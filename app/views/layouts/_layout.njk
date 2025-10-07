@@ -1,0 +1,116 @@
+{% extends "govuk/template.njk" %}
+
+{% from "govuk/components/back-link/macro.njk"           import govukBackLink %}
+{% from "govuk/components/breadcrumbs/macro.njk"         import govukBreadcrumbs %}
+{% from "govuk/components/button/macro.njk"              import govukButton %}
+{% from "govuk/components/checkboxes/macro.njk"          import govukCheckboxes %}
+{% from "govuk/components/date-input/macro.njk"          import govukDateInput %}
+{% from "govuk/components/details/macro.njk"             import govukDetails %}
+{% from "govuk/components/footer/macro.njk"              import govukFooter %}
+{% from "govuk/components/input/macro.njk"               import govukInput %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/pagination/macro.njk"          import govukPagination %}
+{% from "govuk/components/panel/macro.njk"               import govukPanel %}
+{% from "govuk/components/phase-banner/macro.njk"        import govukPhaseBanner %}
+{% from "govuk/components/radios/macro.njk"              import govukRadios %}
+{% from "govuk/components/summary-list/macro.njk"        import govukSummaryList %}
+{% from "govuk/components/table/macro.njk"               import govukTable %}
+{% from "govuk/components/warning-text/macro.njk"        import govukWarningText %}
+{% from "govuk/components/fieldset/macro.njk"            import govukFieldset %}
+{% from "govuk/components/inset-text/macro.njk"          import govukInsetText %}
+{% from "govuk/components/error-summary/macro.njk"       import govukErrorSummary %}
+{% from "govuk/components/service-navigation/macro.njk"  import govukServiceNavigation %}
+
+{% from "../macros/rpa-contact-details.njk"              import rpaContactDetails %}
+
+{% set govukRebrand = true %}
+
+{% block pageTitle %}{{ serviceName }} - GOV.UK{% endblock %}
+
+{% block head %}
+  <link rel="icon" sizes="48x48" href="/assets/rebrand/images/favicon.ico">
+  <link rel="icon" sizes="any" href="/assets/rebrand/images/favicon.svg" type="image/svg+xml">
+  {% if cookiesPolicy.analytics %}
+    {% include "../tag-manager/_head-content.njk" %}
+  {% endif %}
+  <!--[if !IE 8]><!-->
+  <% htmlWebpackPlugin.files.css.forEach(file => { %>
+    <link href="<%= file %>" rel="stylesheet">
+  <% }) %>
+  <!--<![endif]-->
+  {# For Internet Explorer 8, you need to compile specific stylesheet #}
+  {# see https://github.com/alphagov/govuk-frontend/blob/master/docs/installation/supporting-internet-explorer-8.md #}
+  <!--[if IE 8]>
+    <link href="{{ assetPath }}/govuk-frontend/dist/govuk/all-ie8.css" rel="stylesheet" />
+  <![endif]-->
+{% endblock %}
+
+{% block header %}
+  {{ govukHeader({
+    rebrand: true,
+    homepageUrl: "https://www.gov.uk/",
+    containerClasses: "govuk-width-container"
+  }) }}
+
+  {% set nav = [] %}
+
+  {% if userIsSignedIn %}
+    {% set nav = [{ href: "/sign-out", text: 'Sign out' }] %}
+  {% endif %}
+
+  {{ govukServiceNavigation({
+    serviceName: serviceName,
+    serviceUrl: "https://www.gov.uk/government/collections/funding-to-improve-animal-health-and-welfare-guidance-for-farmers-and-vets",
+    navigation: nav
+  }) 
+  }}
+  <div class="govuk-grid-row govuk-width-container">
+    {{ govukPhaseBanner({
+      tag: {
+        text: "beta"
+      },
+      html: 'This is a new service. Help us improve it and <a href="' + customerSurveyUri + '" target="' + customerSurveyUri + '" rel="noopener noreferrer">give your feedback (opens in new tab)</a>.'
+    }) }}
+  </div>
+{% endblock %}
+
+{% block bodyStart %}
+  {% if not cookiesPolicy.confirmed %}
+    {% include "../cookies/cookie-banner.njk" %}
+  {% endif %}
+  {% if cookiesPolicy.analytics %}
+    {% include "../tag-manager/_body-content.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% set footerHtml %}
+<h2>Data Protection</h2>
+<p class="data-entry">For information on how we handle personal data go to GOV.UK and search for <a href="https://www.gov.uk/government/organisations/rural-payments-agency/about/personal-information-charter" target="https://www.gov.uk/government/organisations/rural-payments-agency/about/personal-information-charter" rel="noopener noreferrer" ga-click ga-category="Footer" ga-action="Link clicked: Rural Payments Agency personal information charter">Rural Payments Agency personal information charter</a>.</p>
+<ul class="govuk-footer__inline-list">
+  <li class="govuk-footer__inline-list-item">
+    <a class="govuk-footer__link" href="/accessibility">
+      Accessibility
+    </a>
+  </li>
+  <li class="govuk-footer__inline-list-item">
+    <a class="govuk-footer__link" href="/cookies">
+      Cookies
+    </a>
+  </li>
+</ul>
+{% endset -%}
+
+{% block footer %}
+  {{ govukFooter({
+    rebrand: true,
+    meta: {
+      html: footerHtml
+    }
+  }) }}
+{% endblock %}
+
+{% block bodyEnd %}
+  <% htmlWebpackPlugin.files.js.forEach(file => { %>
+    <script src="<%= file %>"></script>
+  <% }) %>
+{% endblock %}

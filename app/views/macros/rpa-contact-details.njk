@@ -1,0 +1,17 @@
+{% macro rpaContactDetails(model) %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <ul class='govuk-list'>
+      <li>Email: <a href='mailto:{{model.email}}'>{{ model.email }}</a></li>
+      <br/>
+      <li>Telephone: {{ model.telephone }}</li>
+      <li>Monday to Friday, 8:30am to 5pm, except bank holidays</li>
+    </ul>
+    <p>
+      <a class='govuk-link' target={{ model.callChargesUri }} href={{ model.callChargesUri }} rel="noopener noreferrer">
+          Find out about call charges (opens in a new tab)
+      </a>
+    </p>
+  </div>
+</div>
+{% endmacro %}

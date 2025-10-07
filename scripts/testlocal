@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+echo "Moving your .env file to .env.testtemp"
+mv .env .env.testtemp
+
+BASEDIR=$(dirname $0)
+$BASEDIR/test "$@"
+
+echo "Moving your .env file back as we're all done!"
+mv .env.testtemp .env

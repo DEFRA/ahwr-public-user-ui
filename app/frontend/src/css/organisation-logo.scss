@@ -1,0 +1,70 @@
+.brand__border-color {
+  border-color: #00a33b;
+}
+
+@media (min-width: 40.0625em) {
+  .gem-c-organisation-logo {
+    font-size: 18px;
+    line-height: 20px;
+  }
+}
+
+.brand--department-for-environment-food-rural-affairs .brand__border-color,
+.brand--department-for-environment-food-rural-affairs.brand__border-color {
+  border-color: #00a33b;
+}
+
+.brand--rural-payments-agency .brand__border-color,
+.brand--rural-payments-agency.brand__border-color {
+  border-color: #00a33b;
+}
+
+.gem-c-organisation-logo__crest--eo,
+.gem-c-organisation-logo__crest--org,
+.gem-c-organisation-logo__crest--single-identity {
+  background: url(../images/govuk-crest.png) no-repeat 6px 0 !important;
+  background-size: auto 26px;
+}
+
+.gem-c-organisation-logo__link {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: "HelveticaNeue", "Helvetica Neue", "Arial", "Helvetica", sans-serif;
+}
+
+@media (min-width: 40.0625em) {
+  .gem-c-organisation-logo__crest {
+    padding-top: 25px;
+    padding-left: 7px;
+  }
+}
+
+.gem-c-organisation-logo__crest {
+  border-left: 2px solid #0b0c0c;
+  padding-top: 20px;
+  padding-left: 6px;
+}
+
+.gem-c-organisation-logo__container {
+  text-transform: none;
+  text-decoration: none;
+  display: block;
+  color: #0b0c0c;
+  height: auto;
+  width: auto;
+  direction: ltr;
+}
+
+.gem-c-organisation-logo__name {
+  position: relative;
+  top: 3px;
+  font-family: "HelveticaNeue", "Helvetica Neue", "Arial", "Helvetica", sans-serif;
+}
+
+.gem-c-organisation-logo__link:active,
+.gem-c-organisation-logo__link:focus,
+.gem-c-organisation-logo__link:hover,
+.gem-c-organisation-logo__link:link,
+.gem-c-organisation-logo__link:visited {
+  color: #0b0c0c;
+}

@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  ffc-ahwr-dashboard:
+    command: >
+      sh -c "npm run test:watch:all"
+    volumes:
+      - ./app:/home/node/app
+      - ./test:/home/node/test
+      - ./jest.config.cjs:/home/node/jest.config.cjs
+      - ./webpack.config.js:/home/node/webpack.config.js
+
+volumes:
+  dist:
+  layouts:

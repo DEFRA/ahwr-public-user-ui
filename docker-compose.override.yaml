@@ -1,0 +1,37 @@
+# This override file should be used when running this service in isolation
+# to provide dependencies and expose ports for local testing
+
+services:
+  ffc-ahwr-dashboard:
+    build:
+      target: development
+    image: ffc-ahwr-dashboard-development
+    container_name: ffc-ahwr-dashboard-development
+    environment:
+      USE_PRETTY_PRINT: ${USE_PRETTY_PRINT:-true}
+      DEV_LOGIN_ENABLED: ${DEV_LOGIN_ENABLED:-true}
+    ports:
+      - "3003:3000"
+      - "9232:9229"
+    volumes:
+      - ./app:/home/node/app
+      - ./package.json:/home/node/package.json
+    networks:
+      - shared_net
+
+  redis:
+    image: redis:4.0.14
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - shared_net
+
+networks:
+  shared_net:
+    external: true
+
+volumes:
+  azurite_data:
+  redis_data:

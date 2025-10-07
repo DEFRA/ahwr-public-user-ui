@@ -28,11 +28,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: |
-          npm ci
-          npm run build:frontend
-          npm run format:check
-          npm run lint
-          npm test
+          ./scripts/test
 
       - name: Publish Hot Fix
         uses: DEFRA/cdp-build-action/build-hotfix@main

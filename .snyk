@@ -1,0 +1,7 @@
+version: v1.25.0
+ignore:
+  SNYK-JS-ELLIPTIC-8187303:
+    - 'jwk-to-pem@2.0.7 > elliptic@6.6.1':
+      reason: No fix for elliptic available
+      expires: 2025-03-01
+patch: {}

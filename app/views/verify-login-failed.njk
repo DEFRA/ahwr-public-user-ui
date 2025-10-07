@@ -1,0 +1,30 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Login failed - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Login failed</h1>
+
+    {% if message %}
+    <p>{{ message }}</p>
+    {% endif %}
+
+    <p>Please repeat the login process.</p>
+
+    <p class="govuk-body">If you need help with your application, contact the Rural Payments Agency.</p>  
+    {{ rpaContactDetails({ email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone }) }}
+  </div>
+</div>
+{% endblock %}

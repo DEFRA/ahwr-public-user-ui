@@ -1,0 +1,4 @@
+{% set cattle = ['beef', 'dairy'] %}
+
+{{- species | capitalize -}}
+{% if species in cattle %} cattle{% endif %}

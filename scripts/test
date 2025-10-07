@@ -1,0 +1,91 @@
+#!/usr/bin/env sh
+
+set -e
+projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; pwd)"
+
+service="ffc-ahwr-dashboard"
+
+# Determine which docker compose command is available
+if command -v docker compose &> /dev/null; then
+  compose_cmd="docker compose"
+elif command -v docker-compose &> /dev/null; then
+  compose_cmd="docker-compose"
+else
+  echo "Neither 'docker compose' nor 'docker-compose' is installed." >&2
+  exit 1
+fi
+
+show_help() {
+  echo "
+    Usage: scripts/test [OPTION...]
+    Run tests.
+
+    Options:
+      -w, --watch   watch tests
+      -d, --debug   debug tests
+      -f, --fix fix lint errors before tests
+      -h, --help    display this help text
+    "
+}
+
+while :; do
+  case $1 in
+    -w|--watch)
+      watch="true"
+      ;;
+
+    -d|--debug)
+      debug="true"
+      ;;
+
+    -f|--fix)
+      fix_lint="true" # Fix linting issues rather than just fail and stop tests running
+      ;;
+
+    -h|--help)   # Call a "show_help" function to display a synopsis, then exit.
+      show_help
+      exit
+      ;;
+    *)
+      break
+  esac
+
+  shift
+done
+
+compose() {
+  if [ "${watch}" = "true" ]; then
+    $compose_cmd -f docker-compose.yaml -f docker-compose.test.yaml -f docker-compose.test.watch.yaml -p "${service}-test" $@
+  elif [ "${debug}" = "true" ]; then
+    $compose_cmd -f docker-compose.yaml -f docker-compose.test.yaml -f docker-compose.test.watch.yaml -f docker-compose.test.debug.yaml -p "${service}-test" $@
+  else
+    $compose_cmd -f docker-compose.yaml -f docker-compose.test.yaml -p "${service}-test" $@
+  fi
+}
+
+(
+  cd "${projectRoot}"
+
+  if [ "${fix_lint}" = "true" ]; then
+    npm run lint:fix
+  fi
+
+  # Create test output folder
+  mkdir -p test-output
+
+  # Guarantee clean environment
+  compose down -v
+
+  # Ensure container images are up to date
+  compose build
+
+  # Run tests
+  if [ "${debug}" = "true" ]; then
+    compose run --service-ports ${service} ${command}
+  else
+    compose run --rm ${service} ${command}
+  fi
+
+  # Clean up
+  compose down -v
+)

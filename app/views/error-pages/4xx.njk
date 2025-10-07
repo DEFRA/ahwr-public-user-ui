@@ -1,0 +1,15 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Error - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block content %}
+  <div id="_{{ payload.statusCode }}" class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ payload.statusCode }} - {{ payload.error }}</h1>
+      <p>{{ payload.message }}</p>
+    </div>
+  </div>
+  <div>
+    <p><a href="https://www.gov.uk/government/collections/funding-to-improve-animal-health-and-welfare-guidance-for-farmers-and-vets">Go back home</a></p>
+  </div>
+{% endblock %}

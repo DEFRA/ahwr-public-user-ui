@@ -1,199 +1,104 @@
-# ahwr-public-user-ui
+# FFC AHWR Dashboard
 
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_ahwr-public-user-ui&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=DEFRA_ahwr-public-user-ui)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_ahwr-public-user-ui&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DEFRA_ahwr-public-user-ui)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_ahwr-public-user-ui&metric=coverage)](https://sonarcloud.io/summary/new_code?id=DEFRA_ahwr-public-user-ui)
+FFC AHWR Dashboard service, looks after giving easy access through dashboard function to customer.
 
-Core delivery platform Node.js Frontend Template.
+## Usage
 
-- [Requirements](#requirements)
-  - [Node.js](#nodejs)
-- [Server-side Caching](#server-side-caching)
-- [Redis](#redis)
-- [Local Development](#local-development)
-  - [Setup](#setup)
-  - [Development](#development)
-  - [Production](#production)
-  - [Npm scripts](#npm-scripts)
-  - [Update dependencies](#update-dependencies)
-  - [Formatting](#formatting)
-    - [Windows prettier issue](#windows-prettier-issue)
-- [Docker](#docker)
-  - [Development image](#development-image)
-  - [Production image](#production-image)
-  - [Docker Compose](#docker-compose)
-  - [Dependabot](#dependabot)
-  - [SonarCloud](#sonarcloud)
-- [Licence](#licence)
-  - [About the licence](#about-the-licence)
+Create a new repository from this template and run `./rename.js` specifying the new name of the project and the description to use e.g.
 
-## Requirements
-
-### Node.js
-
-Please install [Node.js](http://nodejs.org/) `>= v22` and [npm](https://nodejs.org/) `>= v9`. You will find it
-easier to use the Node Version Manager [nvm](https://github.com/creationix/nvm)
-
-To use the correct version of Node.js for this application, via nvm:
-
-```bash
-cd ahwr-public-user-ui
-nvm use
+```
+./rename.js ffc-demo-web "Web frontend for demo workstream"
 ```
 
-## Server-side Caching
+The script will update the following:
 
-We use Catbox for server-side caching. By default the service will use CatboxRedis when deployed and CatboxMemory for
-local development.
-You can override the default behaviour by setting the `SESSION_CACHE_ENGINE` environment variable to either `redis` or
-`memory`.
+- `package.json`: update `name`, `description`, `homepage`
+- `docker-compose.yaml`: update the service name, `image` and `container_name`
+- `docker-compose.test.yaml`: update the service name, `image` and `container_name`
+- `docker-compose.override.yaml`: update the service name, `image` and `container_name`
+- Rename `helm/ffc-ahwr-dashboard`
+- `helm/ffc-ahwr-dashboard/Chart.yaml`: update `description` and `name`
+- `helm/ffc-ahwr-dashboard/values.yaml`: update `name`, `namespace`, `workstream`, `image`, `containerConfigMap.name`
+- `helm/ffc-ahwr-dashboard/templates/_container.yaml`: update the template name
+- `helm/ffc-ahwr-dashboard/templates/cluster-ip-service.yaml`: update the template name and list parameter of include
+- `helm/ffc-ahwr-dashboard/templates/config-map.yaml`: update the template name and list parameter of include
+- `helm/ffc-ahwr-dashboard/templates/deployment.yaml`: update the template name, list parameter of deployment and container includes
 
-Please note: CatboxMemory (`memory`) is _not_ suitable for production use! The cache will not be shared between each
-instance of the service and it will not persist between restarts.
+### Notes on automated rename
 
-## Redis
+- The Helm chart deployment values in `helm/ffc-ahwr-dashboard/values.yaml` may need updating depending on the resource needs of your microservice
+- The rename is a one-way operation i.e. currently it doesn't allow the name being changed from to be specified
+- There is some validation on the input to try and ensure the rename is successful, however, it is unlikely to stand up to malicious entry
+- Once the rename has been performed the script can be removed from the repo
+- Should the rename go awry the changes can be reverted via `git clean -df && git checkout -- .`
 
-Redis is an in-memory key-value store. Every instance of a service has access to the same Redis key-value store similar
-to how services might have a database (or MongoDB). All frontend services are given access to a namespaced prefixed that
-matches the service name. e.g. `my-service` will have access to everything in Redis that is prefixed with `my-service`.
+## Prerequisites
 
-If your service does not require a session cache to be shared between instances or if you don't require Redis, you can
-disable setting `SESSION_CACHE_ENGINE=false` or changing the default value in `src/config/index.js`.
+- Docker
+- Docker Compose
 
-## Proxy
+Optional:
 
-We are using forward-proxy which is set up by default. To make use of this: `import { fetch } from 'undici'` then
-because of the `setGlobalDispatcher(new ProxyAgent(proxyUrl))` calls will use the ProxyAgent Dispatcher
+- Kubernetes
+- Helm
 
-If you are not using Wreck, Axios or Undici or a similar http that uses `Request`. Then you may have to provide the
-proxy dispatcher:
+## Running the application
 
-To add the dispatcher to your own client:
+The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.
 
-```javascript
-import { ProxyAgent } from 'undici'
+- A Helm chart is provided for production deployments to Kubernetes.
 
-return await fetch(url, {
-  dispatcher: new ProxyAgent({
-    uri: proxyUrl,
-    keepAliveTimeout: 10,
-    keepAliveMaxTimeout: 10
-  })
-})
+### Build container image
+
+Container images are built using Docker Compose, with the same images used to run the service with either Docker Compose or Kubernetes.
+
+When using the Docker Compose files in development the local `app` folder will
+be mounted on top of the `app` folder within the Docker container, hiding the CSS files that were generated during the Docker build. For the site to render correctly locally `npm run build` must be run on the host system.
+
+By default, the start script will build (or rebuild) images so there will
+rarely be a need to build images manually. However, this can be achieved
+through the Docker Compose
+[build](https://docs.docker.com/compose/reference/build/) command:
+
+```
+# Build container images
+docker-compose build
 ```
 
-## Local Development
+### Start
 
-### Setup
+Use Docker Compose to run service locally.
 
-Install application dependencies:
-
-```bash
-npm install
+```
+docker-compose up
 ```
 
-### Development
+## Test structure
 
-To run the application in `development` mode run:
+The tests have been structured into subfolders of `./test` as per the
+[Microservice test approach and repository structure](https://eaflood.atlassian.net/wiki/spaces/FPS/pages/1845396477/Microservice+test+approach+and+repository+structure)
 
-```bash
-npm run dev
+### Running tests
+
+A convenience script is provided to run automated tests in a containerised
+environment. This will rebuild images before running tests via docker-compose,
+using a combination of `docker-compose.yaml` and `docker-compose.test.yaml`.
+The command given to `docker-compose run` may be customised by passing
+arguments to the test script.
+
+Examples:
+
+```
+# Run all tests
+scripts/test
+
+# Run tests with file watch
+scripts/test -w
 ```
 
-### Production
+## CI pipeline
 
-To mimic the application running in `production` mode locally run:
-
-```bash
-npm start
-```
-
-### Npm scripts
-
-All available Npm scripts can be seen in [package.json](./package.json)
-To view them in your command line run:
-
-```bash
-npm run
-```
-
-### Update dependencies
-
-To update dependencies use [npm-check-updates](https://github.com/raineorshine/npm-check-updates):
-
-> The following script is a good start. Check out all the options on
-> the [npm-check-updates](https://github.com/raineorshine/npm-check-updates)
-
-```bash
-ncu --interactive --format group
-```
-
-### Formatting
-
-#### Windows prettier issue
-
-If you are having issues with formatting of line breaks on Windows update your global git config by running:
-
-```bash
-git config --global core.autocrlf false
-```
-
-## Docker
-
-### Development image
-
-> [!TIP]
-> For Apple Silicon users, you may need to add `--platform linux/amd64` to the `docker run` command to ensure
-> compatibility fEx: `docker build --platform=linux/arm64 --no-cache --tag ahwr-public-user-ui`
-
-Build:
-
-```bash
-docker build --target development --no-cache --tag ahwr-public-user-ui:development .
-```
-
-Run:
-
-```bash
-docker run -p 3000:3000 ahwr-public-user-ui:development
-```
-
-### Production image
-
-Build:
-
-```bash
-docker build --no-cache --tag ahwr-public-user-ui .
-```
-
-Run:
-
-```bash
-docker run -p 3000:3000 ahwr-public-user-ui
-```
-
-### Docker Compose
-
-A local environment with:
-
-- Localstack for AWS services (S3, SQS)
-- Redis
-- MongoDB
-- This service.
-- A commented out backend example.
-
-```bash
-docker compose up --build -d
-```
-
-### Dependabot
-
-We have added an example dependabot configuration file to the repository. You can enable it by renaming
-the [.github/example.dependabot.yml](.github/example.dependabot.yml) to `.github/dependabot.yml`
-
-### SonarCloud
-
-Instructions for setting up SonarCloud can be found in [sonar-project.properties](./sonar-project.properties).
+This service uses the [FFC CI pipeline](https://github.com/DEFRA/ffc-jenkins-pipeline-library)
 
 ## Licence
 
@@ -207,8 +112,6 @@ The following attribution statement MUST be cited in your products and applicati
 
 ### About the licence
 
-The Open Government Licence (OGL) was developed by the Controller of Her Majesty's Stationery Office (HMSO) to enable
-information providers in the public sector to license the use and re-use of their information under a common open
-licence.
+The Open Government Licence (OGL) was developed by the Controller of Her Majesty's Stationery Office (HMSO) to enable information providers in the public sector to license the use and re-use of their information under a common open licence.
 
 It is designed to encourage use and re-use of information freely and flexibly, with only a few conditions.

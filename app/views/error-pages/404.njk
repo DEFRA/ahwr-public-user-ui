@@ -1,0 +1,18 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Page not found - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block content %}
+  <div id="_404" class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">404 - Page not found</h1>
+      <p>The page you requested was not found.</p>
+    </div>
+  </div>
+  <div>
+    <p><a href="{{dashboardLink}}">Go back home</a></p>
+    {% if signInLink %}
+      <p><a href="{{signInLink}}">Sign in</a></p>
+    {% endif %}
+  </div>
+{% endblock %}

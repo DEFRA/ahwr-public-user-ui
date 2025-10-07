@@ -1,0 +1,30 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{{ serviceName }} - GOV.UK{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Your Improve Animal Health and Welfare (IAHW) agreement has been removed</h1>
+      <p class="govuk-body">
+        Your agreement has been removed in line with the <a href='{{ privacyPolicyUri }}'>IAHW privacy policy.</a> You can no longer make claims on this agreement.
+      </p>
+      <p class="govuk-body">
+        If you're eligible, you can apply for a new agreement.
+      </p>
+      <p class="govuk-body">
+        <a href='{{ applyServiceUri }}'>Apply for a new agreement</a>
+      </p>
+      <h2 class="govuk-heading-m">Get help with your agreement</h2>
+      <p>Contact us if you are not sure why you can no longer access your agreement.</p>
+      <p class="govuk-body">
+        You should:
+      </p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>use 'IAHW' in the email subject heading</li>
+        <li>put your SBI on everything you send to us</li>
+      </ul>
+      {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+    </div>
+  </div>
+{% endblock %}
