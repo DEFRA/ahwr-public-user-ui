@@ -1,6 +1,6 @@
 {
   "name": "ahwr-public-user-ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Public user UI for AHWR service",
   "homepage": "https://github.com/DEFRA/ahwr-public-user-ui",
   "main": "app/index.js",

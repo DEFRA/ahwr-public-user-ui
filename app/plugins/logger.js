@@ -41,7 +41,7 @@ export const loggingPlugin = {
     formatters: {
       level: (level) => ({ level }),
     },
-    ignorePaths: ["/healthy", "/healthz"],
+    ignorePaths: ["/health"],
     ignoreTags: ["assets"],
     serializers: {
       req,
