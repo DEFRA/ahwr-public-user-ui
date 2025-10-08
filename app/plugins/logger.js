@@ -36,7 +36,7 @@ const err = (err) => ({
 export const loggingPlugin = {
   plugin: pino,
   options: {
-    name: "ffc-ahwr-dashboard",
+    name: "ahwr-public-user-ui",
     ...(process.env.NODE_ENV === "test" && testLevel),
     formatters: {
       level: (level) => ({ level }),

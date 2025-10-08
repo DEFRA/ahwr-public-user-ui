@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  ffc-ahwr-dashboard:
+  ahwr-public-user-ui:
     command: >
       sh -c "npm run test:watch:all"
     volumes:

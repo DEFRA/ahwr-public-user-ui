@@ -1,82 +1,23 @@
-# FFC AHWR Dashboard
+# AHWR Public User UI
 
-FFC AHWR Dashboard service, looks after giving easy access through dashboard function to customer.
-
-## Usage
-
-Create a new repository from this template and run `./rename.js` specifying the new name of the project and the description to use e.g.
-
-```
-./rename.js ffc-demo-web "Web frontend for demo workstream"
-```
-
-The script will update the following:
-
-- `package.json`: update `name`, `description`, `homepage`
-- `docker-compose.yaml`: update the service name, `image` and `container_name`
-- `docker-compose.test.yaml`: update the service name, `image` and `container_name`
-- `docker-compose.override.yaml`: update the service name, `image` and `container_name`
-- Rename `helm/ffc-ahwr-dashboard`
-- `helm/ffc-ahwr-dashboard/Chart.yaml`: update `description` and `name`
-- `helm/ffc-ahwr-dashboard/values.yaml`: update `name`, `namespace`, `workstream`, `image`, `containerConfigMap.name`
-- `helm/ffc-ahwr-dashboard/templates/_container.yaml`: update the template name
-- `helm/ffc-ahwr-dashboard/templates/cluster-ip-service.yaml`: update the template name and list parameter of include
-- `helm/ffc-ahwr-dashboard/templates/config-map.yaml`: update the template name and list parameter of include
-- `helm/ffc-ahwr-dashboard/templates/deployment.yaml`: update the template name, list parameter of deployment and container includes
-
-### Notes on automated rename
-
-- The Helm chart deployment values in `helm/ffc-ahwr-dashboard/values.yaml` may need updating depending on the resource needs of your microservice
-- The rename is a one-way operation i.e. currently it doesn't allow the name being changed from to be specified
-- There is some validation on the input to try and ensure the rename is successful, however, it is unlikely to stand up to malicious entry
-- Once the rename has been performed the script can be removed from the repo
-- Should the rename go awry the changes can be reverted via `git clean -df && git checkout -- .`
+AHWR Public User UI service, which contains the user dashboard as well as both the apply and claim user journeys.
 
 ## Prerequisites
 
 - Docker
 - Docker Compose
 
-Optional:
-
-- Kubernetes
-- Helm
-
 ## Running the application
 
 The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.
 
-- A Helm chart is provided for production deployments to Kubernetes.
-
-### Build container image
-
-Container images are built using Docker Compose, with the same images used to run the service with either Docker Compose or Kubernetes.
-
-When using the Docker Compose files in development the local `app` folder will
-be mounted on top of the `app` folder within the Docker container, hiding the CSS files that were generated during the Docker build. For the site to render correctly locally `npm run build` must be run on the host system.
-
-By default, the start script will build (or rebuild) images so there will
-rarely be a need to build images manually. However, this can be achieved
-through the Docker Compose
-[build](https://docs.docker.com/compose/reference/build/) command:
-
-```
-# Build container images
-docker-compose build
-```
-
 ### Start
 
-Use Docker Compose to run service locally.
+Use the start script inside the /scripts folder.
 
 ```
-docker-compose up
+./scripts/start
 ```
-
-## Test structure
-
-The tests have been structured into subfolders of `./test` as per the
-[Microservice test approach and repository structure](https://eaflood.atlassian.net/wiki/spaces/FPS/pages/1845396477/Microservice+test+approach+and+repository+structure)
 
 ### Running tests
 
@@ -89,16 +30,15 @@ arguments to the test script.
 Examples:
 
 ```
-# Run all tests
+# Run tests locally (moves your .env so it does not interfere)
+scripts/testlocal
+
+# Run tests in pipeline
 scripts/test
 
 # Run tests with file watch
 scripts/test -w
 ```
-
-## CI pipeline
-
-This service uses the [FFC CI pipeline](https://github.com/DEFRA/ffc-jenkins-pipeline-library)
 
 ## Licence
 

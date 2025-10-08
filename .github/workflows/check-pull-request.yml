@@ -28,10 +28,6 @@ jobs:
       - run: |
           ./scripts/test
 
-      - name: Test Docker Image Build
-        run: |
-          print 'Do we need this?'
-
 #      - name: SonarCloud Scan
 #        if: github.actor != 'dependabot[bot]'
 #        uses: SonarSource/sonarqube-scan-action@v5.3.1 #  (or check latest version on https://github.com/marketplace/actions/official-sonarqube-scan)

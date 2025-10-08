@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  ffc-ahwr-dashboard:
+  ahwr-public-user-ui:
     command: npm run test:debug
     ports:
       - "9229:9229"

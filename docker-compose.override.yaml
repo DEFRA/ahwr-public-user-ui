@@ -2,11 +2,11 @@
 # to provide dependencies and expose ports for local testing
 
 services:
-  ffc-ahwr-dashboard:
+  ahwr-public-user-ui:
     build:
       target: development
-    image: ffc-ahwr-dashboard-development
-    container_name: ffc-ahwr-dashboard-development
+    image: ahwr-public-user-ui-development
+    container_name: ahwr-public-user-ui-development
     environment:
       USE_PRETTY_PRINT: ${USE_PRETTY_PRINT:-true}
       DEV_LOGIN_ENABLED: ${DEV_LOGIN_ENABLED:-true}

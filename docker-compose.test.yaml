@@ -2,13 +2,13 @@
 # that test output is saved to the host
 
 services:
-  ffc-ahwr-dashboard:
+  ahwr-public-user-ui:
     build:
       target: development
     environment:
       NODE_ENV: test
-    image: ffc-ahwr-dashboard-development
-    container_name: ffc-ahwr-dashboard-test
+    image: ahwr-public-user-ui-development
+    container_name: ahwr-public-user-ui-test
     command: npm run test
     volumes:
       - ./test-output:/home/node/test-output

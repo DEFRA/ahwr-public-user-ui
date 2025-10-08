@@ -1,10 +1,10 @@
 services:
-  ffc-ahwr-dashboard:
+  ahwr-public-user-ui:
     build:
       context: .
       target: production
-    image: ffc-ahwr-dashboard
-    container_name: ffc-ahwr-dashboard
+    image: ahwr-public-user-ui
+    container_name: ahwr-public-user-ui
     environment:
       APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
       COOKIE_PASSWORD: who-likes-cookies-i-like-cookies-everybody-likes-cookies
