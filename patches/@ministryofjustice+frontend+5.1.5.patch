@@ -1,0 +1,10 @@
+diff --git a/node_modules/@ministryofjustice/frontend/moj/vendor/govuk-frontend/_base.scss b/node_modules/@ministryofjustice/frontend/moj/vendor/govuk-frontend/_base.scss
+index e82080c..8b645e0 100644
+--- a/node_modules/@ministryofjustice/frontend/moj/vendor/govuk-frontend/_base.scss
++++ b/node_modules/@ministryofjustice/frontend/moj/vendor/govuk-frontend/_base.scss
+@@ -1,4 +1,4 @@
+-@forward "node_modules/govuk-frontend/dist/govuk/base" with (
++@forward "govuk-frontend/dist/govuk/base" with (
+   $govuk-suppressed-warnings: (
+     "govuk-typography-scale-14"
+   )

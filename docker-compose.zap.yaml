@@ -1,0 +1,19 @@
+services:
+  ahwr-public-user-ui:
+    command: npm run start:watch
+    build:
+      target: development
+    image: ahwr-public-user-ui-development
+    environment:
+      NODE_ENV: test
+    volumes:
+      - ./test-output/:/home/node/test-output/
+
+  zap-baseline-scan:
+    image: zaproxy/zap-bare:2.16.1
+    command: zap.sh -cmd -quickurl http://ahwr-public-user-ui:${PORT:-3000} -configfile wrk/config/zap.conf -quickout wrk/test-output/zap-report.html
+    depends_on:
+      - ahwr-public-user-ui
+    volumes:
+      - ./test-output/:/zap/wrk/test-output/
+      - ./zap/:/zap/wrk/config/

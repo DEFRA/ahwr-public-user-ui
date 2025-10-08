@@ -1,0 +1,193 @@
+.govspeak .attachment {
+  position: relative;
+  margin: 30px 0;
+  padding: 35px 0 0 129px;
+}
+
+.govspeak .attachment .attachment-thumb {
+  position: relative;
+  float: left;
+  margin-top: 5px;
+  margin-left: -124px;
+  padding-bottom: 15px;
+}
+
+.govspeak .attachment .attachment-thumb svg {
+  fill: #b1b4b6;
+  stroke: #b1b4b6;
+  display: block;
+  width: 99px;
+  height: 140px;
+  background: #fff;
+  outline: 5px solid rgba(11, 12, 12, 0.1);
+  box-shadow: 0 2px 2px rgba(11, 12, 12, 0.4);
+}
+
+.gem-c-govspeak .attachment .attachment-details h3 {
+  font-family: "nta", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.1111111111;
+  margin: 0;
+}
+
+@media print {
+  .gem-c-govspeak .attachment .attachment-details h3 {
+    font-family: sans-serif;
+  }
+}
+@media (min-width: 40.0625em) {
+  .gem-c-govspeak .attachment .attachment-details h3 {
+    font-size: 27px;
+    line-height: 1.1111111111;
+  }
+}
+@media print {
+  .gem-c-govspeak .attachment .attachment-details h3 {
+    font-size: 18pt;
+    line-height: 1.15;
+  }
+}
+.gem-c-govspeak .attachment .attachment-details p {
+  margin: 10px 0;
+}
+
+.gem-c-govspeak .attachment .attachment-details .metadata {
+  font-family: "nta", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+@media print {
+  .gem-c-govspeak .attachment .attachment-details .metadata {
+    font-family: sans-serif;
+  }
+}
+@media (min-width: 40.0625em) {
+  .gem-c-govspeak .attachment .attachment-details .metadata {
+    font-size: 14px;
+    line-height: 1.4285714286;
+  }
+}
+@media print {
+  .gem-c-govspeak .attachment .attachment-details .metadata {
+    font-size: 12pt;
+    line-height: 1.2;
+  }
+}
+.gem-c-govspeak .attachment .attachment-details .url {
+  word-break: break-word;
+  word-wrap: break-word;
+}
+
+.gem-c-govspeak .attachment .attachment-details .changed,
+.gem-c-govspeak .attachment .attachment-details .references,
+.gem-c-govspeak .attachment .attachment-details .unnumbered-paper {
+  display: block;
+}
+
+.gem-c-govspeak .attachment .attachment-details .download,
+.gem-c-govspeak .attachment .attachment-details .preview {
+  font-family: "nta", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+@media print {
+  .gem-c-govspeak .attachment .attachment-details .download,
+  .gem-c-govspeak .attachment .attachment-details .preview {
+    font-family: sans-serif;
+  }
+}
+@media (min-width: 40.0625em) {
+  .gem-c-govspeak .attachment .attachment-details .download,
+  .gem-c-govspeak .attachment .attachment-details .preview {
+    font-size: 19px;
+    line-height: 1.3157894737;
+  }
+}
+@media print {
+  .gem-c-govspeak .attachment .attachment-details .download,
+  .gem-c-govspeak .attachment .attachment-details .preview {
+    font-size: 14pt;
+    line-height: 1.15;
+  }
+}
+.gem-c-govspeak .attachment .attachment-details .download strong,
+.gem-c-govspeak .attachment .attachment-details .preview strong {
+  font-weight: bold;
+}
+
+.gem-c-govspeak .attachment .attachment-details .preview {
+  padding-right: 15px;
+}
+
+.gem-c-govspeak .attachment .attachment-details .opendocument-help {
+  font-family: "nta", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+@media print {
+  .gem-c-govspeak .attachment .attachment-details .opendocument-help {
+    font-family: sans-serif;
+  }
+}
+@media (min-width: 40.0625em) {
+  .gem-c-govspeak .attachment .attachment-details .opendocument-help {
+    font-size: 14px;
+    line-height: 1.4285714286;
+  }
+}
+@media print {
+  .gem-c-govspeak .attachment .attachment-details .opendocument-help {
+    font-size: 12pt;
+    line-height: 1.2;
+  }
+}
+.gem-c-govspeak .attachment .attachment-details .accessibility-warning {
+  word-break: break-word;
+  word-wrap: break-word;
+}
+
+.gem-c-govspeak .attachment .attachment-details .accessibility-warning h3 {
+  font-family: "nta", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.25;
+  margin: 0;
+}
+
+@media print {
+  .gem-c-govspeak .attachment .attachment-details .accessibility-warning h3 {
+    font-family: sans-serif;
+  }
+}
+@media (min-width: 40.0625em) {
+  .gem-c-govspeak .attachment .attachment-details .accessibility-warning h3 {
+    font-size: 14px;
+    line-height: 1.4285714286;
+  }
+}
+@media print {
+  .gem-c-govspeak .attachment .attachment-details .accessibility-warning h3 {
+    font-size: 12pt;
+    line-height: 1.2;
+  }
+}
+.gem-c-govspeak .attachment .attachment-details .js-hidden {
+  display: none;
+}

@@ -26,17 +26,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: |
-          npm ci
-          npm run build:frontend
-          npm run format:check
-          npm run lint
-          npm test
-
-      - name: Test Docker Image Build
-        run: |
-          set +e
-          docker build --no-cache --tag cdp-node-frontend-template .
-          exit $?
+          ./scripts/test
 
 #      - name: SonarCloud Scan
 #        if: github.actor != 'dependabot[bot]'

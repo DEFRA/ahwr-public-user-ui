@@ -1,0 +1,40 @@
+services:
+  ahwr-public-user-ui:
+    build:
+      context: .
+      target: production
+    image: ahwr-public-user-ui
+    container_name: ahwr-public-user-ui
+    environment:
+      COOKIE_PASSWORD: who-likes-cookies-i-like-cookies-everybody-likes-cookies
+      GOOGLE_TAG_MANAGER_KEY: ${GOOGLE_TAG_MANAGER_KEY}
+      REDIS_HOSTNAME: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      SERVICE_URI: http://localhost:3003/
+      CLAIM_SERVICE_URI: http://localhost:3004/claim
+      APPLY_SERVICE_URI: http://localhost:3000/apply
+      APPLICATION_API_URI: http://host.docker.internal:3001/api
+      DEFRA_ID_TENANT: ${DEFRA_ID_TENANT:-azdcuspoc5}
+      DEFRA_ID_POLICY: ${DEFRA_ID_POLICY:-B2C_1A_SIGNUPSIGNINSFI}
+      DEFRA_ID_REDIRECT_URI: ${DEFRA_ID_REDIRECT_URI:-http://localhost:3003/signin-oidc}
+      DEFRA_ID_JWT_ISSUER_ID: ${DEFRA_ID_JWT_ISSUER_ID:-64c9d4f5-a560-4b65-9004-6d1e5ccee51d}
+      DEFRA_ID_CLIENT_ID: ${DEFRA_ID_CLIENT_ID:-83d2b160-74ce-4356-9709-3f8da7868e35}
+      DEFRA_ID_CLIENT_SECRET: ${DEFRA_ID_CLIENT_SECRET:-changeme}
+      DEFRA_ID_SERVICE_ID: ${DEFRA_ID_SERVICE_ID:-2a672ee6-7750-ed11-bba3-000d3adf7047}
+      RPA_HOST_NAME: ${RPA_HOST_NAME:-https://dev-internal-gateway.trade.azure.defra.cloud}
+      RPA_GET_PERSON_SUMMARY_URL: ${RPA_GET_PERSON_SUMMARY_URL:-/rural-payments-vet-visits/v1/person/3337243/summary}
+      RPA_GET_ORGANISATION_PERMISSIONS_URL: ${RPA_GET_ORGANISATION_PERMISSIONS_URL:-/rural-payments-vet-visits/v1/SitiAgriApi/authorisation/organisation/organisationId/authorisation}
+      RPA_GET_ORGANISATION_URL: ${RPA_GET_ORGANISATION_URL:-/rural-payments-vet-visits/v1/organisation/organisationId}
+      RPA_GET_CPH_NUMBERS_URL: ${RPA_GET_CPH_NUMBERS_URL:-/rural-payments-vet-visits/v1/SitiAgriApi/cph/organisation/organisationId/cph-numbers}
+      APIM_OCP_SUBSCRIPTION_KEY: ${APIM_OCP_SUBSCRIPTION_KEY:-changeme}
+      APIM_HOST_NAME: ${APIM_HOST_NAME:-https://login.microsoftonline.com}
+      APIM_OAUTH_PATH: ${APIM_OAUTH_PATH:-/c9d74090-b4e6-4b04-981d-e6757a160812/oauth2/v2.0/token}
+      APIM_CLIENT_ID: ${APIM_CLIENT_ID:-changeme}
+      APIM_CLIENT_SECRET: ${APIM_CLIENT_SECRET:-changeme}
+      APIM_SCOPE: ${APIM_SCOPE:-api://dev-futuretrade-int.defra.gov.uk/.default}
+      TERMS_AND_CONDITIONS_URL: ${TERMS_AND_CONDITIONS_URL:-http://localhost:3003/terms/v3}
+      MULTI_SPECIES_RELEASE_DATE: ${MULTI_SPECIES_RELEASE_DATE}
+      CUSTOMER_SURVEY_CLAIM_URI: ${CUSTOMER_SURVEY_CLAIM_URI:-https://forms.office.com/Pages/ResponsePage.aspx?id=UCQKdycCYkyQx044U38RAsIdAEqqafZCk2LjifrI4h1UOVJKOVRUWlBLMEpFQVdERzA3QVRFWUM2NS4u}
+      MULTI_HERDS_RELEASE_DATE: ${MULTI_HERDS_RELEASE_DATE:-2025-05-01}
+      PRIVACY_POLICY_URI: ${PRIVACY_POLICY_URI:-https://www.gov.uk/government/publications/get-funding-to-improve-animal-health-and-welfare-privacy-notice}

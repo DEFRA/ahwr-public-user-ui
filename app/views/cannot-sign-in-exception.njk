@@ -1,0 +1,90 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{{ serviceName }} - GOV.UK{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if error === "InvalidPermissionsError" %}
+        <h1 class="govuk-heading-l">You cannot apply for reviews or follow-ups for this business</h1>
+        <p class="govuk-body">You do not have the required permission to act for {{ organisationName }} &#8212; {{ sbiText }}.</p>
+        <h2 class="govuk-heading-m">What to do next</h2>
+        <p class="govuk-body">To apply for this business, the business owner must give you either:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>full permission level for business details</li>
+          <li>'submit' permission level for the basic payment scheme</li>
+        </ul>
+
+        {% if hasMultipleBusinesses %}
+          <h2 class="govuk-heading-m govuk-!-static-margin-top-2">Apply for another business</h2>
+          <p class="govuk-body">You can <a href='{{ backLink }}'>apply for another business</a> that you have permission to act for.</p>
+        {% endif %}
+
+        <h2 class="govuk-heading-m">Get help with your application</h2>
+        <p class="govuk-body">If you need help with your application, contact the Rural Payments Agency.</p>
+        {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+      {% endif %}
+
+      {% if error === "NoEligibleCphError" %}
+        <h1 class="govuk-heading-l">You cannot apply for reviews or follow-ups for this business</h1>
+        <p class="govuk-body">{{ organisationName }} &#8212; {{ sbiText }} has no eligible county parish holding (CPH) number registered to it.</p>
+
+        <p class="govuk-body">To be eligible a CPH must be registered in England.</p>
+        <p class="govuk-body">The CPH number cannot be:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>an 8000 number used for abattoirs, pet food manufacturers, racing pigeon establishments and showgrounds</li>
+          <li>a 9000 number used for poultry keepers</li>
+        </ul>
+
+        {% if hasMultipleBusinesses %}
+          <h2 class="govuk-heading-m">Apply for another business</h2>
+          <p class="govuk-body">You can <a href='{{ backLink }}'>apply for another business</a> that does have an eligible CPH.</p>
+        {% endif %}
+
+        <h2 class="govuk-heading-m">Get help with your application</h2>
+        <p class="govuk-body">If you need help with your application, contact the Rural Payments Agency.</p>
+        {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+      {% endif %}
+
+      {% if error === "LockedBusinessError" %}
+        <h1 class="govuk-heading-l">You cannot apply for reviews or follow-ups for this business</h1>
+        <p class="govuk-body">The business record for {{ organisationName }} is locked.</p>
+
+        <p class="govuk-body">This may be because:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>you have told us you do not need this record - this could be because you're no longer claiming from the Rural Payments Agency (RPA) or you do not need a county parish holding (CPH) number anymore</li>
+          <li>{{ organisationName }} has a new business record</li>
+          <li>you have made changes to your business structure, so this record is no longer needed</li>
+          <li>{{ organisationName }} has stopped trading</li>
+        </ul>
+
+        <h2 class="govuk-heading-m">Unlocking the business record</h2>
+        <p class="govuk-body">To unlock the business record, contact the RPA.</p>
+        {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+
+        {% if hasMultipleBusinesses %}
+        <h2 class="govuk-heading-m govuk-!-static-margin-top-2">Apply for another business</h2>
+          <p class="govuk-body">You can <a href='{{ backLink }}'>apply for another business</a> that does not have a locked business record.</p>
+        {% endif %}
+
+      {% endif %}
+
+      {% if error === "ExpiredOldWorldApplication" %}
+        <h1 class="govuk-heading-l">Your agreement has expired</h1>
+        <p class="govuk-body">Apply for a new Improve Animal Health and Welfare (IAHW) agreement to claim for reviews and follow-ups.</p>
+
+        <h2 class="govuk-heading-m">Get help with your application</h2>
+        <p class="govuk-body">If you need help with your application, contact the Rural Payments Agency.</p>
+        {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+
+        {% if hasMultipleBusinesses %}
+          <h2 class="govuk-heading-m govuk-!-static-margin-top-2">Claim for another business</h2>
+          <p class="govuk-body">You can <a href='{{ backLink }}'>claim for another business</a> that has applied for a review.</p>
+        {% endif %}
+      {% endif %}
+
+      <h2 class="govuk-heading-m govuk-!-static-margin-top-2">Sign out of your account</h2>
+      <p class="govuk-body">You can <a href='{{ signOutLink }}'>sign out of your account.</a> This will sign you out of all of your Defra accounts.</p>
+    </div>
+  </div>
+{% endblock %}

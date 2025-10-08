@@ -1,12 +1,29 @@
-.DS_Store
+# Test output
+#html-reports
+test-output
+
+# npm stuff
 .npm/
-.vscode
-.idea
-.public
 node_modules
 npm-debug.log
-coverage
-.cache
-.envrc
-tsconfig.tsbuildinfo
+
+# Misc
+helm/**/*.lock
+*.tgz
 .env
+*.log
+
+# Editor stuff
+.vscode
+dist/
+
+# Generated views
+layout.njk
+
+# OS stuff
+.DS_Store
+
+# IntelliJ
+
+.idea
+.dccache

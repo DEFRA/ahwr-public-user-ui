@@ -1,0 +1,17 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{{ serviceName }} - GOV.UK{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Welcome to annual health and welfare review of your livestock</h1>
+
+    <p class="govuk-body">Use this service to apply for an annual health and welfare review with your vet.</p>
+    
+    <h2 class="govuk-heading-m">Get help with your application</h2>
+    <p class="govuk-body">If you cannot apply online or have a question about your application contact the Rural Payments Agency.</p>
+    {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+  </div>
+</div>
+{% endblock %}

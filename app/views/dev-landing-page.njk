@@ -1,0 +1,43 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Dev landing page - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {{ govukInput({
+            label: {
+            text: "Enter an SBI for Dev sign in",
+            classes: "govuk-label--l",
+            isPageHeading: true
+            },
+            classes: "govuk-input govuk-!-width-three-quarters",
+            id: "sbi",
+            name: "sbi",
+            value: sbi,
+            errorMessage: errorMessage
+        }) }}
+        <p class="govuk-body">Prefix the SBI with 1 to have multiple businesses</p>
+        <p class="govuk-body">Suffix SBI with the following letters to force a login exception</p>
+        <p class="govuk-body">L - for LockedBusinessError</p>
+        <p class="govuk-body">I - for InvalidPermissionsError</p>
+        <p class="govuk-body">C - for NoEligibleCphError</p>
+
+        {{ govukButton({
+          text: "Fake Sign in",
+          attributes: {id: "btnContinue"},
+          preventDoubleClick: true
+        }) }}
+      </form>
+
+      {{ govukButton({
+        text: "Real Sign in",
+        attributes: { id: "btnContinue" },
+        href: "/sign-in",
+        preventDoubleClick: true
+      }) }}
+    </div>
+  </div>
+{% endblock %}

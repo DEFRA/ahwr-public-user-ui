@@ -1,0 +1,37 @@
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% set withdrawn = {
+  text: 'Withdrawn',
+  classes: 'govuk-tag--grey'
+} %}
+{% set submitted = {
+  text: 'Submitted',
+  classes: 'govuk-tag--turquoise'
+} %}
+{% set approved = {
+  text: 'Approved'
+} %}
+{% set paid = {
+  text: 'Paid'
+} %}
+{% set rejected = {
+  text: 'Rejected',
+  classes: 'govuk-tag--red'
+} %}
+
+{% set tags = {
+  '2': withdrawn,
+  '5': submitted,
+  '8': paid,
+  '9': approved,
+  '10': rejected,
+  '11': submitted,
+  '12': submitted,
+  '13': submitted,
+  '15': approved,
+  '16': approved
+} %}
+
+{{-
+  govukTag(tags[status])
+-}}
