@@ -17,6 +17,7 @@ RUN npm install --ignore-scripts
 COPY --chown=node:node . .
 RUN npx patch-package
 RUN npm run build
+
 CMD [ "npm", "run", "start:watch" ]
 
 # Production
@@ -24,8 +25,6 @@ FROM defradigital/node:${PARENT_VERSION} AS production
 ARG PARENT_VERSION
 LABEL uk.gov.defra.ffc.parent-image=defradigital/node:${PARENT_VERSION}
 
-# Add curl to template.
-# CDP PLATFORM HEALTHCHECK REQUIREMENT
 USER root
 RUN apk add --no-cache curl
 USER node
@@ -35,7 +34,7 @@ COPY --from=development /home/node/package*.json ./
 RUN npm ci --ignore-scripts --omit=dev
 
 ARG PORT
-ENV PORT=${PORT}
+ENV PORT=${PORT:-3000}
 EXPOSE ${PORT}
 
 CMD [ "node", "app" ]
