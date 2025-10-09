@@ -30,11 +30,12 @@ USER root
 RUN apk add --no-cache curl
 USER node
 
+COPY --from=development /home/node/app/ ./app/
+COPY --from=development /home/node/package*.json ./
+RUN npm ci --ignore-scripts --omit=dev
+
 ARG PORT
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-COPY --from=development /home/node/app/ ./app/
-COPY --from=development /home/node/package*.json ./
-RUN npm ci --ignore-scripts --omit=dev
 CMD [ "node", "app" ]

@@ -31,6 +31,7 @@ export async function createServer() {
       },
     ],
     port: config.port,
+    host: config.host,
     routes: {
       validate: {
         options: {
