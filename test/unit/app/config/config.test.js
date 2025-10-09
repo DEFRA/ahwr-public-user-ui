@@ -9,7 +9,7 @@ describe("Base config", () => {
 
   test("defaults used for missing values where applicable", () => {
     delete process.env.REDIS_PORT;
-    delete process.env.REDIS_HOSTNAME;
+    delete process.env.REDIS_HOST;
     delete process.env.PORT;
 
     const config = getConfig();
