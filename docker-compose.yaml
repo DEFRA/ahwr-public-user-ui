@@ -8,8 +8,9 @@ services:
     environment:
       COOKIE_PASSWORD: who-likes-cookies-i-like-cookies-everybody-likes-cookies
       GOOGLE_TAG_MANAGER_KEY: ${GOOGLE_TAG_MANAGER_KEY}
-      REDIS_HOSTNAME: redis
+      REDIS_HOST: redis
       REDIS_PORT: 6379
+      REDIS_USERNAME: ""
       REDIS_PASSWORD: ""
       SERVICE_URI: http://localhost:3003/
       CLAIM_SERVICE_URI: http://localhost:3004/claim

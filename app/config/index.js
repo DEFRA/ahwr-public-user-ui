@@ -3,7 +3,7 @@ import { applicationApiConfig, applicationApiConfigSchema } from "../api-request
 
 const threeDaysInMs = 1000 * 3600 * 24 * 3;
 const oneYearInMs = 1000 * 60 * 60 * 24 * 365;
-const DEFAULT_REDIT_PORT = 6379;
+const DEFAULT_REDIS_PORT = 6379;
 
 export const getConfig = () => {
   const schema = joi.object({
@@ -12,7 +12,8 @@ export const getConfig = () => {
       expiresIn: joi.number().required(),
       options: {
         host: joi.string(),
-        partition: joi.string(),
+        keyPrefix: joi.string(),
+        username: joi.string().allow(""),
         password: joi.string().allow(""),
         port: joi.number().required(),
         tls: joi.object(),
@@ -73,17 +74,18 @@ export const getConfig = () => {
     cache: {
       expiresIn: threeDaysInMs,
       options: {
-        host: process.env.REDIS_HOSTNAME ?? "redis-hostname.default",
-        partition: "ffc-ahwr-frontend",
+        host: process.env.REDIS_HOST || "redis-hostname.default",
+        keyPrefix: process.env.REDIS_KEY_PREFIX || "ahwr-public-user-ui",
+        username: process.env.REDIS_USERNAME,
         password: process.env.REDIS_PASSWORD,
-        port: Number.parseInt(process.env.REDIS_PORT ?? DEFAULT_REDIT_PORT.toString(), 10),
+        port: Number.parseInt(process.env.REDIS_PORT ?? DEFAULT_REDIS_PORT.toString(), 10),
         tls: process.env.NODE_ENV === "production" ? {} : undefined,
       },
     },
     cookie: {
-      cookieNameCookiePolicy: "ffc_ahwr_cookie_policy",
-      cookieNameAuth: "ffc_ahwr_auth",
-      cookieNameSession: "ffc_ahwr_session",
+      cookieNameCookiePolicy: "ahwr_cookie_policy",
+      cookieNameAuth: "ahwr_auth",
+      cookieNameSession: "ahwr_session",
       isSameSite: process.env.DISABLE_COOKIE_SAME_SITE === "true" ? false : "Lax",
       isSecure: process.env.NODE_ENV === "production",
       password: process.env.COOKIE_PASSWORD,

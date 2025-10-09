@@ -5,8 +5,8 @@ jest.mock("../../../../app/config", () => ({
   ...jest.requireActual("../../../../app/config"),
   cookie: {
     cookieNameCookiePolicy: "testCookiePolicyName",
-    cookieNameAuth: "ffc_ahwr_auth",
-    cookieNameSession: "ffc_ahwr_session",
+    cookieNameAuth: "ahwr_auth",
+    cookieNameSession: "ahwr_session",
     isSameSite: "Lax",
     isSecure: true,
     password: "blah blah blah",

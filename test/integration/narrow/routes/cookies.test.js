@@ -28,7 +28,7 @@ describe("cookies tests", () => {
     const res = await server.inject({
       url: "/cookies",
       headers: {
-        cookie: `ffc_ahwr_cookie_policy=${cookie}`,
+        cookie: `ahwr_cookie_policy=${cookie}`,
       },
     });
 
