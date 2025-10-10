@@ -2,8 +2,6 @@ import { config } from "./config/index.js";
 import Hapi from "@hapi/hapi";
 import hapiCookiePlugin from "@hapi/cookie";
 import hapiInertPlugin from "@hapi/inert";
-import catboxRedis from "@hapi/catbox-redis";
-import catboxMemory from "@hapi/catbox-memory";
 import { authPlugin } from "./plugins/auth-plugin.js";
 import { cookiePlugin } from "./plugins/cookies.js";
 import { crumbPlugin } from "./plugins/crumb.js";
@@ -15,21 +13,11 @@ import { viewContextPlugin } from "./plugins/view-context.js";
 import { viewsPlugin } from "./plugins/views.js";
 import { routerPlugin } from "./plugins/router.js";
 import { devRedirectPlugin } from "./plugins/dev-redirect.js";
-
-const cacheConfig = config.useRedis ? config.cache.options : {};
-
-const catbox = config.useRedis ? catboxRedis : catboxMemory;
+import { getCacheEngine } from "./cache/get-cache-engine.js";
 
 export async function createServer() {
   const server = Hapi.server({
-    cache: [
-      {
-        provider: {
-          constructor: catbox,
-          options: cacheConfig,
-        },
-      },
-    ],
+    cache: [getCacheEngine()],
     port: config.port,
     host: config.host,
     routes: {
