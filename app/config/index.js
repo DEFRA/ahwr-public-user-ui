@@ -3,7 +3,6 @@ import { applicationApiConfig, applicationApiConfigSchema } from "../api-request
 
 const threeDaysInMs = 1000 * 3600 * 24 * 3;
 const oneYearInMs = 1000 * 60 * 60 * 24 * 365;
-const DEFAULT_REDIS_PORT = 6379;
 
 export const getConfig = () => {
   const schema = joi.object({
@@ -15,8 +14,8 @@ export const getConfig = () => {
         keyPrefix: joi.string(),
         username: joi.string().allow(""),
         password: joi.string().allow(""),
-        port: joi.number().required(),
-        tls: joi.object(),
+        useSingleInstanceCache: joi.boolean(),
+        useTLS: joi.boolean(),
       },
     },
     cookie: {
@@ -79,8 +78,8 @@ export const getConfig = () => {
         keyPrefix: process.env.REDIS_KEY_PREFIX || "ahwr-public-user-ui",
         username: process.env.REDIS_USERNAME,
         password: process.env.REDIS_PASSWORD,
-        port: Number.parseInt(process.env.REDIS_PORT ?? DEFAULT_REDIS_PORT.toString(), 10),
-        tls: process.env.NODE_ENV === "production" ? {} : undefined,
+        useSingleInstanceCache: process.env.NODE_ENV !== "production",
+        useTLS: process.env.NODE_ENV === "production",
       },
     },
     cookie: {
