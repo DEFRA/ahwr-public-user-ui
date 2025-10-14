@@ -108,16 +108,16 @@ export const declarationRouteHandlers = [
 
         resetFarmerApplyDataBeforeApplication(application);
 
-        const { agreementReference } = await createApplication(application);
+        const { applicationReference } = await createApplication(application);
 
-        request.logger.setBindings({ agreementReference });
+        request.logger.setBindings({ applicationReference });
 
-        if (agreementReference) {
+        if (applicationReference) {
           setSessionData(
             request,
             sessionEntryKeys.farmerApplyData,
             sessionKeys.farmerApplyData.reference,
-            agreementReference,
+            applicationReference,
           );
           setSessionData(
             request,
@@ -136,12 +136,12 @@ export const declarationRouteHandlers = [
           });
         }
 
-        if (!agreementReference) {
+        if (!applicationReference) {
           throw new Error("Apply declaration returned a null application reference.");
         }
 
         return h.view(applyViews.confirmation, {
-          reference: agreementReference,
+          reference: applicationReference,
           isNewUser: userType.NEW_USER === application.organisation.userType,
           latestTermsAndConditionsUri: config.latestTermsAndConditionsUri,
         });
