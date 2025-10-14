@@ -14,7 +14,6 @@ export async function getApplicationsBySbi(sbi, logger) {
 }
 
 export const createApplication = async (application, logger) => {
-  console.log(application);
   const endpoint = `${config.applicationApi.uri}/applications`;
   try {
     const { payload } = await Wreck.post(endpoint, {

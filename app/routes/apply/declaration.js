@@ -43,7 +43,7 @@ export const declarationRouteHandlers = [
         }
 
         return h.view(applyViews.declaration, {
-          backLink: `/${applyRoutes.timings}`,
+          backLink: applyRoutes.timings,
           latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${applyRoutes.declaration}`,
           organisation: formatOrganisation(organisation),
         });

@@ -1,7 +1,6 @@
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { applicationType } from "../constants/constants.js";
 import { getSessionData, setSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { getLatestApplication } from "./utils.js";
 
 export const preApplyHandler = async (request, h) => {
   if (request.method === "get") {
@@ -18,7 +17,7 @@ export const preApplyHandler = async (request, h) => {
       const newWorldApplications = latestApplications.filter(
         (newWorldApp) => newWorldApp.type === applicationType.ENDEMICS,
       );
-      application = newWorldApplications.length ? getLatestApplication(newWorldApplications) : null;
+      application = newWorldApplications.length ? newWorldApplications[0] : null;
       setSessionData(request, sessionEntryKeys.application, sessionKeys.application, application);
     }
 
