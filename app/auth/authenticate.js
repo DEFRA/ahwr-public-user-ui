@@ -3,8 +3,7 @@ import { verify as verifyNonce } from "./id-token/nonce.js";
 import { jwtVerify } from "./token-verify/jwt-verify.js";
 import { jwtVerifyIss } from "./token-verify/jwt-verify-iss.js";
 import { redeemAuthorizationCodeForAccessToken } from "./auth-code-grant/redeem-authorization-code-for-access-token.js";
-import { setCustomer, setToken } from "../session/index.js";
-import { sessionKeys } from "../session/keys.js";
+import { setSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { requestAuthorizationCodeUrl } from "./auth-code-grant/request-authorization-code-url.js";
 import { acquireSigningKey } from "./token-verify/acquire-signing-key.js";
 
@@ -25,12 +24,28 @@ export const authenticate = async (request, h, logger) => {
   await jwtVerifyIss(accessToken.iss);
   verifyNonce(request, idToken);
 
-  setToken(request, sessionKeys.tokens.accessToken, redeemResponse.access_token);
-
-  setCustomer(request, sessionKeys.customer.crn, accessToken.contactId);
-  setCustomer(request, sessionKeys.customer.organisationId, accessToken.currentRelationshipId);
-  setCustomer(
+  setSessionData(
     request,
+    sessionEntryKeys.tokens,
+    sessionKeys.tokens.accessToken,
+    redeemResponse.access_token,
+  );
+
+  setSessionData(
+    request,
+    sessionEntryKeys.customer,
+    sessionKeys.customer.crn,
+    accessToken.contactId,
+  );
+  setSessionData(
+    request,
+    sessionEntryKeys.customer,
+    sessionKeys.customer.organisationId,
+    accessToken.currentRelationshipId,
+  );
+  setSessionData(
+    request,
+    sessionEntryKeys.customer,
     sessionKeys.customer.attachedToMultipleBusinesses,
     accessToken.enrolmentCount > 1,
   );

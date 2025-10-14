@@ -1,5 +1,5 @@
 import { getYesNoRadios } from "./form-component/yes-no-radios.js";
-import { getCustomer } from "../../session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
 import { requestAuthorizationCodeUrl } from "../../auth/auth-code-grant/request-authorization-code-url.js";
 
 const labelText = "Are these details correct?";
@@ -9,7 +9,7 @@ const formatAddressForDisplay = (organisation) => {
 };
 
 export const getOrganisationModel = (request, organisation, errorText) => {
-  const { crn } = getCustomer(request);
+  const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
   request.logger.setBindings({ crn });
 
   const rows = [

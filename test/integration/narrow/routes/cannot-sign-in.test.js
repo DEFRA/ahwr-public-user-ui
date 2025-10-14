@@ -1,21 +1,21 @@
 import { StatusCodes } from "http-status-codes";
 import { createServer } from "../../../../app/server.js";
-import {
-  getToken,
-  getCannotSignInDetails,
-  clearAllOfSession,
-} from "../../../../app/session/index.js";
+import { getSessionData, clearAllOfSession } from "../../../../app/session/index.js";
 import { getSignOutUrl } from "../../../../app/routes/sign-out.js";
 import { clearAuthCookie } from "../../../../app/auth/cookie-auth/cookie-auth.js";
-import { claimServiceUri } from "../../../../app/config/routes.js";
 
-jest.mock("../../../../app/session/index.js");
+jest.mock("../../../../app/session", () => {
+  const actual = jest.requireActual("../../../../app/session");
+  // Mocking everything apart from sessionKeys and sessionEntryKeys
+  const mocked = Object.keys(actual).reduce((acc, key) => {
+    acc[key] = key === "sessionKeys" || key === "sessionEntryKeys" ? actual[key] : jest.fn();
+    return acc;
+  }, {});
+  return mocked;
+});
+
 jest.mock("../../../../app/auth/cookie-auth/cookie-auth.js");
 jest.mock("../../../../app/routes/sign-out.js");
-
-jest.mock("../../../../app/constants/claim-statuses.js", () => ({
-  closedViewStatuses: [2, 10, 7, 9, 8],
-}));
 
 describe("GET /cannot-sign-in handler", () => {
   let server;
@@ -24,7 +24,8 @@ describe("GET /cannot-sign-in handler", () => {
     server = await createServer();
   });
 
-  test("it returns a 302 to the claim front page if the details needed are not in the session", async () => {
+  test("it throws an error if the details needed are not in the session", async () => {
+    getSessionData.mockReturnValueOnce(undefined);
     const res = await server.inject({
       url: "/cannot-sign-in",
       auth: {
@@ -33,8 +34,7 @@ describe("GET /cannot-sign-in handler", () => {
       },
     });
 
-    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-    expect(res.headers.location).toBe(claimServiceUri);
+    expect(res.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
   });
 
   test("it returns a 200 if the details needed exist in the session", async () => {
@@ -49,11 +49,7 @@ describe("GET /cannot-sign-in handler", () => {
     const hasMultipleBusinesses = "false";
     const backLink = "something";
 
-    getCannotSignInDetails
-      .mockReturnValueOnce(error)
-      .mockReturnValueOnce(backLink)
-      .mockReturnValueOnce(hasMultipleBusinesses)
-      .mockReturnValueOnce(organisation);
+    getSessionData.mockReturnValueOnce({ error, backLink, hasMultipleBusinesses, organisation });
 
     const res = await server.inject({
       url: "/cannot-sign-in",
@@ -64,7 +60,7 @@ describe("GET /cannot-sign-in handler", () => {
     });
 
     expect(res.statusCode).toBe(StatusCodes.OK);
-    expect(getToken).toHaveBeenCalled();
+    expect(getSessionData).toHaveBeenCalled();
     expect(getSignOutUrl).toHaveBeenCalled();
     expect(clearAuthCookie).toHaveBeenCalled();
     expect(clearAllOfSession).toHaveBeenCalled();

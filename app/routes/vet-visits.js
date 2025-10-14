@@ -1,22 +1,20 @@
-import { getCustomer, getEndemicsClaim, setEndemicsClaim } from "../session/index.js";
-import { getLatestApplicationsBySbi } from "../api-requests/application-api.js";
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../session/index.js";
+import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import {
   getClaimsByApplicationReference,
   isWithinLastTenMonths,
 } from "../api-requests/claim-api.js";
 import nunjucks from "nunjucks";
 import { applicationType, claimType } from "../constants/constants.js";
-import { sessionKeys } from "../session/keys.js";
 import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
-import { claimServiceUri, vetVisits } from "../config/routes.js";
+import { claimServiceUri } from "../config/routes.js";
 import { config } from "../config/index.js";
 import { showMultiHerdsBanner } from "./utils/show-multi-herds-banner.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 
 const { latestTermsAndConditionsUri } = config;
 
-const pageUrl = `/${vetVisits}`;
-const claimServiceRedirectUri = `${claimServiceUri}/endemics/which-species`;
+const claimServiceRedirectUri = `${claimServiceUri}/which-species`;
 const centringClass = "vertical-middle";
 
 const createRowsForTable = (claims) => {
@@ -57,7 +55,7 @@ const createRowsForTable = (claims) => {
               </div>`,
       },
       {
-        html: env.render("tag.njk", { status: claim.statusId }),
+        html: env.render("tag.njk", { status: claim.status }),
         classes: centringClass,
       },
     ];
@@ -140,15 +138,23 @@ const buildTableHeaders = () => {
 export const vetVisitsHandlers = [
   {
     method: "GET",
-    path: pageUrl,
+    path: "/vet-visits",
     options: {
       handler: async (request, h) => {
-        const { organisation } = getEndemicsClaim(request);
+        const organisation = getSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.organisation,
+        );
 
         request.logger.setBindings({ sbi: organisation.sbi });
 
-        const { attachedToMultipleBusinesses } = getCustomer(request);
-        const applications = await getLatestApplicationsBySbi(organisation.sbi, request.logger);
+        const attachedToMultipleBusinesses = getSessionData(
+          request,
+          sessionEntryKeys.customer,
+          sessionKeys.customer.attachedToMultipleBusinesses,
+        );
+        const applications = await getApplicationsBySbi(organisation.sbi, request.logger);
 
         if (applications.length === 0) {
           throw new Error(
@@ -156,11 +162,10 @@ export const vetVisitsHandlers = [
           );
         }
 
-        if (applications[0].applicationRedacts.length) {
+        if (applications[0].redacted) {
           return h.view("agreement-redacted", {
             ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             privacyPolicyUri: config.privacyPolicyUri,
-            applyServiceUri: `${config.applyServiceUri}/endemics/you-can-claim-multiple`,
           });
         }
 
@@ -173,7 +178,7 @@ export const vetVisitsHandlers = [
 
         const claims = latestEndemicsApplication
           ? await getClaimsByApplicationReference(
-              latestEndemicsApplication?.reference,
+              latestEndemicsApplication.data.reference,
               request.logger,
             )
           : [];
@@ -187,11 +192,13 @@ export const vetVisitsHandlers = [
         const { beefClaimsRows, dairyClaimsRows, pigClaimsRows, sheepClaimsRows } =
           buildClaimRowsPerSpecies(allClaims, isOldWorld);
 
-        setEndemicsClaim(
+        setSessionData(
           request,
+          sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.LatestEndemicsApplicationReference,
           latestEndemicsApplication?.reference,
         );
+
         const downloadedDocument = `/download-application/${organisation.sbi}/${latestEndemicsApplication?.reference}`;
 
         const showNotificationBanner =
@@ -199,7 +206,7 @@ export const vetVisitsHandlers = [
 
         const { sheepHeaders, nonSheepHeaders } = buildTableHeaders();
 
-        return h.view(vetVisits, {
+        return h.view("vet-visits", {
           beefClaimsRows,
           dairyClaimsRows,
           pigClaimsRows,

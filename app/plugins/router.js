@@ -14,6 +14,10 @@ import { config } from "../config/index.js";
 import { cannotSignInExceptionHandlers } from "../routes/cannot-sign-in.js";
 import { defraIdSignInHandlers } from "../routes/sign-in.js";
 import { missingPagesRoutes } from "../routes/missing-routes.js";
+import { declarationRouteHandlers } from "../routes/apply/declaration.js";
+import { numbersRouteHandlers } from "../routes/apply/numbers.js";
+import { timingsRouteHandlers } from "../routes/apply/timings.js";
+import { claimMultipleRouteHandlers } from "../routes/apply/you-can-claim-multiple.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
@@ -30,6 +34,11 @@ const alwaysOnRoutes = [
   cannotSignInExceptionHandlers,
   defraIdSignInHandlers,
   missingPagesRoutes,
+  // Apply routes
+  declarationRouteHandlers,
+  numbersRouteHandlers,
+  timingsRouteHandlers,
+  claimMultipleRouteHandlers,
 ].flat();
 
 let routes;

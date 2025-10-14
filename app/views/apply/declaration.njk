@@ -1,0 +1,99 @@
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Review your agreement offer - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+	  attributes: {id: "back"}
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList:[{
+            text: errorMessage.text,
+            href: "#terms"
+        }]
+      }) }}
+      {% endif %}
+      <h1 class="govuk-heading-l">Review your agreement offer</h1>
+
+      <p class="govuk-body">This is an offer of funding to improve animal health and welfare for this business:</p>
+      <div class="govuk-inset-text">
+        <span id="organisation-name">{{ organisation.name }}</span><br>
+        <span id="organisation-address">{% for line in organisation.address %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</span><br>
+      SBI: <span id="organisation-sbi">{{ organisation.sbi }}</span>
+      </div>
+
+      <h2 class="govuk-heading-s">You may either:</h2>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>accept this offer of agreement subject to the following</li>
+        <li>reject this offer</li>
+      </ul><br>
+
+      <h2 class="govuk-heading-s">You must:</h2>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>allow a vet to take samples to test for diseases relevant to the livestock you choose</li>
+        <li>share details about the vet and the results the vet gives you with the Rural Payments Agency (RPA)</li>
+      </ul><br>
+
+      <p class="govuk-body">
+        If the RPA requests evidence that your reviews or follow-ups took place, or details of the herd or flocks you have, you must provide it. This will be on your vet summary.
+      </p>
+
+      <p>If you accept this offer you confirm that:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>you have read, understood and agree to follow <a id="termsAndConditionsUri" class="govuk-link" rel="external" href="{{latestTermsAndConditionsUri}}">the agreement terms and conditions</a>
+        </li>
+      </ul><br>
+
+      <p>The agreement terms and conditions include, but are not limited to:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>you must have the minimum number of livestock needed</li>
+        <li>you must follow the rules for timing of reviews and follow-ups</li>
+      </ul><br>
+
+      <form method="POST" autocomplete="off" novalidate="novalidate" id ="submitDeclarationForm">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {{ govukCheckboxes({
+        id: "terms",
+        idPrefix: "terms",
+        name: "terms",
+        errorMessage: errorMessage,
+        items: [{
+            value: "agree",
+            text: "I have read, understood and agree to follow the terms and conditions."
+          }]
+      }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+          text: "Accept",
+          attributes: { "aria-label": "Accept - Review your agreement offer" },
+          value: "accepted",
+          name: "offerStatus",
+          preventDoubleClick: true
+        }) }}
+          {{ govukButton({
+          text: "Reject",
+          attributes: { "aria-label": "Reject - Review your agreement offer" },
+          classes: "govuk-button--secondary",
+          value: "rejected",
+          name: "offerStatus",
+          preventDoubleClick: true
+        }) }}
+        </div>
+        <div class="gem-c-print-link govuk-!-display-none-print govuk-!-margin-top-6">
+          <button onclick="window.print()" class="govuk-link govuk-body-s gem-c-print-link__button">Print this page</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

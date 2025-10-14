@@ -14,3 +14,8 @@ export const claimType = {
 };
 
 export const farmerApply = "farmerApply";
+
+export const userType = {
+  EXISTING_USER: "existingUser",
+  NEW_USER: "newUser",
+};

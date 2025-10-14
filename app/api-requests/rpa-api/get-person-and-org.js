@@ -1,10 +1,9 @@
 import {
-  getToken,
-  setCustomer,
-  setEndemicsClaim,
-  setFarmerApplyData,
+  sessionEntryKeys,
+  setSessionData,
+  sessionKeys,
+  getSessionData,
 } from "../../session/index.js";
-import { sessionKeys } from "../../session/keys.js";
 import { getCphNumbers } from "./cph-numbers.js";
 import {
   getOrganisation,
@@ -46,13 +45,27 @@ const setOrganisationSessionData = (request, personSummary, org, crn) => {
     id: org.id,
   };
 
-  setEndemicsClaim(request, sessionKeys.endemicsClaim.organisation, organisation);
-  setFarmerApplyData(request, sessionKeys.farmerApplyData.organisation, organisation);
+  setSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+    sessionKeys.endemicsClaim.organisation,
+    organisation,
+  );
+  setSessionData(
+    request,
+    sessionEntryKeys.farmerApplyData,
+    sessionKeys.farmerApplyData.organisation,
+    organisation,
+  );
 };
 
 export const getPersonAndOrg = async ({ request, apimAccessToken, crn, logger, accessToken }) => {
   const organisationId = accessToken.currentRelationshipId;
-  const defraIdAccessToken = getToken(request, sessionKeys.tokens.accessToken);
+  const defraIdAccessToken = getSessionData(
+    request,
+    sessionEntryKeys.tokens,
+    sessionKeys.tokens.accessToken,
+  );
 
   const [
     personSummaryResult,
@@ -90,7 +103,7 @@ export const getPersonAndOrg = async ({ request, apimAccessToken, crn, logger, a
     personId: personSummary.id,
   });
 
-  setCustomer(request, sessionKeys.customer.id, personSummary.id);
+  setSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.id, personSummary.id);
 
   const personAndOrg = {
     orgDetails: {

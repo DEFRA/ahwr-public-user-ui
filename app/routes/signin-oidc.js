@@ -1,10 +1,14 @@
 import joi from "joi";
 import { StatusCodes } from "http-status-codes";
-import { sessionKeys } from "../session/keys.js";
 import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
 import { generateNewCrumb } from "./utils/crumb-cache.js";
 import { retrieveApimAccessToken } from "../auth/client-credential-grant/retrieve-apim-access-token.js";
-import { clearAllOfSession, getCustomer } from "../session/index.js";
+import {
+  clearAllOfSession,
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../session/index.js";
 import { authenticate } from "../auth/authenticate.js";
 import { clearAuthCookie, setAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { farmerApply } from "../constants/constants.js";
@@ -54,7 +58,7 @@ export const signinRouteHandlers = [
 
           const apimAccessToken = await retrieveApimAccessToken(request);
 
-          const crn = getCustomer(request, sessionKeys.customer.crn);
+          const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
 
           const { orgDetails, personSummary, cphNumbers } = await getPersonAndOrg({
             request,

@@ -1,8 +1,7 @@
 import Wreck from "@hapi/wreck";
 import FormData from "form-data";
 import { authConfig } from "../../config/auth.js";
-import { sessionKeys } from "../../session/keys.js";
-import { getPkcecodes } from "../../session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
 
 export const redeemAuthorizationCodeForAccessToken = async (request) => {
   const endpoint = `${authConfig.defraId.hostname}/${authConfig.defraId.policy}/oauth2/v2.0/token`;
@@ -20,7 +19,12 @@ export const redeemAuthorizationCodeForAccessToken = async (request) => {
     // The same redirect_uri value that was used to acquire the authorization_code.
     data.append("redirect_uri", authConfig.defraId.redirectUri);
     // The same code_verifier that was used to obtain the authorization_code.
-    data.append("code_verifier", getPkcecodes(request, sessionKeys.pkcecodes.verifier));
+    const pkcecodes = getSessionData(
+      request,
+      sessionEntryKeys.pkcecodes,
+      sessionKeys.pkcecodes.verifier,
+    );
+    data.append("code_verifier", pkcecodes);
     const { payload } = await Wreck.post(endpoint, {
       headers: data.getHeaders(),
       payload: data,

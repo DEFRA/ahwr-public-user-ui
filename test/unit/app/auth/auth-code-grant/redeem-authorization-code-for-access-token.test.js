@@ -1,8 +1,9 @@
-import { getPkcecodes } from "../../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
 import wreck from "@hapi/wreck";
 import { redeemAuthorizationCodeForAccessToken } from "../../../../../app/auth/auth-code-grant/redeem-authorization-code-for-access-token.js";
 import { authConfig } from "../../../../../app/config/auth.js";
 import FormData from "form-data";
+import { when } from "jest-when";
 
 jest.mock("@hapi/wreck");
 jest.mock("applicationinsights", () => ({
@@ -27,21 +28,20 @@ jest.mock("../../../../../app/config/auth", () => ({
     getOrganisationUrl: "dummy-get-organisation-url",
   },
 }));
-jest.mock("../../../../../app/session", () => ({
-  getPkcecodes: jest.fn(),
-}));
-jest.mock("../../../../../app/session/keys", () => ({
-  sessionKeys: {
-    pkcecodes: {
-      verifier: "test-verifier",
-    },
-    endemicsClaim: {
-      organisation: {
-        organisationKey: 1234567,
-      },
-    },
-  },
-}));
+
+jest.mock("../../../../../app/session", () => {
+  const actual = jest.requireActual("../../../../../app/session");
+  // Mocking everything apart from sessionKeys and sessionEntryKeys
+  const mocked = Object.keys(actual).reduce((acc, key) => {
+    acc[key] = key === "sessionKeys" || key === "sessionEntryKeys" ? actual[key] : jest.fn();
+    return acc;
+  }, {});
+  return mocked;
+});
+
+when(getSessionData)
+  .calledWith(expect.anything(), sessionEntryKeys.pkcecodes, sessionKeys.pkcecodes.verifier)
+  .mockReturnValue("test-code-verifier");
 
 describe("redeemAuthorizationCodeForAccessToken", () => {
   const mockRequest = {
@@ -54,7 +54,6 @@ describe("redeemAuthorizationCodeForAccessToken", () => {
   };
 
   beforeEach(() => {
-    getPkcecodes.mockReturnValue("test-code-verifier");
     FormData.prototype.append = jest.fn(); // Mock append method of form-data
   });
 

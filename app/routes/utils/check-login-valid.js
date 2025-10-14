@@ -1,10 +1,13 @@
 import { customerHasAtLeastOneValidCph } from "../../api-requests/rpa-api/cph-check.js";
 import { requestAuthorizationCodeUrl } from "../../auth/auth-code-grant/request-authorization-code-url.js";
-import { getCustomer, setCannotSignInDetails } from "../../session/index.js";
-import { sessionKeys } from "../../session/keys.js";
-import { getLatestApplicationsBySbi } from "../../api-requests/application-api.js";
+import {
+  getSessionData,
+  setSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../../session/index.js";
+import { getApplicationsBySbi } from "../../api-requests/application-api.js";
 import { getRedirectPath } from "./get-redirect-path.js";
-import { maybeSuffixLoginRedirectUrl } from "../../lib/suffix-url.js";
 
 export const setSessionForErrorPage = ({
   request,
@@ -13,14 +16,30 @@ export const setSessionForErrorPage = ({
   backLink,
   organisation,
 }) => {
-  setCannotSignInDetails(request, sessionKeys.cannotSignInDetails.error, error);
-  setCannotSignInDetails(
+  setSessionData(
     request,
+    sessionEntryKeys.cannotSignInDetails,
+    sessionKeys.cannotSignInDetails.error,
+    error,
+  );
+  setSessionData(
+    request,
+    sessionEntryKeys.cannotSignInDetails,
     sessionKeys.cannotSignInDetails.hasMultipleBusinesses,
     hasMultipleBusinesses,
   );
-  setCannotSignInDetails(request, sessionKeys.cannotSignInDetails.backLink, backLink);
-  setCannotSignInDetails(request, sessionKeys.cannotSignInDetails.organisation, organisation);
+  setSessionData(
+    request,
+    sessionEntryKeys.cannotSignInDetails,
+    sessionKeys.cannotSignInDetails.backLink,
+    backLink,
+  );
+  setSessionData(
+    request,
+    sessionEntryKeys.cannotSignInDetails,
+    sessionKeys.cannotSignInDetails.organisation,
+    organisation,
+  );
 };
 
 const logReasonAndEmitEvent = ({ logger, reason, sbi, crn }) => {
@@ -37,7 +56,7 @@ export const checkLoginValid = async ({
   personSummary,
 }) => {
   const { logger } = request;
-  const crn = getCustomer(request, sessionKeys.customer.crn);
+  const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
 
   if (organisation.locked) {
     logReasonAndEmitEvent({
@@ -73,20 +92,17 @@ export const checkLoginValid = async ({
     return returnErrorRouting({ h, error: "NoEligibleCphError", organisation, request, crn });
   }
 
-  const latestApplicationsForSbi = await getLatestApplicationsBySbi(organisation.sbi, logger);
+  const applicationsForSbi = await getApplicationsBySbi(organisation.sbi, logger);
 
-  if (latestApplicationsForSbi[0]?.applicationRedacts?.length) {
+  if (applicationsForSbi.length && applicationsForSbi[0].redacted) {
     logger.setBindings({
-      error: `Agreement ${latestApplicationsForSbi[0].reference} has been redacted`,
+      error: `Agreement ${applicationsForSbi[0].reference} has been redacted`,
       crn,
     });
     return returnErrorRouting({ h, error: "AgreementRedactedError", organisation, request, crn });
   }
 
-  const { redirectPath: initialRedirectPath, error: err } = getRedirectPath(
-    latestApplicationsForSbi,
-    request,
-  );
+  const { redirectPath, error: err } = getRedirectPath(applicationsForSbi, request);
 
   if (err) {
     logReasonAndEmitEvent({
@@ -99,13 +115,6 @@ export const checkLoginValid = async ({
     return returnErrorRouting({ h, error: err, organisation, request, crn });
   }
 
-  const redirectPath = maybeSuffixLoginRedirectUrl(
-    request,
-    initialRedirectPath,
-    crn,
-    personSummary.id,
-  );
-
   return { redirectPath, redirectCallback: null };
 };
 
@@ -113,7 +122,11 @@ const returnErrorRouting = async ({ h, error, organisation, request, crn }) => {
   // raise an ineligibility event here
 
   const hasMultipleBusinesses = Boolean(
-    getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses),
+    getSessionData(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.attachedToMultipleBusinesses,
+    ),
   );
 
   setSessionForErrorPage({

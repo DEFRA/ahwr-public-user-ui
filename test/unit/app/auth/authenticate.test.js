@@ -1,13 +1,17 @@
-import { sessionKeys } from "../../../../app/session/keys.js";
 import HttpStatus from "http-status-codes";
 import wreck from "@hapi/wreck";
 import jwktopem from "jwk-to-pem";
 import { verifyState } from "../../../../app/auth/auth-code-grant/state.js";
 import { authenticate } from "../../../../app/auth/authenticate";
-import { getPkcecodes, getToken, setCustomer, setToken } from "../../../../app/session/index.js";
+import {
+  getSessionData,
+  setSessionData,
+  sessionKeys,
+  sessionEntryKeys,
+} from "../../../../app/session/index.js";
 import { verify } from "jsonwebtoken";
 import { authConfig } from "../../../../app/config/auth.js";
-const { when, resetAllWhenMocks } = require("jest-when");
+import { when, resetAllWhenMocks } from "jest-when";
 
 const MOCK_NOW = new Date();
 
@@ -36,7 +40,7 @@ jest.mock("../../../../app/config/auth.js", () => ({
       tenantName: "tenantname",
       oAuthAuthorisePath: "/oauth2/v2.0/authorize",
       policy: "b2c_1a_signupsigninsfi",
-      redirectUri: "http://localhost:3000/apply/signin-oidc",
+      redirectUri: "/signin-oidc",
       clientId: "dummy_client_id",
       clientSecret: "dummy_client_secret",
       serviceId: "dummy_service_id",
@@ -244,11 +248,15 @@ describe("authenticate", () => {
       verifyState.mockReturnValue(true);
     }
 
-    when(getToken)
-      .calledWith(testCase.given.request, sessionKeys.tokens.state)
+    when(getSessionData)
+      .calledWith(testCase.given.request, sessionEntryKeys.tokens, sessionKeys.tokens.state)
       .mockReturnValue(testCase.when.state);
-    when(getPkcecodes)
-      .calledWith(testCase.given.request, sessionKeys.pkcecodes.verifier)
+    when(getSessionData)
+      .calledWith(
+        testCase.given.request,
+        sessionEntryKeys.pkcecodes,
+        sessionKeys.pkcecodes.verifier,
+      )
       .mockReturnValue(testCase.when.session.pkcecodes.verifier);
     when(wreck.post)
       .calledWith(expect.stringContaining("token"), {
@@ -270,35 +278,38 @@ describe("authenticate", () => {
     when(jwktopem)
       .calledWith(testCase.when.acquiredSigningKey)
       .mockReturnValue(testCase.when.jwktopem);
-    when(getToken)
-      .calledWith(testCase.given.request, sessionKeys.tokens.nonce)
+    when(getSessionData)
+      .calledWith(testCase.given.request, sessionEntryKeys.tokens, sessionKeys.tokens.nonce)
       .mockReturnValue("123");
 
     if (testCase.expect.error) {
       await expect(authenticate(testCase.given.request)).rejects.toEqual(testCase.expect.error);
 
-      expect(setToken).toHaveBeenCalledTimes(0);
-      expect(setCustomer).toHaveBeenCalledTimes(0);
+      expect(setSessionData).toHaveBeenCalledTimes(0);
     } else {
       await authenticate(testCase.given.request);
 
-      expect(setToken).toHaveBeenCalledWith(
+      expect(setSessionData).toHaveBeenCalledWith(
         testCase.given.request,
+        sessionEntryKeys.tokens,
         sessionKeys.tokens.accessToken,
         testCase.when.redeemResponse.payload.access_token,
       );
-      expect(setCustomer).toHaveBeenCalledWith(
+      expect(setSessionData).toHaveBeenCalledWith(
         testCase.given.request,
+        sessionEntryKeys.customer,
         sessionKeys.customer.crn,
         "1234567890",
       );
-      expect(setCustomer).toHaveBeenCalledWith(
+      expect(setSessionData).toHaveBeenCalledWith(
         testCase.given.request,
+        sessionEntryKeys.customer,
         sessionKeys.customer.organisationId,
         "123456789",
       );
-      expect(setCustomer).toHaveBeenCalledWith(
+      expect(setSessionData).toHaveBeenCalledWith(
         testCase.given.request,
+        sessionEntryKeys.customer,
         sessionKeys.customer.attachedToMultipleBusinesses,
         false,
       );

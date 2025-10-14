@@ -1,11 +1,10 @@
 import { LockedBusinessError } from "../exceptions/LockedBusinessError.js";
 import { InvalidPermissionsError } from "../exceptions/InvalidPermissionsError.js";
 import { NoEligibleCphError } from "../exceptions/NoEligibleCphError.js";
-import { sessionKeys } from "../session/keys.js";
-import { setCustomer, setEndemicsClaim, setFarmerApplyData } from "../session/index.js";
+import { setSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { setAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { farmerApply } from "../constants/constants.js";
-import { getLatestApplicationsBySbi } from "../api-requests/application-api.js";
+import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { getRedirectPath } from "./utils/get-redirect-path.js";
 import HttpStatus from "http-status-codes";
 import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
@@ -34,7 +33,7 @@ const createDevDetails = (sbi) => {
     name: "John Smith",
   };
 
-  return [personSummary, organisationSummary];
+  return { personSummary, organisationSummary };
 };
 
 function throwErrorBasedOnSuffix(sbi = "") {
@@ -75,7 +74,7 @@ export const devLoginHandlers = [
 
         request.logger.setBindings({ sbi });
 
-        const [personSummary, organisationSummary] = createDevDetails(sbi);
+        const { personSummary, organisationSummary } = createDevDetails(sbi);
         const { organisation: org } = organisationSummary;
 
         const organisation = {
@@ -91,12 +90,32 @@ export const devLoginHandlers = [
 
         try {
           throwErrorBasedOnSuffix(sbi);
-          const latestApplicationsForSbi = await getLatestApplicationsBySbi(sbi, request.logger);
+          const latestApplicationsForSbi = await getApplicationsBySbi(sbi, request.logger);
 
-          setCustomer(request, sessionKeys.customer.id, personSummary.id);
-          setCustomer(request, sessionKeys.customer.crn, personSummary.customerReferenceNumber);
-          setFarmerApplyData(request, sessionKeys.farmerApplyData.organisation, organisation);
-          setEndemicsClaim(request, sessionKeys.endemicsClaim.organisation, organisation);
+          setSessionData(
+            request,
+            sessionEntryKeys.customer,
+            sessionKeys.customer.id,
+            personSummary.id,
+          );
+          setSessionData(
+            request,
+            sessionEntryKeys.customer,
+            sessionKeys.customer.crn,
+            personSummary.customerReferenceNumber,
+          );
+          setSessionData(
+            request,
+            sessionEntryKeys.farmerApplyData,
+            sessionKeys.farmerApplyData.organisation,
+            organisation,
+          );
+          setSessionData(
+            request,
+            sessionEntryKeys.endemicsClaim,
+            sessionKeys.endemicsClaim.organisation,
+            organisation,
+          );
           setAuthCookie(request, personSummary.email, farmerApply);
 
           const { redirectPath, error } = getRedirectPath(latestApplicationsForSbi, request);
@@ -131,7 +150,7 @@ export const devLoginHandlers = [
             return h.redirect("/cannot-sign-in").takeover();
           }
 
-          console.log(error)
+          console.log(error);
 
           return h
             .view("verify-login-failed", {

@@ -1,15 +1,20 @@
 import { StatusCodes } from "http-status-codes";
 import { createServer } from "../../../../app/server.js";
-import { getEndemicsClaim } from "../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
 import globalJsdom from "global-jsdom";
 import { getByRole } from "@testing-library/dom";
 import { config } from "../../../../app/config/index.js";
+import { when } from "jest-when";
 
-jest.mock("../../../../app/session/index.js");
-
-jest.mock("../../../../app/constants/claim-statuses.js", () => ({
-  closedViewStatuses: [2, 10, 7, 9, 8],
-}));
+jest.mock("../../../../app/session", () => {
+  const actual = jest.requireActual("../../../../app/session");
+  // Mocking everything apart from sessionKeys and sessionEntryKeys
+  const mocked = Object.keys(actual).reduce((acc, key) => {
+    acc[key] = key === "sessionKeys" || key === "sessionEntryKeys" ? actual[key] : jest.fn();
+    return acc;
+  }, {});
+  return mocked;
+});
 
 describe("Missing routes", () => {
   let server;
@@ -55,7 +60,13 @@ describe("Missing routes", () => {
 
   test("GET an unregistered route when user is signed in", async () => {
     cleanupJsdom();
-    getEndemicsClaim.mockReturnValue({ organisation: {} });
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.organisation,
+      )
+      .mockReturnValue({});
 
     const options = {
       method: "GET",

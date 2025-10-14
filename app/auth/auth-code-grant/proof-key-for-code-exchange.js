@@ -1,6 +1,5 @@
 import crypto from "crypto";
-import { sessionKeys } from "../../session/keys.js";
-import { setPkcecodes } from "../../session/index.js";
+import { setSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
 
 export const base64URLEncode = (str) => {
   return str.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
@@ -13,6 +12,6 @@ const sha256 = (buffer) => {
 export const generateCodeChallenge = (request) => {
   const verifier = base64URLEncode(crypto.randomBytes(32));
   const codeChallenge = base64URLEncode(sha256(verifier));
-  setPkcecodes(request, sessionKeys.pkcecodes.verifier, verifier);
+  setSessionData(request, sessionEntryKeys.pkcecodes, sessionKeys.pkcecodes.verifier, verifier);
   return codeChallenge;
 };

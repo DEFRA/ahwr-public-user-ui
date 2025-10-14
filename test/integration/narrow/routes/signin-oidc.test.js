@@ -18,26 +18,6 @@ jest.mock("../../../../app/session/index.js", () => ({
   setFarmerApplyData: jest.fn(),
 }));
 
-jest.mock("../../../../app/constants/claim-statuses.js", () => ({
-  closedViewStatuses: [2, 10, 7, 9, 8],
-  CLAIM_STATUSES: {
-    AGREED: 1,
-    WITHDRAWN: 2,
-    IN_CHECK: 5,
-    ACCEPTED: 6,
-    NOT_AGREED: 7,
-    PAID: 8,
-    READY_TO_PAY: 9,
-    REJECTED: 10,
-    ON_HOLD: 11,
-    RECOMMENDED_TO_PAY: 12,
-    RECOMMENDED_TO_REJECT: 13,
-    AUTHORISED: 14,
-    SENT_TO_FINANCE: 15,
-    PAYMENT_HELD: 16,
-  },
-}));
-
 const unitTestDefraId = "https://local-defra-id.com/stuff";
 
 const mockOrgAndPerson = {

@@ -1,0 +1,73 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Timing of reviews and follow-ups - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+	  attributes: {id: "back"}
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Timing of reviews and follow-ups</h1>
+    <p>Claim your animal health and welfare reviews and endemic disease follow-ups as part of Get funding to improve animal health and welfare.</p>
+
+    <hr class="govuk-section-break govuk-section-break--s" />
+
+    {{ govukWarningText({
+      text: "To be eligible to claim, you need to have an Improve Animal Health and Welfare (IAHW) agreement in place and follow these timing rules.",
+      iconFallbackText: "Warning"
+    }) }}
+
+    <hr class="govuk-section-break govuk-section-break--s" />
+
+    <h2 class="govuk-heading-m">Animal health and welfare reviews</h2>
+    <p>To be eligible to claim for animal health and welfare reviews you must:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>have an Improve Animal Health and Welfare (IAHW) agreement in place before you do your first review, including any sampling or testing</li>
+      <li>ensure reviews on herds or flocks of a particular species, are at least 10 months apart</li>
+      <li>have no more than 3 reviews on any number of herds or flocks per species by 19 June 2027</li>
+    </ul>
+
+    <hr class="govuk-section-break govuk-section-break--m" />
+
+    <h2 class="govuk-heading-m">Endemic disease follow-ups</h2>
+    <p>To be eligible to claim for endemic disease follow-ups you must: </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>have an IAHW agreement in place before you do your first follow-up, including any sampling or testing</li>
+      <li>have had a review which you should claim for first</li>
+      <li>have the follow-up on the same herd or flock of a particular species as the review</li>
+      <li>ensure the follow-up takes place no more than 10 months after your review</li>
+      <li>ensure that follow-ups on herds or flocks of a particular species, are always at least 10 months apart</li>      
+      <li>have no more than 3 follow-ups on any number of herds or flocks per species by 19 June 2027</li>
+    </ul>
+
+    <hr class="govuk-section-break govuk-section-break--m" />
+
+    <form method="POST" autocomplete="off" novalidate="novalidate" id ="submitDeclarationForm">
+      <input type="hidden" name="crumb" value="{{crumb}}"/>
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "I agree",
+          attributes: { "aria-label": "I agree - Timing of review and follow-ups" },
+          value: "agree",
+          name: "agreementStatus",
+          preventDoubleClick: true
+        }) }}
+        {{ govukButton({
+          text: "I do not agree",
+          attributes: { "aria-label": "I do not agree - Timing of review and follow-ups" },
+          classes: "govuk-button--secondary",
+          value: "rejected",
+          name: "agreementStatus",
+          preventDoubleClick: true
+        }) }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
