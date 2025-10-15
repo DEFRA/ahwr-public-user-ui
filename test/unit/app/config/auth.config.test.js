@@ -13,7 +13,7 @@ describe("Auth config", () => {
       processEnv: {
         tenant: "testtenant",
         policy: "testpolicy",
-        redirectUri: "http://localhost:3000/apply/signin-oidc",
+        redirectUri: "http://localhost:3003/signin-oidc",
         jwtIssuerId: "dummy_jwt_issuer_id",
         clientId: "dummyclientid",
         clientSecret: "dummyclientsecret",
@@ -35,7 +35,7 @@ describe("Auth config", () => {
           hostname: "https://testtenant.b2clogin.com/testtenant.onmicrosoft.com",
           oAuthAuthorisePath: "/oauth2/v2.0/authorize",
           policy: "testpolicy",
-          redirectUri: "http://localhost:3000/apply/signin-oidc",
+          redirectUri: "http://localhost:3003/signin-oidc",
           tenantName: "testtenant",
           jwtIssuerId: "dummy_jwt_issuer_id",
           clientId: "dummyclientid",

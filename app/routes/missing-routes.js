@@ -1,11 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { config } from "../config/index.js";
-import { getEndemicsClaim } from "../session/index.js";
-import { sessionKeys } from "../session/keys.js";
-
-const {
-  endemicsClaim: { organisation: organisationKey },
-} = sessionKeys;
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 
 export const missingPagesRoutes = [
   {
@@ -14,7 +9,13 @@ export const missingPagesRoutes = [
     options: {
       auth: { mode: "try" },
       handler: (request, h) => {
-        const userIsSignedIn = Boolean(getEndemicsClaim(request, organisationKey));
+        const userIsSignedIn = Boolean(
+          getSessionData(
+            request,
+            sessionEntryKeys.endemicsClaim,
+            sessionKeys.endemicsClaim.organisation,
+          ),
+        );
 
         return h
           .view("error-pages/404", {

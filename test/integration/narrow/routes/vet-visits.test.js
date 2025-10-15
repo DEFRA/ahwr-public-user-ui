@@ -8,10 +8,6 @@ import { getByRole, queryByRole } from "@testing-library/dom";
 import { http, HttpResponse } from "msw";
 import { authConfig } from "../../../../app/config/auth.js";
 
-jest.mock("../../../../app/constants/claim-statuses.js", () => ({
-  closedViewStatuses: [2, 10, 7, 9, 8]
-}));
-
 const nunJucksInternalTimerMethods = ["nextTick"];
 let cleanUpFunction;
 
@@ -27,9 +23,8 @@ afterAll(() => {
 });
 
 function setMswHandlers(applicationReference, applications, claims) {
-  const applicationsLatest = http.get(
-    `${config.applicationApi.uri}/applications/latest`,
-    () => HttpResponse.json(applications),
+  const applicationsLatest = http.get(`${config.applicationApi.uri}/applications/latest`, () =>
+    HttpResponse.json(applications),
   );
 
   const claimByReference = http.get(
@@ -40,7 +35,7 @@ function setMswHandlers(applicationReference, applications, claims) {
   mswServer.use(applicationsLatest, claimByReference);
 }
 
- // TODO - once we have removed mocks, this test can run again
+// TODO - once we have removed mocks, this test can run again
 test.skip("get /vet-visits: no agreement throws an error", async () => {
   const server = await createServer();
 
@@ -75,13 +70,15 @@ test.skip("get /vet-visits: no agreement throws an error", async () => {
   });
   cleanUpFunction = globalJsdom(payload);
 
-  expect(getByRole(document.body, "heading", {
-    level: 1,
-    name: "Sorry, there is a problem with the service",
-  })).toBeDefined();
+  expect(
+    getByRole(document.body, "heading", {
+      level: 1,
+      name: "Sorry, there is a problem with the service",
+    }),
+  ).toBeDefined();
 });
 
- // TODO - once we have removed mocks, this test can run again
+// TODO - once we have removed mocks, this test can run again
 test.skip("get /vet-visits: new world, multiple businesses", async () => {
   cleanUpFunction();
   const server = await createServer();
@@ -103,7 +100,9 @@ test.skip("get /vet-visits: new world, multiple businesses", async () => {
   await setServerState(server, state);
 
   const applicationReference = "IAHW-TEST-NEW1";
-  const newWorldApplications = [{ sbi, type: "EE", reference: applicationReference, applicationRedacts: [] }];
+  const newWorldApplications = [
+    { sbi, type: "EE", reference: applicationReference, applicationRedacts: [] },
+  ];
 
   const claims = [
     {
@@ -114,7 +113,7 @@ test.skip("get /vet-visits: new world, multiple businesses", async () => {
         typeOfLivestock: "beef",
         claimType: "R",
       },
-      statusId: "2",
+      status: "WITHDRAWN",
     },
   ];
 
@@ -129,45 +128,31 @@ test.skip("get /vet-visits: new world, multiple businesses", async () => {
   });
   cleanUpFunction = globalJsdom(payload);
 
-  expect(queryByRole(document.body, "region", { name: "Important" })).toBe(
-    null,
-  );
+  expect(queryByRole(document.body, "region", { name: "Important" })).toBe(null);
 
   expect(getTableCells(document.body)).toEqual([
     ["Visit date", "Herd name", "Type and claim number", "Status"],
-    [
-      "29 December 2024",
-      "Unnamed herd",
-      expect.stringContaining("REBC-A89F-7776"),
-      "Withdrawn",
-    ],
+    ["29 December 2024", "Unnamed herd", expect.stringContaining("REBC-A89F-7776"), "Withdrawn"],
   ]);
 
-  expect(
-    getByRole(document.body, "link", { name: "Download agreement summary" }),
-  ).toHaveProperty(
+  expect(getByRole(document.body, "link", { name: "Download agreement summary" })).toHaveProperty(
     "href",
     `${document.location.href}download-application/${sbi}/${applicationReference}`,
   );
 
-  expect(
-    getByRole(document.body, "button", { name: "Start a new claim" }),
-  ).toHaveProperty(
+  expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
     "href",
-    `${config.claimServiceUri}/endemics/which-species`,
+    `${config.claimServiceUri}/which-species`,
   );
 
   expect(
     getByRole(document.body, "link", {
       name: "Claim for a different business",
     }),
-  ).toHaveProperty(
-    "href",
-    expect.stringContaining(authConfig.defraId.hostname),
-  );
+  ).toHaveProperty("href", expect.stringContaining(authConfig.defraId.hostname));
 });
 
- // TODO - once we have removed mocks, this test can run again
+// TODO - once we have removed mocks, this test can run again
 test.skip("get /vet-visits: new world, multiple businesses, for sheep (flock not herd)", async () => {
   cleanUpFunction();
   const server = await createServer();
@@ -194,7 +179,7 @@ test.skip("get /vet-visits: new world, multiple businesses, for sheep (flock not
       sbi,
       type: "EE",
       reference: applicationReference,
-      applicationRedacts: []
+      applicationRedacts: [],
     },
   ];
 
@@ -207,7 +192,7 @@ test.skip("get /vet-visits: new world, multiple businesses, for sheep (flock not
         typeOfLivestock: "sheep",
         claimType: "R",
       },
-      statusId: "2",
+      status: "WITHDRAWN",
     },
   ];
 
@@ -224,16 +209,11 @@ test.skip("get /vet-visits: new world, multiple businesses, for sheep (flock not
 
   expect(getTableCells(document.body)).toEqual([
     ["Visit date", "Flock name", "Type and claim number", "Status"],
-    [
-      "29 December 2024",
-      "Unnamed flock",
-      expect.stringContaining("REBC-A89F-7776"),
-      "Withdrawn",
-    ],
+    ["29 December 2024", "Unnamed flock", expect.stringContaining("REBC-A89F-7776"), "Withdrawn"],
   ]);
 });
 
- // TODO - once we have removed mocks, this test can run again
+// TODO - once we have removed mocks, this test can run again
 test.skip("get /vet-visits: new world, claim has a herd", async () => {
   cleanUpFunction();
   const server = await createServer();
@@ -260,7 +240,7 @@ test.skip("get /vet-visits: new world, claim has a herd", async () => {
       sbi,
       type: "EE",
       reference: applicationReference,
-      applicationRedacts: []
+      applicationRedacts: [],
     },
   ];
 
@@ -276,7 +256,7 @@ test.skip("get /vet-visits: new world, claim has a herd", async () => {
       herd: {
         herdName: "best beef herd",
       },
-      statusId: "2",
+      status: "WITHDRAWN",
     },
   ];
 
@@ -291,45 +271,31 @@ test.skip("get /vet-visits: new world, claim has a herd", async () => {
   });
   cleanUpFunction = globalJsdom(payload);
 
-  expect(queryByRole(document.body, "region", { name: "Important" })).toBe(
-    null,
-  );
+  expect(queryByRole(document.body, "region", { name: "Important" })).toBe(null);
 
   expect(getTableCells(document.body)).toEqual([
     ["Visit date", "Herd name", "Type and claim number", "Status"],
-    [
-      "29 December 2024",
-      "best beef herd",
-      expect.stringContaining("REBC-A89F-7776"),
-      "Withdrawn",
-    ],
+    ["29 December 2024", "best beef herd", expect.stringContaining("REBC-A89F-7776"), "Withdrawn"],
   ]);
 
-  expect(
-    getByRole(document.body, "link", { name: "Download agreement summary" }),
-  ).toHaveProperty(
+  expect(getByRole(document.body, "link", { name: "Download agreement summary" })).toHaveProperty(
     "href",
     `${document.location.href}download-application/${sbi}/${applicationReference}`,
   );
 
-  expect(
-    getByRole(document.body, "button", { name: "Start a new claim" }),
-  ).toHaveProperty(
+  expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
     "href",
-    `${config.claimServiceUri}/endemics/which-species`,
+    `${config.claimServiceUri}/which-species`,
   );
 
   expect(
     getByRole(document.body, "link", {
       name: "Claim for a different business",
     }),
-  ).toHaveProperty(
-    "href",
-    expect.stringContaining(authConfig.defraId.hostname),
-  );
+  ).toHaveProperty("href", expect.stringContaining(authConfig.defraId.hostname));
 });
 
- // TODO - once we have removed mocks, this test can run again
+// TODO - once we have removed mocks, this test can run again
 test.skip("get /vet-visits: new world, no claims made, show banner", async () => {
   cleanUpFunction();
   const server = await createServer();
@@ -358,11 +324,11 @@ test.skip("get /vet-visits: new world, no claims made, show banner", async () =>
       type: "EE",
       reference: "IAHW-TEST-NEW2",
       createdAt: beforeMultiSpeciesReleaseDate,
-      applicationRedacts: []
+      applicationRedacts: [],
     },
   ];
 
-  setMswHandlers('IAHW-TEST-NEW2', newWorldApplications, []);
+  setMswHandlers("IAHW-TEST-NEW2", newWorldApplications, []);
 
   const { payload } = await server.inject({
     url: "/vet-visits",
@@ -379,15 +345,13 @@ test.skip("get /vet-visits: new world, no claims made, show banner", async () =>
   );
 });
 
- // TODO - once we have removed mocks, this test can run again
+// TODO - once we have removed mocks, this test can run again
 test.skip("get /vet-visits: old world application only", async () => {
   cleanUpFunction();
   const server = await createServer();
   const timeOfTest = new Date("2025-01-02");
 
-  jest
-    .useFakeTimers({ doNotFake: nunJucksInternalTimerMethods })
-    .setSystemTime(timeOfTest);
+  jest.useFakeTimers({ doNotFake: nunJucksInternalTimerMethods }).setSystemTime(timeOfTest);
 
   const state = {
     customer: {
@@ -416,13 +380,12 @@ test.skip("get /vet-visits: old world application only", async () => {
         visitDate: almostTenMonthsBefore,
         whichReview: "dairy",
       },
-      statusId: "5",
-      applicationRedacts: []
+      status: "IN_CHECK",
+      applicationRedacts: [],
     },
   ];
-  const applicationsLatest = http.get(
-    `${config.applicationApi.uri}/applications/latest`,
-    () => HttpResponse.json(oldWorldApplications),
+  const applicationsLatest = http.get(`${config.applicationApi.uri}/applications/latest`, () =>
+    HttpResponse.json(oldWorldApplications),
   );
 
   mswServer.use(applicationsLatest);
@@ -437,22 +400,15 @@ test.skip("get /vet-visits: old world application only", async () => {
   jest.useRealTimers();
   globalJsdom(payload);
 
-  expect(queryByRole(document.body, "region", { name: "Important" })).toBe(
-    null,
-  );
+  expect(queryByRole(document.body, "region", { name: "Important" })).toBe(null);
 
   expect(getTableCells(document.body)).toEqual([
     ["Visit date", "Herd name", "Type and claim number", "Status"],
-    [
-      "3 March 2024",
-      "Unnamed herd",
-      expect.stringContaining("AHWR-TEST-OLD1"),
-      "Submitted",
-    ],
+    ["3 March 2024", "Unnamed herd", expect.stringContaining("AHWR-TEST-OLD1"), "Submitted"],
   ]);
 });
 
- // TODO - once we have removed mocks, this test can run again
+// TODO - once we have removed mocks, this test can run again
 test.skip("get /vet-visits: shows agreement redacted", async () => {
   cleanUpFunction();
   const server = await createServer();
@@ -481,13 +437,15 @@ test.skip("get /vet-visits: shows agreement redacted", async () => {
       type: "EE",
       reference: "IAHW-TEST-NEW2",
       createdAt: beforeMultiSpeciesReleaseDate,
-      applicationRedacts: [{
-        success: 'Y'
-      }]
+      applicationRedacts: [
+        {
+          success: "Y",
+        },
+      ],
     },
   ];
 
-  setMswHandlers('IAHW-TEST-NEW2', newWorldApplications, []);
+  setMswHandlers("IAHW-TEST-NEW2", newWorldApplications, []);
 
   const { payload } = await server.inject({
     url: "/vet-visits",
@@ -501,10 +459,10 @@ test.skip("get /vet-visits: shows agreement redacted", async () => {
   const heading = getByRole(document.body, "heading", { level: 1 });
   expect(heading).not.toBeNull();
   expect(heading.textContent.trim()).toBe(
-    "Your Improve Animal Health and Welfare (IAHW) agreement has been removed"
+    "Your Improve Animal Health and Welfare (IAHW) agreement has been removed",
   );
 
   const applyLink = getByRole(document.body, "link", { name: "Apply for a new agreement" });
   expect(applyLink).not.toBeNull();
-  expect(applyLink.getAttribute("href")).toBe("http://localhost:3000/apply/endemics/you-can-claim-multiple");
+  expect(applyLink.getAttribute("href")).toBe("/you-can-claim-multiple");
 });

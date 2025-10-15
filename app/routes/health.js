@@ -11,5 +11,5 @@ export const healthHandlers = [
     handler: (_request, h) => {
       return h.response("ok").code(200);
     },
-  }
+  },
 ];

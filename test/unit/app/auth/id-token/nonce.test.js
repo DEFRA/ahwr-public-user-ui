@@ -1,16 +1,26 @@
 import { generate, verify } from "../../../../../app/auth/id-token/nonce.js";
-import { sessionKeys } from "../../../../../app/session/keys.js";
-import { getToken, setToken } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
+import { randomUUID } from "node:crypto";
+import { when } from "jest-when";
 
 jest.mock("node:crypto", () => ({
   randomUUID: jest.fn(),
 }));
 
-jest.mock("../../../../../app/session", () => ({
-  setToken: jest.fn(),
-  getToken: jest.fn(),
-}));
-const { randomUUID } = require("node:crypto");
+jest.mock("../../../../../app/session", () => {
+  const actual = jest.requireActual("../../../../../app/session");
+  // Mocking everything apart from sessionKeys and sessionEntryKeys
+  const mocked = Object.keys(actual).reduce((acc, key) => {
+    acc[key] = key === "sessionKeys" || key === "sessionEntryKeys" ? actual[key] : jest.fn();
+    return acc;
+  }, {});
+  return mocked;
+});
 
 describe("Nonce handling", () => {
   const mockNonce = "uuid-nonce";
@@ -19,8 +29,7 @@ describe("Nonce handling", () => {
 
   beforeEach(() => {
     randomUUID.mockReturnValueOnce(mockNonce);
-    setToken.mockClear();
-    getToken.mockClear();
+    jest.clearAllMocks();
   });
 
   describe("generate", () => {
@@ -28,7 +37,12 @@ describe("Nonce handling", () => {
       const nonce = generate(request);
 
       expect(randomUUID).toHaveBeenCalled();
-      expect(setToken).toHaveBeenCalledWith(request, sessionKeys.tokens.nonce, mockNonce);
+      expect(setSessionData).toHaveBeenCalledWith(
+        request,
+        sessionEntryKeys.tokens,
+        sessionKeys.tokens.nonce,
+        mockNonce,
+      );
       expect(nonce).toBe(mockNonce);
     });
   });
@@ -39,17 +53,23 @@ describe("Nonce handling", () => {
     });
 
     test("should throw an error if session contains no nonce", () => {
-      getToken.mockReturnValueOnce(null);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.tokens, sessionKeys.tokens.nonce)
+        .mockReturnValue(null);
       expect(() => verify(request, idToken)).toThrow("HTTP Session contains no nonce");
     });
 
     test("should throw an error if nonce does not match", () => {
-      getToken.mockReturnValueOnce("different-nonce");
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.tokens, sessionKeys.tokens.nonce)
+        .mockReturnValue("different-nonce");
       expect(() => verify(request, idToken)).toThrow("Nonce mismatch");
     });
 
     test("should not throw an error if nonce matches", () => {
-      getToken.mockReturnValueOnce(mockNonce);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.tokens, sessionKeys.tokens.nonce)
+        .mockReturnValue(mockNonce);
       expect(() => verify(request, idToken)).not.toThrow();
     });
   });

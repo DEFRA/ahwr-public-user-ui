@@ -17,7 +17,7 @@ services:
       - ./app:/home/node/app
       - ./package.json:/home/node/package.json
     networks:
-      - shared_net
+      - ahwr-local
 
   redis:
     image: redis:4.0.14
@@ -26,10 +26,11 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - shared_net
+      - ahwr-local
 
+# Make sure you have this network locally 'ahwr-local' (created in /scripts/start)
 networks:
-  shared_net:
+  ahwr-local:
     external: true
 
 volumes:

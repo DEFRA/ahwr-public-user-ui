@@ -3,10 +3,6 @@ import { createServer } from "../../../../app/server";
 import { DEFRA_ID_BASE_URL } from "../../../../app/auth/auth-code-grant/request-authorization-code-url";
 import { randomUUID } from "crypto";
 
-jest.mock("../../../../app/constants/claim-statuses.js", () => ({
-  closedViewStatuses: [2, 10, 7, 9, 8],
-}));
-
 describe("/sign-in", () => {
   let server;
 

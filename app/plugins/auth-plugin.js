@@ -1,11 +1,6 @@
 import { config } from "../config/index.js";
 import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
-import { sessionKeys } from "../session/keys.js";
-import { getEndemicsClaim } from "../session/index.js";
-
-const {
-  endemicsClaim: { organisation: organisationKey },
-} = sessionKeys;
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 
 export const authPlugin = {
   plugin: {
@@ -25,7 +20,15 @@ export const authPlugin = {
           return requestAuthorizationCodeUrl(request);
         },
         validateFunc: async (request) => {
-          return { valid: Boolean(getEndemicsClaim(request, organisationKey)) };
+          const sessionWasSet = Boolean(
+            getSessionData(
+              request,
+              sessionEntryKeys.endemicsClaim,
+              sessionKeys.endemicsClaim.organisation,
+            ),
+          );
+
+          return { valid: sessionWasSet };
         },
       });
       server.auth.default({ strategy: "session", mode: "required" });

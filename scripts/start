@@ -15,7 +15,7 @@ fi
 cd "${projectRoot}"
 
 # Ensure the shared external network exists
-network_name="shared_net"
+network_name="ahwr-local"
 if ! docker network inspect "$network_name" >/dev/null 2>&1; then
   echo "Creating external network: $network_name"
   docker network create "$network_name"

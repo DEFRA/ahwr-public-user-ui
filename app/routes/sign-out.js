@@ -1,7 +1,11 @@
-import { clearAllOfSession, getToken } from "../session/index.js";
+import {
+  clearAllOfSession,
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../session/index.js";
 import { clearAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { authConfig } from "../config/auth.js";
-import { sessionKeys } from "../session/keys.js";
 import { config } from "../config/index.js";
 
 export const signOutUrl = `${authConfig.defraId.hostname}/${authConfig.defraId.policy}/oauth2/v2.0/logout`;
@@ -22,7 +26,11 @@ export const signOutHandlers = [
     path: "/sign-out",
     options: {
       handler: async (request, h) => {
-        const token = getToken(request, sessionKeys.tokens.accessToken);
+        const token = getSessionData(
+          request,
+          sessionEntryKeys.tokens,
+          sessionKeys.tokens.accessToken,
+        );
         clearAllOfSession(request);
         clearAuthCookie(request);
 

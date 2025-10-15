@@ -4,16 +4,28 @@ import {
   getOrganisationAuthorisation,
   getOrganisation,
 } from "../../../../../app/api-requests/rpa-api/organisation";
-import { setCustomer, setEndemicsClaim, setFarmerApplyData } from "../../../../../app/session";
-import { sessionKeys } from "../../../../../app/session/keys";
+import {
+  setSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  getSessionData,
+} from "../../../../../app/session";
 import { getCphNumbers } from "../../../../../app/api-requests/rpa-api/cph-numbers";
+import { when } from "jest-when";
 
-jest.mock("../../../../../app/session", () => ({
-  getToken: jest.fn().mockReturnValue("abc123"),
-  setCustomer: jest.fn(),
-  setEndemicsClaim: jest.fn(),
-  setFarmerApplyData: jest.fn(),
-}));
+when(getSessionData)
+  .calledWith(expect.anything(), sessionEntryKeys.tokens, sessionKeys.tokens.accessToken)
+  .mockReturnValue("abc123");
+
+jest.mock("../../../../../app/session", () => {
+  const actual = jest.requireActual("../../../../../app/session");
+  // Mocking everything apart from sessionKeys and sessionEntryKeys
+  const mocked = Object.keys(actual).reduce((acc, key) => {
+    acc[key] = key === "sessionKeys" || key === "sessionEntryKeys" ? actual[key] : jest.fn();
+    return acc;
+  }, {});
+  return mocked;
+});
 
 jest.mock("../../../../../app/api-requests/rpa-api/person", () => ({
   getPersonSummary: jest.fn().mockResolvedValue({
@@ -114,19 +126,30 @@ describe("getPersonAndOrg", () => {
       defraIdAccessToken: "abc123",
       organisationId: accessToken.currentRelationshipId,
     });
-    expect(setCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.id, 12345);
-    expect(setEndemicsClaim).toHaveBeenCalledWith(request, sessionKeys.endemicsClaim.organisation, {
-      address:
-        "1 Brown Lane,Smithering,West Sussex,England,UK,Thompsons,Sisterdene,1-30,Grey Building,Brown Lane,Grenwald,West Sussex,WS11 2DS,GBR",
-      crn: 123456789,
-      email: "farmertomstestemail@test.com.test",
-      farmerName: "Farmer Tom",
-      name: "Unit test org",
-      orgEmail: "unit@test.email.com.test",
-      sbi: "999000",
-    });
-    expect(setFarmerApplyData).toHaveBeenCalledWith(
+    expect(setSessionData).toHaveBeenCalledWith(
       request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.id,
+      12345,
+    );
+    expect(setSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.organisation,
+      {
+        address:
+          "1 Brown Lane,Smithering,West Sussex,England,UK,Thompsons,Sisterdene,1-30,Grey Building,Brown Lane,Grenwald,West Sussex,WS11 2DS,GBR",
+        crn: 123456789,
+        email: "farmertomstestemail@test.com.test",
+        farmerName: "Farmer Tom",
+        name: "Unit test org",
+        orgEmail: "unit@test.email.com.test",
+        sbi: "999000",
+      },
+    );
+    expect(setSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.farmerApplyData,
       sessionKeys.farmerApplyData.organisation,
       {
         address:
@@ -142,7 +165,7 @@ describe("getPersonAndOrg", () => {
     expect(getCphNumbers).toHaveBeenCalledWith({
       apimAccessToken,
       defraIdAccessToken: "abc123",
-      request
+      request,
     });
   });
 

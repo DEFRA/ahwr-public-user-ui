@@ -3,10 +3,6 @@ import { getByText, queryByText } from "@testing-library/dom";
 import globalJsdom from "global-jsdom";
 import "@testing-library/jest-dom";
 
-jest.mock("../../../../app/constants/claim-statuses.js", () => ({
-  closedViewStatuses: [2, 10, 7, 9, 8],
-}));
-
 describe("GET /accessibility", () => {
   let server;
   let cleanupJsdom;

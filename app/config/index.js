@@ -1,5 +1,8 @@
 import joi from "joi";
-import { applicationApiConfig, applicationApiConfigSchema } from "../api-requests/application-api.config.js";
+import {
+  applicationApiConfig,
+  applicationApiConfigSchema,
+} from "../api-requests/application-api.config.js";
 
 const threeDaysInMs = 1000 * 3600 * 24 * 3;
 const oneYearInMs = 1000 * 60 * 60 * 24 * 365;
@@ -45,7 +48,6 @@ export const getConfig = () => {
     host: joi.string().required(),
     serviceUri: joi.string().uri(),
     claimServiceUri: joi.string().uri(),
-    applyServiceUri: joi.string().uri(),
     serviceName: joi.string(),
     useRedis: joi.boolean(),
     customerSurvey: {
@@ -108,7 +110,6 @@ export const getConfig = () => {
     host: "0.0.0.0",
     serviceUri: process.env.SERVICE_URI,
     claimServiceUri: process.env.CLAIM_SERVICE_URI,
-    applyServiceUri: process.env.APPLY_SERVICE_URI,
     useRedis: process.env.NODE_ENV !== "test",
     serviceName: "Get funding to improve animal health and welfare",
     customerSurvey: {

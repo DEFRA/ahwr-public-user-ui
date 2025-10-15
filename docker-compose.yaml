@@ -14,8 +14,7 @@ services:
       REDIS_PASSWORD: ""
       SERVICE_URI: http://localhost:3003/
       CLAIM_SERVICE_URI: http://localhost:3004/claim
-      APPLY_SERVICE_URI: http://localhost:3000/apply
-      APPLICATION_API_URI: http://host.docker.internal:3001/api
+      APPLICATION_API_URI: http://ahwr-application-backend:3001/api
       DEFRA_ID_TENANT: ${DEFRA_ID_TENANT:-azdcuspoc5}
       DEFRA_ID_POLICY: ${DEFRA_ID_POLICY:-B2C_1A_SIGNUPSIGNINSFI}
       DEFRA_ID_REDIRECT_URI: ${DEFRA_ID_REDIRECT_URI:-http://localhost:3003/signin-oidc}

@@ -1,45 +1,38 @@
 import { checkLoginValid } from "../../../../../app/routes/utils/check-login-valid";
-import { getCustomer, setSignInRedirect } from "../../../../../app/session";
-import { sessionKeys } from "../../../../../app/session/keys";
+import {
+  getSessionData,
+  setSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../../../../../app/session";
 import { customerHasAtLeastOneValidCph } from "../../../../../app/api-requests/rpa-api/cph-check";
 import { requestAuthorizationCodeUrl } from "../../../../../app/auth/auth-code-grant/request-authorization-code-url";
-import { getLatestApplicationsBySbi } from "../../../../../app/api-requests/application-api";
+import { getApplicationsBySbi } from "../../../../../app/api-requests/application-api";
+import { when } from "jest-when";
 
-jest.mock("../../../../../app/constants/claim-statuses.js", () => ({
-  closedViewStatuses: [2, 10, 7, 9, 8],
-  CLAIM_STATUSES: {
-    AGREED: 1,
-    WITHDRAWN: 2,
-    IN_CHECK: 5,
-    ACCEPTED: 6,
-    NOT_AGREED: 7,
-    PAID: 8,
-    READY_TO_PAY: 9,
-    REJECTED: 10,
-    ON_HOLD: 11,
-    RECOMMENDED_TO_PAY: 12,
-    RECOMMENDED_TO_REJECT: 13,
-    AUTHORISED: 14,
-    SENT_TO_FINANCE: 15,
-    PAYMENT_HELD: 16,
-  },
-}));
+when(getSessionData)
+  .calledWith(expect.anything(), sessionEntryKeys.customer, sessionKeys.customer.crn)
+  .mockReturnValue(124);
 
-jest.mock("../../../../../app/session", () => ({
-  getCustomer: jest.fn().mockReturnValue(124),
-  setCannotSignInDetails: jest.fn(),
-  setSignInRedirect: jest.fn(),
-}));
+jest.mock("../../../../../app/session", () => {
+  const actual = jest.requireActual("../../../../../app/session");
+  // Mocking everything apart from sessionKeys and sessionEntryKeys
+  const mocked = Object.keys(actual).reduce((acc, key) => {
+    acc[key] = key === "sessionKeys" || key === "sessionEntryKeys" ? actual[key] : jest.fn();
+    return acc;
+  }, {});
+  return mocked;
+});
 
 jest.mock("../../../../../app/api-requests/rpa-api/cph-check", () => ({
   customerHasAtLeastOneValidCph: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock("../../../../../app/api-requests/application-api", () => ({
-  getLatestApplicationsBySbi: jest.fn().mockResolvedValue([
+  getApplicationsBySbi: jest.fn().mockResolvedValue([
     {
       type: "EE",
-      statusId: 9,
+      status: "READY_TO_PAY",
       createdAt: new Date(),
     },
   ]),
@@ -94,8 +87,17 @@ describe("checkLoginValid", () => {
 
     expect(result.redirectPath).toEqual("/check-details");
     expect(result.redirectCallback).toBeNull();
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).toHaveBeenCalledWith(request, sessionKeys.signInRedirect, true);
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
   });
@@ -142,8 +144,17 @@ describe("checkLoginValid", () => {
       redirectPath: null,
       redirectCallback: mockRedirectCallBackAsString,
     });
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).not.toHaveBeenCalled();
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).not.toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).not.toHaveBeenCalled(); // only gets called if an error hasnt been found yet
     expect(mockSetBindings).toHaveBeenCalledWith({
       crn: 124,
@@ -193,8 +204,17 @@ describe("checkLoginValid", () => {
       redirectPath: null,
       redirectCallback: mockRedirectCallBackAsString,
     });
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).not.toHaveBeenCalled();
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).not.toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).not.toHaveBeenCalled(); // only gets called if an error hasnt been found yet
     expect(mockSetBindings).toHaveBeenCalledWith({
       crn: 124,
@@ -245,8 +265,17 @@ describe("checkLoginValid", () => {
       redirectPath: null,
       redirectCallback: mockRedirectCallBackAsString,
     });
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).not.toHaveBeenCalled();
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).not.toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers); // only gets called if an error hasnt been found yet
     expect(mockSetBindings).toHaveBeenCalledWith({
       crn: 124,
@@ -297,8 +326,17 @@ describe("checkLoginValid", () => {
       redirectPath: null,
       redirectCallback: mockRedirectCallBackAsString,
     });
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).not.toHaveBeenCalled();
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).not.toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers); // only gets called if an error hasnt been found yet
     expect(mockSetBindings).toHaveBeenCalledWith({
       crn: 124,
@@ -309,7 +347,7 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has no applications", async () => {
-    getLatestApplicationsBySbi.mockResolvedValue([]);
+    getApplicationsBySbi.mockResolvedValue([]);
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
       redirect: jest.fn().mockReturnValue({
@@ -348,18 +386,27 @@ describe("checkLoginValid", () => {
 
     expect(result.redirectPath).toEqual("/check-details");
     expect(result.redirectCallback).toBeNull();
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).toHaveBeenCalledWith(request, sessionKeys.signInRedirect, true);
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect path to dashboard entry if there are no problems and the user an agreed new world application", async () => {
-    getLatestApplicationsBySbi.mockResolvedValue([
+    getApplicationsBySbi.mockResolvedValue([
       {
         type: "EE",
-        statusId: 1,
+        status: "AGREED",
         createdAt: new Date(),
       },
     ]);
@@ -401,18 +448,27 @@ describe("checkLoginValid", () => {
 
     expect(result.redirectPath).toEqual("/check-details");
     expect(result.redirectCallback).toBeNull();
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).not.toHaveBeenCalled();
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).not.toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user an non-agreed new world application", async () => {
-    getLatestApplicationsBySbi.mockResolvedValue([
+    getApplicationsBySbi.mockResolvedValue([
       {
         type: "EE",
-        statusId: 4,
+        status: "IN_CHECK",
         createdAt: new Date(),
       },
     ]);
@@ -454,18 +510,27 @@ describe("checkLoginValid", () => {
 
     expect(result.redirectPath).toEqual("/check-details");
     expect(result.redirectCallback).toBeNull();
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).toHaveBeenCalledWith(request, sessionKeys.signInRedirect, true);
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application", async () => {
-    getLatestApplicationsBySbi.mockResolvedValue([
+    getApplicationsBySbi.mockResolvedValue([
       {
         type: "VV",
-        statusId: 2,
+        status: "WITHDRAWN",
         createdAt: new Date(),
       },
     ]);
@@ -507,18 +572,27 @@ describe("checkLoginValid", () => {
 
     expect(result.redirectPath).toEqual("/check-details");
     expect(result.redirectCallback).toBeNull();
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).toHaveBeenCalledWith(request, sessionKeys.signInRedirect, true);
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application specifially in the PAID state", async () => {
-    getLatestApplicationsBySbi.mockResolvedValue([
+    getApplicationsBySbi.mockResolvedValue([
       {
         type: "VV",
-        statusId: 8,
+        status: "PAID",
         createdAt: new Date(),
       },
     ]);
@@ -560,18 +634,27 @@ describe("checkLoginValid", () => {
 
     expect(result.redirectPath).toEqual("/check-details");
     expect(result.redirectCallback).toBeNull();
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).toHaveBeenCalledWith(request, sessionKeys.signInRedirect, true);
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect callback if there are no problems but the user has a non-closed status old world application", async () => {
-    getLatestApplicationsBySbi.mockResolvedValue([
+    getApplicationsBySbi.mockResolvedValue([
       {
         type: "VV",
-        statusId: 1,
+        status: "AGREED",
         createdAt: new Date(),
       },
     ]);
@@ -612,8 +695,17 @@ describe("checkLoginValid", () => {
 
     expect(result.redirectPath).toBeNull();
     expect(result.redirectCallback).toBe(mockRedirectCallBackAsString);
-    expect(getCustomer).toHaveBeenCalledWith(request, sessionKeys.customer.crn);
-    expect(setSignInRedirect).not.toHaveBeenCalled();
+    expect(getSessionData).toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.customer,
+      sessionKeys.customer.crn,
+    );
+    expect(setSessionData).not.toHaveBeenCalledWith(
+      request,
+      sessionEntryKeys.signInRedirect,
+      sessionKeys.signInRedirect,
+      true,
+    );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).toHaveBeenCalledWith({
       error: "User has an expired old world application",

@@ -1,12 +1,9 @@
 import { getOrganisationModel } from "./models/organisation.js";
-import { sessionKeys } from "../session/keys.js";
 import joi from "joi";
 import { StatusCodes } from "http-status-codes";
-import { getEndemicsClaim, getSignInRedirect } from "../session/index.js";
-import { applyServiceUri } from "../config/routes.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { config } from "../config/index.js";
-
-const { organisation: organisationKey } = sessionKeys.endemicsClaim;
+import { applyRoutes } from "../config/routes.js";
 
 export const checkDetailsHandlers = [
   {
@@ -14,7 +11,11 @@ export const checkDetailsHandlers = [
     path: "/check-details",
     options: {
       handler: async (request, h) => {
-        const organisation = getEndemicsClaim(request, organisationKey);
+        const organisation = getSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.organisation,
+        );
 
         if (!organisation) {
           throw new Error("Organisation not in session.");
@@ -34,7 +35,11 @@ export const checkDetailsHandlers = [
         }),
         failAction: (request, h, err) => {
           request.logger.setBindings({ err });
-          const organisation = getEndemicsClaim(request, organisationKey);
+          const organisation = getSessionData(
+            request,
+            sessionEntryKeys.endemicsClaim,
+            sessionKeys.endemicsClaim.organisation,
+          );
 
           if (!organisation) {
             throw new Error("Organisation not in session.");
@@ -53,16 +58,24 @@ export const checkDetailsHandlers = [
         const { confirmCheckDetails } = request.payload;
 
         if (confirmCheckDetails === "yes") {
-          const redirectToApply = getSignInRedirect(request, sessionKeys.signInRedirect);
+          const redirectToApply = getSessionData(
+            request,
+            sessionEntryKeys.signInRedirect,
+            sessionKeys.signInRedirect,
+          );
 
           if (redirectToApply === true) {
-            return h.redirect(`${applyServiceUri}/endemics/you-can-claim-multiple`);
+            return h.redirect(applyRoutes.youCanClaimMultiple);
           }
 
           return h.redirect("/vet-visits");
         }
 
-        const { organisation } = getEndemicsClaim(request);
+        const organisation = getSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.organisation,
+        );
 
         return h.view("update-details", {
           devMode: config.devLogin.enabled,

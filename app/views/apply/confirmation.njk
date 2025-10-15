@@ -1,0 +1,78 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Application complete - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({
+      titleText: "Application complete",
+      html: "Your agreement number is<br><strong>" + reference + "</strong>"
+    }) }}
+
+      <p class="govuk-body">Your application has been successful.</p>
+      <p class="govuk-body">We have sent you a confirmation email and your agreement summary.</p>
+      
+      {% if isNewUser %}
+        <h2 class="govuk-heading-m">What you need to do next</h2>
+          <ol class="govuk-list govuk-list--number">
+            <li class="govuk-body">Contact the vet to arrange a review and give them the agreement number.</li>
+            <li class="govuk-body">Read the guidance about <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-and-vets-what-happens-on-an-animal-health-and-welfare-review">what happens on an animal health and welfare review</a>. 
+              The guidance explains what you must ask the vet to do and what's optional.
+            </li>
+            <li class="govuk-body">Ask the vet to read the guidance on
+              <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/vets-how-to-do-an-animal-health-and-welfare-review-and-endemic-disease-follow-up">
+                how to do an animal health and welfare review and endemic disease follow-up</a>. This is important because the vet needs to follow the guidance closely so that you are eligible to claim.
+            </li>
+            <li class="govuk-body">After the vet has completed the review, you can claim your funding. Read the guidance on 
+              <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-how-to-claim-funding-to-improve-animal-health-and-welfare">how to claim funding to improve animal health and welfare</a>.
+            </li>
+          </ol>
+      {% else %}
+        <h2 class="govuk-heading-m">We recommend you arrange a follow-up by following these steps</h2>
+          <ol class="govuk-list govuk-list--number">
+            <li class="govuk-body">Contact the vet to arrange an endemic disease follow-up and give them the agreement number.</li>
+            <li class="govuk-body">Read the guidance about <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-and-vets-what-happens-on-an-endemic-disease-follow-up">what happens on a follow-up</a>.
+              The guidance explains what you must ask the vet to do and what's optional.</li>
+            <li class="govuk-body">Ask the vet to read the guidance on <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-and-vets-what-happens-on-an-animal-health-and-welfare-review">
+              how to do a review and follow-up</a>. This is important because the vet needs to follow the guidance closely so that you are eligible to claim.
+            </li>
+            <li class="govuk-body">After the vet has completed the follow-up, you can claim your funding. Read the guidance on 
+              <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-how-to-claim-funding-to-improve-animal-health-and-welfare">
+                how to claim funding to improve animal health and welfare</a>.
+            </li>
+          </ol>
+
+        <h2 class="govuk-heading-m">If you do not want to have a follow-up, you can arrange your next review</h2>
+        <p class="govuk-body">Follow-ups help prevent the spread of disease in your livestock. If you choose not to have one, 
+          <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups">
+            you can arrange your next review
+          </a> at the advised time.
+        </p>
+      {% endif %}
+      
+      <h2 class="govuk-heading-m">Get help with your application</h2>
+      <p>Contact the Rural Payments Agency and give your agreement number if you:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>need to change your application</li>
+        <li>decide you do not want a review after you have accepted your agreement offer</li>
+        <li>have a question about your application</li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Rural Payment Agency</h2>
+      {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+
+      <br/>
+      <p>
+        <a class="govuk-link" rel="external noopener noreferrer" href={{ customerSurveyUri }} target={{ customerSurveyUri }}>
+        What did you think of this service?
+        </a>
+        (giving feedback takes about 5 minutes)
+      </p>
+
+      <div class="gem-c-print-link govuk-!-display-none-print govuk-!-margin-top-0 govuk-!-margin-bottom-6">
+        <button onclick="window.print()" class="govuk-link govuk-body-s gem-c-print-link__button">Print this page</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}

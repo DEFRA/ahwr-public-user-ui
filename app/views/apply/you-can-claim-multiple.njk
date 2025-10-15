@@ -1,0 +1,55 @@
+{% extends './layouts/layout.njk' %}
+
+{% set pageHeadingText='What you can claim for as part of this agreement' %}
+
+{% block pageTitle %}{{ pageHeadingText }} - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+{{ govukBackLink({
+text: "Back",
+href: backLink,
+attributes: {id: "back"}
+}) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">{{ pageHeadingText }}</h1>
+    <p class="govuk-body">Under this agreement, you can claim funding for any number of herds or flocks of one or more
+      of the following species:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>beef cattle</li>
+      <li>dairy cattle</li>
+      <li>pigs</li>
+      <li>sheep</li>
+    </ul>
+    <p class="govuk-body">You can do a maximum of 3 reviews and 3 follow-ups on any number of herds or flocks of one or
+      more species. You must do all your reviews and follow-ups by 19 June 2027.</p>
+    <p class="govuk-body">You need to make a separate claim for each herd or flock of a particular species.</p>
+    <br>
+
+    <form method="POST" autocomplete="off" novalidate="novalidate" id="submitYouCanClaimMultipleForm">
+      <input type="hidden" name="crumb" value="{{crumb}}" />
+      <div class="govuk-button-group">
+        {{ govukButton({
+        attributes: { "aria-label": "I agree - " + pageHeadingText },
+        text: "I agree",
+        value: "agree",
+        name: "agreementStatus",
+        preventDoubleClick: true
+        }) }}
+
+        {{ govukButton({
+        attributes: { "aria-label": "I do not agree - " + pageHeadingText },
+        text: "I do not agree",
+        value: "rejected",
+        name: "agreementStatus",
+        preventDoubleClick: true,
+        classes: "govuk-button--secondary"
+        }) }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

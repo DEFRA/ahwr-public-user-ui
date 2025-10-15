@@ -1,31 +1,30 @@
-import { CLAIM_STATUSES, closedViewStatuses } from "../../constants/claim-statuses.js";
+import { closedViewStatuses } from "../../constants/claim-statuses.js";
 import { applicationType } from "../../constants/constants.js";
-import { setSignInRedirect } from "../../session/index.js";
-import { sessionKeys } from "../../session/keys.js";
+import { setSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
 
-export function getRedirectPath(latestApplicationsForSbi, request) {
+export function getRedirectPath(applicationsForSbi, request) {
   const checkDetails = "/check-details";
 
-  if (latestApplicationsForSbi.length === 0) {
-    setSignInRedirect(request, sessionKeys.signInRedirect, true);
+  if (applicationsForSbi.length === 0) {
+    setSessionData(request, sessionEntryKeys.signInRedirect, sessionKeys.signInRedirect, true);
     return { redirectPath: checkDetails, error: "" };
   }
 
-  const latestApplication = latestApplicationsForSbi[0];
+  const latestApplication = applicationsForSbi[0];
 
   if (latestApplication.type === applicationType.ENDEMICS) {
-    if (latestApplication.statusId === CLAIM_STATUSES.AGREED) {
+    if (latestApplication.status === "AGREED") {
       return { redirectPath: checkDetails, error: "" };
     }
 
-    setSignInRedirect(request, sessionKeys.signInRedirect, true);
+    setSessionData(request, sessionEntryKeys.signInRedirect, sessionKeys.signInRedirect, true);
     return { redirectPath: checkDetails, error: "" };
   }
 
-  if (closedViewStatuses.includes(latestApplication.statusId)) {
+  if (closedViewStatuses.includes(latestApplication.status)) {
     // User has claimed on their OW agreement, and needs a new world agreement.
     // Send to endemics apply journey
-    setSignInRedirect(request, sessionKeys.signInRedirect, true);
+    setSessionData(request, sessionEntryKeys.signInRedirect, sessionKeys.signInRedirect, true);
     return { redirectPath: checkDetails, error: "" };
   }
 

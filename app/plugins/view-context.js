@@ -1,4 +1,5 @@
 import { config } from "../config/index.js";
+import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 
 const { serviceName, claimServiceUri, serviceUri, customerSurvey } = config;
 
@@ -26,6 +27,7 @@ export const viewContextPlugin = {
           ctx.serviceUri = serviceUri;
           ctx.customerSurveyUri = customerSurvey.uri;
           ctx.userIsSignedIn = request.auth.isAuthenticated;
+          ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS;
 
           response.source.context = ctx;
         }
