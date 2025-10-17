@@ -1,0 +1,52 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if reviewTestResults == 'positive' %}
+        <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+      {% elif reviewTestResults == 'negative' %}
+        <h1 class="govuk-heading-l">There could be a problem with your claim</h1>
+      {% endif %}
+
+      <p class="govuk-body">To be effective, a PI hunt must be done on all {{ livestockText }} cattle in the herd.</p>
+
+      <h2 class="govuk-heading-m">If the PI hunt was not done on all {{ livestockText }} cattle in the herd</h2>
+      {% if reviewTestResults == 'positive' %}
+        <p class="govuk-body">You need to contact your vet to do the PI hunt on all {{ livestockText }} cattle in the herd.</p>
+      {% elif reviewTestResults == 'negative' %}
+        <p class="govuk-body">You cannot claim funding for the PI hunt. You can still continue to claim funding for a biosecurity assessment. If approved, your claim payment will be £{{ claimPaymentNoPiHunt }}.</p>
+        <p class="govuk-body"><a class="govuk-link" href={{ continueClaimLink }}>Continue your claim.</a></p>
+      {% endif %}
+      
+      <h2 class="govuk-heading-m">If the PI hunt was done on all {{ livestockText }} cattle in the herd</h2>
+      {% if reviewTestResults == 'positive' %}
+        <p class="govuk-body">If you selected the wrong answer by mistake, you need to go back and change your answer.</p>
+      {% elif reviewTestResults == 'negative' %}
+        <p class="govuk-body">If you selected the wrong answer by mistake, you can change your answer and claim funding for the PI hunt.</p>
+      {% endif %}
+
+      <p class="govuk-body"><a class="govuk-link" href={{ backLink }}>Change your answer if the PI hunt was done on all {{ livestockText }} cattle in the herd.</a></p>
+
+        {{ govukWarningText({
+          text: "Your claim will be checked by our team.",
+          iconFallbackText: "Warning"
+        }) }}
+        {% include './chunks/get-help-with-claim.njk' %}
+    </div>
+  </div>
+{% endblock %}
+
+

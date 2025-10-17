@@ -1,0 +1,37 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+        {% if isBeefOrDairyEndemics %}
+          <p class="govuk-body">This test result unique reference number (URN) or certificate number was used in a previous claim.</p>
+          <p class="govuk-body">If you entered the wrong URN or certificate number, you'll need to go back and enter the correct number.</p>
+          <p class="govuk-body"><a class="govuk-link" href={{backLink}}>Enter the URN or certificate number.</a></p>
+        {% else %}
+          <p class="govuk-body">This test result unique reference number (URN) was used in a previous claim.</p>
+          <p class="govuk-body">If you entered the wrong URN, you'll need to go back and enter the correct URN.</p>
+          <p class="govuk-body"><a class="govuk-link" href={{backLink}}>Enter the URN.</a></p>
+        {% endif %}
+        {{ govukWarningText({
+          text: "Your claim will be checked by our team.",
+          iconFallbackText: "Warning"
+        }) }}
+        {% include './chunks/get-help-with-claim.njk' %}
+    </div>
+  </div>
+{% endblock %}
+
+

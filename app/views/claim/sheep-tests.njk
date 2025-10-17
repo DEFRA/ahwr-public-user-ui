@@ -1,0 +1,55 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Which disease or condition did the vet take samples to test for? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+      text: "Back",
+      href: backLink
+    }) 
+  }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+    <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) 
+        }}
+      {% endif %}
+
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        
+        {{ govukCheckboxes({
+            name: "sheepTests",
+            fieldset: {
+              legend: {
+                text: "Which disease or condition did the vet take samples to test for?",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--l"
+              }
+            },
+            hint: {
+              text: "You can find this on the summary the vet gave you. Select all that apply."
+            },
+            items: sheepTestCheckboxItems,
+            errorMessage: errorMessage
+          }) 
+        }}
+
+        {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continue"
+            },
+            preventDoubleClick: true
+          }) 
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}There could be a problem with your claim - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">There could be a problem with your claim</h1>
+      <p class="govuk-body">To claim for a PI hunt, your vet must have recommended it.</p>
+      
+      <h2 class="govuk-heading-m">If the vet did not recommend the  PI hunt</h2>
+      <p class="govuk-body">You cannot claim funding for the PI hunt. You can still continue to claim funding for a biosecurity assessment. If approved, your claim payment will be £{{ claimPaymentNoPiHunt }}.</p>
+      <p class="govuk-body"><a class="govuk-link" href={{ continueClaimLink }}>Continue your claim.</a></p>
+      
+      <h2 class="govuk-heading-m">If the vet recommended the  PI hunt</h2>
+      <p class="govuk-body">If you selected the wrong answer by mistake, you can change your answer and claim funding for the PI hunt.</p>
+      <p class="govuk-body"><a class="govuk-link" href={{ backLink }}>Change your answer if the vet recommended the PI hunt.</a></p>
+
+      {{ govukWarningText({
+        text: "Your claim will be checked by our team.",
+        iconFallbackText: "Warning"
+      }) }}
+      {% include './chunks/get-help-with-claim.njk' %}
+    </div>
+  </div>
+{% endblock %}
+

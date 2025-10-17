@@ -1,0 +1,106 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Check {{ herdOrFlock }} details - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+	attributes: { id: "back" }
+  }) }}
+{% endblock %}
+
+{% set rows = [
+  {
+    key: {
+      text: herdOrFlock | capitalize ~ " name"
+    },
+    value: {
+      text: herdName
+    }
+  },
+  {
+    key: {
+      text: "CPH number for " ~ herdOrFlock
+    },
+    value: {
+      text: herdCph
+    },
+    actions: {
+      items: [
+        {
+          href: herdCphLink,
+          text: "Change",
+          visuallyHiddenText: "CPH number"
+        }
+      ]
+    }
+  }
+] %}
+
+{% if isOnlyHerdOnSbi %}
+  {% set rows = rows.concat([
+    {
+      key: {
+        text: "Only " ~ herdOrFlock ~ " associated with SBI"
+      },
+      value: {
+        text: isOnlyHerdOnSbi | capitalize
+      },
+      actions: {
+        items: [
+          {
+            href: isOnlyHerdOnSbiLink,
+            text: "Change",
+            visuallyHiddenText: "Only " ~ herdOrFlock ~ " associated with SBI"
+          }
+        ]
+      }
+    }
+  ]) %}
+{% endif %}
+
+{% if herdReasons %}
+  {% set rows = rows.concat([
+    {
+      key: {
+        text: herdOrFlock | capitalize ~ " details"
+      },
+      value: {
+        html: herdReasons
+      },
+      actions: {
+        items: [
+          {
+            href: herdReasonsLink,
+            text: "Change",
+            visuallyHiddenText: herdOrFlock ~ " details"
+          }
+        ]
+      }
+    }
+  ]) %}
+{% endif %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Check {{ herdOrFlock }} details</h1>
+
+      {{ govukSummaryList({
+      classes: "govuk-!-margin-bottom-9",
+      rows: rows
+    }) }}
+
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {{ govukButton({
+            text: "Continue",
+            attributes: { id: "continue" },
+            preventDoubleClick: true
+            }) 
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

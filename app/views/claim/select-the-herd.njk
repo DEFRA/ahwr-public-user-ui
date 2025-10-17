@@ -1,0 +1,133 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}{{pageTitleText}} - {{serviceName}} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+
+        {% if herds.length == 1 %}
+          <h1 class="govuk-heading-l govuk-!-margin-bottom-2">{{ pageTitleText }}</h1>
+          <p class="govuk-hint govuk-!-margin-bottom-7">You can now have reviews and follow-ups on more than one {{herdOrFlock}}.</p>
+          <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Your last claim for this species:</p>
+          {{ 
+            govukSummaryList({
+              rows: [
+                {
+                  key: {
+                    text: "Species"
+                  },
+                  value: {
+                    text: species | title 
+                  }
+                },
+                {
+                  key: {
+                    text: herdOrFlock | title + " name"
+                  },
+                  value: {
+                    text: herds[0].herdName
+                  }
+                },
+                {
+                  key: {
+                    text: "Type"
+                  },
+                  value: {
+                    text: claimType
+                  }
+                },
+                {
+                  key: {
+                    text: "Last visit date"
+                  },
+                  value: {
+                    text: lastVisitDate
+                  }
+                },
+                {
+                  key: {
+                    text: "Claim date"
+                  },
+                  value: {
+                    text: claimDate
+                  }
+                }
+              ]
+            }) 
+          }}
+          {{ 
+            govukRadios({
+              id: "herdSelected",
+              name: "herdSelected",
+              errorMessage: errorMessage,
+              items: [
+                {
+                  value: herds[0].herdId,
+                  text: "Yes, it's the same",
+                  checked: herdSelected == herds[0].herdId
+                },
+                {
+                  value: radioValueNewHerd,
+                  text: "No, it's a different " + herdOrFlock,
+                  checked: herdSelected == radioValueNewHerd
+                }
+              ]
+            })
+          }}
+        {% else %}
+          {% set herdOrFlockItems = [] %}
+          {% for item in herds %}
+            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item.herdId, text: item.herdName, checked: herdSelected == item.herdId }]) %}
+          {% endfor %}
+          {% set herdOrFlockItems = herdOrFlockItems.concat([{ divider: "or" }]) %}
+          {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: radioValueNewHerd, text: "I am claiming for a different " + herdOrFlock, checked: herdSelected === radioValueNewHerd }]) %}
+          {{ 
+            govukRadios({
+              id: "herdSelected",
+              name: "herdSelected",
+              fieldset: {
+                legend: {
+                  isPageHeading: true,
+                  classes: "govuk-fieldset__legend--l",
+                  text: pageTitleText
+                }
+              }, 
+              hint: {
+                text: "You can also choose to claim for a different " + herdOrFlock
+              }, 
+              errorMessage: errorMessage,
+              items: herdOrFlockItems
+            })
+          }}
+        {% endif %}
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: { id: "btnContinue" },
+          preventDoubleClick: true
+        }) 
+      }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+      <br>
+        <p class="govuk-body">
+          <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups">{{ errorMessage }}</a>
+        </p>
+      <p class="govuk-body">If you entered the wrong date, you'll need to go back and enter the correct date.</p>
+      <p class="govuk-body">
+        <a class="govuk-link" href={{ backLink }}>{{backToPageMessage}}</a>
+      </p>
+      {{ govukWarningText({
+        text: "Your claim will be checked by our team.",
+        iconFallbackText: "Warning"
+      }) }}
+      {% include './chunks/get-help-with-claim.njk' %}
+    </div>
+  </div>
+{% endblock %}

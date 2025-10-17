@@ -1,0 +1,37 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+      {% if errorLink %}
+        <p class="govuk-body">
+          <a href={{errorLink}}>{{errorMessage}}</a>
+        </p>
+      {% else %}
+        <p class="govuk-body">{{errorMessage}}</p>
+      {% endif %}
+      <p class="govuk-body">If you entered the wrong date, you'll need to go back and enter the correct date.</p>
+      <p class="govuk-body">
+        <a href={{backLink}}>Enter the date when samples were taken.</a>
+      </p>
+      {{ govukWarningText({
+        text: "Your claim will be checked by our team.",
+        iconFallbackText: "Warning"
+      }) }}
+      {% include './chunks/get-help-with-claim.njk' %}
+    </div>
+  </div>
+{% endblock %}

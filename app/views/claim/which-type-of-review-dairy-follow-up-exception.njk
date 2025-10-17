@@ -1,0 +1,31 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Which type of review dairy follow up exception - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+
+        <p class="govuk-body">Endemic disease follow-up is not available for dairy cattle yet. This part of the service will be available soon.</p>
+
+        <p>Go to <a rel="external" href={{ claimDashboard }} class="govuk-link">manage your claims</a> to make another claim or view:</p>
+        <ul class="govuk-list govuk-list--bullet">
+            <li>details of your claims</li>
+            <li>service guidance</li>
+            <li>your Terms and Conditions</li>
+        </ul>
+        {% include './chunks/get-help-with-claim.njk' %}
+    </div>
+  </div>
+{% endblock %}

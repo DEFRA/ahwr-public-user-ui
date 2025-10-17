@@ -1,0 +1,54 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Enter the {{ herdOrFlock }} name - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {{ govukInput({
+        label: {
+            text: "Enter the " ~ herdOrFlock ~ " name",
+            classes: "govuk-label--l",
+            isPageHeading: true
+        },
+         hint: {
+            text: "You can find this information on the ‘Tell us about this " ~ herdOrFlock ~ "’ section of the form that the vet filled in for you."
+         },
+        classes: "govuk-input govuk-!-width-three-quarters",
+        id: "herdName",
+        name: "herdName",
+        value: herdName,
+        errorMessage: errorMessage
+      }) }}
+        {{ govukButton({
+          text: "Continue",
+          attributes: { id: "btnContinue" },
+          preventDoubleClick: true
+        }) 
+      }}
+      </form>
+      {{ govukDetails({
+        summaryText: "I don't have the " ~ herdOrFlock ~ " details from the vet",
+        text: ("Your vet should have completed the  ‘Tell us about this " ~ herdOrFlock ~ "’ section on the vet template. You can ask them to <a class='govuk-link' href='https://www.gov.uk/guidance/vet-summary-templates-for-all-species'>download the form</a> and fill the details in for you.") | safe
+      }) }}
+    </div>
+  </div>
+{% endblock %}

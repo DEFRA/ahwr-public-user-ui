@@ -1,0 +1,37 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Oral fluid samples exception - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+
+        <p class="govuk-body">
+        <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-and-vets-what-happens-on-an-animal-health-and-welfare-review#during-the-review-sampling-for-disease-testing">The vet must have taken at least {{minimumNumberFluidOralSamples}} oral fluid samples</a>.
+        </p>
+
+        <p class="govuk-body">If you entered the wrong number, you’ll need to go back and enter the correct number.</p>
+        <p class="govuk-body"><a class="govuk-link" href={{backLink}}>Enter the number of oral fluid samples taken.</a></p>
+
+        {{ govukWarningText({
+          text: "Your claim will be checked by our team.",
+          iconFallbackText: "Warning"
+        }) }}
+
+        <h2 class="govuk-heading-m">Get help with your claim</h2>
+        <p class="govuk-body">If you need help with your claim, contact the Rural Payments Agency and give your agreement number.</p>
+        {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Claim complete - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({
+      titleText: "Claim complete",
+      html: "Your claim number<br><strong id=reference>" + reference + "</strong>"
+    }) }}
+      <p id="message" class="govuk-!-margin-top-6">You have successfully submitted your claim for an {{claimTypeText}}.</p>
+      <p>We've sent you a confirmation email.</p>
+      <h2 class="govuk-heading-m">What happens next</h2>
+      <p>The Rural Payments Agency (RPA) may contact you to request the summary the vet gave you.</p>
+      <p id="amount">We will process your claim within 28 days. If your claim is successful, you will get £{{amount}}.</p>
+      <p>Go to <a class="govuk-link" rel="external" href={{ claimDashboard }}>manage your claims</a> to make another claim or view:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>details of your claims</li>
+        <li>service guidance</li>
+        <li>your terms and conditions</li>
+      </ul>
+      <p>If you want to arrange another review or follow-up, read about when to have a <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/plan-an-animal-health-and-welfare-review">review</a> and when to have a <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/plan-when-to-have-an-endemic-disease-follow-up">follow-up</a>.</p>
+      <h2 class="govuk-heading-m">Get help with your claim</h2>
+      <p>If you need to change the details of your claim, contact the RPA and give your agreement number.</p>
+      {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+      <br/>
+      <p>
+        <a class='govuk-link' rel="external noopener noreferrer" target={{ claimSurveyUri }} href={{ claimSurveyUri }}>
+        What did you think of this service?
+      </a>
+      (giving feedback takes about 5 minutes)
+    </p>
+    </div>
+  </div>
+{% endblock %}

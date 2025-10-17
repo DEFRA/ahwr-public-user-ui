@@ -1,0 +1,66 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}{{ titleText }} - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+	  attributes: {id: "back"}
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% if errorMessage %}
+      {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList:[{
+            text: errorMessage.text,
+            href: errorMessage.href
+        }]
+      }) }}
+    {% endif %}
+
+    <form method="POST" autocomplete="off" novalidate="novalidate">
+      <input type="hidden" name="crumb" value="{{crumb}}"/>
+      {{ 
+        govukRadios({
+          id: "piHunt",
+          name: "piHunt",
+          classes: 'govuk-radios--inline',
+          fieldset:{
+            legend:{
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l",
+              text: titleText
+            }
+          }, 
+          hint: {
+            text: "You can find this on the summary the vet gave you."
+          }, 
+          errorMessage: errorMessage,
+          items: [
+            {
+              value:"yes",
+              text: "Yes",
+              checked: previousAnswer == "yes"
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: previousAnswer == "no"
+            }
+          ]
+        })
+      }}
+      {{ govukButton({
+        text: "Continue",
+        attributes: {id: "btnContinue"},
+        preventDoubleClick: true
+      }) }}
+    </form>
+  </div>
+</div>
+{% endblock %}

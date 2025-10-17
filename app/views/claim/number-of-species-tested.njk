@@ -1,0 +1,48 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}{{questionText}} - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href:backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-1">{{questionText}}</h1>
+        <p class="govuk-hint">You can find this on the summary the vet gave you.</p>
+        {{ govukInput({
+        label: {
+          text: "Enter the number of animals samples were taken from",
+          isPageHeading: false
+        },
+        classes: "govuk-input govuk-input--width-10",
+        id: "numberAnimalsTested",
+        name: "numberAnimalsTested",
+        value: numberAnimalsTested,
+        errorMessage: errorMessage
+      }) }}
+        {{ govukButton({
+          text: "Continue",
+          attributes: {id: "btnContinue"},
+          preventDoubleClick: true
+        }) 
+      }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

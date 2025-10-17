@@ -1,0 +1,97 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Is this the same {{herdOrFlock}} you have previously claimed for? - {{serviceName}} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Is this the same {{herdOrFlock}} you have previously claimed for?</h1>
+        <p class="govuk-hint govuk-!-margin-bottom-7">You can now have reviews and follow-ups on more than one {{herdOrFlock}}.</p>
+        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Your last claim for this species:</p>
+        {{ 
+          govukSummaryList({
+            rows: [
+              {
+                key: {
+                  text: "Species"
+                },
+                value: {
+                  text: species | title 
+                }
+              },
+              {
+                key: {
+                  text: "Type"
+                },
+                value: {
+                  text: claimType
+                }
+              },
+              {
+                key: {
+                  text: "Last visit date"
+                },
+                value: {
+                  text: lastVisitDate
+                }
+              },
+              {
+                key: {
+                  text: "Claim date"
+                },
+                value: {
+                  text: claimDate
+                }
+              }
+            ]
+          }) 
+        }}
+        {{ 
+          govukRadios({
+            id: "herdSame",
+            name: "herdSame",
+            errorMessage: errorMessage,
+            items: [
+              {
+                value: "yes",
+                text: "Yes, it's the same",
+                checked: herdSame == "yes"
+              },
+              {
+                value: "no",
+                text: "No, it's a different " + herdOrFlock,
+                checked: herdSame == "no"
+              }
+            ]
+          })
+        }}
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: { id: "btnContinue" },
+          preventDoubleClick: true
+        }) 
+      }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

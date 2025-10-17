@@ -1,0 +1,54 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Enter the CPH number for this {{ herdOrFlock }} - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Enter the County Parish Holding (CPH) number for this {{ herdOrFlock }}</h1>
+      <p class="govuk-hint govuk-!-margin-bottom-7">Tell us the CPH for where this {{ herdOrFlock }} is kept.</p>
+
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {{ govukInput({
+            label: {
+                text: "CPH number for this " ~  herdOrFlock,
+                classes: "govuk-label--m "
+            },
+            hint: {
+                text: "CPH format should be nn/nnn/nnnn"
+            },
+            classes: "govuk-input",
+            id: "herdCph",
+            name: "herdCph",
+            value: herdCph,
+            errorMessage: errorMessage
+            }) 
+        }}
+        {{ govukButton({
+            text: "Continue",
+            attributes: { id: "btnContinue" },
+            preventDoubleClick: true
+          }) 
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
