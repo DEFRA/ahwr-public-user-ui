@@ -1,19 +1,16 @@
 import Joi from 'joi'
-import links from '../../config/routes.js'
-import { sheepTestResultsType, sheepTestTypes } from '../../constants/sheep-test-types.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { getErrorResultObject, getErrorResultString } from '../utils/disease-type-test-result.js'
 import { radios } from '../models/form-component/radios.js'
 import HttpStatus from 'http-status-codes'
-import { prefixUrl } from '../utils/page-utils.js'
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { sheepTestResultsType, sheepTestTypes } from "../../constants/claim-constants.js";
 
 const MAX_ALLOWED_CHARS = 500
 const VALIDATOR_PATTERN = /^(?!.*\s{2,})[a-zA-Z0-9\s-]{1,500}$/
-const { endemicsSheepTests, endemicsSheepTestResults, endemicsCheckAnswers } = links
 
-const pageUrl = prefixUrl(endemicsSheepTestResults)
 const routes = (request) => {
-  const { sheepTestResults } = getEndemicsClaim(request)
+  const { sheepTestResults } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
   const currentDiseaseTypeIndex = sheepTestResults.findIndex((test) => test.isCurrentPage)
   const previousDiseaseTypeIndex = currentDiseaseTypeIndex - 1
@@ -24,9 +21,9 @@ const routes = (request) => {
   const nextPageDiseaseType = nextPageDiseaseTypeIndex <= sheepTestResults.length - 1 && sheepTestResults[nextPageDiseaseTypeIndex]?.diseaseType
 
   return {
-    currentPage: prefixUrl(`${endemicsSheepTestResults}?diseaseType=${currentDiseaseType}`),
-    nextPage: nextPageDiseaseType ? prefixUrl(`${endemicsSheepTestResults}?diseaseType=${nextPageDiseaseType}`) : prefixUrl(endemicsCheckAnswers),
-    previousPage: previousDiseaseType ? prefixUrl(`${endemicsSheepTestResults}?diseaseType=${previousDiseaseType}`) : prefixUrl(endemicsSheepTests)
+    currentPage: `${claimRoutes.sheepTestResults}?diseaseType=${currentDiseaseType}`,
+    nextPage: nextPageDiseaseType ? `${claimRoutes.sheepTestResults}?diseaseType=${nextPageDiseaseType}` : claimRoutes.checkAnswers,
+    previousPage: previousDiseaseType ? `${claimRoutes.sheepTestResults}?diseaseType=${previousDiseaseType}` : claimRoutes.sheepTests
   }
 }
 
@@ -49,7 +46,7 @@ const title = (diseaseType) => `What was the ${diseaseType} result?`
 const inputText = (id, text, value, classes, errorMessage) => ({ id, name: id, label: { text }, value, classes, errorMessage })
 
 const getPageContent = (request, data) => {
-  const { sheepEndemicsPackage, sheepTestResults } = getEndemicsClaim(request)
+  const { sheepEndemicsPackage, sheepTestResults } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { diseaseType, result } = sheepTestResults.find((test) => test.isCurrentPage)
   const testResultOptions = sheepTestResultsType[diseaseType]
 
@@ -241,20 +238,21 @@ const getEmptyItems = (items, itemType) => {
 
 const getHandler = {
   method: 'GET',
-  path: pageUrl,
+  path: claimRoutes.sheepTestResults,
   options: {
     handler: async (request, h) => {
-      const endemicsClaim = getEndemicsClaim(request)
+      const endemicsClaim = getSessionData(request, sessionEntryKeys.endemicsClaim);
       if (request.query?.diseaseType && endemicsClaim?.sheepTestResults) {
         const updatedSheepTestResults = endemicsClaim?.sheepTestResults.map((test) => test.diseaseType === request?.query?.diseaseType ? { ...test, isCurrentPage: true } : { ...test, isCurrentPage: false })
 
-        setEndemicsClaim(request, 'sheepTestResults', updatedSheepTestResults)
+        // TODO: This should emit event
+        setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.sheepTestResults, updatedSheepTestResults)
       }
 
       const pageContent = getPageContent(request)
       const { previousPage } = routes(request)
 
-      return h.view(endemicsSheepTestResults, {
+      return h.view(claimViews.sheepTestResults, {
         ...pageContent,
         backLink: previousPage
       })
@@ -264,12 +262,12 @@ const getHandler = {
 
 const postHandler = {
   method: 'POST',
-  path: pageUrl,
+  path: claimRoutes.sheepTestResults,
   options: {
     handler: async (request, h) => {
       const { payload } = request
       const { nextPage, previousPage } = routes(request)
-      const { sheepTestResults } = getEndemicsClaim(request)
+      const { sheepTestResults } = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const diseaseTypeIndex = sheepTestResults.findIndex((test) => test.isCurrentPage)
       const diseaseType = sheepTestResults[diseaseTypeIndex]
       const updatedSheepTestResults = [...sheepTestResults]
@@ -280,14 +278,15 @@ const postHandler = {
         const errorList = [{ text: 'Select a result', href: `#${TEST_RESULT_ELEMENT_ID}` }]
 
         if (!payload?.testResult) {
-          return h.view(endemicsSheepTestResults, { ...pageContent, backLink, errorList }).code(HttpStatus.BAD_REQUEST).takeover()
+          return h.view(claimViews.sheepTestResults, { ...pageContent, backLink, errorList }).code(HttpStatus.BAD_REQUEST).takeover()
         }
 
         diseaseType.result = payload.testResult
 
         updatedSheepTestResults[diseaseTypeIndex] = diseaseType
 
-        setEndemicsClaim(request, 'sheepTestResults', updatedSheepTestResults)
+        // TODO: This should emit event
+        setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.sheepTestResults, updatedSheepTestResults)
 
         return h.redirect(nextPage)
       }
@@ -304,7 +303,7 @@ const postHandler = {
       if (hasError([diseaseTypeValidationError, testResultValidationError])) {
         const pageContent = getPageContent(request, results)
 
-        return h.view(endemicsSheepTestResults, {
+        return h.view(claimViews.sheepTestResults, {
           ...pageContent,
           backLink: previousPage,
           errorList: getErrorList(diseaseTypeValidationError, testResultValidationError)
@@ -323,7 +322,8 @@ const postHandler = {
 
       updatedSheepTestResults[diseaseTypeIndex] = diseaseType
 
-      setEndemicsClaim(request, 'sheepTestResults', updatedSheepTestResults)
+      // TODO: This should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.sheepTestResults, updatedSheepTestResults)
 
       if (hasError([diseaseTypeErrorList.length, testResultEmptyItems.length, newDiseaseTypeErrorMessage])) {
         const pageContent = getPageContent(request, {
@@ -331,7 +331,7 @@ const postHandler = {
           testResult: newDiseaseTypeErrorMessage?.testResult
         })
 
-        return h.view(endemicsSheepTestResults, {
+        return h.view(claimViews.sheepTestResults, {
           ...pageContent,
           backLink: previousPage,
           errorList: [
@@ -347,7 +347,7 @@ const postHandler = {
         return h.redirect(nextPage)
       }
 
-      return h.view(endemicsSheepTestResults, {
+      return h.view(claimViews.sheepTestResults, {
         ...getPageContent(request),
         backLink: previousPage
       })

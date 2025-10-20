@@ -1,30 +1,19 @@
 import Joi from 'joi'
-import links from '../../config/routes.js'
-import { sessionKeys } from '../../session/keys.js'
-import { getReviewType } from '../../lib/get-review-type.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getEndemicsClaimDetails, getLivestockTypes, getReviewType, getTestResult } from "../../lib/utils.js";
 import { getSpeciesEligibleNumberForDisplay } from '../../lib/display-helpers.js'
 import { getYesNoRadios } from '../models/form-component/yes-no-radios.js'
-import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { getLivestockTypes } from '../../lib/get-livestock-types.js'
-import { getTestResult } from '../../lib/get-test-result.js'
-import { isMultipleHerdsUserJourney, isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
-import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
+import {
+  getHerdBackLink,
+  isMultipleHerdsUserJourney,
+  isVisitDateAfterPIHuntAndDairyGoLive
+} from "../../lib/context-helper.js";
 import HttpStatus from 'http-status-codes'
-import { getEndemicsClaimDetails, prefixUrl } from '../utils/page-utils.js'
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import { claimRoutes, claimViews } from "../../constants/routes.js";
 
-const {
-  endemicsSpeciesNumbers,
-  endemicsNumberOfSpeciesTested,
-  endemicsSpeciesNumbersException,
-  endemicsVetName,
-  endemicsDateOfTesting,
-  endemicsDateOfVisit
-} = links
-const { speciesNumbers, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClaim
 
 const backLink = (request) => {
-  const { reviewTestResults, typeOfLivestock, typeOfReview, dateOfVisit, previousClaims, latestEndemicsApplication } = getEndemicsClaim(request)
+  const { reviewTestResults, typeOfLivestock, typeOfReview, dateOfVisit, previousClaims, latestEndemicsApplication } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isBeefOrDairyEndemics, isBeef, isDairy } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
   const { isNegative } = getTestResult(reviewTestResults)
 
@@ -32,16 +21,17 @@ const backLink = (request) => {
     return getHerdBackLink(typeOfLivestock, previousClaims)
   }
 
-  if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isBeefOrDairyEndemics) {
-    return prefixUrl(endemicsDateOfVisit)
+  if (isVisitDateAfterPIHuntAndDairyGoLive(getSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.dateOfVisit))
+    && isBeefOrDairyEndemics) {
+    return claimRoutes.dateOfVisit;
   }
   if ((isDairy || isBeef) && isNegative) {
-    return prefixUrl(endemicsDateOfVisit)
+    return claimRoutes.dateOfVisit;
   }
 
-  return prefixUrl(endemicsDateOfTesting)
+  return claimRoutes.dateOfTesting;
 }
-const pageUrl = prefixUrl(endemicsSpeciesNumbers)
+
 const hintHtml = 'You can find this on the summary the vet gave you.'
 
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintText: hintHtml }
@@ -70,10 +60,10 @@ const legendText = (speciesEligibleNumberForDisplay, typeOfReview, typeOfLivesto
 
 const getHandler = {
   method: 'GET',
-  path: pageUrl,
+  path: claimRoutes.speciesNumbers,
   options: {
     handler: async (request, h) => {
-      const claim = getEndemicsClaim(request)
+      const claim = getSessionData(request, sessionEntryKeys.endemicsClaim)
 
       if (!claim) {
         throw new Error('No claim found in session')
@@ -83,13 +73,13 @@ const getHandler = {
 
       const questionText = legendText(speciesEligibleNumberForDisplay, claim.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication)
 
-      return h.view(endemicsSpeciesNumbers, {
+      return h.view(claimViews.speciesNumbers, {
         backLink: backLink(request),
         customisedTitle: questionText,
         ...getYesNoRadios(
           questionText,
-          speciesNumbers,
-          getEndemicsClaim(request, speciesNumbers),
+          sessionKeys.endemicsClaim.speciesNumbers,
+          claim.speciesNumbers,
           undefined,
           radioOptions
         )
@@ -100,15 +90,15 @@ const getHandler = {
 
 const postHandler = {
   method: 'POST',
-  path: pageUrl,
+  path: claimRoutes.speciesNumbers,
   options: {
     validate: {
       payload: Joi.object({
-        [speciesNumbers]: Joi.string().valid('yes', 'no').required()
+        [sessionKeys.endemicsClaim.speciesNumbers]: Joi.string().valid('yes', 'no').required()
       }),
       failAction: (request, h, err) => {
         request.logger.setBindings({ err })
-        const claim = getEndemicsClaim(request)
+        const claim = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
         if (!claim) {
           throw new Error('No claim found in session')
@@ -116,13 +106,13 @@ const postHandler = {
 
         const speciesEligibleNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
 
-        return h.view(endemicsSpeciesNumbers, {
+        return h.view(claimViews.speciesNumbers, {
           backLink: backLink(request),
           errorMessage: { text: errorMessageText(claim.typeOfReview, speciesEligibleNumberForDisplay, claim.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication) },
           ...getYesNoRadios(
             legendText(speciesEligibleNumberForDisplay, claim.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication),
-            speciesNumbers,
-            getEndemicsClaim(request, speciesNumbers),
+            sessionKeys.endemicsClaim.speciesNumbers,
+            claim.speciesNumbers,
             errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication),
             radioOptions
           )
@@ -132,23 +122,25 @@ const postHandler = {
       }
     },
     handler: async (request, h) => {
-      const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+      const { typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
-      const answer = request.payload[speciesNumbers]
-      setEndemicsClaim(request, speciesNumbers, answer)
+      const answer = request.payload[sessionKeys.endemicsClaim.speciesNumbers]
+      // TODO: Should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.speciesNumbers, answer);
 
       if (answer === 'yes') {
         if (isDairy || (isBeef && isEndemicsFollowUp)) {
-          return h.redirect(prefixUrl(endemicsVetName))
+          return h.redirect(claimRoutes.vetName)
         }
 
-        return h.redirect(prefixUrl(endemicsNumberOfSpeciesTested))
+        return h.redirect(claimRoutes.numberOfSpeciesTested)
       }
 
-      raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
-      return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, changeYourAnswerText: sheepNumbersExceptionsText[typeOfReview], isReview })
+      // TODO: Raise event
+      // raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
+      return h.view(claimViews.speciesNumbersException, { backLink: claimRoutes.speciesNumbers, changeYourAnswerText: sheepNumbersExceptionsText[typeOfReview], isReview })
         .code(HttpStatus.BAD_REQUEST)
         .takeover()
     }

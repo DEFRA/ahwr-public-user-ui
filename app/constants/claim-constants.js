@@ -12,7 +12,7 @@ export const claimConstants = {
     pigs: "pigs",
     sheep: "sheep",
   },
-  claimType: {
+  claimType: { // TODO These won;t work as the data will be using REVIEW | FOLLOW_UP
     review: "R",
     endemics: "E",
     vetVisits: "VV",

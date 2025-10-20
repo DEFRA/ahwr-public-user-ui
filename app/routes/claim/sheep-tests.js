@@ -1,27 +1,20 @@
-import links from '../../config/routes.js'
-import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sheepTestTypes } from '../../constants/sheep-test-types.js'
 import HttpStatus from 'http-status-codes'
-import { prefixUrl } from '../utils/page-utils.js'
+import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
 
-const { sheepTests: sheepTestsKey, sheepTestResults: sheepTestResultsKey } = sessionKeys.endemicsClaim
-const { endemicsSheepEndemicsPackage, endemicsSheepTests, endemicsSheepTestResults } = links
-
-const pageUrl = prefixUrl(endemicsSheepTests)
-const backLink = prefixUrl(endemicsSheepEndemicsPackage)
 
 const getHandler = {
   method: 'GET',
-  path: pageUrl,
+  path: claimRoutes.sheepTests,
   options: {
     handler: async (request, h) => {
-      const sessionEndemicsClaim = getEndemicsClaim(request)
+      const sessionEndemicsClaim = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const sheepTestCheckboxItems = sheepTestTypes[sessionEndemicsClaim?.sheepEndemicsPackage].map((test) => ({ ...test, checked: sessionEndemicsClaim.sheepTests?.includes(test.value) }))
 
-      return h.view(endemicsSheepTests, {
+      return h.view(claimViews.sheepTests, {
         sheepTestCheckboxItems,
-        backLink
+        backLink: claimRoutes.sheepEndemicsPackage
       })
     }
   }
@@ -29,20 +22,22 @@ const getHandler = {
 
 const postHandler = {
   method: 'POST',
-  path: pageUrl,
+  path: claimRoutes.sheepTests,
   options: {
     handler: async (request, h) => {
       const { sheepTests } = request.payload
-      const session = getEndemicsClaim(request)
-      setEndemicsClaim(request, sheepTestsKey, sheepTests)
+      const session = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      // TODO: Should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.sheepTests, sheepTests);
 
       if (!sheepTests) {
-        setEndemicsClaim(request, sheepTestResultsKey, undefined)
+        // TODO: Should emit event
+        setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.sheepTestResults, undefined);
         const sheepTestCheckboxItems = sheepTestTypes[session?.sheepEndemicsPackage].map((test) => ({ ...test, checked: sheepTests?.includes(test.value) }))
 
-        return h.view(endemicsSheepTests, {
+        return h.view(claimViews.sheepTests, {
           sheepTestCheckboxItems,
-          backLink,
+          backLink: claimRoutes.sheepEndemicsPackage,
           errorMessage: {
             text: 'Select a disease or condition',
             href: '#sheepTests'
@@ -53,9 +48,9 @@ const postHandler = {
       if (sheepTests === 'other') {
         const sheepTestCheckboxItems = sheepTestTypes[session?.sheepEndemicsPackage].map((test) => ({ ...test, checked: sheepTests?.includes(test.value) }))
 
-        return h.view(endemicsSheepTests, {
+        return h.view(claimViews.sheepTests, {
           sheepTestCheckboxItems,
-          backLink,
+          backLink: claimRoutes.sheepEndemicsPackage,
           errorMessage: {
             text: 'Select all diseases or conditions tested for in this package',
             href: '#sheepTests'
@@ -63,10 +58,11 @@ const postHandler = {
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
-      setEndemicsClaim(request, sheepTestResultsKey,
-        [...(typeof sheepTests === 'object' ? sheepTests : [sheepTests])]
-          .map((test, index) => ({ diseaseType: test, result: session?.sheepTestResults?.find(item => item.diseaseType === test)?.result || '', isCurrentPage: index === 0 })))
-      return h.redirect(prefixUrl(endemicsSheepTestResults))
+      const sheepTestResultValue = [...(typeof sheepTests === 'object' ? sheepTests : [sheepTests])]
+        .map((test, index) => ({ diseaseType: test, result: session?.sheepTestResults?.find(item => item.diseaseType === test)?.result || '', isCurrentPage: index === 0 }))
+      // TODO: Should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.sheepTestResults, sheepTestResultValue);
+      return h.redirect(claimRoutes.sheepTestResults)
     }
   }
 }

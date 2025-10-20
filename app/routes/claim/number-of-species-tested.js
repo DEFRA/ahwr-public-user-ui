@@ -166,4 +166,4 @@ const postHandler = {
   },
 };
 
-export const numberOfSpeciesHandlers = [getHandler, postHandler];
+export const numberOfSpeciesTestedHandlers = [getHandler, postHandler];

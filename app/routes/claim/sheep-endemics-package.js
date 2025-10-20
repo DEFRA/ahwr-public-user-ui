@@ -1,14 +1,9 @@
 import Joi from 'joi'
-import links from '../../config/routes.js'
-import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { radios } from '../models/form-component/radios.js'
 import HttpStatus from 'http-status-codes'
-import { prefixUrl } from '../utils/page-utils.js'
+import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
 
-const { endemicsSheepEndemicsPackage, endemicsVetRCVS, endemicsSheepTests } = links
-const { endemicsClaim: { sheepEndemicsPackage: sheepEndemicsPackageKey } } = sessionKeys
-const pageUrl = prefixUrl(endemicsSheepEndemicsPackage)
 const options = {
   hintHtml: 'You can find this on the summary the vet gave you. The diseases the vet might take samples to test for are listed with each package.'
 }
@@ -59,24 +54,24 @@ const sheepRadioOptions = [{
 
 const getHandler = {
   method: 'GET',
-  path: pageUrl,
+  path: claimRoutes.sheepEndemicsPackage,
   options: {
     handler: async (request, h) => {
-      const session = getEndemicsClaim(request)
+      const session = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const sheepEndemicsPackageRadios = radios(pageHeading, 'sheepEndemicsPackage', undefined, options)(
         sheepRadioOptions.map((option) => ({
           ...option,
-          checked: session?.sheepEndemicsPackage === option.value
+          checked: session.sheepEndemicsPackage === option.value
         })))
-      const backLink = prefixUrl(endemicsVetRCVS)
-      return h.view(endemicsSheepEndemicsPackage, { backLink, pageHeading, sheepEndemicsPackage: session?.sheepEndemicsPackage, ...sheepEndemicsPackageRadios })
+      const backLink = claimRoutes.vetRcvs
+      return h.view(claimViews.sheepEndemicsPackage, { backLink, pageHeading, sheepEndemicsPackage: session.sheepEndemicsPackage, ...sheepEndemicsPackageRadios })
     }
   }
 }
 
 const postHandler = {
   method: 'POST',
-  path: pageUrl,
+  path: claimRoutes.sheepEndemicsPackage,
   options: {
     validate: {
       payload: Joi.object({
@@ -91,10 +86,10 @@ const postHandler = {
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
         const sheepEndemicsPackageRadios = radios(pageHeading, 'sheepEndemicsPackage', 'Select a sheep health package', options)(sheepRadioOptions)
-        const backLink = prefixUrl(endemicsVetRCVS)
-        return h.view(endemicsSheepEndemicsPackage, {
+
+        return h.view(claimViews.sheepEndemicsPackage, {
           ...request.payload,
-          backLink,
+          backLink: claimRoutes.vetRcvs,
           pageHeading,
           ...sheepEndemicsPackageRadios,
           errorMessage: {
@@ -106,15 +101,16 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { sheepEndemicsPackage } = request.payload
-      const session = getEndemicsClaim(request)
-      if (session?.sheepEndemicsPackage !== sheepEndemicsPackage) {
-        setEndemicsClaim(request, 'sheepTests', undefined)
-        setEndemicsClaim(request, 'sheepTestResults', undefined)
+      const session = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      if (session.sheepEndemicsPackage !== sheepEndemicsPackage) {
+        setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.sheepTests, undefined)
+        setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.sheepTestResults, undefined)
+        // TODO : These two previous emitted events on change
       }
+      // TODO: and this
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.sheepEndemicsPackage, sheepEndemicsPackage)
 
-      setEndemicsClaim(request, sheepEndemicsPackageKey, sheepEndemicsPackage)
-
-      return h.redirect(prefixUrl(endemicsSheepTests))
+      return h.redirect(claimRoutes.sheepTests)
     }
   }
 }
