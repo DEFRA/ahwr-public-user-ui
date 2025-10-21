@@ -1,5 +1,5 @@
 import { applicationType, userType } from "../constants/constants.js";
-import { isWithin10Months } from "../lib/utils.js";
+import { isWithin10MonthsFromNow } from "./utils.js";
 
 export function getUserTypeByApplication(applicationsForSbi) {
   const oldWorldApplications = applicationsForSbi.filter(
@@ -11,7 +11,7 @@ export function getUserTypeByApplication(applicationsForSbi) {
   }
 
   const latestApplication = applicationsForSbi[0];
-  const latestApplicationWithinLastTenMonths = isWithin10Months(latestApplication.data.visitDate);
+  const latestApplicationWithinLastTenMonths = isWithin10MonthsFromNow(latestApplication.data.visitDate);
 
   const closedStatuses = ["WITHDRAWN", "REJECTED", "NOT_AGREED"];
 

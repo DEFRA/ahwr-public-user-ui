@@ -47,7 +47,6 @@ export const getConfig = () => {
     port: joi.number().required(),
     host: joi.string().required(),
     serviceUri: joi.string().uri(),
-    claimServiceUri: joi.string().uri(),
     serviceName: joi.string(),
     useRedis: joi.boolean(),
     customerSurvey: {
@@ -109,7 +108,6 @@ export const getConfig = () => {
     port: Number.parseInt(process.env.PORT ?? "3000", 10),
     host: "0.0.0.0",
     serviceUri: process.env.SERVICE_URI,
-    claimServiceUri: process.env.CLAIM_SERVICE_URI,
     useRedis: process.env.NODE_ENV !== "test",
     serviceName: "Get funding to improve animal health and welfare",
     customerSurvey: {

@@ -168,6 +168,7 @@ const getHandler = {
         previousClaims,
         typeOfLivestock,
       } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+
       const { isReview } = getReviewType(typeOfReview);
       const reviewOrFollowUpText = isReview ? "review" : "follow-up";
 

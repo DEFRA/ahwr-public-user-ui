@@ -1,8 +1,3 @@
-import { config } from "../config/index.js";
-
-// TODO - delete this
-export const claimServiceUri = config.claimServiceUri;
-
 export const dashboardRoutes = { manageYourClaims: "vet-visits", checkDetails: "check-details" };
 
 export const applyRoutes = {

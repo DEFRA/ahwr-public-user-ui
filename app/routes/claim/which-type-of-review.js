@@ -32,7 +32,6 @@ export const whichReviewHandlers = [
           previousAnswer: getPreviousAnswer(typeOfReview),
         });
       },
-      tags: ["ms"],
     },
   },
   {
@@ -78,7 +77,7 @@ export const whichReviewHandlers = [
             getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock);
 
           if (!prevReviewClaim) {
-            // TODO: Raise inalid data event
+            // TODO: Raise invalid data event
             // raiseInvalidDataEvent(
             //   request,
             //   typeOfReviewKey,

@@ -138,7 +138,7 @@ const createdHerdRowObject = (keyText, htmlValue, href, visuallyHiddenText) => {
 
 const getHandler = {
   method: "GET",
-  path: "/checkAnswers",
+  path: claimRoutes.checkAnswers,
   options: {
     handler: async (request, h) => {
       const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -394,7 +394,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/check-answers",
+  path: claimRoutes.checkAnswers,
   options: {
     handler: async (request, h) => {
       const {

@@ -16,7 +16,7 @@ export const sessionKeys = {
   endemicsClaim: {
     organisation: "organisation",
     vetsName: "vetsName",
-    typeOfReview: "livestock",
+    typeOfReview: "typeOfReview",
     dateOfVisit: "dateOfVisit",
     dateOfTesting: "dateOfTesting",
     vetRCVSNumber: "vetRCVSNumber",

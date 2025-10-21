@@ -142,7 +142,7 @@ test.skip("get /vet-visits: new world, multiple businesses", async () => {
 
   expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
     "href",
-    `${config.claimServiceUri}/which-species`,
+    `claim/which-species`,
   );
 
   expect(
@@ -285,7 +285,7 @@ test.skip("get /vet-visits: new world, claim has a herd", async () => {
 
   expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
     "href",
-    `${config.claimServiceUri}/which-species`,
+    `claim/which-species`,
   );
 
   expect(

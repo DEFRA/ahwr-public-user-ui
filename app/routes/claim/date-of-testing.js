@@ -376,8 +376,8 @@ const postHandler = {
         reviewHerdId,
       );
 
-      const dateOfTestingBeforePreviousReviewDateOfVisit =
-        new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit);
+      const dateOfTestingBeforePreviousReviewDateOfVisit = previousReviewClaim ?
+        new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit) : false;
 
       if (
         typeOfReview === claimConstants.claimType.endemics &&

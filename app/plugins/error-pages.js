@@ -24,6 +24,8 @@ export const errorPagesPlugin = {
             return h.view("error-pages/4xx", { payload }).code(statusCode);
           }
 
+          console.log(response);
+
           request.logger.error(
             {
               statusCode,

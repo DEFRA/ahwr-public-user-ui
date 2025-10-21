@@ -72,7 +72,7 @@ export const resetEndemicsClaimSession = async (request, applicationRef, claimRe
     sessionKeys.endemicsClaim.reference,
     tempClaimRef,
   );
-  refreshClaims(request, applicationRef);
+  await refreshClaims(request, applicationRef);
 };
 
 export function canChangeSpecies(request, typeOfReview) {

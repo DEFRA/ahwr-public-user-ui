@@ -60,7 +60,10 @@ export async function isURNUnique (data, logger) {
       json: true
     })
 
-    return payload
+    // return payload
+    // TODO: when backend is fixed for this, remove the lines below
+    console.log(payload)
+    return { isURNUnique: true }
   } catch (err) {
     logger.setBindings({ err, endpoint })
     // appInsights.defaultClient.trackException({ exception: err })

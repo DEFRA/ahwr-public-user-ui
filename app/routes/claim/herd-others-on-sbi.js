@@ -88,7 +88,7 @@ const postHandler = {
         // const { herdId, herdVersion } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
 
-        return h.redirect(claimRoutes.checkHerdDetailsPageUrl);
+        return h.redirect(claimRoutes.checkHerdDetails);
       }
 
       return h.redirect(claimRoutes.enterHerdDetails);
