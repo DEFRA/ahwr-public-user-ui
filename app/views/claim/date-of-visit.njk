@@ -1,0 +1,97 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorSummary.length %}Error: {% endif %}Date of {{ reviewOrFollowUpText }} - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorSummary.length %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: errorSummary
+        }) }}
+      {% endif %}
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+
+        <div id="when-was-the-vet-visit" class="govuk-form-group {% if dateOfReview.errorMessage %}govuk-form-group--error{% endif %}">
+          <fieldset class="govuk-fieldset" aria-describedby="date-of-visit-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <h1 class="govuk-fieldset__heading">Date of {{ reviewOrFollowUpText }}</h1>
+            </legend>
+            <p id="date-of-visit-hint" class="govuk-hint">This is the date the vet last visited the farm for this {{ reviewOrFollowUpText }}.
+        You can find it on the summary the vet gave you.</p>
+                {% if inputsInError.day %}
+                    {% set dateOfVisitDay = {
+                        name: 'day',
+                        value: dateOfVisit.day,
+                        classes: 'govuk-input--width-2 govuk-input--error'
+                    } %}
+                {% else %}
+                    {% set dateOfVisitDay = {
+                        name: 'day',
+                        value: dateOfVisit.day,
+                        classes: 'govuk-input--width-2'
+                    } %}
+                {% endif %}
+
+                {% if inputsInError.month %}
+                    {% set dateOfVisitMonth = {
+                        name: 'month',
+                        value: dateOfVisit.month,
+                        classes: 'govuk-input--width-2 govuk-input--error'
+                    } %}
+                {% else %}
+                    {% set dateOfVisitMonth = {
+                        name: 'month',
+                        value: dateOfVisit.month,
+                        classes: 'govuk-input--width-2'
+                    } %}
+                {% endif %}
+
+                {% if inputsInError.year %}
+                    {% set dateOfVisitYear = {
+                        name: 'year',
+                        value: dateOfVisit.year,
+                        classes: 'govuk-input--width-4 govuk-input--error'
+                    } %}
+                {% else %}
+                {% set dateOfVisitYear = {
+                    name: 'year',
+                    value: dateOfVisit.year,
+                    classes: 'govuk-input--width-4'
+                } %}
+                {% endif %}
+            {{ govukDateInput({
+            id: "visit-date",
+            namePrefix: "visit-date",
+            hint: {
+              html: "For example, 27 3 2022",
+              id: "date-of-visit-hint"
+            },
+            errorMessage: dateOfVisit.errorMessage,
+            items: [dateOfVisitDay, dateOfVisitMonth, dateOfVisitYear]
+          }) }}
+          </fieldset>
+        </div>
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "continue"
+          },
+          preventDoubleClick: true
+        }) }}
+
+      </form>
+    </div>
+  </div>
+{% endblock %}

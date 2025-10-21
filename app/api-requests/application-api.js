@@ -27,3 +27,25 @@ export const createApplication = async (application, logger) => {
     throw err;
   }
 };
+
+export const getHerds = async (_applicationReference, _typeOfLivestock, _logger) => {
+  // TODO - make this call real
+
+  // const endpoint = `${config.applicationApiUri}/application/${applicationReference}/herds?species=${typeOfLivestock}`
+
+  // try {
+  //   const { payload } = await Wreck.get(
+  //     endpoint,
+  //     { json: true }
+  //   )
+  //   return payload
+  // } catch (err) {
+  //   if (err.output.statusCode === StatusCodes.NOT_FOUND) {
+  //     return []
+  //   }
+  //   logger.setBindings({ err })
+  //   throw err
+  // }
+
+  return [];
+};

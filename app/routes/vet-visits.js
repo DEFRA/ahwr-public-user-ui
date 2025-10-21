@@ -1,20 +1,17 @@
 import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../session/index.js";
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
-import {
-  getClaimsByApplicationReference,
-  isWithinLastTenMonths,
-} from "../api-requests/claim-api.js";
+import { getClaimsByApplicationReference } from "../api-requests/claim-api.js";
 import nunjucks from "nunjucks";
 import { applicationType, claimType } from "../constants/constants.js";
 import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
-import { claimServiceUri } from "../config/routes.js";
 import { config } from "../config/index.js";
 import { showMultiHerdsBanner } from "./utils/show-multi-herds-banner.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
+import { isWithin10MonthsFromNow } from "../lib/utils.js";
+import { claimRoutes } from "../constants/routes.js";
 
 const { latestTermsAndConditionsUri } = config;
 
-const claimServiceRedirectUri = `${claimServiceUri}/which-species`;
 const centringClass = "vertical-middle";
 
 const createRowsForTable = (claims) => {
@@ -184,7 +181,7 @@ export const vetVisitsHandlers = [
           : [];
 
         const vetVisitApplicationsWithinLastTenMonths = vetVisitApplications.filter((application) =>
-          isWithinLastTenMonths(application?.data?.visitDate),
+          isWithin10MonthsFromNow(application.data.visitDate),
         );
         const allClaims = [...claims, ...vetVisitApplicationsWithinLastTenMonths];
         const isOldWorld = !latestEndemicsApplication;
@@ -195,7 +192,7 @@ export const vetVisitsHandlers = [
         setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.LatestEndemicsApplicationReference,
+          sessionKeys.endemicsClaim.latestEndemicsApplicationReference,
           latestEndemicsApplication?.reference,
         );
 
@@ -217,7 +214,7 @@ export const vetVisitsHandlers = [
           },
           showNotificationBanner,
           attachedToMultipleBusinesses,
-          claimServiceRedirectUri,
+          claimJourneyStartPointUri: claimRoutes.whichSpecies,
           ...organisation,
           ...(latestEndemicsApplication?.reference && {
             reference: latestEndemicsApplication.reference,

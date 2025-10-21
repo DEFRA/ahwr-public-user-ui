@@ -1,0 +1,35 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+      <br>
+      <p class="govuk-body">You must have had the <a href='https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#who-can-get-funding'>minimum number of livestock</a> on the date of the {{'review' if isReview else 'follow-up'}}.</p>
+      <p class="govuk-body">If you had the minimum number, you'll need to go back and change your answer.</p>
+      <p class="govuk-body">
+        <a class="govuk-link" href={{ backLink }}>Change your answer if you had the minimum number of livestock on the date of the {{'review' if isReview else 'follow-up'}}.</a>
+      </p>
+      {{ govukWarningText({
+        text: "Your claim will be checked by our team.",
+        iconFallbackText: "Warning"
+      }) }}
+
+      <h2 class="govuk-heading-m">Get help with your claim</h2>
+      <p class="govuk-body">If you need help with your claim, contact the Rural Payments Agency and give your agreement number.</p>
+      {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+    </div>
+  </div>
+{% endblock %}

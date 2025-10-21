@@ -28,7 +28,7 @@ export const getOrganisationModel = (request, organisation, errorText) => {
     },
     organisation,
     listData: { rows },
-    ...getYesNoRadios(labelText, "confirmCheckDetails", errorText, {
+    ...getYesNoRadios(labelText, "confirmCheckDetails", undefined, errorText, {
       isPageHeading: false,
       legendClasses: "govuk-fieldset__legend--m",
       inline: true,

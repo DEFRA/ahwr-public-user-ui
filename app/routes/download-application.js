@@ -4,9 +4,9 @@ export const downloadApplicationHandlers = {
   handler: async (request, h) => {
     // const { sbi, reference } = request.params;
     // request.logger.setBindings({ sbi, reference });
-    // const { LatestEndemicsApplicationReference, organisation } = getEndemicsClaim(request);
+    // const { latestEndemicsApplicationReference, organisation } = getEndemicsClaim(request);
     // const blobName = `${sbi}/${reference}.pdf`;
-    // if (LatestEndemicsApplicationReference === reference && organisation.sbi === sbi) {
+    // if (latestEndemicsApplicationReference === reference && organisation.sbi === sbi) {
     //   const blobBuffer = await getBlob(blobName);
     //   return h
     //     .response(blobBuffer)

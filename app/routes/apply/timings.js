@@ -5,7 +5,7 @@ import {
   sessionKeys,
 } from "../../session/index.js";
 import { userType } from "../../constants/constants.js";
-import { applyRoutes, applyViews } from "../../config/routes.js";
+import { applyRoutes, applyViews } from "../../constants/routes.js";
 import { preApplyHandler } from "../../lib/pre-apply-handler.js";
 
 export const timingsRouteHandlers = [

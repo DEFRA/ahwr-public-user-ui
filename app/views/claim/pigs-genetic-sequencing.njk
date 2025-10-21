@@ -1,0 +1,62 @@
+{% extends './layouts/layout.njk' %} {% block pageTitle %}{% if errorMessage
+%}Error: {% endif %}What was the result of the genetic sequencing? - {{ serviceName }} - GOV.UK{% endblock
+%} {%block beforeContent %}
+{{
+  govukBackLink({
+    text: "Back",
+    href: backLink
+  })
+}}
+{% endblock %} {% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+    <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+      {% if errorMessage %}
+      {{
+        govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [
+            {
+              text: errorMessage.text,
+              href: "#geneticSequencing"
+            }
+          ]
+        })
+      }}
+      {% endif %}
+      <div class="govuk-grid-row">
+
+        <form method="POST" autocomplete="off" novalidate="novalidate">
+          <input type="hidden" name="crumb" value="{{ crumb }}" />
+          {{
+            govukRadios({
+              id: "geneticSequencing",
+              name: "geneticSequencing",
+              fieldset: {
+                legend: {
+                    text: "What was the result of the genetic sequencing?",
+                    isPageHeading: true,
+                    classes: "govuk-fieldset__legend--l govuk-!-static-margin-bottom-6"
+                }
+              },
+              hint: {
+                text: "You can find this on the summary the vet gave you. Select one option"
+              },
+              errorMessage: errorMessage,
+              items: options
+            })
+          }}
+
+          {{
+            govukButton({
+              text: "Continue",
+              attributes: { id: "btnContinue" },
+              preventDoubleClick: true
+            })
+          }}
+        </form>
+      </div>
+    </div>
+    {% endblock %}
+  </div>
+</div>

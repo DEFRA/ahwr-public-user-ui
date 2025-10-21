@@ -8,7 +8,7 @@ import {
 } from "../../session/index.js";
 import { userType } from "../../constants/constants.js";
 import { config } from "../../config/index.js";
-import { applyRoutes, applyViews } from "../../config/routes.js";
+import { applyRoutes, applyViews } from "../../constants/routes.js";
 import { StatusCodes } from "http-status-codes";
 import { preApplyHandler } from "../../lib/pre-apply-handler.js";
 import { createApplication } from "../../api-requests/application-api.js";
@@ -121,8 +121,8 @@ export const declarationRouteHandlers = [
           );
           setSessionData(
             request,
-            sessionEntryKeys.tempReference,
-            sessionKeys.tempReference,
+            sessionEntryKeys.tempApplicationReference,
+            sessionKeys.tempApplicationReference,
             tempApplicationReference,
           );
 

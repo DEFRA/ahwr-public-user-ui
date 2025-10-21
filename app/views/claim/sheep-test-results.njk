@@ -1,0 +1,114 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorList | length %}Error: {% endif %}{{ pageTitle }} - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+        text: "Back",
+        href: backLink
+      }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row govuk-!-static-margin-top-0">
+    <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+      {% if errorList | length%}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: errorList
+          }) 
+        }}
+      {% endif %}
+      {% if title %}
+        <h1 class="govuk-heading-l">{{title}}</h1>
+        <p class="govuk-hint">You can find this on the summary the vet gave you.</p>
+      {% endif %}
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {% if radios %}
+          {{ govukRadios(radios) }}
+        {% else %}
+          {% if result | length %}
+            {% for item in result %}
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-three-quarters">
+                  <h2 class="govuk-heading-m">Condition or disease</h2>
+                </div>
+                <div class="govuk-grid-column-one-quarter">
+                  {% if loop.index !== 1 %}
+                    {{ govukButton({
+                        text: "Remove",
+                        attributes: {
+                          id: "Delete"
+                        },
+                        value: loop.index - 1,
+                        name: "delete",
+                        classes: "govuk-button--secondary",
+                        preventDoubleClick: true  
+                      }) 
+                    }}
+                  {% endif %}
+                </div>
+              </div>
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-three-quarters">
+                  {{ govukInput({
+                      label: {
+                        text: "Enter the condition or disease"
+                      },
+                      id: "diseaseType-"+ (loop.index - 1),
+                      name: "diseaseType",
+                      value: item.diseaseType,
+                      errorMessage: item.errorMessage.diseaseType
+                    }) 
+                  }}
+                </div>
+              </div>
+
+              {{ govukInput({
+                  label: {
+                    text: "Enter the result"
+                  },
+                  classes: "govuk-!-width-one-half govuk-!-margin-bottom-6",
+                  id: "testResult-" + (loop.index - 1),
+                  name: "testResult",
+                  value: item.testResult,
+                  errorMessage: item.errorMessage.testResult
+                }) 
+              }}
+            {% endfor %}
+          {% endif %}
+          {% if resultLength != 10 %}
+            <h2 class="govuk-heading-m">Condition or disease</h2>
+            {% for inputText in inputTexts %}
+              {{ govukInput(inputText) }}
+            {% endfor %}
+          {% endif %}
+          {{ govukButton({
+              text: "Add another",
+              attributes: {
+                id: "Add another"
+              },
+              disabled: disableAddAnotherButton,
+              value: "addAnother",
+              name: "submitButton",
+              classes: "govuk-button--secondary",
+              preventDoubleClick: true  
+            }) 
+          }}
+        {% endif %}
+        <br/>
+        {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continue"
+            },
+            value: "continue",
+            name: "submitButton",
+            preventDoubleClick: true
+          }) 
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

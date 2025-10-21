@@ -1,0 +1,68 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Is this the only {{ speciesGroupText }} associated with this Single Business Identifier (SBI)? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+      
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {{ 
+          govukRadios({
+            id: "isOnlyHerdOnSbi",
+            name: "isOnlyHerdOnSbi",
+            classes: 'govuk-radios--inline',
+            fieldset:{
+              legend:{
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--l",
+                text: 'Is this the only ' ~ speciesGroupText ~ ' associated with this Single Business Identifier (SBI)?'
+              }
+            }, 
+            hint: {
+              text: "You can find this information on the ‘Tell us about this " ~ herdOrFlock ~ "’ section of the form that the vet filled in for you."
+            }, 
+            errorMessage: errorMessage,
+            items: [
+              {
+                value:"yes",
+                text: "Yes",
+                checked: isOnlyHerdOnSbi == "yes"
+              },
+              {
+                value: "no",
+                text: "No",
+                checked: isOnlyHerdOnSbi == "no"
+              }
+            ]
+          })
+        }}
+        {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continue"
+            },
+            preventDoubleClick: true
+          }) 
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

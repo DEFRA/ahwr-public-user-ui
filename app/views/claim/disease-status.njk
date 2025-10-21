@@ -1,0 +1,75 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}What is the disease status category? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{%block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink
+  })}}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">        
+     <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+    <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList:[{
+            text: errorMessage.text,
+              href: "#diseaseStatus"
+          }]
+        }) }}
+      {% endif %}
+      <div class="govuk-grid-row">
+        <h1 class="govuk-heading-l">What is the disease status category?</h1>
+
+        <form method="POST" autocomplete="off" novalidate="novalidate">
+          <input type="hidden" name="crumb" value="{{crumb}}"/>
+          {{ govukRadios({
+            id: "diseaseStatus",
+            name: "diseaseStatus",
+            fieldset:{
+              legend: {
+                classes: "govuk-fieldset__legend--m govuk-!-static-margin-bottom-6"
+        }
+      },
+      hint: {
+          text: "You can find this on the summary the vet gave you."
+      },
+      errorMessage: errorMessage,
+      items:[
+        {
+          value: 1,
+          text: "1",
+          checked: previousAnswer === "1"
+        },
+        {
+          value: 2,
+          text: "2",
+          checked: previousAnswer === "2"
+        },
+        {
+          value: 3,
+          text: "3",
+          checked: previousAnswer === "3"
+        },
+        {
+          value: 4,
+          text: "4",
+          checked: previousAnswer === "4"
+        }
+      ]
+    })
+    }}
+          {{ govukButton({
+        text: "Continue",
+        attributes: {id: "btnContinue"},
+        preventDoubleClick: true
+      })
+    }}
+        </form>
+      </div>
+  </div>
+{% endblock %}

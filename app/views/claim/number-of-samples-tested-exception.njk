@@ -1,0 +1,37 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Samples tested exception - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+
+        <p class="govuk-body">
+        <a href="https://www.gov.uk/government/publications/pigs-testing-required-for-an-annual-health-and-welfare-review-and-endemic-disease-follow-up/vets-testing-pigs-for-endemic-disease-follow-up#testing-sampling-and-advice">The number of samples tested does not match the amount needed to complete your claim.</a>
+        </p>
+
+        <p class="govuk-body">If you entered the wrong number of samples, you’ll need to go back and enter the correct number.</p>
+        <p class="govuk-body"><a class="govuk-link" href={{backLink}}>Enter the number of samples tested</a></p>
+
+        {{ govukWarningText({
+          text: "Your claim will be checked by our team.",
+          iconFallbackText: "Warning"
+        }) }}
+
+        <h2 class="govuk-heading-m">Get help with your claim</h2>
+        <p class="govuk-body">If you need help, contact the Rural Payments Agency.</p>
+        {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+    </div>
+  </div>
+{% endblock %}

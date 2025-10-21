@@ -1,0 +1,63 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Vet Visits Review Test Results - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        
+        <fieldset class="govuk-fieldset" aria-describedby="vet-visits-review-test-results-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              {% if typeOfLivestock === 'beef' or typeOfLivestock === 'dairy' %}
+                What was the test result of your last animal health and welfare review?
+              {% elif typeOfLivestock === 'pigs' %}
+                What was the review test result?
+              {% endif %}
+            </legend>
+
+            {% if typeOfLivestock === 'beef' or typeOfLivestock === 'dairy' %}
+              <p class="govuk-body">This should have happened within the last 10 months.</p>
+            {% elif typeOfLivestock === 'pigs' %}
+              <p class="govuk-body">This should:</p>
+              <ul class="govuk-list govuk-list--bullet">
+                <li>be the test result from your last animal health and welfare review</li>
+                <li>have happened within the last 10 months</li>
+              </ul>
+            {% endif %}
+
+            <p id="vet-visits-review-test-results-hint" class="govuk-body">You may need to provide the summary from this review as evidence.</p>
+
+            {{ govukRadios(radios) }}
+        </fieldset>
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "continue"
+          },
+          preventDoubleClick: true
+        }) }}
+
+      </form>
+    </div>
+  </div>
+{% endblock %}

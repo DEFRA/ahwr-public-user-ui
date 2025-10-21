@@ -13,16 +13,60 @@ export async function getClaimsByApplicationReference(applicationReference, logg
   }
 }
 
-export function isWithinLastTenMonths(date) {
-  if (!date) {
-    return false; // Date of visit was introduced more than 10 months ago
+export async function submitNewClaim(_data, _logger) {
+  // TODO - make this call real
+
+  // const endpoint = `${config.applicationApiUri}/claim`
+
+  // try {
+  //   const { payload } = await Wreck.post(endpoint, {
+  //     payload: data,
+  //     json: true
+  //   })
+
+  //   return payload
+  // } catch (err) {
+  //   logger.setBindings({ err, endpoint })
+  //   throw err
+  // }
+  return Promise.resolve({ reference: "REBC-FAKE-REF1", data: { amount: 1000000 } });
+}
+
+export async function getAmount(_data, _logger) {
+  // TODO - make this call real
+
+  // const { type, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals, dateOfVisit } = data
+  // const endpoint = `${config.applicationApiUri}/claim/get-amount`
+
+  // try {
+  //   const { payload } = await Wreck.post(endpoint, {
+  //     payload: { type, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals, dateOfVisit },
+  //     json: true
+  //   })
+
+  //   return payload
+  // } catch (err) {
+  //   logger.setBindings({ err, endpoint })
+  //   throw err
+  // }
+  return Promise.resolve(100);
+}
+
+export async function isURNUnique (data, logger) {
+  const endpoint = `${config.applicationApiUri}/claim/is-urn-unique`
+  try {
+    const { payload } = await Wreck.post(endpoint, {
+      payload: data,
+      json: true
+    })
+
+    // return payload
+    // TODO: when backend is fixed for this, remove the lines below
+    console.log(payload)
+    return { isURNUnique: true }
+  } catch (err) {
+    logger.setBindings({ err, endpoint })
+    // appInsights.defaultClient.trackException({ exception: err })
+    throw err
   }
-
-  const start = new Date(date);
-  const end = new Date(start);
-
-  end.setMonth(end.getMonth() + 10);
-  end.setHours(23, 59, 59, 999); // set to midnight of the agreement end day
-
-  return Date.now() <= end;
 }

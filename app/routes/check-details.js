@@ -3,7 +3,7 @@ import joi from "joi";
 import { StatusCodes } from "http-status-codes";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { config } from "../config/index.js";
-import { applyRoutes } from "../config/routes.js";
+import { applyRoutes } from "../constants/routes.js";
 
 export const checkDetailsHandlers = [
   {

@@ -4,7 +4,7 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../session/index.js";
-import { applyRoutes, applyViews } from "../../config/routes.js";
+import { applyRoutes, applyViews } from "../../constants/routes.js";
 import { preApplyHandler } from "../../lib/pre-apply-handler.js";
 
 export const numbersRouteHandlers = [

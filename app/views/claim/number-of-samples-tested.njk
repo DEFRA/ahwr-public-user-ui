@@ -1,0 +1,50 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}How many samples were tested? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+          {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+        {% endif %}
+     <h1 class="govuk-heading-l">How many samples were tested?</h1>
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+
+        {{ govukInput({
+            hint: {
+              text: hintText
+            },
+            classes: "govuk-input--width-2",
+            id: "numberOfSamplesTested",
+            name: "numberOfSamplesTested",
+            value: numberOfSamplesTested,
+            errorMessage: errorMessage
+        }) }}
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "continue"
+          },
+          preventDoubleClick: true
+        }) }}
+
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %} You cannot claim  - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+        text: "Back",
+        href: backLink
+      }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+    <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+      <h1 class="govuk-heading-l"> You cannot claim</h1>
+  </div>
+{% endblock %}

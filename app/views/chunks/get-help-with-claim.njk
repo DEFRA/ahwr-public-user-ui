@@ -1,0 +1,5 @@
+{% block content %}
+    <h2 class="govuk-heading-m">Get help with your claim</h2>
+    <p class="govuk-body">If you need help with your claim, contact the Rural Payments Agency and give your agreement number.</p>
+    {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+{% endblock %}

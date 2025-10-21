@@ -4,8 +4,8 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../session/index.js";
-import { applyRoutes, applyViews, dashboardRoutes } from "../../config/routes.js";
-import { createTempAgreementReference } from "../../lib/create-temp-agreeement-ref.js";
+import { applyRoutes, applyViews, dashboardRoutes } from "../../constants/routes.js";
+import { createTempReference } from "../../lib/create-temp-ref.js";
 import { getUserTypeByApplication } from "../../lib/get-user-type-by-application.js";
 import { getApplicationsBySbi } from "../../api-requests/application-api.js";
 import { preApplyHandler } from "../../lib/pre-apply-handler.js";
@@ -18,7 +18,7 @@ export const claimMultipleRouteHandlers = [
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
         // on way in we must generate a new reference
-        const tempApplicationId = createTempAgreementReference();
+        const tempApplicationId = createTempReference();
 
         setSessionData(
           request,
