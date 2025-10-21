@@ -88,7 +88,9 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdName } = request.payload;
-      const { herdId, herdVersion, previousClaims, herds, typeOfLivestock } = getSessionData(
+      const {
+        // herdId, herdVersion, // TODO: These may be needed for event emission
+        previousClaims, herds, typeOfLivestock } = getSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
       );
@@ -116,6 +118,16 @@ const postHandler = {
       );
 
       // TODO - Emit an event here saying the herd name has been collected
+      // await sendHerdEvent({
+      //   request,
+      //   type: 'herd-name',
+      //   message: 'Herd name collected from user',
+      //   data: {
+      //     herdId,
+      //     herdVersion,
+      //     herdName
+      //   }
+      // })
 
       return h.redirect(claimRoutes.enterCphNumber);
     },

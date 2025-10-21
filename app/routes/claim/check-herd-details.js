@@ -3,9 +3,7 @@ import { ONLY_HERD_ON_SBI } from "../../constants/claim-constants.js";
 import { getHerdOrFlock } from "../../lib/display-helpers.js";
 import {
   getSessionData,
-  setSessionData,
   sessionEntryKeys,
-  sessionKeys,
 } from "../../session/index.js";
 import { MULTIPLE_HERD_REASONS } from "ffc-ahwr-common-library";
 import { skipOtherHerdsOnSbiPage, skipSameHerdPage } from "../../lib/context-helper.js";

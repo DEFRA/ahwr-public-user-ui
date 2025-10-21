@@ -1,6 +1,4 @@
 import joi from "joi";
-import appInsights from "applicationinsights";
-import { config } from "../../config/index.js";
 import {
   claimConstants,
   MAX_POSSIBLE_DAY,
@@ -203,7 +201,7 @@ const postHandler = {
         latestVetVisitApplication: oldWorldApplication,
         typeOfLivestock,
         organisation,
-        reference: tempClaimReference,
+        // reference: tempClaimReference, // needed for the TODO event tracking
         latestEndemicsApplication: newWorldApplication,
         tempHerdId: tempHerdIdFromSession,
       } = endemicsClaimSession;
@@ -236,22 +234,23 @@ const postHandler = {
           inputsInError,
         };
 
-        const readableApplicationCreatedDate = new Date(newWorldApplication.createdAt)
-          .toLocaleDateString("en-GB")
-          .split("/")
-          .reverse()
-          .join("-");
+        // const readableApplicationCreatedDate = new Date(newWorldApplication.createdAt)
+        //   .toLocaleDateString("en-GB")
+        //   .split("/")
+        //   .reverse()
+        //   .join("-");
 
-        appInsights.defaultClient.trackEvent({
-          name: "claim-invalid-date-of-visit",
-          properties: {
-            tempClaimReference,
-            dateOfAgreement: readableApplicationCreatedDate,
-            dateEntered: `${data.dateOfVisit.year}-${data.dateOfVisit.month}-${data.dateOfVisit.day}`,
-            journeyType: reviewOrFollowUpText,
-            error: errorSummary[0].text,
-          },
-        });
+        // TODO - track event...
+        // appInsights.defaultClient.trackEvent({
+        //   name: "claim-invalid-date-of-visit",
+        //   properties: {
+        //     tempClaimReference,
+        //     dateOfAgreement: readableApplicationCreatedDate,
+        //     dateEntered: `${data.dateOfVisit.year}-${data.dateOfVisit.month}-${data.dateOfVisit.day}`,
+        //     journeyType: reviewOrFollowUpText,
+        //     error: errorSummary[0].text,
+        //   },
+        // });
 
         return h.view(claimViews.dateOfVisit, data).code(HttpStatus.BAD_REQUEST).takeover();
       }

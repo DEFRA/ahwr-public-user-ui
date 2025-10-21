@@ -11,7 +11,7 @@ describe("getYesNoRadios", () => {
   };
 
   test("should return correct structure with default options", () => {
-    const result = getYesNoRadios(legendText, id);
+    const result = getYesNoRadios(legendText, id, undefined);
 
     expect(result).toEqual({
       radios: {
@@ -29,8 +29,8 @@ describe("getYesNoRadios", () => {
           text: "", // Default empty string
         },
         items: [
-          { value: "yes", text: "Yes" },
-          { value: "no", text: "No" },
+          { checked: false, value: "yes", text: "Yes" },
+          { checked: false, value: "no", text: "No" },
         ],
       },
     });
@@ -38,7 +38,7 @@ describe("getYesNoRadios", () => {
 
   test("should handle custom options and error text", () => {
     const errorText = "Error message";
-    const result = getYesNoRadios(legendText, id, errorText, options);
+    const result = getYesNoRadios(legendText, id, undefined, errorText, options);
 
     expect(result).toEqual({
       radios: {
@@ -56,8 +56,8 @@ describe("getYesNoRadios", () => {
           text: options.hintText,
         },
         items: [
-          { value: "yes", text: "Yes" },
-          { value: "no", text: "No" },
+          { checked: false, value: "yes", text: "Yes" },
+          { checked: false, value: "no", text: "No" },
         ],
         errorMessage: {
           text: errorText,
@@ -70,6 +70,18 @@ describe("getYesNoRadios", () => {
     const result = getYesNoRadios(legendText, id, undefined, undefined, options);
 
     expect(result.radios.items[0].checked).toBeFalsy();
+    expect(result.radios.items[1].checked).toBeFalsy();
+  });
+  test("should correctly handle previous answer no", () => {
+    const result = getYesNoRadios(legendText, id, 'no', undefined, options);
+
+    expect(result.radios.items[0].checked).toBeFalsy();
+    expect(result.radios.items[1].checked).toBeTruthy();
+  });
+  test("should correctly handle previous answer yes", () => {
+    const result = getYesNoRadios(legendText, id, 'yes', undefined, options);
+
+    expect(result.radios.items[0].checked).toBeTruthy();
     expect(result.radios.items[1].checked).toBeFalsy();
   });
 });

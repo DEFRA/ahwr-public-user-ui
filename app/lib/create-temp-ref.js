@@ -7,7 +7,7 @@ const containsSwearWord = (input) => {
   return profanity.exists(input);
 };
 
-export const createTempReference = ({ referenceForClaim }) => {
+export const createTempReference = ({ referenceForClaim } = { referenceForClaim: false }) => {
   const charset = "ABCDEFGHIJKLMNPQRSTUVWXYZ123456789";
   const id = Array.from({ length: 8 }, () => charset.charAt(randomInt(0, charset.length))).join("");
   const firstFour = id.slice(0, 4);
@@ -17,7 +17,7 @@ export const createTempReference = ({ referenceForClaim }) => {
     containsSwearWord(`${firstFour}${secondFour}`) ||
     containsSwearWord(`${secondFour}${firstFour}`)
   ) {
-    return createTempReference();
+    return createTempReference({ referenceForClaim });
   }
 
   if (referenceForClaim) {
