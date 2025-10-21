@@ -17,7 +17,7 @@ const getHandler = {
       const endemicsClaimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
       return h.view(claimViews.diseaseStatus, {
-        ...(endemicsClaimData?.diseaseStatus && {
+        ...(endemicsClaimData.diseaseStatus && {
           previousAnswer: endemicsClaimData.diseaseStatus,
         }),
         backLink: claimRoutes.numberOfSamplesTested,

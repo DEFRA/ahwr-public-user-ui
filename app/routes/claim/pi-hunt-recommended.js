@@ -7,9 +7,9 @@ import {
 } from "../../session/index.js";
 import { radios } from "../../models/form-component/radios.js";
 import { clearPiHuntSessionOnChange } from "../../lib/clear-pi-hunt-session-on-change.js";
-import { getAmount } from "../../api-requests/claim-api.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { getAmount } from "../../lib/prices-helper.js";
 
 const questionText = "Was the PI hunt recommended by the vet?";
 const hintHtml = "You can find this on the summary the vet gave you.";
@@ -97,7 +97,7 @@ const postHandler = {
       );
 
       if (piHuntRecommended === "no") {
-        const claimPaymentNoPiHunt = await getAmount(
+        const claimPaymentNoPiHunt = getAmount(
           {
             type: typeOfReview,
             typeOfLivestock,
@@ -105,9 +105,8 @@ const postHandler = {
             piHunt,
             piHuntAllAnimals: "no",
             dateOfVisit,
-          },
-          request.logger,
-        );
+          }
+          );
         // TODO - raise invalid data event
 
         if (piHuntRecommended !== previousAnswer) {

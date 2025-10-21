@@ -1,6 +1,4 @@
-import { claimConstants } from "../constants/claim-constants.js";
-
-const { beef, dairy, pigs, sheep } = claimConstants.livestockTypes;
+import { BEEF, claimConstants, DAIRY, PIGS, SHEEP } from "../constants/claim-constants.js";
 
 export const isWithin10MonthsFromNow = (d) => {
   const date = new Date(d);
@@ -24,14 +22,14 @@ export const getTestResult = (testResult) => {
 
 export const getLivestockTypes = (typeOfLivestock) => {
   return {
-    isBeef: typeOfLivestock === beef,
-    isDairy: typeOfLivestock === dairy,
-    isPigs: typeOfLivestock === pigs,
-    isSheep: typeOfLivestock === sheep,
+    isBeef: typeOfLivestock === BEEF,
+    isDairy: typeOfLivestock === DAIRY,
+    isPigs: typeOfLivestock === PIGS,
+    isSheep: typeOfLivestock === SHEEP,
   };
 };
 
-export const isCows = (typeOfLivestock) => typeOfLivestock === beef || typeOfLivestock === dairy;
+export const isCows = (typeOfLivestock) => typeOfLivestock === BEEF || typeOfLivestock === DAIRY;
 
 export function getClaimType(claimData, isEndemicsClaims = false) {
   if (!isEndemicsClaims) {

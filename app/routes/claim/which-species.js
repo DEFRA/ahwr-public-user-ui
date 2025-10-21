@@ -1,11 +1,9 @@
 import Joi from "joi";
-import { claimConstants } from "../../constants/claim-constants.js";
 import { refreshApplications, resetEndemicsClaimSession } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
 import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
 import { claimRoutes, claimViews, dashboardRoutes } from "../../constants/routes.js";
-
-const { livestockTypes } = claimConstants;
+import { TYPE_OF_LIVESTOCK } from "ffc-ahwr-common-library";
 
 const errorMessage = { text: "Select which species you are claiming for" };
 
@@ -51,7 +49,7 @@ const postHandler = {
     validate: {
       payload: Joi.object({
         typeOfLivestock: Joi.string()
-          .valid(...Object.values(livestockTypes))
+          .valid(...Object.values(TYPE_OF_LIVESTOCK))
           .required(),
       }),
       failAction: (request, h, err) => {

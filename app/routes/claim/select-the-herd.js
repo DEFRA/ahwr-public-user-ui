@@ -5,14 +5,14 @@ import {
   sessionEntryKeys, setSessionData, getSessionData
 } from "../../session/index.js";
 import HttpStatus from "http-status-codes";
-import { claimConstants, ONLY_HERD, ONLY_HERD_ON_SBI } from "../../constants/claim-constants.js";
+import { ONLY_HERD, ONLY_HERD_ON_SBI } from "../../constants/claim-constants.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { canMakeClaim } from "../../lib/can-make-claim.js";
 import { formatDate, getHerdOrFlock } from "../../lib/display-helpers.js";
 import { getClaimInfo } from "../utils/get-claim-info.js";
 import { getReviewType } from "../../lib/utils.js";
+import { claimType } from "ffc-ahwr-common-library";
 
-const { endemics } = claimConstants.claimType;
 
 const pageUrl = claimRoutes.selectTheHerd;
 
@@ -173,7 +173,7 @@ const postHandler = {
 
       const { isReview } = getReviewType(typeOfReview);
 
-      if (herdSelected === radioValueNewHerd && typeOfReview === endemics) {
+      if (herdSelected === radioValueNewHerd && typeOfReview === claimType.endemics) {
         return h
           .view(claimViews.selectTheHerdException, {
             backLink: pageUrl,
