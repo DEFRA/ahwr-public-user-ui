@@ -8,7 +8,7 @@ import {
   MULTIPLE_SPECIES_RELEASE_DATE,
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
 } from "../../constants/claim-constants.js";
-import { getOldWorldClaimFromApplication } from "../../lib/claim-helper.js";
+import { getOldWorldClaimFromApplication, getAllClaimsForFirstHerd  } from "../../lib/claim-helper.js";
 import { isValidDate } from "../../lib/date-validations.js";
 import { getReviewType, getLivestockTypes } from "../../lib/utils.js";
 import {
@@ -23,7 +23,6 @@ import { isMultipleHerdsUserJourney } from "../../lib/context-helper.js";
 import { getHerds } from "../../api-requests/application-api.js";
 import { getTempHerdId } from "../../lib/get-temp-herd-id.js";
 import { getNextMultipleHerdsPage } from "../../lib/get-next-multiple-herds-page.js";
-import { getAllClaimsForFirstHerd } from "../../lib/claim-helper.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 

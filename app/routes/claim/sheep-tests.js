@@ -1,7 +1,7 @@
-import { sheepTestTypes } from '../../constants/sheep-test-types.js'
 import HttpStatus from 'http-status-codes'
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import { sheepTestTypes } from "../../constants/claim-constants.js";
 
 
 const getHandler = {

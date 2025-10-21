@@ -1,37 +1,20 @@
 import Joi from 'joi'
-import links from '../../config/routes.js'
-import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
-import { getTestResult } from '../../lib/get-test-result.js'
-import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { isURNUnique } from '../../api-requests/claim-service-api.js'
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys, setSessionData
+} from "../../session/index.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
-import { getEndemicsClaimDetails, prefixUrl } from '../utils/page-utils.js'
-
-const {
-  endemicsVetRCVS,
-  endemicsCheckAnswers,
-  endemicsTestUrn,
-  endemicsVaccination,
-  endemicsTestUrnException,
-  endemicsNumberOfOralFluidSamples,
-  endemicsNumberOfSamplesTested,
-  endemicsTestResults,
-  endemicsPIHunt,
-  endemicsDateOfTesting
-} = links
-const {
-  endemicsClaim: { laboratoryURN: laboratoryURNKey, dateOfVisit: dateOfVisitKey }
-} = sessionKeys
+import { getEndemicsClaimDetails, getTestResult } from "../../lib/utils.js";
+import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { isURNUnique } from "../../api-requests/claim-api.js";
 
 const ENTER_THE_URN = 'Enter the URN'
 const MAX_URN_LENGTH = 50
 
-const pageUrl = prefixUrl(endemicsTestUrn)
-
 const title = (request) => {
-  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
 
   if (isBeefOrDairyEndemics) {
@@ -42,50 +25,50 @@ const title = (request) => {
 }
 
 const previousPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview, reviewTestResults } = getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview, reviewTestResults } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isEndemicsFollowUp, isBeefOrDairyEndemics, isReview, isBeef, isDairy, isPigs } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
   const { isPositive } = getTestResult(reviewTestResults)
 
-  if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isBeefOrDairyEndemics) {
-    return prefixUrl(endemicsDateOfTesting)
+  if (isVisitDateAfterPIHuntAndDairyGoLive(getSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.dateOfVisit)) && isBeefOrDairyEndemics) {
+    return claimRoutes.dateOfTesting;
   }
   if (isReview) {
-    return prefixUrl(endemicsVetRCVS)
+    return claimRoutes.vetRcvs;
   }
   if (isEndemicsFollowUp && isPigs) {
-    return prefixUrl(endemicsVaccination)
+    return claimRoutes.vaccination;
   }
   if ((isBeef || isDairy) && isPositive) {
-    return prefixUrl(endemicsPIHunt)
+    return claimRoutes.piHunt;
   }
 
-  return prefixUrl(endemicsVetRCVS)
+  return claimRoutes.vetRcvs;
 }
 
 const nextPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isBeef, isDairy, isPigs, isReview, isEndemicsFollowUp } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
 
   if (isPigs && isReview) {
-    return prefixUrl(endemicsNumberOfOralFluidSamples)
+    return claimRoutes.numberOfFluidOralSamples;
   }
   if (isPigs && isEndemicsFollowUp) {
-    return prefixUrl(endemicsNumberOfSamplesTested)
+    return claimRoutes.numberOfSamplesTested;
   }
   if (isBeef || isDairy) {
-    return prefixUrl(endemicsTestResults)
+    return claimRoutes.testResults;
   }
 
-  return prefixUrl(endemicsCheckAnswers)
+  return claimRoutes.checkAnswers;
 }
 
 const getHandler = {
   method: 'GET',
-  path: pageUrl,
+  path: claimRoutes.testUrn,
   options: {
     handler: async (request, h) => {
-      const { laboratoryURN } = getEndemicsClaim(request)
-      return h.view(endemicsTestUrn, {
+      const { laboratoryURN } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      return h.view(claimViews.testUrn, {
         title: title(request),
         laboratoryURN,
         backLink: previousPageUrl(request)
@@ -96,7 +79,7 @@ const getHandler = {
 
 const postHandler = {
   method: 'POST',
-  path: pageUrl,
+  path: claimRoutes.testUrn,
   options: {
     validate: {
       payload: Joi.object({
@@ -115,11 +98,11 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+        const { typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
         const { isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
         const errorMessage = (err.details[0].message === ENTER_THE_URN && isBeefOrDairyEndemics) ? 'Enter the URN or certificate number' : err.details[0].message
         return h
-          .view(endemicsTestUrn, {
+          .view(claimViews.testUrn, {
             ...request.payload,
             title: title(request),
             errorMessage: { text: errorMessage, href: '#laboratoryURN' },
@@ -131,14 +114,16 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { laboratoryURN } = request.payload
-      const { organisation, typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+      const { organisation, typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const { isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
       const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN }, request.logger)
-      setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
+      // TODO: Should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.laboratoryURN, laboratoryURN);
 
       if (!response?.isURNUnique) {
-        raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
-        return h.view(endemicsTestUrnException, { backLink: pageUrl, isBeefOrDairyEndemics }).code(HttpStatus.BAD_REQUEST).takeover()
+        // TODO: raise invalid data event here
+        // raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
+        return h.view(claimViews.testUrnException, { backLink: claimRoutes.testUrn, isBeefOrDairyEndemics }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       return h.redirect(nextPageUrl(request))

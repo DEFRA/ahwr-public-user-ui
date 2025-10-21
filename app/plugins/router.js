@@ -44,6 +44,14 @@ import { sheepEndemicsPackageHandlers } from "../routes/claim/sheep-endemics-pac
 import { sheepTestResultsHandlers } from "../routes/claim/sheep-test-results.js";
 import { sheepTestsHandlers } from "../routes/claim/sheep-tests.js";
 import { speciesNumbersHandlers } from "../routes/claim/species-numbers.js";
+import { testResultsHandlers } from "../routes/claim/test-results.js";
+import { testUrnHandlers } from "../routes/claim/test-urn.js";
+import { vaccinationHandlers } from "../routes/claim/vaccination.js";
+import { vetsNameHandlers } from "../routes/claim/vet-name.js";
+import { vetRCVSHandlers } from "../routes/claim/vet-rcvs.js";
+import { vetVisitsReviewTestResultsHandlers } from "../routes/claim/vet-visits-review-test-results.js";
+import { whichSpeciesHandlers } from "../routes/claim/which-species.js";
+import { whichReviewHandlers } from "../routes/claim/which-type-of-review.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
@@ -91,7 +99,15 @@ const alwaysOnRoutes = [
   sheepEndemicsPackageHandlers,
   sheepTestResultsHandlers,
   sheepTestsHandlers,
-  speciesNumbersHandlers
+  speciesNumbersHandlers,
+  testResultsHandlers,
+  testUrnHandlers,
+  vaccinationHandlers,
+  vetsNameHandlers,
+  vetRCVSHandlers,
+  vetVisitsReviewTestResultsHandlers,
+  whichSpeciesHandlers,
+  whichReviewHandlers
 ].flat();
 
 let routes;

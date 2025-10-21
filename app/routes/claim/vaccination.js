@@ -1,19 +1,11 @@
 import Joi from "joi";
-import links from "../../config/routes.js";
-import { sessionKeys } from "../../session/keys.js";
 import { claimConstants } from "../../constants/claim-constants.js";
-import { getEndemicsClaim, setEndemicsClaim } from "../../session/index.js";
 import { radios } from "../models/form-component/radios.js";
 import HttpStatus from "http-status-codes";
-import { prefixUrl } from "../utils/page-utils.js";
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import { claimRoutes, claimViews } from "../../constants/routes.js";
 
-const { endemicsVaccination, endemicsTestUrn, endemicsVetRCVS, endemicsTestResults } = links;
-const {
-  endemicsClaim: { herdVaccinationStatus: herdVaccinationStatusKey },
-} = sessionKeys;
 const { vaccination } = claimConstants;
-
-const pageUrl = prefixUrl(endemicsVaccination);
 
 const questionText =
   "What is the herd porcine reproductive and respiratory syndrome (PRRS) vaccination status?";
@@ -21,10 +13,10 @@ const hintHtml = "You can find this on the summary the vet gave you.";
 
 const getHandler = {
   method: "GET",
-  path: pageUrl,
+  path: claimRoutes.vaccination,
   options: {
     handler: async (request, h) => {
-      const { vetVisitsReviewTestResults, herdVaccinationStatus } = getEndemicsClaim(request);
+      const { vetVisitsReviewTestResults, herdVaccinationStatus } = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const vaccinatedNotVaccinatedRadios = radios(
         questionText,
         "herdVaccinationStatus",
@@ -43,16 +35,16 @@ const getHandler = {
         },
       ]);
       const backLink = vetVisitsReviewTestResults
-        ? prefixUrl(endemicsTestResults)
-        : prefixUrl(endemicsVetRCVS);
-      return h.view(endemicsVaccination, { backLink, ...vaccinatedNotVaccinatedRadios });
+        ? claimRoutes.testResults
+        : claimRoutes.vetRcvs;
+      return h.view(claimViews.vaccination, { backLink, ...vaccinatedNotVaccinatedRadios });
     },
   },
 };
 
 const postHandler = {
   method: "POST",
-  path: pageUrl,
+  path: claimRoutes.vaccination,
   options: {
     validate: {
       payload: Joi.object({
@@ -62,7 +54,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err });
-        const { vetVisitsReviewTestResults } = getEndemicsClaim(request);
+        const { vetVisitsReviewTestResults } = getSessionData(request, sessionEntryKeys.endemicsClaim);
         const vaccinatedNotVaccinatedRadios = radios(
           questionText,
           "herdVaccinationStatus",
@@ -73,10 +65,10 @@ const postHandler = {
           { value: vaccination.notVaccinated, text: "Not vaccinated" },
         ]);
         const backLink = vetVisitsReviewTestResults
-          ? prefixUrl(endemicsTestResults)
-          : prefixUrl(endemicsVetRCVS);
+          ? claimRoutes.testResults
+          : claimRoutes.vetRcvs;
         return h
-          .view(endemicsVaccination, {
+          .view(claimViews.vaccination, {
             ...request.payload,
             backLink,
             ...vaccinatedNotVaccinatedRadios,
@@ -92,8 +84,9 @@ const postHandler = {
     handler: async (request, h) => {
       const { herdVaccinationStatus } = request.payload;
 
-      setEndemicsClaim(request, herdVaccinationStatusKey, herdVaccinationStatus);
-      return h.redirect(prefixUrl(endemicsTestUrn));
+      // TODO: Should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.herdVaccinationStatus, herdVaccinationStatus);
+      return h.redirect(claimRoutes.testUrn);
     },
   },
 };

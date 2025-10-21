@@ -1,29 +1,24 @@
 import Joi from "joi";
-import { sessionKeys } from "../../session/keys.js";
-import { getEndemicsClaim, setEndemicsClaim } from "../../session/index.js";
-import links from "../../config/routes.js";
 import { claimConstants } from "../../constants/claim-constants.js";
 import { refreshApplications, resetEndemicsClaimSession } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
-import { prefixUrl } from "../utils/page-utils.js";
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import { claimRoutes, claimViews, dashboardRoutes } from "../../constants/routes.js";
 
 const { livestockTypes } = claimConstants;
-const { claimDashboard, endemicsWhichSpecies, endemicsWhichTypeOfReview } = links;
 
-const pageUrl = prefixUrl(endemicsWhichSpecies);
-const backLink = claimDashboard;
 const errorMessage = { text: "Select which species you are claiming for" };
 
 const getHandler = {
   method: "GET",
-  path: pageUrl,
+  path: claimRoutes.whichSpecies,
   options: {
     handler: async (request, h) => {
       // get type of livestock here, before we reset the session
       const {
         organisation: { sbi },
         typeOfLivestock,
-      } = getEndemicsClaim(request);
+      } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
       request.logger.setBindings({ sbi });
 
@@ -34,15 +29,16 @@ const getHandler = {
       // to this point to change species, we cant keep all their answers
       await resetEndemicsClaimSession(request, latestEndemicsApplication.reference);
 
-      if (latestEndemicsApplication?.applicationRedacts?.length) {
-        return h.redirect(links.claimDashboard).takeover();
-      }
+      // FIXME: caution, latest farmer-claim version does not have this, it has been moved. This needs to match
+      // if (latestEndemicsApplication?.applicationRedacts?.length) {
+      //   return h.redirect(links.claimDashboard).takeover();
+      // }
 
-      return h.view(endemicsWhichSpecies, {
+      return h.view(claimViews.whichSpecies, {
         ...(typeOfLivestock && {
           previousAnswer: typeOfLivestock,
         }),
-        backLink,
+        backLink: dashboardRoutes.manageYourClaims,
       });
     },
   },
@@ -50,7 +46,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: pageUrl,
+  path: claimRoutes.whichSpecies,
   options: {
     validate: {
       payload: Joi.object({
@@ -61,9 +57,9 @@ const postHandler = {
       failAction: (request, h, err) => {
         request.logger.setBindings({ err });
         return h
-          .view(endemicsWhichSpecies, {
+          .view(claimViews.whichSpecies, {
             errorMessage,
-            backLink,
+            backLink: dashboardRoutes.manageYourClaims,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -75,15 +71,16 @@ const postHandler = {
         typeOfLivestock: prevTypeOfLivestock,
         reference,
         latestEndemicsApplication,
-      } = getEndemicsClaim(request);
+      } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
       if (typeOfLivestock !== prevTypeOfLivestock) {
         await resetEndemicsClaimSession(request, latestEndemicsApplication.reference, reference);
       }
 
-      setEndemicsClaim(request, sessionKeys.endemicsClaim.typeOfLivestock, typeOfLivestock);
+      // TODO: Should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.typeOfLivestock, typeOfLivestock);
 
-      return h.redirect(prefixUrl(endemicsWhichTypeOfReview));
+      return h.redirect(claimRoutes.whichTypeOfReview);
     },
   },
 };

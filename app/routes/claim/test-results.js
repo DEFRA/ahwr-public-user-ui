@@ -1,57 +1,44 @@
 import Joi from 'joi'
-import links from '../../config/routes.js'
-import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
-import { getReviewType } from '../../lib/get-review-type.js'
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
 import { radios } from '../models/form-component/radios.js'
 import HttpStatus from 'http-status-codes'
-import { getEndemicsClaimDetails, prefixUrl } from '../utils/page-utils.js'
+import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { getEndemicsClaimDetails, getReviewType } from "../../lib/utils.js";
 
-const {
-  endemicsTestResults,
-  endemicsCheckAnswers,
-  endemicsTestUrn,
-  endemicsDiseaseStatus,
-  endemicsBiosecurity,
-  endemicsNumberOfOralFluidSamples
-} = links
-const { endemicsClaim: { testResults: testResultsKey } } = sessionKeys
-
-const pageUrl = prefixUrl(endemicsTestResults)
 const previousPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isBeef, isDairy, isSheep, isPigs, isEndemicsFollowUp } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
 
   if (isEndemicsFollowUp) {
     if (isSheep) {
-      return prefixUrl(endemicsDiseaseStatus)
+      return claimRoutes.diseaseStatus;
     }
     if (isBeef || isDairy) {
-      return prefixUrl(endemicsTestUrn)
+      return claimRoutes.testUrn;
     }
   }
 
   if (isPigs) {
-    return prefixUrl(endemicsNumberOfOralFluidSamples)
+    return claimRoutes.numberOfFluidOralSamples;
   }
   if (isBeef || isDairy) {
-    return prefixUrl(endemicsTestUrn)
+    return claimRoutes.testUrn;
   }
 
   return undefined // if a review, and is for sheep, what should back page be? Can this ever happen?
 }
 const nextPageURL = (request) => {
-  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
 
   if (isBeefOrDairyEndemics) {
-    return prefixUrl(endemicsBiosecurity)
+    return claimRoutes.biosecurity;
   }
 
-  return prefixUrl(endemicsCheckAnswers)
+  return claimRoutes.checkAnswers;
 }
 const pageTitle = (request) => {
-  const { typeOfReview } = getEndemicsClaim(request)
+  const { typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   return isEndemicsFollowUp ? 'What was the follow-up test result?' : 'What was the test result?'
 }
@@ -60,19 +47,19 @@ const hintHtml = 'You can find this on the summary the vet gave you.'
 
 const getHandler = {
   method: 'GET',
-  path: pageUrl,
+  path: claimRoutes.testResults,
   options: {
     handler: async (request, h) => {
-      const { testResults } = getEndemicsClaim(request)
+      const { testResults } = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const positiveNegativeRadios = radios(pageTitle(request), 'testResults', undefined, { hintHtml })([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
-      return h.view(endemicsTestResults, { backLink: previousPageUrl(request), title: pageTitle(request), ...positiveNegativeRadios })
+      return h.view(claimViews.testResults, { backLink: previousPageUrl(request), title: pageTitle(request), ...positiveNegativeRadios })
     }
   }
 }
 
 const postHandler = {
   method: 'POST',
-  path: pageUrl,
+  path: claimRoutes.testResults,
   options: {
     validate: {
       payload: Joi.object({
@@ -81,7 +68,7 @@ const postHandler = {
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
         const positiveNegativeRadios = radios(pageTitle(request), 'testResults', 'Select a test result', { hintHtml })([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
-        return h.view(endemicsTestResults, {
+        return h.view(claimViews.testResults, {
           ...request.payload,
           title: pageTitle(request),
           backLink: previousPageUrl(request),
@@ -96,7 +83,8 @@ const postHandler = {
     handler: async (request, h) => {
       const { testResults } = request.payload
 
-      setEndemicsClaim(request, testResultsKey, testResults)
+      // TODO: Should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.testResults, testResults);
       return h.redirect(nextPageURL(request))
     }
   }

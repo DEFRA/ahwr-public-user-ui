@@ -1,27 +1,11 @@
 import Joi from "joi";
-import { sessionKeys } from "../../session/keys.js";
 import { claimConstants } from "../../constants/claim-constants.js";
-import links from "../../config/routes.js";
-import { getEndemicsClaim, setEndemicsClaim } from "../../session/index.js";
-import { getOldWorldClaimFromApplication } from "../../lib/index.js";
-import { raiseInvalidDataEvent } from "../../event/raise-invalid-data-event.js";
 import HttpStatus from "http-status-codes";
-import { prefixUrl } from "../utils/page-utils.js";
+import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import { getOldWorldClaimFromApplication } from "../../lib/claim-helper.js";
 
-const {
-  endemicsClaim: { typeOfReview: typeOfReviewKey },
-} = sessionKeys;
-const {
-  endemicsWhichTypeOfReview,
-  endemicsDateOfVisit,
-  endemicsVetVisitsReviewTestResults,
-  endemicsWhichSpecies,
-  endemicsWhichTypeOfReviewException,
-} = links;
 const { livestockTypes, claimType } = claimConstants;
-
-const pageUrl = prefixUrl(endemicsWhichTypeOfReview);
-const backLink = prefixUrl(endemicsWhichSpecies);
 
 const getPreviousAnswer = (typeOfReview) => {
   if (typeOfReview === claimType.review) {
@@ -38,13 +22,13 @@ const getPreviousAnswer = (typeOfReview) => {
 export const whichReviewHandlers = [
   {
     method: "GET",
-    path: pageUrl,
+    path: claimRoutes.whichTypeOfReview,
     options: {
       handler: async (request, h) => {
-        const { typeOfReview } = getEndemicsClaim(request);
+        const { typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-        return h.view(endemicsWhichTypeOfReview, {
-          backLink,
+        return h.view(claimViews.whichTypeOfReview, {
+          backLink: claimRoutes.whichSpecies,
           previousAnswer: getPreviousAnswer(typeOfReview),
         });
       },
@@ -53,7 +37,7 @@ export const whichReviewHandlers = [
   },
   {
     method: "POST",
-    path: pageUrl,
+    path: claimRoutes.whichTypeOfReview,
     options: {
       validate: {
         payload: Joi.object({
@@ -63,9 +47,9 @@ export const whichReviewHandlers = [
           request.logger.setBindings({ err });
 
           return h
-            .view(endemicsWhichTypeOfReview, {
+            .view(claimViews.whichTypeOfReview, {
               errorMessage: { text: "Select what you are claiming for", href: "#typeOfReview" },
-              backLink,
+              backLink: claimRoutes.whichSpecies,
             })
             .code(HttpStatus.BAD_REQUEST)
             .takeover();
@@ -77,9 +61,10 @@ export const whichReviewHandlers = [
           typeOfLivestock,
           previousClaims,
           latestVetVisitApplication: oldWorldApplication,
-        } = getEndemicsClaim(request);
+        } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-        setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview]);
+        // TODO: Should emit event
+        setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.typeOfReview, claimType[typeOfReview]);
 
         const relevantClaims = previousClaims.filter(
           (claim) => claim.data.typeOfLivestock === typeOfLivestock,
@@ -93,15 +78,16 @@ export const whichReviewHandlers = [
             getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock);
 
           if (!prevReviewClaim) {
-            raiseInvalidDataEvent(
-              request,
-              typeOfReviewKey,
-              "Cannot claim for endemics without a previous review.",
-            );
+            // TODO: Raise inalid data event
+            // raiseInvalidDataEvent(
+            //   request,
+            //   typeOfReviewKey,
+            //   "Cannot claim for endemics without a previous review.",
+            // );
 
             return h
-              .view(`${endemicsWhichTypeOfReviewException}`, {
-                backLink: pageUrl,
+              .view(claimViews.whichTypeOfReviewException, {
+                backLink: claimRoutes.whichTypeOfReview,
                 backToPageMessage: "Tell us if you are claiming for a review or follow up.",
               })
               .code(HttpStatus.BAD_REQUEST)
@@ -116,10 +102,10 @@ export const whichReviewHandlers = [
           typeOfLivestock === oldWorldClaimTypeOfLivestock;
 
         if (isCattleEndemicsClaimForOldWorldReview) {
-          return h.redirect(prefixUrl(endemicsVetVisitsReviewTestResults));
+          return h.redirect(claimRoutes.vetVisitsReviewTestResults);
         }
 
-        return h.redirect(prefixUrl(endemicsDateOfVisit));
+        return h.redirect(claimRoutes.dateOfVisit);
       },
     },
   },

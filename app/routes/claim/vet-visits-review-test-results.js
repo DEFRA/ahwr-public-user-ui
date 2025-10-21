@@ -1,56 +1,44 @@
 import Joi from 'joi'
-import links from '../../config/routes.js'
-import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { radios } from '../models/form-component/radios.js'
-import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import HttpStatus from 'http-status-codes'
-import { prefixUrl } from '../utils/page-utils.js'
+import { getLivestockTypes } from "../../lib/utils.js";
+import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
 
-const {
-  endemicsVetRCVS,
-  endemicsVaccination,
-  endemicsDateOfVisit,
-  endemicsWhichTypeOfReview,
-  endemicsVetVisitsReviewTestResults
-} = links
-const { endemicsClaim: { vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey, reviewTestResults: reviewTestResultsKey } } = sessionKeys
-
-const pageUrl = prefixUrl(endemicsVetVisitsReviewTestResults)
 
 const previousPageUrl = (typeOfLivestock) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   if (isBeef || isDairy) {
-    return prefixUrl(endemicsWhichTypeOfReview)
+    return claimRoutes.whichTypeOfReview;
   }
-  return prefixUrl(endemicsVetRCVS)
+  return claimRoutes.vetRcvs;
 }
 
 const nextPageURL = (request) => {
-  const { typeOfLivestock } = getEndemicsClaim(request)
+  const { typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
   if (isBeef || isDairy) {
-    return prefixUrl(endemicsDateOfVisit)
+    return claimRoutes.dateOfVisit;
   }
-  return prefixUrl(endemicsVaccination)
+  return claimRoutes.vaccination;
 }
 
 const getHandler = {
   method: 'GET',
-  path: pageUrl,
+  path: claimRoutes.vetVisitsReviewTestResults,
   options: {
     handler: async (request, h) => {
-      const { vetVisitsReviewTestResults, typeOfLivestock } = getEndemicsClaim(request)
+      const { vetVisitsReviewTestResults, typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const positiveNegativeRadios = radios('', 'vetVisitsReviewTestResults')([{ value: 'positive', text: 'Positive', checked: vetVisitsReviewTestResults === 'positive' }, { value: 'negative', text: 'Negative', checked: vetVisitsReviewTestResults === 'negative' }])
-      return h.view(endemicsVetVisitsReviewTestResults, { typeOfLivestock, backLink: previousPageUrl(typeOfLivestock), ...positiveNegativeRadios })
+      return h.view(claimViews.vetVisitsReviewTestResults, { typeOfLivestock, backLink: previousPageUrl(typeOfLivestock), ...positiveNegativeRadios })
     }
   }
 }
 
 const postHandler = {
   method: 'POST',
-  path: pageUrl,
+  path: claimRoutes.vetVisitsReviewTestResults,
   options: {
     validate: {
       payload: Joi.object({
@@ -58,9 +46,9 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock } = getEndemicsClaim(request)
+        const { typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
         const positiveNegativeRadios = radios('', 'vetVisitsReviewTestResults', 'Select a test result')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
-        return h.view(endemicsVetVisitsReviewTestResults, {
+        return h.view(claimViews.vetVisitsReviewTestResults, {
           ...request.payload,
           typeOfLivestock,
           backLink: previousPageUrl(typeOfLivestock),
@@ -76,8 +64,10 @@ const postHandler = {
     handler: async (request, h) => {
       const { vetVisitsReviewTestResults } = request.payload
 
-      setEndemicsClaim(request, vetVisitsReviewTestResultsKey, vetVisitsReviewTestResults)
-      setEndemicsClaim(request, reviewTestResultsKey, vetVisitsReviewTestResults)
+      // TODO: Should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.vetVisitsReviewTestResults, vetVisitsReviewTestResults);
+      // TODO: Should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.reviewTestResults, vetVisitsReviewTestResults);
 
       return h.redirect(nextPageURL(request))
     }

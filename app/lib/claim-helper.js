@@ -1,4 +1,4 @@
-import { MULTIPLE_HERDS_RELEASE_DATE, claimConstants } from "../constants/claim-constants";
+import { MULTIPLE_HERDS_RELEASE_DATE, claimConstants } from "../constants/claim-constants.js";
 import { areDatesWithin10Months } from "./utils";
 
 const getPastReviewClaimsForSpeciesAndHerd = (

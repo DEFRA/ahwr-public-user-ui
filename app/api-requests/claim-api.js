@@ -51,3 +51,19 @@ export async function getAmount(_data, _logger) {
   // }
   return Promise.resolve(100);
 }
+
+export async function isURNUnique (data, logger) {
+  const endpoint = `${config.applicationApiUri}/claim/is-urn-unique`
+  try {
+    const { payload } = await Wreck.post(endpoint, {
+      payload: data,
+      json: true
+    })
+
+    return payload
+  } catch (err) {
+    logger.setBindings({ err, endpoint })
+    // appInsights.defaultClient.trackException({ exception: err })
+    throw err
+  }
+}

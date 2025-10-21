@@ -1,36 +1,19 @@
 import Joi from "joi";
-import { errorMessages } from "../../lib/error-messages.js";
 import { claimConstants } from "../../constants/claim-constants.js";
-import links from "../../config/routes.js";
-import { getEndemicsClaim, setEndemicsClaim } from "../../session/index.js";
-import { sessionKeys } from "../../session/keys.js";
-import { getTestResult } from "../../lib/get-test-result.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
-import { getEndemicsClaimDetails, prefixUrl } from "../utils/page-utils.js";
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import { getEndemicsClaimDetails, getTestResult } from "../../lib/utils.js";
+import { claimRoutes, claimViews } from "../../constants/routes.js";
 
-const { rcvs: rcvsErrorMessages } = errorMessages;
+const errorMessages = {
+  enterRCVS: 'Enter an RCVS number',
+  validRCVS: 'An RCVS number is a 7 digit number or a 6 digit number ending in a letter.'
+}
 const { claimType } = claimConstants;
 
-const {
-  endemicsVetName,
-  endemicsVetRCVS,
-  endemicsTestUrn,
-  endemicsVaccination,
-  endemicsBiosecurity,
-  endemicsPIHunt,
-  endemicsSheepEndemicsPackage,
-  endemicsVetVisitsReviewTestResults,
-} = links;
-const {
-  endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey, dateOfVisit: dateOfVisitKey },
-} = sessionKeys;
-
-const pageUrl = prefixUrl(endemicsVetRCVS);
-const backLink = prefixUrl(endemicsVetName);
-
 const nextPageURL = (request) => {
-  const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = getEndemicsClaim(request);
+  const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isBeef, isDairy, isPigs, isSheep, isEndemicsFollowUp } = getEndemicsClaimDetails(
     typeOfLivestock,
     typeOfReview,
@@ -38,31 +21,31 @@ const nextPageURL = (request) => {
 
   if (isEndemicsFollowUp) {
     if (relevantReviewForEndemics.type === claimType.vetVisits && isPigs) {
-      return prefixUrl(endemicsVetVisitsReviewTestResults);
+      return claimRoutes.vetVisitsReviewTestResults;
     }
     if (isSheep) {
-      return prefixUrl(endemicsSheepEndemicsPackage);
+      return claimRoutes.sheepEndemicsPackage;
     }
     if (isBeef || isDairy) {
-      return prefixUrl(endemicsTestUrn);
+      return claimRoutes.testUrn;
     }
     if (isPigs) {
-      return prefixUrl(endemicsVaccination);
+      return claimRoutes.vaccination;
     }
   }
 
-  return prefixUrl(endemicsTestUrn);
+  return claimRoutes.testUrn;
 };
 
 const getHandler = {
   method: "GET",
-  path: pageUrl,
+  path: claimRoutes.vetRcvs,
   options: {
     handler: async (request, h) => {
-      const { vetRCVSNumber } = getEndemicsClaim(request);
-      return h.view(endemicsVetRCVS, {
+      const { vetRCVSNumber } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      return h.view(claimViews.vetRcvs, {
         vetRCVSNumber,
-        backLink,
+        backLink: claimRoutes.vetName,
       });
     },
   },
@@ -70,7 +53,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: pageUrl,
+  path: claimRoutes.vetRcvs,
   options: {
     validate: {
       payload: Joi.object({
@@ -79,19 +62,19 @@ const postHandler = {
           .pattern(/^\d{6}[\dX]$/i)
           .required()
           .messages({
-            "any.required": rcvsErrorMessages.enterRCVS,
-            "string.base": rcvsErrorMessages.enterRCVS,
-            "string.empty": rcvsErrorMessages.enterRCVS,
-            "string.pattern.base": rcvsErrorMessages.validRCVS,
+            "any.required": errorMessages.enterRCVS,
+            "string.base": errorMessages.enterRCVS,
+            "string.empty": errorMessages.enterRCVS,
+            "string.pattern.base": errorMessages.validRCVS,
           }),
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err });
         return h
-          .view(endemicsVetRCVS, {
+          .view(claimViews.vetRcvs, {
             ...request.payload,
-            backLink,
-            errorMessage: { text: err.details[0].message, href: `#${vetRCVSNumberKey}` },
+            backLink: claimRoutes.vetName,
+            errorMessage: { text: err.details[0].message, href: `#${sessionKeys.endemicsClaim.vetRCVSNumber}` },
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -99,28 +82,29 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { vetRCVSNumber } = request.payload;
-      const { reviewTestResults, typeOfLivestock, typeOfReview } = getEndemicsClaim(request);
+      const { dateOfVisit, reviewTestResults, typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const { isBeef, isDairy, isBeefOrDairyEndemics } = getEndemicsClaimDetails(
         typeOfLivestock,
         typeOfReview,
       );
       const { isNegative, isPositive } = getTestResult(reviewTestResults);
 
-      setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber);
+      // TODO: Should emit event
+      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.vetRCVSNumber, vetRCVSNumber);
 
       if (
-        isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) &&
+        isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) &&
         isBeefOrDairyEndemics
       ) {
-        return h.redirect(prefixUrl(endemicsPIHunt));
+        return h.redirect(claimRoutes.piHunt);
       }
 
       if (isBeef || isDairy) {
         if (isPositive) {
-          return h.redirect(prefixUrl(endemicsPIHunt));
+          return h.redirect(claimRoutes.piHunt);
         }
         if (isNegative) {
-          return h.redirect(prefixUrl(endemicsBiosecurity));
+          return h.redirect(claimRoutes.biosecurity);
         }
       }
 
