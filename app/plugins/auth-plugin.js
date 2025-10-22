@@ -1,5 +1,4 @@
 import { config } from "../config/index.js";
-import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 
 export const authPlugin = {
@@ -16,8 +15,8 @@ export const authPlugin = {
           ttl: config.cookie.ttl,
         },
         keepAlive: true,
-        redirectTo: (request) => {
-          return requestAuthorizationCodeUrl(request);
+        redirectTo: (_request) => {
+          return "/sign-in";
         },
         validateFunc: async (request) => {
           const sessionWasSet = Boolean(

@@ -9,8 +9,8 @@ import { getTestResult } from "../../lib/utils.js";
 import { clearPiHuntSessionOnChange } from "../../lib/clear-pi-hunt-session-on-change.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
-import { claimConstants } from "../../constants/claim-constants.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { claimType } from "ffc-ahwr-common-library";
 
 const getHandler = {
   method: "GET",
@@ -114,7 +114,7 @@ const postHandler = {
 };
 
 const isFollowUpOfNewWorldReview = (relevantReviewForEndemics) => {
-  return relevantReviewForEndemics.type === claimConstants.claimType.review;
+  return relevantReviewForEndemics.type === claimType.review;
 };
 
 export const piHuntHandlers = [getHandler, postHandler];

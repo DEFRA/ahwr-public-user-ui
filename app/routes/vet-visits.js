@@ -6,9 +6,10 @@ import { applicationType } from "../constants/constants.js";
 import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
 import { config } from "../config/index.js";
 import { showMultiHerdsBanner } from "./utils/show-multi-herds-banner.js";
-import { RPA_CONTACT_DETAILS, claimType } from "ffc-ahwr-common-library";
+import { RPA_CONTACT_DETAILS, claimType, UNNAMED_FLOCK, UNNAMED_HERD } from "ffc-ahwr-common-library";
 import { isWithin10MonthsFromNow } from "../lib/utils.js";
 import { claimRoutes } from "../constants/routes.js";
+import { SHEEP } from "../constants/claim-constants.js";
 
 const { latestTermsAndConditionsUri } = config;
 
@@ -28,10 +29,10 @@ const createRowsForTable = (claims) => {
     });
 
     const claimTypeText =
-      (claim.data.claimType ?? claimType.review) === "REVIEW" ? "Review" : "Follow-up";
+      (claim.data.claimType ?? claimType.review) === claimType.review ? "Review" : "Follow-up";
     const herdName =
       claim.herd?.herdName ??
-      (claim.data.typeOfLivestock === "sheep" ? "Unnamed flock" : "Unnamed herd");
+      (claim.data.typeOfLivestock === SHEEP ? UNNAMED_FLOCK : UNNAMED_HERD);
 
     return [
       {

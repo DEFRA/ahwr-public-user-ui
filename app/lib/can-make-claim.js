@@ -1,6 +1,6 @@
 import { areDatesWithin10Months, getLivestockTypes } from "./utils.js";
 import { getOldWorldClaimFromApplication } from "./claim-helper.js";
-import { claimConstants } from "../constants/claim-constants.js";
+import { claimType } from "ffc-ahwr-common-library";
 
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
@@ -61,13 +61,13 @@ export const canMakeClaim = ({
   oldWorldApplication,
 }) => {
   const prevReviewClaim =
-    prevClaims.find((claim) => claim.type === claimConstants.claimType.review) ||
+    prevClaims.find((claim) => claim.type === claimType.review) ||
     getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock);
   const prevEndemicsClaim = prevClaims.find(
-    (claim) => claim.type === claimConstants.claimType.endemics,
+    (claim) => claim.type === claimType.endemics,
   );
 
-  return typeOfReview === claimConstants.claimType.review
+  return typeOfReview === claimType.review
     ? canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit)
     : canMakeEndemicsClaim(
         dateOfVisit,

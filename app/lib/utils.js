@@ -1,4 +1,5 @@
-import { BEEF, claimConstants, DAIRY, PIGS, SHEEP } from "../constants/claim-constants.js";
+import { BEEF, DAIRY, PIGS, SHEEP } from "../constants/claim-constants.js";
+import { claimType } from "ffc-ahwr-common-library";
 
 export const isWithin10MonthsFromNow = (d) => {
   const date = new Date(d);
@@ -48,8 +49,8 @@ export function getClaimType(claimData, isEndemicsClaims = false) {
 
 export const getReviewType = (typeOfReview) => {
   return {
-    isReview: typeOfReview === claimConstants.claimType.review,
-    isEndemicsFollowUp: typeOfReview === claimConstants.claimType.endemics,
+    isReview: typeOfReview === claimType.review,
+    isEndemicsFollowUp: typeOfReview === claimType.endemics,
   };
 };
 

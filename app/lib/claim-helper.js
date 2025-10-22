@@ -1,5 +1,6 @@
-import { MULTIPLE_HERDS_RELEASE_DATE, claimConstants } from "../constants/claim-constants.js";
+import { MULTIPLE_HERDS_RELEASE_DATE } from "../constants/claim-constants.js";
 import { areDatesWithin10Months } from "./utils.js";
+import { claimType } from "ffc-ahwr-common-library";
 
 const getPastReviewClaimsForSpeciesAndHerd = (
   dateOfVisit,
@@ -10,7 +11,7 @@ const getPastReviewClaimsForSpeciesAndHerd = (
   previousClaims.filter(
     (prevClaim) =>
       new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit) &&
-      prevClaim.type === claimConstants.claimType.review &&
+      prevClaim.type === claimType.review &&
       typeOfLivestock === prevClaim.data.typeOfLivestock &&
       (herdId ? herdId === prevClaim.herd?.id : true), // Only filtering on this if herdId is present, as we may not be on a MultiHerds journey
   );
@@ -46,7 +47,7 @@ export const getReviewWithinLast10Months = (
 export const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
   oldWorldApp && typeOfLivestock === oldWorldApp.data.whichReview
     ? {
-        statusId: oldWorldApp.statusId,
+        status: oldWorldApp.status,
         data: {
           claimType: oldWorldApp.data.whichReview,
           dateOfVisit: oldWorldApp.data.visitDate,

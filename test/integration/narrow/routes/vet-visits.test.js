@@ -111,7 +111,7 @@ test.skip("get /vet-visits: new world, multiple businesses", async () => {
       data: {
         dateOfVisit: "2024-12-29",
         typeOfLivestock: "beef",
-        claimType: "R",
+        claimType: "REVIEW",
       },
       status: "WITHDRAWN",
     },
@@ -190,7 +190,7 @@ test.skip("get /vet-visits: new world, multiple businesses, for sheep (flock not
       data: {
         dateOfVisit: "2024-12-29",
         typeOfLivestock: "sheep",
-        claimType: "R",
+        claimType: "REVIEW",
       },
       status: "WITHDRAWN",
     },
@@ -251,7 +251,7 @@ test.skip("get /vet-visits: new world, claim has a herd", async () => {
       data: {
         dateOfVisit: "2024-12-29",
         typeOfLivestock: "beef",
-        claimType: "R",
+        claimType: "REVIEW",
       },
       herd: {
         herdName: "best beef herd",

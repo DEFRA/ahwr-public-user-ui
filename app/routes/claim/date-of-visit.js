@@ -1,10 +1,11 @@
 import joi from "joi";
 import {
-  claimConstants,
+  BEEF,
+  DAIRY,
   MAX_POSSIBLE_DAY,
   MAX_POSSIBLE_MONTH,
   MULTIPLE_SPECIES_RELEASE_DATE,
-  PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
+  PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
 } from "../../constants/claim-constants.js";
 import { getOldWorldClaimFromApplication, getAllClaimsForFirstHerd  } from "../../lib/claim-helper.js";
 import { isValidDate } from "../../lib/date-validations.js";
@@ -23,6 +24,7 @@ import { getTempHerdId } from "../../lib/get-temp-herd-id.js";
 import { getNextMultipleHerdsPage } from "../../lib/get-next-multiple-herds-page.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { claimType } from "ffc-ahwr-common-library";
 
 const labelPrefix = "visit-date-";
 
@@ -53,8 +55,8 @@ export const previousPageUrl = (
   const oldWorldClaimTypeOfLivestock = latestVetVisitApplication?.data?.whichReview;
 
   const isCattleEndemicsClaimForOldWorldReview =
-    typeOfReview === claimConstants.claimType.endemics &&
-    [claimConstants.livestockTypes.beef, claimConstants.livestockTypes.dairy].includes(
+    typeOfReview === claimType.endemics &&
+    [BEEF, DAIRY].includes(
       oldWorldClaimTypeOfLivestock,
     ) &&
     relevantClaims.length === 0 &&
@@ -391,7 +393,7 @@ const nonMhRouting = (
   // duplicated from which-type-of-review-ms
   // we don't know if postMH claims can be used for follow-up until date entered
   if (
-    typeOfClaim === "E" &&
+    typeOfClaim === claimType.endemics &&
     !getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock) &&
     claimsForFirstHerdIfPreMH.length === 0
   ) {

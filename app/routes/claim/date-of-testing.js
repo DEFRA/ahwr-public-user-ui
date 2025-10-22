@@ -1,6 +1,5 @@
 import Joi from "joi";
 import {
-  claimConstants,
   MAX_POSSIBLE_YEAR,
   MIN_POSSIBLE_YEAR,
 } from "../../constants/claim-constants.js";
@@ -27,6 +26,7 @@ import {
 } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { claimType } from "ffc-ahwr-common-library";
 
 const addError = (error, label, type, href) => {
   if (
@@ -380,7 +380,7 @@ const postHandler = {
         new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit) : false;
 
       if (
-        typeOfReview === claimConstants.claimType.endemics &&
+        typeOfReview === claimType.endemics &&
         previousReviewClaim &&
         dateOfTestingBeforePreviousReviewDateOfVisit
       ) {
