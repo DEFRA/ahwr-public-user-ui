@@ -165,25 +165,19 @@ describe('Date of testing', () => {
 
     test.each([
       {
-        description: 'When vet visited the farm',
-        whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-        dateOfVisit: today,
         typeOfLivestock: 'beef'
       },
       {
-        description: 'When vet visited the farm',
-        whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-        dateOfVisit: today,
         typeOfLivestock: 'dairy'
       }
-    ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, dateOfVisit, typeOfLivestock }) => {
-      getSessionData.mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'FOLLOW_UP', typeOfLivestock } })
-        .mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'FOLLOW_UP', typeOfLivestock } })
+    ])('returns 302 to next page when acceptable answer given - When vet visited the farm', async ({ typeOfLivestock }) => {
+      getSessionData.mockImplementationOnce(() => { return { dateOfVisit: today, typeOfReview: 'FOLLOW_UP', typeOfLivestock } })
+        .mockImplementationOnce(() => { return { dateOfVisit: today, typeOfReview: 'FOLLOW_UP', typeOfLivestock } })
 
       const options = {
         method: 'POST',
         url,
-        payload: { crumb, whenTestingWasCarriedOut, dateOfVisit, dateOfAgreementAccepted: '2022-01-01' },
+        payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: today, dateOfAgreementAccepted: '2022-01-01' },
         auth,
         headers: { cookie: `crumb=${crumb}` }
       }

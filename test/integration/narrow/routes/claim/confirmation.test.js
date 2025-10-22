@@ -22,14 +22,8 @@ describe('Claim confirmation', () => {
   const url = `/confirmation`
 
   test.each([
-    { typeOfLivestock: 'beef', typeOfReview: 'FOLLOW_UP' },
-    { typeOfLivestock: 'pigs', typeOfReview: 'FOLLOW_UP' },
-    { typeOfLivestock: 'dairy', typeOfReview: 'FOLLOW_UP' },
-    { typeOfLivestock: 'sheep', typeOfReview: 'FOLLOW_UP' },
-    { typeOfLivestock: 'beef', typeOfReview: 'REVIEW' },
-    { typeOfLivestock: 'pigs', typeOfReview: 'REVIEW' },
-    { typeOfLivestock: 'dairy', typeOfReview: 'REVIEW' },
-    { typeOfLivestock: 'sheep', typeOfReview: 'REVIEW' }
+    { typeOfReview: 'FOLLOW_UP' },
+    { typeOfReview: 'REVIEW' },
   ])('GET endemicsConfirmation route', async ({ typeOfReview }) => {
     const { isReview } = getReviewType(typeOfReview)
     const options = {
