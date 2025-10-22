@@ -393,7 +393,7 @@ const nonMhRouting = (
   // duplicated from which-type-of-review-ms
   // we don't know if postMH claims can be used for follow-up until date entered
   if (
-    typeOfClaim === "FOLLOW_UP" &&
+    typeOfClaim === claimType.endemics &&
     !getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock) &&
     claimsForFirstHerdIfPreMH.length === 0
   ) {
