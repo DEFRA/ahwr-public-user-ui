@@ -1,3 +1,5 @@
+import { claimType as CLAIM_TYPE } from "ffc-ahwr-common-library";
+
 export const getClaimInfo = (previousClaims, typeOfLivestock) => {
   let claimTypeText;
   let dateOfVisitText;
@@ -14,7 +16,7 @@ export const getClaimInfo = (previousClaims, typeOfLivestock) => {
       return claim.createdAt > latest.createdAt ? claim : latest;
     });
 
-    claimTypeText = claimType === "R" ? "Review" : "Endemics";
+    claimTypeText = claimType === CLAIM_TYPE.review ? "Review" : "Endemics";
     dateOfVisitText = new Date(dateOfVisit).toLocaleDateString("en-GB", {
       day: "numeric",
       month: "long",

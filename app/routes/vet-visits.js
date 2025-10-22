@@ -9,6 +9,7 @@ import { showMultiHerdsBanner } from "./utils/show-multi-herds-banner.js";
 import { RPA_CONTACT_DETAILS, claimType } from "ffc-ahwr-common-library";
 import { isWithin10MonthsFromNow } from "../lib/utils.js";
 import { claimRoutes } from "../constants/routes.js";
+import { SHEEP } from "../constants/claim-constants.js";
 
 const { latestTermsAndConditionsUri } = config;
 
@@ -31,7 +32,7 @@ const createRowsForTable = (claims) => {
       (claim.data.claimType ?? claimType.review) === "REVIEW" ? "Review" : "Follow-up";
     const herdName =
       claim.herd?.herdName ??
-      (claim.data.typeOfLivestock === "sheep" ? "Unnamed flock" : "Unnamed herd");
+      (claim.data.typeOfLivestock === SHEEP ? "Unnamed flock" : "Unnamed herd");
 
     return [
       {

@@ -10,12 +10,12 @@ import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { getClaimsByApplicationReference } from "../api-requests/claim-api.js";
 import { createTempReference } from "./create-temp-ref.js";
 import {
-  claimConstants,
   MULTIPLE_HERDS_RELEASE_DATE,
   ONLY_HERD,
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
 } from "../constants/claim-constants.js";
 import { claimRoutes } from "../constants/routes.js";
+import { claimType } from "ffc-ahwr-common-library";
 
 export async function refreshApplications(sbi, request) {
   const applications = await getApplicationsBySbi(sbi, request.logger);
@@ -83,7 +83,7 @@ export function canChangeSpecies(request, typeOfReview) {
   );
 
   return (
-    claimConstants.claimType[typeOfReview] === claimConstants.claimType.review &&
+    claimType[typeOfReview] === claimType.review &&
     !lockedToSpecies(previousClaims)
   );
 }

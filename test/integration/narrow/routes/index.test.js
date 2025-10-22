@@ -1,5 +1,4 @@
 import { createServer } from "../../../../app/server.js";
-import { DEFRA_ID_BASE_URL } from "../../../../app/auth/auth-code-grant/request-authorization-code-url.js";
 
 describe("root / path", () => {
   let server;
@@ -27,6 +26,6 @@ describe("root / path", () => {
     });
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location.href).toMatch(DEFRA_ID_BASE_URL);
+    expect(res.headers.location).toMatch('/sign-in');
   });
 });

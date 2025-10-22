@@ -1,11 +1,11 @@
 import Joi from "joi";
-import { claimConstants } from "../../constants/claim-constants.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
 import { getOldWorldClaimFromApplication } from "../../lib/claim-helper.js";
+import { claimType } from "ffc-ahwr-common-library";
+import { BEEF, DAIRY } from "../../constants/claim-constants.js";
 
-const { livestockTypes, claimType } = claimConstants;
 
 const getPreviousAnswer = (typeOfReview) => {
   if (typeOfReview === claimType.review) {
@@ -96,7 +96,7 @@ export const whichReviewHandlers = [
 
         const isCattleEndemicsClaimForOldWorldReview =
           claimType[typeOfReview] === claimType.endemics &&
-          [livestockTypes.beef, livestockTypes.dairy].includes(oldWorldClaimTypeOfLivestock) &&
+          [BEEF, DAIRY].includes(oldWorldClaimTypeOfLivestock) &&
           relevantClaims.length === 0 &&
           typeOfLivestock === oldWorldClaimTypeOfLivestock;
 

@@ -14,7 +14,7 @@ export async function getClaimsByApplicationReference(applicationReference, logg
 }
 
 export async function submitNewClaim(data, logger) {
-  const endpoint = `${config.applicationApiUri}/claim`
+  const endpoint = `${config.applicationApiUri}/claims`
 
   try {
     const { payload } = await Wreck.post(endpoint, {
@@ -30,7 +30,7 @@ export async function submitNewClaim(data, logger) {
 }
 
 export async function isURNUnique (data, logger) {
-  const endpoint = `${config.applicationApiUri}/claim/is-urn-unique`
+  const endpoint = `${config.applicationApiUri}/claims/is-urn-unique`
   try {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,

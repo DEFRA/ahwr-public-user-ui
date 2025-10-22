@@ -1,16 +1,15 @@
 import Joi from "joi";
-import { claimConstants } from "../../constants/claim-constants.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
 import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
 import { getEndemicsClaimDetails, getTestResult } from "../../lib/utils.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { claimType } from "ffc-ahwr-common-library";
 
 const errorMessages = {
   enterRCVS: 'Enter an RCVS number',
   validRCVS: 'An RCVS number is a 7 digit number or a 6 digit number ending in a letter.'
 }
-const { claimType } = claimConstants;
 
 const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = getSessionData(request, sessionEntryKeys.endemicsClaim);
