@@ -439,7 +439,7 @@ const postHandler = {
 
       const claim = await submitNewClaim(
         {
-          applicationReference: latestEndemicsApplication?.reference,
+          applicationReference: latestEndemicsApplication.reference,
           reference: tempClaimReference,
           type: typeOfReview,
           createdBy: "admin",
@@ -483,12 +483,12 @@ const postHandler = {
               }),
             ...(isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags) && {
               herd: {
-                herdId,
-                herdVersion,
-                herdName,
+                id: herdId,
+                version: herdVersion,
+                name: herdName,
                 cph: herdCph,
-                herdReasons,
-                herdSame,
+                reasons: herdReasons,
+                same: herdSame,
               },
             }),
           },

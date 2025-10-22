@@ -1,21 +1,11 @@
 import { config } from "../config/index.js";
+import { claimType, TYPE_OF_LIVESTOCK } from "ffc-ahwr-common-library";
 
 export const claimConstants = {
   thresholdPerClaimType: {
     beef: 5,
     pigs: 30,
     sheep: 10,
-  },
-  livestockTypes: {
-    beef: "beef",
-    dairy: "dairy",
-    pigs: "pigs",
-    sheep: "sheep",
-  },
-  claimType: { // TODO These won;t work as the data will be using REVIEW | FOLLOW_UP
-    review: "R",
-    endemics: "E",
-    vetVisits: "VV",
   },
   diseaseStatusTypes: {
     1: "1",
@@ -34,53 +24,31 @@ export const claimConstants = {
   pigsFollowUpTest: {
     pcr: "pcr",
     elisa: "elisa",
-  },
-  amount: {
-    R: {
-      beef: "£522",
-      dairy: "£372",
-      pigs: "£684",
-      sheep: "£436",
-    },
-    E: {
-      beef: "£[amount]",
-      dairy: "£[amount]",
-      pigs: "£[amount]",
-      sheep: "£[amount]",
-    },
-  },
+  }
 };
 
-export const amounts = {
-  beef: 522,
-  dairy: 372,
-  pigs: 684,
-  sheep: 436,
-};
+const { review, endemics } = claimType;
 
-const {
-  livestockTypes: { beef, dairy, pigs, sheep },
-  claimType: { review, endemics },
-} = claimConstants;
+export const { BEEF, DAIRY, PIGS, SHEEP } = TYPE_OF_LIVESTOCK;
 
 export const thresholds = {
   minimumNumberFluidOralSamples: 5,
   positiveReviewNumberOfSamplesTested: "6",
   negativeReviewNumberOfSamplesTested: "30",
   numberOfSpeciesTested: {
-    [beef]: {
+    [BEEF]: {
       [review]: 5,
       [endemics]: 11,
     },
-    [dairy]: {
+    [DAIRY]: {
       [review]: 5,
       [endemics]: 1,
     },
-    [pigs]: {
+    [PIGS]: {
       [review]: 30,
       [endemics]: 30,
     },
-    [sheep]: {
+    [SHEEP]: {
       [review]: 10,
       [endemics]: 1,
     },

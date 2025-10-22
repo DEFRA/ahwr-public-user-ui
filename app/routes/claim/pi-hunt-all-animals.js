@@ -7,10 +7,10 @@ import {
 } from "../../session/index.js";
 import { radios } from "../../models/form-component/radios.js";
 import { getTestResult } from "../../lib/utils.js";
-import { getAmount } from "../../api-requests/claim-api.js";
 import { clearPiHuntSessionOnChange } from "../../lib/clear-pi-hunt-session-on-change.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { getAmount } from "../../lib/prices-helper.js";
 
 const backLink = (reviewTestResults) => {
   const { isPositive } = getTestResult(reviewTestResults);
@@ -104,7 +104,7 @@ const postHandler = {
       );
 
       if (piHuntAllAnimals === "no") {
-        const claimPaymentNoPiHunt = await getAmount(
+        const claimPaymentNoPiHunt = getAmount(
           {
             type: typeOfReview,
             typeOfLivestock,
@@ -112,8 +112,7 @@ const postHandler = {
             piHunt,
             piHuntAllAnimals: "no",
             dateOfVisit,
-          },
-          request.logger,
+          }
         );
         // TODO - raise invalid data event
 

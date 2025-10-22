@@ -2,11 +2,11 @@ import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from ".
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { getClaimsByApplicationReference } from "../api-requests/claim-api.js";
 import nunjucks from "nunjucks";
-import { applicationType, claimType } from "../constants/constants.js";
+import { applicationType } from "../constants/constants.js";
 import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
 import { config } from "../config/index.js";
 import { showMultiHerdsBanner } from "./utils/show-multi-herds-banner.js";
-import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
+import { RPA_CONTACT_DETAILS, claimType } from "ffc-ahwr-common-library";
 import { isWithin10MonthsFromNow } from "../lib/utils.js";
 import { claimRoutes } from "../constants/routes.js";
 
@@ -28,7 +28,7 @@ const createRowsForTable = (claims) => {
     });
 
     const claimTypeText =
-      (claim.data.claimType ?? claimType.review) === "R" ? "Review" : "Follow-up";
+      (claim.data.claimType ?? claimType.review) === "REVIEW" ? "Review" : "Follow-up";
     const herdName =
       claim.herd?.herdName ??
       (claim.data.typeOfLivestock === "sheep" ? "Unnamed flock" : "Unnamed herd");

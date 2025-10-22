@@ -8,11 +8,6 @@ export const applicationType = {
   VET_VISITS: "VV",
 };
 
-export const claimType = {
-  review: "R",
-  endemics: "E",
-};
-
 export const farmerApply = "farmerApply";
 
 export const userType = {

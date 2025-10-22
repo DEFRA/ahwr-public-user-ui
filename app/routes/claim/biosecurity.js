@@ -9,12 +9,11 @@ import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { getTestResult, getLivestockTypes } from "../../lib/utils.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
-import { claimConstants } from "../../constants/claim-constants.js";
+import { claimConstants, PIGS } from "../../constants/claim-constants.js";
 
 const YES_TO_ASSESSMENT_TEXT = "Select yes if the vet did a biosecurity assessment";
 
 const {
-  livestockTypes: { pigs },
   pigsFollowUpTest: { pcr },
 } = claimConstants;
 
@@ -203,7 +202,7 @@ const postHandler = {
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.biosecurity,
-        typeOfLivestock === pigs ? { biosecurity, assessmentPercentage } : biosecurity,
+        typeOfLivestock === PIGS ? { biosecurity, assessmentPercentage } : biosecurity,
       );
 
       if (biosecurity === "no") {

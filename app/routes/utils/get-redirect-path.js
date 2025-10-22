@@ -1,6 +1,6 @@
-import { closedViewStatuses } from "../../constants/claim-statuses.js";
 import { applicationType } from "../../constants/constants.js";
 import { setSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
+import { closedViewStatuses } from "ffc-ahwr-common-library";
 
 export function getRedirectPath(applicationsForSbi, request) {
   const checkDetails = "/check-details";
