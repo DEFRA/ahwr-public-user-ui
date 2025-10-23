@@ -176,7 +176,7 @@ export const vetVisitsHandlers = [
 
         const claims = latestEndemicsApplication
           ? await getClaimsByApplicationReference(
-              latestEndemicsApplication.data.reference,
+              latestEndemicsApplication.reference,
               request.logger,
             )
           : [];
@@ -184,6 +184,7 @@ export const vetVisitsHandlers = [
         const vetVisitApplicationsWithinLastTenMonths = vetVisitApplications.filter((application) =>
           isWithin10MonthsFromNow(application.data.visitDate),
         );
+
         const allClaims = [...claims, ...vetVisitApplicationsWithinLastTenMonths];
         const isOldWorld = !latestEndemicsApplication;
 
