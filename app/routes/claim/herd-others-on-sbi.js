@@ -24,7 +24,6 @@ const getHandler = {
   method: "GET",
   path: "/herd-others-on-sbi",
   options: {
-    tags: ["mh"],
     handler: async (request, h) => {
       const { isOnlyHerdOnSbi, typeOfLivestock } = getSessionData(
         request,
