@@ -48,7 +48,7 @@ describe('/enter-cph-number tests', () => {
     test('returns 200 with herd labels when species beef', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef'
       })
 
@@ -64,7 +64,7 @@ describe('/enter-cph-number tests', () => {
     test('returns 200 with herd labels when species beef, also correct cph number', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdCph: '22/333/4444'
       })
@@ -82,7 +82,7 @@ describe('/enter-cph-number tests', () => {
     test('returns 200 with flock labels when species sheep', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep'
       })
 
@@ -98,7 +98,7 @@ describe('/enter-cph-number tests', () => {
     test('returns 200 with back link to select herd when updating an existing herd', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep',
         herdVersion: 2,
         herdCph: '22/333/4444'
@@ -122,7 +122,7 @@ describe('/enter-cph-number tests', () => {
     test('navigates to herd others when no previous herds and payload is valid', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep'
       })
 
@@ -136,7 +136,7 @@ describe('/enter-cph-number tests', () => {
     test('navigates to check herd details when there are previous herds and othersOnSbi is yes', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep',
         herds: [{ id: 'herd one' }],
         isOnlyHerdOnSbi: 'yes'
@@ -152,7 +152,7 @@ describe('/enter-cph-number tests', () => {
     test('navigates to enter herd details when there are previous herds and othersOnSbi is no', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep',
         herds: [{ id: 'herd one' }],
         isOnlyHerdOnSbi: 'no'
@@ -168,7 +168,7 @@ describe('/enter-cph-number tests', () => {
     test('display errors when cph number is missing', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef'
       })
 
@@ -185,7 +185,7 @@ describe('/enter-cph-number tests', () => {
     test('display errors when cph number does not contain digits', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef'
       })
 
@@ -202,7 +202,7 @@ describe('/enter-cph-number tests', () => {
     test('display errors with flock label when payload invalid', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep'
       })
 
@@ -219,7 +219,7 @@ describe('/enter-cph-number tests', () => {
     test('display errors with back link to select herd when payload invalid and updating an existing herd', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdVersion: 2
       })

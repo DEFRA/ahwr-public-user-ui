@@ -54,7 +54,7 @@ describe('/enter-herd-name tests', () => {
     test('returns 200 with herd labels when species beef', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herds: [{
           id: '1'
@@ -73,7 +73,7 @@ describe('/enter-herd-name tests', () => {
     test('returns 200 with herd labels when species beef, also correct herd name', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdName: 'Commercial Herd',
         herds: [{
@@ -94,7 +94,7 @@ describe('/enter-herd-name tests', () => {
     test('returns 200 with flock labels when species sheep', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep',
         herds: [{
           id: '1'
@@ -113,7 +113,7 @@ describe('/enter-herd-name tests', () => {
     test('returns 200 with back link to date of visit when no previous herds', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep',
         herds: []
       })
@@ -136,7 +136,7 @@ describe('/enter-herd-name tests', () => {
     test('navigates to the correct page when payload valid', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep'
       })
 
@@ -150,7 +150,7 @@ describe('/enter-herd-name tests', () => {
     test('navigates to the correct page when payload valid and multiple previous claims with herds', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep',
         previousClaims: [
           {
@@ -176,7 +176,7 @@ describe('/enter-herd-name tests', () => {
     test('displays errors when herd name is missing', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herds: [{ id: 1 }]
       })
@@ -194,7 +194,7 @@ describe('/enter-herd-name tests', () => {
     test('displays errors when herd name is less than 2 characters', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herds: [{ id: 1 }]
       })
@@ -212,7 +212,7 @@ describe('/enter-herd-name tests', () => {
     test('displays errors when herd name is greater than 30 characters', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herds: [{ id: 1 }]
       })
@@ -230,7 +230,7 @@ describe('/enter-herd-name tests', () => {
     test('displays errors when herd name contains an invalid character', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herds: [{ id: 1 }]
       })
@@ -248,7 +248,7 @@ describe('/enter-herd-name tests', () => {
     test('displays errors when herd name has already been used in a previous claim', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herds: [{ id: 1 }],
         previousClaims: [
@@ -273,7 +273,7 @@ describe('/enter-herd-name tests', () => {
     test('displays errors with back link to date of visit when no previous herds and sheep', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep'
       })
 

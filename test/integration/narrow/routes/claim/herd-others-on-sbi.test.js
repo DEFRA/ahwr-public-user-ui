@@ -37,7 +37,7 @@ describe('/herd-others-on-sbi tests', () => {
     test('returns 200 with herd labels when species beef', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef'
       })
 
@@ -58,7 +58,7 @@ describe('/herd-others-on-sbi tests', () => {
     test('returns 200 with herd labels when species beef, also selects no', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         isOnlyHerdOnSbi: 'no'
       })
@@ -76,7 +76,7 @@ describe('/herd-others-on-sbi tests', () => {
     test('returns 200 with flock labels when species sheep', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep'
       })
 
@@ -97,7 +97,7 @@ describe('/herd-others-on-sbi tests', () => {
     test('returns 200 with flock labels when species dairy', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'dairy'
       })
 
@@ -118,7 +118,7 @@ describe('/herd-others-on-sbi tests', () => {
     test('returns 200 with flock labels when species pigs', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'pigs'
       })
 
@@ -145,7 +145,7 @@ describe('/herd-others-on-sbi tests', () => {
     test('navigates to enter herd details when no existing herd and they select yes', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep'
       })
 
@@ -162,7 +162,7 @@ describe('/herd-others-on-sbi tests', () => {
     test('navigates to check herd details when no existing herd and they select no', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep'
       })
 
@@ -178,7 +178,7 @@ describe('/herd-others-on-sbi tests', () => {
     test('display errors with flock labels when no answer selected and typeOfLivestock is sheep', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep'
       })
 
@@ -195,7 +195,7 @@ describe('/herd-others-on-sbi tests', () => {
     test('display errors with herd labels when no answer selected and typeOfLivestock is not sheep', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef'
       })
 

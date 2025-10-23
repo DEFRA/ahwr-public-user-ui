@@ -35,7 +35,7 @@ describe('Vet name test', () => {
 
   describe(`GET ${url} route`, () => {
     test.each([{ reviewTestResults: 'negative' }, { reviewTestResults: 'positive' }])('returns 200', async ({ reviewTestResults }) => {
-      getSessionData.mockImplementation(() => { return { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
+      getSessionData.mockImplementation(() => { return { typeOfLivestock: 'beef', typeOfReview: 'FOLLOW_UP', reviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
       const options = {
         method: 'GET',
         url,

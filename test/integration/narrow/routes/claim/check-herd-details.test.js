@@ -42,7 +42,7 @@ describe('/check-herd-details tests', () => {
     test('returns 200 with herd labels when species beef, also change links are correct', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdId: '909bb722-3de1-443e-8304-0bba8fx§922050',
         herdVersion: 1,
@@ -68,7 +68,7 @@ describe('/check-herd-details tests', () => {
     test('returns 200 and displays flock labels when species is sheep', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep',
         herdId: '909bb722-3de1-443e-8304-0bba8f922050',
         herdVersion: 1,
@@ -94,7 +94,7 @@ describe('/check-herd-details tests', () => {
     test('returns 200 and backLink to isOnlyHerdOnSbi when isOnlyHerdOnSbi is yes', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdId: '909bb722-3de1-443e-8304-0bba8f922050',
         herdVersion: 1,
@@ -119,7 +119,7 @@ describe('/check-herd-details tests', () => {
     test('returns 200 and backLink to enterHerdDetails when isOnlyHerdOnSbi is no', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdId: '909bb722-3de1-443e-8304-0bba8f922050',
         herdVersion: 1,
@@ -144,7 +144,7 @@ describe('/check-herd-details tests', () => {
     test('should display others on sbi when existing herd and it was the only herd', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdId: '909bb722-3de1-443e-8304-0bba8fx5922050',
         herdVersion: 1,
@@ -174,7 +174,7 @@ describe('/check-herd-details tests', () => {
     test('should display others on sbi when no existing herds', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdId: '909bb722-3de1-443e-8304-0bba8fx5922050',
         herdVersion: 1,
@@ -201,7 +201,7 @@ describe('/check-herd-details tests', () => {
     test('should not display others on sbi when existing herd and it was not the only herd', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdId: '909bb722-3de1-443e-8304-0bba8fx5922050',
         herdVersion: 1,
@@ -235,7 +235,7 @@ describe('/check-herd-details tests', () => {
 
     const validPayloadWithPreviousClaimsWithoutHerd = {
       reference: 'TEMP-6GSE-PIR8',
-      typeOfReview: 'R',
+      typeOfReview: 'REVIEW',
       typeOfLivestock: 'beef',
       herdId: '909bb722-3de1-443e-8304-0bba8f922050',
       herdVersion: 1,
@@ -244,7 +244,7 @@ describe('/check-herd-details tests', () => {
       isOnlyHerdOnSbi: 'no',
       herdReasons: ['differentBreed'],
       previousClaims: [
-        { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+        { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'REVIEW', typeOfLivestock: 'beef' } }
       ]
     }
 
@@ -274,9 +274,9 @@ describe('/check-herd-details tests', () => {
       getSessionData.mockReturnValue({
         ...validPayloadWithPreviousClaimsWithoutHerd,
         previousClaims: [
-          { createdAt: '2025-03-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', herdId: 'abaf864a-bda6-49b0-a17f-4a170fedd9c1' } },
-          { createdAt: '2025-03-10T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+          { createdAt: '2025-03-01T00:00:00.000Z', data: { typeOfReview: 'REVIEW', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'REVIEW', typeOfLivestock: 'beef', herdId: 'abaf864a-bda6-49b0-a17f-4a170fedd9c1' } },
+          { createdAt: '2025-03-10T00:00:00.000Z', data: { typeOfReview: 'REVIEW', typeOfLivestock: 'beef' } }
         ]
       })
       getNextMultipleHerdsPage.mockReturnValue('/date-of-testing')

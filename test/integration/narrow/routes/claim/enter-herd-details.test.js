@@ -37,7 +37,7 @@ describe('/enter-herd-details tests', () => {
     test('returns 200 with herd labels when species beef', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef'
       })
 
@@ -69,7 +69,7 @@ describe('/enter-herd-details tests', () => {
     test('returns 200 with herd labels when species beef, also selects differentBreed and other', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdReasons: ['differentBreed', 'keptSeparate']
       })
@@ -88,7 +88,7 @@ describe('/enter-herd-details tests', () => {
     test('returns 200 with flock labels when species sheep', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep'
       })
 
@@ -108,7 +108,7 @@ describe('/enter-herd-details tests', () => {
     test(`returns 200 with back link to enter cph number when previous herds but herd reason not ${ONLY_HERD}`, async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdId: 'herd-one',
         herds: [{ herdId: 'herd-one', herdReasons: ['foo'] }]
@@ -130,7 +130,7 @@ describe('/enter-herd-details tests', () => {
     test(`returns 200 with back link to herd-others-on-sbi when previous herds and herd reason is ${ONLY_HERD}`, async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdId: 'herd-one',
         herds: [{ herdId: 'herd-one', herdReasons: [ONLY_HERD] }]
@@ -158,7 +158,7 @@ describe('/enter-herd-details tests', () => {
     test('navigates to the correct page when payload valid', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep',
         herdReasons: []
       })
@@ -173,7 +173,7 @@ describe('/enter-herd-details tests', () => {
     test('display errors when payload invalid', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdReasons: []
       })
@@ -190,7 +190,7 @@ describe('/enter-herd-details tests', () => {
     test('display errors and no reasons selected when reasons stored in session but payload is now invalid', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdReasons: ['differentBreed']
       })
@@ -208,7 +208,7 @@ describe('/enter-herd-details tests', () => {
     test('display errors with flock labels when payload invalid', async () => {
       getSessionData.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'REVIEW',
         typeOfLivestock: 'sheep',
         herdReasons: []
       })
@@ -225,7 +225,7 @@ describe('/enter-herd-details tests', () => {
   test('display errors with back link to enter cph number when previous herds', async () => {
     getSessionData.mockReturnValue({
       reference: 'TEMP-6GSE-PIR8',
-      typeOfReview: 'R',
+      typeOfReview: 'REVIEW',
       typeOfLivestock: 'sheep',
       herdReasons: [],
       herds: [{ id: 'herdOne' }]
