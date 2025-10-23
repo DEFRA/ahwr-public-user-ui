@@ -104,7 +104,7 @@ const getSheepDiseasesTestedRow = (isEndemicsFollowUp, sessionData) => {
     return createdHerdRowObject(
       "Diseases or conditions tested for",
       testList,
-      claimRoutes.sheepTestResults,
+      claimRoutes.sheepTests,
       "diseases or conditions tested for",
     );
   }

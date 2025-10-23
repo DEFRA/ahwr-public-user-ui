@@ -25,11 +25,11 @@ const title = (request) => {
 }
 
 const previousPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview, reviewTestResults } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+  const { typeOfLivestock, typeOfReview, reviewTestResults, dateOfVisit } = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isEndemicsFollowUp, isBeefOrDairyEndemics, isReview, isBeef, isDairy, isPigs } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
   const { isPositive } = getTestResult(reviewTestResults)
 
-  if (isVisitDateAfterPIHuntAndDairyGoLive(getSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.dateOfVisit)) && isBeefOrDairyEndemics) {
+  if (isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) && isBeefOrDairyEndemics) {
     return claimRoutes.dateOfTesting;
   }
   if (isReview) {
