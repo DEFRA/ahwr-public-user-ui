@@ -16,6 +16,7 @@ import { devRedirectPlugin } from "./plugins/dev-redirect.js";
 import { getCacheEngine } from "./cache/get-cache-engine.js";
 
 export async function createServer() {
+  setupProxy()
   const server = Hapi.server({
     cache: [getCacheEngine()],
     port: config.port,
