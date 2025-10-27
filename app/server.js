@@ -14,8 +14,10 @@ import { viewsPlugin } from "./plugins/views.js";
 import { routerPlugin } from "./plugins/router.js";
 import { devRedirectPlugin } from "./plugins/dev-redirect.js";
 import { getCacheEngine } from "./cache/get-cache-engine.js";
+import { setupProxy } from "./lib/setup-proxy.js";
 
 export async function createServer() {
+  setupProxy()
   const server = Hapi.server({
     cache: [getCacheEngine()],
     port: config.port,
