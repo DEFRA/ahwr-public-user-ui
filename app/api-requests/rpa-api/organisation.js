@@ -11,9 +11,11 @@ export const getOrganisationAuthorisation = async ({
   const { getOrganisationPermissionsUrl } = authConfig.ruralPaymentsAgency;
 
   const response = await sendRPAGetRequest(
-    getOrganisationPermissionsUrl.replace("organisationId", organisationId),
-    defraIdAccessToken,
-    { Authorization: apimAccessToken },
+    {
+      url: getOrganisationPermissionsUrl.replace("organisationId", organisationId),
+      defraIdAccessToken,
+      headers: { Authorization: apimAccessToken }
+  }
   );
   return response?.data;
 };
