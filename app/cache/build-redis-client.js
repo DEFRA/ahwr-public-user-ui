@@ -1,5 +1,6 @@
 import { Cluster, Redis } from "ioredis";
 import { config } from "../config/index.js";
+import { getLogger } from "../logging/logger.js";
 
 const redisConfig = config.cache.options;
 
@@ -52,11 +53,11 @@ export function buildRedisClient() {
   }
 
   redisClient.on("connect", () => {
-    console.log("Connected to Redis server");
+    getLogger().info("Connected to Redis server");
   });
 
   redisClient.on("error", (error) => {
-    console.log(`Redis connection error ${error}`);
+    getLogger().info(`Redis connection error ${error}`);
   });
 
   return redisClient;

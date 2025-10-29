@@ -6,7 +6,7 @@ import { authPlugin } from "./plugins/auth-plugin.js";
 import { cookiePlugin } from "./plugins/cookies.js";
 import { crumbPlugin } from "./plugins/crumb.js";
 import { errorPagesPlugin } from "./plugins/error-pages.js";
-import { loggingPlugin } from "./plugins/logger.js";
+import { requestLogger } from "./logging/request-logger.js";
 import { headerPlugin } from "./plugins/header.js";
 import { sessionPlugin } from "./plugins/session.js";
 import { viewContextPlugin } from "./plugins/view-context.js";
@@ -15,8 +15,10 @@ import { routerPlugin } from "./plugins/router.js";
 import { devRedirectPlugin } from "./plugins/dev-redirect.js";
 import { getCacheEngine } from "./cache/get-cache-engine.js";
 import { redirectAgreementRedactedPlugin } from "./plugins/redirect-agreement-redacted.js";
+import { setupProxy } from "./lib/setup-proxy.js";
 
 export async function createServer() {
+  setupProxy()
   const server = Hapi.server({
     cache: [getCacheEngine()],
     port: config.port,
@@ -39,7 +41,7 @@ export async function createServer() {
   await server.register(authPlugin);
   await server.register(cookiePlugin);
   await server.register(errorPagesPlugin);
-  await server.register(loggingPlugin);
+  await server.register(requestLogger);
   await server.register(routerPlugin);
   await server.register(sessionPlugin);
   await server.register(viewContextPlugin);
