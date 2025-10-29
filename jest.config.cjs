@@ -31,5 +31,5 @@ module.exports = {
   transform: {
     "^.+\\.[j]sx?$": "babel-jest",
   },
-  transformIgnorePatterns: ["/node_modules/(?!(ffc-ahwr-common-library)/)"],
+  transformIgnorePatterns: ["/node_modules/@defra/(?!(hapi-tracing)/)"],
 };
