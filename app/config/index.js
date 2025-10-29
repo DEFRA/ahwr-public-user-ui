@@ -69,6 +69,11 @@ export const getConfig = () => {
       releaseDate: joi.string().required(),
     }),
     privacyPolicyUri: joi.string().uri(),
+    serviceVersion: joi.string().required(),
+    name: joi.string().required(),
+    logLevel: joi.string().required(),
+    logFormat: joi.string().required(),
+    logRedact: joi.array().items(joi.string()),
   });
 
   const config = {
@@ -134,6 +139,11 @@ export const getConfig = () => {
       releaseDate: process.env.MULTI_HERDS_RELEASE_DATE || "2025-05-01",
     },
     privacyPolicyUri: process.env.PRIVACY_POLICY_URI,
+    serviceVersion: process.env.SERVICE_VERSION,
+    name: process.env.SERVICE_NAME ?? "ahwr-public-user-ui",
+    logLevel: process.env.LOG_LEVEL ?? (process.env.NODE_ENV === "test" ? "silent" : "info"),
+    logFormat: process.env.USE_PRETTY_PRINT === "true" ? "pino-pretty" : "ecs",
+    logRedact: process.env.LOG_REDACT ? process.env.LOG_REDACT.split(",") : [],
   };
 
   const { error } = schema.validate(config, {

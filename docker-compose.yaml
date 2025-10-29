@@ -13,6 +13,7 @@ services:
       REDIS_USERNAME: ""
       REDIS_PASSWORD: ""
       SERVICE_URI: http://localhost:3003/
+      SERVICE_VERSION: ${SERVICE_VERSION:-1.0.0}
       APPLICATION_API_URI: http://ahwr-application-backend:3001/api
       DEFRA_ID_TENANT: ${DEFRA_ID_TENANT:-azdcuspoc5}
       DEFRA_ID_POLICY: ${DEFRA_ID_POLICY:-B2C_1A_SIGNUPSIGNINSFI}
