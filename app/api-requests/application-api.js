@@ -1,5 +1,6 @@
 import Wreck from "@hapi/wreck";
 import { config } from "../config/index.js";
+import { StatusCodes } from "http-status-codes";
 
 export async function getApplicationsBySbi(sbi, logger) {
   const endpoint = `${config.applicationApi.uri}/applications?sbi=${sbi}`;
@@ -28,24 +29,17 @@ export const createApplication = async (application, logger) => {
   }
 };
 
-export const getHerds = async (_applicationReference, _typeOfLivestock, _logger) => {
-  // TODO - make this call real
+export const getHerds = async (applicationReference, typeOfLivestock, logger) => {
+  const endpoint = `${config.applicationApiUri}/application/${applicationReference}/herds?species=${typeOfLivestock}`;
 
-  // const endpoint = `${config.applicationApiUri}/application/${applicationReference}/herds?species=${typeOfLivestock}`
-
-  // try {
-  //   const { payload } = await Wreck.get(
-  //     endpoint,
-  //     { json: true }
-  //   )
-  //   return payload
-  // } catch (err) {
-  //   if (err.output.statusCode === StatusCodes.NOT_FOUND) {
-  //     return []
-  //   }
-  //   logger.setBindings({ err })
-  //   throw err
-  // }
-
-  return [];
+  try {
+    const { payload } = await Wreck.get(endpoint, { json: true });
+    return payload;
+  } catch (err) {
+    if (err.output.statusCode === StatusCodes.NOT_FOUND) {
+      return [];
+    }
+    logger.setBindings({ err });
+    throw err;
+  }
 };
