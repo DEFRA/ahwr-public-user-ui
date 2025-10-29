@@ -38,10 +38,6 @@ export const declarationRouteHandlers = [
           sessionKeys.farmerApplyData.organisation,
         );
 
-        if (!organisation) {
-          throw new Error("No organisation found in session");
-        }
-
         return h.view(applyViews.declaration, {
           backLink: applyRoutes.timings,
           latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${applyRoutes.declaration}`,
@@ -63,7 +59,7 @@ export const declarationRouteHandlers = [
           }),
         }),
         failAction: async (request, h, _) => {
-          const application = getSessionData(request, sessionEntryKeys.farmerApplyData);
+          const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
 
           return h
             .view(applyViews.declaration, {
@@ -72,7 +68,7 @@ export const declarationRouteHandlers = [
               errorMessage: {
                 text: "Select yes if you have read and agree to the terms and conditions",
               },
-              organisation: formatOrganisation(application.organisation),
+              organisation: formatOrganisation(farmerApplyData.organisation),
             })
             .code(StatusCodes.BAD_REQUEST)
             .takeover();
@@ -98,17 +94,17 @@ export const declarationRouteHandlers = [
           "yes",
         );
 
-        const application = getSessionData(request, sessionEntryKeys.farmerApplyData);
-        const tempApplicationReference = application.reference;
+        const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
+        const { organisation, reference: tempApplicationReference } = farmerApplyData;
 
         request.logger.setBindings({
           tempApplicationReference,
-          sbi: application.organisation.sbi,
+          sbi: organisation.sbi,
         });
 
-        resetFarmerApplyDataBeforeApplication(application);
+        resetFarmerApplyDataBeforeApplication(farmerApplyData);
 
-        const { applicationReference } = await createApplication(application);
+        const { applicationReference } = await createApplication(farmerApplyData);
 
         request.logger.setBindings({ applicationReference });
 
@@ -142,7 +138,7 @@ export const declarationRouteHandlers = [
 
         return h.view(applyViews.confirmation, {
           reference: applicationReference,
-          isNewUser: userType.NEW_USER === application.organisation.userType,
+          isNewUser: userType.NEW_USER === organisation.userType,
           latestTermsAndConditionsUri: config.latestTermsAndConditionsUri,
         });
       },

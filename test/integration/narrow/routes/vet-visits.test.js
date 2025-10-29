@@ -2,41 +2,19 @@ import { setServerState } from "../../../helpers/set-server-state.js";
 import { config } from "../../../../app/config/index.js";
 import { createServer } from "../../../../app/server.js";
 import { getTableCells } from "../../../helpers/get-table-cells.js";
-import { setupServer } from "msw/node";
 import globalJsdom from "global-jsdom";
 import { getByRole, queryByRole } from "@testing-library/dom";
-import { http, HttpResponse } from "msw";
 import { authConfig } from "../../../../app/config/auth.js";
+import { getApplicationsBySbi } from "../../../../app/api-requests/application-api.js";
+import { getClaimsByApplicationReference } from "../../../../app/api-requests/claim-api.js";
 
 const nunJucksInternalTimerMethods = ["nextTick"];
 let cleanUpFunction;
 
-const mswServer = setupServer();
-mswServer.listen();
+jest.mock("../../../../app/api-requests/application-api.js");
+jest.mock("../../../../app/api-requests/claim-api.js");
 
-afterEach(() => {
-  mswServer.resetHandlers();
-});
-
-afterAll(() => {
-  mswServer.close();
-});
-
-function setMswHandlers(applicationReference, applications, claims) {
-  const applicationsLatest = http.get(`${config.applicationApi.uri}/applications/latest`, () =>
-    HttpResponse.json(applications),
-  );
-
-  const claimByReference = http.get(
-    `${config.applicationApi.uri}/claim/get-by-application-reference/${applicationReference}`,
-    () => HttpResponse.json(claims),
-  );
-
-  mswServer.use(applicationsLatest, claimByReference);
-}
-
-// TODO - once we have removed mocks, this test can run again
-test.skip("get /vet-visits: no agreement throws an error", async () => {
+test("get /vet-visits: no agreement throws an error", async () => {
   const server = await createServer();
 
   const sbi = "106354662";
@@ -55,11 +33,9 @@ test.skip("get /vet-visits: no agreement throws an error", async () => {
 
   await setServerState(server, state);
 
-  const applicationReference = "";
   const newWorldApplications = [];
-  const claims = [];
 
-  setMswHandlers(applicationReference, newWorldApplications, claims);
+  getApplicationsBySbi.mockResolvedValueOnce(newWorldApplications);
 
   const { payload } = await server.inject({
     url: "/vet-visits",
@@ -78,8 +54,7 @@ test.skip("get /vet-visits: no agreement throws an error", async () => {
   ).toBeDefined();
 });
 
-// TODO - once we have removed mocks, this test can run again
-test.skip("get /vet-visits: new world, multiple businesses", async () => {
+test("get /vet-visits: new world, multiple businesses", async () => {
   cleanUpFunction();
   const server = await createServer();
 
@@ -101,7 +76,7 @@ test.skip("get /vet-visits: new world, multiple businesses", async () => {
 
   const applicationReference = "IAHW-TEST-NEW1";
   const newWorldApplications = [
-    { sbi, type: "EE", reference: applicationReference, applicationRedacts: [] },
+    { sbi, type: "EE", reference: applicationReference, redacted: false },
   ];
 
   const claims = [
@@ -117,7 +92,8 @@ test.skip("get /vet-visits: new world, multiple businesses", async () => {
     },
   ];
 
-  setMswHandlers(applicationReference, newWorldApplications, claims);
+  getApplicationsBySbi.mockResolvedValue(newWorldApplications);
+  getClaimsByApplicationReference.mockResolvedValueOnce(claims);
 
   const { payload } = await server.inject({
     url: "/vet-visits",
@@ -142,7 +118,7 @@ test.skip("get /vet-visits: new world, multiple businesses", async () => {
 
   expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
     "href",
-    `claim/which-species`,
+    expect.stringContaining("/which-species"),
   );
 
   expect(
@@ -152,8 +128,7 @@ test.skip("get /vet-visits: new world, multiple businesses", async () => {
   ).toHaveProperty("href", expect.stringContaining(authConfig.defraId.hostname));
 });
 
-// TODO - once we have removed mocks, this test can run again
-test.skip("get /vet-visits: new world, multiple businesses, for sheep (flock not herd)", async () => {
+test("get /vet-visits: new world, multiple businesses, for sheep (flock not herd)", async () => {
   cleanUpFunction();
   const server = await createServer();
 
@@ -179,7 +154,7 @@ test.skip("get /vet-visits: new world, multiple businesses, for sheep (flock not
       sbi,
       type: "EE",
       reference: applicationReference,
-      applicationRedacts: [],
+      redacted: false,
     },
   ];
 
@@ -196,7 +171,8 @@ test.skip("get /vet-visits: new world, multiple businesses, for sheep (flock not
     },
   ];
 
-  setMswHandlers(applicationReference, newWorldApplications, claims);
+  getApplicationsBySbi.mockResolvedValue(newWorldApplications);
+  getClaimsByApplicationReference.mockResolvedValueOnce(claims);
 
   const { payload } = await server.inject({
     url: "/vet-visits",
@@ -213,8 +189,7 @@ test.skip("get /vet-visits: new world, multiple businesses, for sheep (flock not
   ]);
 });
 
-// TODO - once we have removed mocks, this test can run again
-test.skip("get /vet-visits: new world, claim has a herd", async () => {
+test("get /vet-visits: new world, claim has a herd", async () => {
   cleanUpFunction();
   const server = await createServer();
 
@@ -240,7 +215,7 @@ test.skip("get /vet-visits: new world, claim has a herd", async () => {
       sbi,
       type: "EE",
       reference: applicationReference,
-      applicationRedacts: [],
+      redacted: false,
     },
   ];
 
@@ -260,7 +235,8 @@ test.skip("get /vet-visits: new world, claim has a herd", async () => {
     },
   ];
 
-  setMswHandlers(applicationReference, newWorldApplications, claims);
+  getApplicationsBySbi.mockResolvedValue(newWorldApplications);
+  getClaimsByApplicationReference.mockResolvedValueOnce(claims);
 
   const { payload } = await server.inject({
     url: "/vet-visits",
@@ -285,7 +261,7 @@ test.skip("get /vet-visits: new world, claim has a herd", async () => {
 
   expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
     "href",
-    `claim/which-species`,
+    expect.stringContaining("/which-species"),
   );
 
   expect(
@@ -295,8 +271,7 @@ test.skip("get /vet-visits: new world, claim has a herd", async () => {
   ).toHaveProperty("href", expect.stringContaining(authConfig.defraId.hostname));
 });
 
-// TODO - once we have removed mocks, this test can run again
-test.skip("get /vet-visits: new world, no claims made, show banner", async () => {
+test("get /vet-visits: new world, no claims made, show banner", async () => {
   cleanUpFunction();
   const server = await createServer();
   jest.replaceProperty(config.multiSpecies, "releaseDate", "2024-12-04");
@@ -324,11 +299,12 @@ test.skip("get /vet-visits: new world, no claims made, show banner", async () =>
       type: "EE",
       reference: "IAHW-TEST-NEW2",
       createdAt: beforeMultiSpeciesReleaseDate,
-      applicationRedacts: [],
+      redacted: false,
     },
   ];
 
-  setMswHandlers("IAHW-TEST-NEW2", newWorldApplications, []);
+  getApplicationsBySbi.mockResolvedValue(newWorldApplications);
+  getClaimsByApplicationReference.mockResolvedValueOnce([]);
 
   const { payload } = await server.inject({
     url: "/vet-visits",
@@ -345,8 +321,7 @@ test.skip("get /vet-visits: new world, no claims made, show banner", async () =>
   );
 });
 
-// TODO - once we have removed mocks, this test can run again
-test.skip("get /vet-visits: old world application only", async () => {
+test("get /vet-visits: old world application only", async () => {
   cleanUpFunction();
   const server = await createServer();
   const timeOfTest = new Date("2025-01-02");
@@ -381,14 +356,10 @@ test.skip("get /vet-visits: old world application only", async () => {
         whichReview: "dairy",
       },
       status: "IN_CHECK",
-      applicationRedacts: [],
+      redacted: false,
     },
   ];
-  const applicationsLatest = http.get(`${config.applicationApi.uri}/applications/latest`, () =>
-    HttpResponse.json(oldWorldApplications),
-  );
-
-  mswServer.use(applicationsLatest);
+  getApplicationsBySbi.mockResolvedValue(oldWorldApplications);
 
   const { payload } = await server.inject({
     url: "/vet-visits",
@@ -408,8 +379,7 @@ test.skip("get /vet-visits: old world application only", async () => {
   ]);
 });
 
-// TODO - once we have removed mocks, this test can run again
-test.skip("get /vet-visits: shows agreement redacted", async () => {
+test("get /vet-visits: shows agreement redacted", async () => {
   cleanUpFunction();
   const server = await createServer();
   jest.replaceProperty(config.multiSpecies, "releaseDate", "2024-12-04");
@@ -437,15 +407,12 @@ test.skip("get /vet-visits: shows agreement redacted", async () => {
       type: "EE",
       reference: "IAHW-TEST-NEW2",
       createdAt: beforeMultiSpeciesReleaseDate,
-      applicationRedacts: [
-        {
-          success: "Y",
-        },
-      ],
+      redacted: true,
     },
   ];
 
-  setMswHandlers("IAHW-TEST-NEW2", newWorldApplications, []);
+  getApplicationsBySbi.mockResolvedValue(newWorldApplications);
+  getClaimsByApplicationReference.mockResolvedValueOnce([]);
 
   const { payload } = await server.inject({
     url: "/vet-visits",

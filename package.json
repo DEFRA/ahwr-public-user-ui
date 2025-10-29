@@ -38,7 +38,7 @@
     "@hapi/wreck": "18.1.0",
     "@hapi/yar": "10.1.1",
     "@ministryofjustice/frontend": "5.2.1",
-    "ffc-ahwr-common-library": "2.6.8",
+    "ffc-ahwr-common-library": "3.0.0",
     "form-data": "4.0.4",
     "govuk-frontend": "5.12.0",
     "hapi-pino": "11.0.1",

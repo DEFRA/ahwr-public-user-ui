@@ -9,7 +9,7 @@ import { radios } from "../../models/form-component/radios.js";
 import { clearPiHuntSessionOnChange } from "../../lib/clear-pi-hunt-session-on-change.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
-import { getAmount } from "../../lib/prices-helper.js";
+import { getAmount } from "ffc-ahwr-common-library";
 
 const questionText = "Was the PI hunt recommended by the vet?";
 const hintHtml = "You can find this on the summary the vet gave you.";

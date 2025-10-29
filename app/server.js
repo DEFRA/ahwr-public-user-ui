@@ -14,6 +14,7 @@ import { viewsPlugin } from "./plugins/views.js";
 import { routerPlugin } from "./plugins/router.js";
 import { devRedirectPlugin } from "./plugins/dev-redirect.js";
 import { getCacheEngine } from "./cache/get-cache-engine.js";
+import { redirectAgreementRedactedPlugin } from "./plugins/redirect-agreement-redacted.js";
 
 export async function createServer() {
   const server = Hapi.server({
@@ -44,6 +45,7 @@ export async function createServer() {
   await server.register(viewContextPlugin);
   await server.register(viewsPlugin);
   await server.register(headerPlugin);
+  await server.register(redirectAgreementRedactedPlugin);
 
   if (config.devLogin.enabled) {
     await server.register(devRedirectPlugin);

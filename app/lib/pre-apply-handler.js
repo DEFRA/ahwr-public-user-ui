@@ -10,7 +10,11 @@ export const preApplyHandler = async (request, h) => {
       sessionKeys.farmerApplyData.organisation,
     );
 
-    let application = getSessionData(request, sessionEntryKeys.farmerApplyData);
+    if (!organisation) {
+      throw new Error("No organisation found in session");
+    }
+
+    let application = getSessionData(request, sessionEntryKeys.application);
 
     if (!application) {
       const latestApplications = await getApplicationsBySbi(organisation.sbi);
@@ -23,7 +27,7 @@ export const preApplyHandler = async (request, h) => {
 
     request.logger.setBindings({ sbi: organisation.sbi });
 
-    if (application?.status === "AGREED" && !application.applicationRedacts.length) {
+    if (application?.status === "AGREED" && !application.redacted) {
       throw new Error(
         "User attempted to use apply journey despite already having an agreed agreement.",
       );

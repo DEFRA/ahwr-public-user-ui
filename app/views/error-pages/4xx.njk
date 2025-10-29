@@ -10,6 +10,9 @@
     </div>
   </div>
   <div>
-    <p><a href="https://www.gov.uk/government/collections/funding-to-improve-animal-health-and-welfare-guidance-for-farmers-and-vets">Go back home</a></p>
+    <p><a href="{{dashboardLink}}">Go back home</a></p>
+    {% if signInLink %}
+    <p><a href="{{signInLink}}">Sign in</a></p>
+    {% endif %}
   </div>
 {% endblock %}
