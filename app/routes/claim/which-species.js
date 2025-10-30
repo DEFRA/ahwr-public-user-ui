@@ -27,11 +27,6 @@ const getHandler = {
       // to this point to change species, we cant keep all their answers
       await resetEndemicsClaimSession(request, latestEndemicsApplication.reference);
 
-      // FIXME: caution, latest farmer-claim version does not have this, it has been moved. This needs to match
-      // if (latestEndemicsApplication?.applicationRedacts?.length) {
-      //   return h.redirect(links.claimDashboard).takeover();
-      // }
-
       return h.view(claimViews.whichSpecies, {
         ...(typeOfLivestock && {
           previousAnswer: typeOfLivestock,
@@ -53,7 +48,7 @@ const postHandler = {
           .required(),
       }),
       failAction: (request, h, err) => {
-        request.logger.setBindings({ err });
+        request.logger.setBindings({ error: err });
         return h
           .view(claimViews.whichSpecies, {
             errorMessage,

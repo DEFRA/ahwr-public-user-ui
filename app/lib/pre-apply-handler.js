@@ -1,6 +1,12 @@
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { applicationType } from "../constants/constants.js";
-import { getSessionData, setSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import { dashboardRoutes } from "../constants/routes.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionEntry,
+} from "../session/index.js";
 
 export const preApplyHandler = async (request, h) => {
   if (request.method === "get") {
@@ -10,7 +16,11 @@ export const preApplyHandler = async (request, h) => {
       sessionKeys.farmerApplyData.organisation,
     );
 
-    let application = getSessionData(request, sessionEntryKeys.farmerApplyData);
+    if (!organisation) {
+      throw new Error("No organisation found in session");
+    }
+
+    let application = getSessionData(request, sessionEntryKeys.application);
 
     if (!application) {
       const latestApplications = await getApplicationsBySbi(organisation.sbi);
@@ -18,15 +28,17 @@ export const preApplyHandler = async (request, h) => {
         (newWorldApp) => newWorldApp.type === applicationType.ENDEMICS,
       );
       application = newWorldApplications.length ? newWorldApplications[0] : null;
-      setSessionData(request, sessionEntryKeys.application, sessionKeys.application, application);
+      setSessionEntry(request, sessionEntryKeys.application, application);
     }
 
     request.logger.setBindings({ sbi: organisation.sbi });
 
-    if (application?.status === "AGREED" && !application.applicationRedacts.length) {
-      throw new Error(
-        "User attempted to use apply journey despite already having an agreed agreement.",
-      );
+    if (application?.status === "AGREED" && !application.redacted) {
+      // TODO - event needs tracking here
+      request.logger.setBindings({
+        err: "User attempted to use apply journey despite already having an agreed agreement.",
+      });
+      return h.redirect(dashboardRoutes.manageYourClaims).takeover();
     }
   }
 

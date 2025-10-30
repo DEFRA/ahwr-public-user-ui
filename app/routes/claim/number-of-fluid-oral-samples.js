@@ -42,7 +42,7 @@ const postHandler = {
         }),
       }),
       failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+        request.logger.setBindings({ error: err });
 
         return h
           .view(claimViews.numberOfFluidOralSamples, {

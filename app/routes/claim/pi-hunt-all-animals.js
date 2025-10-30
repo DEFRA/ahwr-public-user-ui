@@ -10,7 +10,7 @@ import { getTestResult } from "../../lib/utils.js";
 import { clearPiHuntSessionOnChange } from "../../lib/clear-pi-hunt-session-on-change.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
-import { getAmount } from "../../lib/prices-helper.js";
+import { getAmount } from "ffc-ahwr-common-library";
 
 const backLink = (reviewTestResults) => {
   const { isPositive } = getTestResult(reviewTestResults);
@@ -39,6 +39,7 @@ const getHandler = {
         { value: "yes", text: "Yes", checked: piHuntAllAnimals === "yes" },
         { value: "no", text: "No", checked: piHuntAllAnimals === "no" },
       ]);
+
       return h.view(claimViews.piHuntAllAnimals, {
         backLink: backLink(reviewTestResults),
         title: questionText,

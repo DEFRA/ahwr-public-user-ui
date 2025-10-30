@@ -3,6 +3,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
+  setSessionEntry,
 } from "../../session/index.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import {
@@ -508,12 +509,7 @@ const postHandler = {
         sessionKeys.endemicsClaim.amount,
         claim.data.amount,
       );
-      setSessionData(
-        request,
-        sessionEntryKeys.tempClaimReference,
-        sessionKeys.tempClaimReference,
-        claim.reference,
-      );
+      setSessionEntry(request, sessionEntryKeys.tempClaimReference, claim.reference);
 
       // TODO - fire an event that a claim was created
 

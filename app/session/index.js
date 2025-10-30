@@ -85,14 +85,13 @@ export const sessionKeys = {
     backLink: "backLink",
     organisation: "organisation",
   },
-  signInRedirect: "signInRedirect",
-  application: "application",
-  tempApplicationReference: "tempApplicationReference",
-  tempClaimReference: "tempClaimReference",
 };
 
 // This object must always be in line with the above object.
 // The outer keys must always match. Unit tests make sure of this.
+// The only exception are the ones which are individual values,
+// for example sigInRedirect only stores a boolean, so it doesnt
+// need an object defining above.
 export const sessionEntryKeys = {
   farmerApplyData: "farmerApplyData",
   endemicsClaim: "endemicsClaim",
@@ -102,16 +101,34 @@ export const sessionEntryKeys = {
   cannotSignInDetails: "cannotSignInDetails",
   signInRedirect: "signInRedirect",
   application: "application",
-  tempApplicationReference: "tempApplicationReference",
   tempClaimReference: "tempClaimReference",
 };
 
+// This function is used for setting individual values which are not in nested objects
+export const setSessionEntry = (request, entryKey, value) => {
+  if (!sessionEntryKeys[entryKey]) {
+    throw new Error(
+      `Session entry was attempted to be set with an entry key that doesnt exist: ${entryKey}.`,
+    );
+  }
+
+  request.yar.set(entryKey, typeof value === "string" ? value.trim() : value);
+};
+
+// This function is used for updating the nested objects in the session
 export const setSessionData = (request, entryKey, key, value) => {
   if (!sessionEntryKeys[entryKey]) {
     throw new Error(
       `Session was attempted to be set with an entry key that doesnt exist: ${entryKey}.`,
     );
   }
+
+  if (!key) {
+    throw new Error(
+      "setSessionData requires a key - use setSessionEntry for updating individual non-nested values",
+    );
+  }
+
   const entryValue = request.yar.get(entryKey) || {};
   entryValue[key] = typeof value === "string" ? value.trim() : value;
   request.yar.set(entryKey, entryValue);

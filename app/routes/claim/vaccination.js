@@ -53,7 +53,7 @@ const postHandler = {
           .required(),
       }),
       failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+        request.logger.setBindings({ error: err });
         const { vetVisitsReviewTestResults } = getSessionData(request, sessionEntryKeys.endemicsClaim);
         const vaccinatedNotVaccinatedRadios = radios(
           questionText,

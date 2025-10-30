@@ -8,7 +8,7 @@ export async function getClaimsByApplicationReference(applicationReference, logg
 
     return payload;
   } catch (err) {
-    logger.setBindings({ err });
+    logger.setBindings({ error: err });
     throw err;
   }
 }
@@ -34,16 +34,14 @@ export async function isURNUnique (data, logger) {
   try {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,
-      json: true
-    })
+      json: true,
+    });
 
-    // return payload
-    // TODO: when backend is fixed for this, remove the lines below
-    console.log(payload)
-    return { isURNUnique: true }
+    return payload;
   } catch (err) {
-    logger.setBindings({ err, endpoint })
+    logger.setBindings({ err, endpoint });
+    // Should we actually be tracking this in appInsights? The other endpoints dont
     // appInsights.defaultClient.trackException({ exception: err })
-    throw err
+    throw err;
   }
 }

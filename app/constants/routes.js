@@ -1,4 +1,4 @@
-export const dashboardRoutes = { manageYourClaims: "vet-visits", checkDetails: "check-details" };
+export const dashboardRoutes = { manageYourClaims: "/vet-visits", checkDetails: "/check-details" };
 
 export const applyRoutes = {
   youCanClaimMultiple: "/you-can-claim-multiple",

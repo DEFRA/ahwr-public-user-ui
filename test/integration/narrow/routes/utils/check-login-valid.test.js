@@ -4,6 +4,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
+  setSessionEntry,
 } from "../../../../../app/session";
 import { customerHasAtLeastOneValidCph } from "../../../../../app/api-requests/rpa-api/cph-check";
 import { requestAuthorizationCodeUrl } from "../../../../../app/auth/auth-code-grant/request-authorization-code-url";
@@ -92,12 +93,7 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.customer,
       sessionKeys.customer.crn,
     );
-    expect(setSessionData).toHaveBeenCalledWith(
-      request,
-      sessionEntryKeys.signInRedirect,
-      sessionKeys.signInRedirect,
-      true,
-    );
+    expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
   });
@@ -149,10 +145,9 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.customer,
       sessionKeys.customer.crn,
     );
-    expect(setSessionData).not.toHaveBeenCalledWith(
+    expect(setSessionEntry).not.toHaveBeenCalledWith(
       request,
       sessionEntryKeys.signInRedirect,
-      sessionKeys.signInRedirect,
       true,
     );
     expect(customerHasAtLeastOneValidCph).not.toHaveBeenCalled(); // only gets called if an error hasnt been found yet
@@ -209,10 +204,9 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.customer,
       sessionKeys.customer.crn,
     );
-    expect(setSessionData).not.toHaveBeenCalledWith(
+    expect(setSessionEntry).not.toHaveBeenCalledWith(
       request,
       sessionEntryKeys.signInRedirect,
-      sessionKeys.signInRedirect,
       true,
     );
     expect(customerHasAtLeastOneValidCph).not.toHaveBeenCalled(); // only gets called if an error hasnt been found yet
@@ -270,10 +264,9 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.customer,
       sessionKeys.customer.crn,
     );
-    expect(setSessionData).not.toHaveBeenCalledWith(
+    expect(setSessionEntry).not.toHaveBeenCalledWith(
       request,
       sessionEntryKeys.signInRedirect,
-      sessionKeys.signInRedirect,
       true,
     );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers); // only gets called if an error hasnt been found yet
@@ -331,10 +324,9 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.customer,
       sessionKeys.customer.crn,
     );
-    expect(setSessionData).not.toHaveBeenCalledWith(
+    expect(setSessionEntry).not.toHaveBeenCalledWith(
       request,
       sessionEntryKeys.signInRedirect,
-      sessionKeys.signInRedirect,
       true,
     );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers); // only gets called if an error hasnt been found yet
@@ -391,12 +383,7 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.customer,
       sessionKeys.customer.crn,
     );
-    expect(setSessionData).toHaveBeenCalledWith(
-      request,
-      sessionEntryKeys.signInRedirect,
-      sessionKeys.signInRedirect,
-      true,
-    );
+    expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
@@ -453,10 +440,9 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.customer,
       sessionKeys.customer.crn,
     );
-    expect(setSessionData).not.toHaveBeenCalledWith(
+    expect(setSessionEntry).not.toHaveBeenCalledWith(
       request,
       sessionEntryKeys.signInRedirect,
-      sessionKeys.signInRedirect,
       true,
     );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
@@ -515,12 +501,7 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.customer,
       sessionKeys.customer.crn,
     );
-    expect(setSessionData).toHaveBeenCalledWith(
-      request,
-      sessionEntryKeys.signInRedirect,
-      sessionKeys.signInRedirect,
-      true,
-    );
+    expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
@@ -577,12 +558,7 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.customer,
       sessionKeys.customer.crn,
     );
-    expect(setSessionData).toHaveBeenCalledWith(
-      request,
-      sessionEntryKeys.signInRedirect,
-      sessionKeys.signInRedirect,
-      true,
-    );
+    expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
@@ -639,12 +615,7 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.customer,
       sessionKeys.customer.crn,
     );
-    expect(setSessionData).toHaveBeenCalledWith(
-      request,
-      sessionEntryKeys.signInRedirect,
-      sessionKeys.signInRedirect,
-      true,
-    );
+    expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(mockSetBindings).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();

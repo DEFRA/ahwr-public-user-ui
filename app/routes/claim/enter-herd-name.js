@@ -63,7 +63,7 @@ const postHandler = {
           .required(),
       }),
       failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+        request.logger.setBindings({ error: err });
         const { herds, typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
         const herdOrFlock = getHerdOrFlock(typeOfLivestock);
         const errorType = err.details[0].type;

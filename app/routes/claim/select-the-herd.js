@@ -98,7 +98,7 @@ const postHandler = {
           .required(),
       }),
       failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+        request.logger.setBindings({ error: err });
         const { typeOfLivestock, previousClaims, herds, herdSelected } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
         const herdOrFlock = getHerdOrFlock(typeOfLivestock);

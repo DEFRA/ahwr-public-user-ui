@@ -33,7 +33,7 @@ export const signinRouteHandlers = [
             stripUnknown: true,
           }),
         failAction(request, h, err) {
-          request.logger.setBindings({ err });
+          request.logger.setBindings({ error: err });
           // TODO - track this exception
 
           return h
@@ -51,14 +51,12 @@ export const signinRouteHandlers = [
           await generateNewCrumb(request, h);
 
           const { accessToken, authRedirectCallback } = await authenticate(request, h, logger);
-          console.log('got token')
 
           if (authRedirectCallback) {
             return authRedirectCallback;
           }
 
           const apimAccessToken = await retrieveApimAccessToken(request);
-          console.log('got apim token')
 
           const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
 
@@ -69,10 +67,8 @@ export const signinRouteHandlers = [
             logger,
             accessToken,
           });
-          console.log('got person and org')
 
           await updateContactHistory(personSummary, orgDetails.organisation, logger);
-          console.log('updated contact history')
 
           setAuthCookie(request, personSummary.email, farmerApply);
 
@@ -93,9 +89,8 @@ export const signinRouteHandlers = [
 
           return h.redirect(redirectPath);
         } catch (err) {
-          request.logger.setBindings({ err });
+          request.logger.setBindings({ error: err });
           // TODO - track this exception
-          console.log(err);
 
           clearAllOfSession(request);
           clearAuthCookie(request);

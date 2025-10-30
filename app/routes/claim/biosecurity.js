@@ -157,7 +157,7 @@ const postHandler = {
         }),
       }),
       failAction: (request, h, err) => {
-        request.logger.setBindings({ err });
+        request.logger.setBindings({ error: err });
         const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
         const { biosecurity, assessmentPercentage } = request.payload;
         const assessmentPercentageErrorMessage = getAssessmentPercentageErrorMessage(

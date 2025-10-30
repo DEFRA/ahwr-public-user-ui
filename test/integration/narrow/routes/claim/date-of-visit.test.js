@@ -1298,12 +1298,15 @@ describe('POST /date-of-visit handler', () => {
       headers: { cookie: `crumb=${crumb}` }
     }
 
-    const res = await server.inject(options)
-    console.log(res)
+    const res = await server.inject(options);
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 1))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 1),
+    );
   })
 
   test('for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive', async () => {
