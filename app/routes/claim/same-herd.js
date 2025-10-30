@@ -46,7 +46,7 @@ const postHandler = {
         herdSame: Joi.string().valid("yes", "no").required(),
       }),
       failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+        request.logger.setBindings({ error: err });
         const { typeOfLivestock, previousClaims, herdSame } = getSessionData(
           request,
           sessionEntryKeys.endemicsClaim,

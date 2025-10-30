@@ -9,7 +9,7 @@ export async function getApplicationsBySbi(sbi, logger) {
 
     return payload;
   } catch (err) {
-    logger.setBindings({ err });
+    logger.setBindings({ error: err });
     throw err;
   }
 }
@@ -24,7 +24,7 @@ export const createApplication = async (application, logger) => {
 
     return payload;
   } catch (err) {
-    logger.setBindings({ err });
+    logger.setBindings({ error: err });
     throw err;
   }
 };
@@ -39,7 +39,7 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
     if (err.output.statusCode === StatusCodes.NOT_FOUND) {
       return [];
     }
-    logger.setBindings({ err });
+    logger.setBindings({ error: err });
     throw err;
   }
 };

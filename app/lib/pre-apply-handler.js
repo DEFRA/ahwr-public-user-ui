@@ -1,6 +1,12 @@
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { applicationType } from "../constants/constants.js";
-import { getSessionData, setSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import { dashboardRoutes } from "../constants/routes.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionEntry,
+} from "../session/index.js";
 
 export const preApplyHandler = async (request, h) => {
   if (request.method === "get") {
@@ -22,15 +28,17 @@ export const preApplyHandler = async (request, h) => {
         (newWorldApp) => newWorldApp.type === applicationType.ENDEMICS,
       );
       application = newWorldApplications.length ? newWorldApplications[0] : null;
-      setSessionData(request, sessionEntryKeys.application, sessionKeys.application, application);
+      setSessionEntry(request, sessionEntryKeys.application, application);
     }
 
     request.logger.setBindings({ sbi: organisation.sbi });
 
     if (application?.status === "AGREED" && !application.redacted) {
-      throw new Error(
-        "User attempted to use apply journey despite already having an agreed agreement.",
-      );
+      // TODO - event needs tracking here
+      request.logger.setBindings({
+        err: "User attempted to use apply journey despite already having an agreed agreement.",
+      });
+      return h.redirect(dashboardRoutes.manageYourClaims).takeover();
     }
   }
 

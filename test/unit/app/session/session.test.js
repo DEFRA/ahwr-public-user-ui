@@ -2,7 +2,6 @@ import {
   clearAllOfSession,
   clearApplyRedirect,
   sessionEntryKeys,
-  sessionKeys,
 } from "../../../../app/session/index.js";
 
 const yarMock = {
@@ -19,13 +18,6 @@ const yarMock = {
 describe("session", () => {
   beforeEach(() => {
     jest.resetAllMocks();
-  });
-
-  test("session entry keys should be an object representation of all of the object keys of sessionKeys", () => {
-    const sessionKeysTopLevel = Object.keys(sessionKeys).sort();
-    const sessionEntryKeysTopLevel = Object.keys(sessionEntryKeys).sort();
-
-    expect(sessionEntryKeysTopLevel).toEqual(sessionKeysTopLevel);
   });
 
   describe("clearAllOfSession", () => {

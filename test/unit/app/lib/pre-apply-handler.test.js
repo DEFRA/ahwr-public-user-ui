@@ -6,6 +6,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
+  setSessionEntry,
 } from "../../../../app/session";
 import { when } from "jest-when";
 
@@ -87,10 +88,9 @@ describe("preApplyHandler", () => {
     await preApplyHandler(getRequest, h);
 
     expect(getApplicationsBySbi).toHaveBeenCalled();
-    expect(setSessionData).toHaveBeenCalledWith(
+    expect(setSessionEntry).toHaveBeenCalledWith(
       getRequest,
       sessionEntryKeys.application,
-      sessionKeys.application,
       closedNewWorldApplications[0],
     );
   });

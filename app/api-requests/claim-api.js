@@ -8,7 +8,7 @@ export async function getClaimsByApplicationReference(applicationReference, logg
 
     return payload;
   } catch (err) {
-    logger.setBindings({ err });
+    logger.setBindings({ error: err });
     throw err;
   }
 }

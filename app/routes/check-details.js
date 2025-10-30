@@ -34,7 +34,7 @@ export const checkDetailsHandlers = [
           confirmCheckDetails: joi.string().valid("yes", "no").required(),
         }),
         failAction: (request, h, err) => {
-          request.logger.setBindings({ err });
+          request.logger.setBindings({ error: err });
           const organisation = getSessionData(
             request,
             sessionEntryKeys.endemicsClaim,

@@ -150,8 +150,6 @@ export const devLoginHandlers = [
             return h.redirect("/cannot-sign-in").takeover();
           }
 
-          console.log(error);
-
           return h
             .view("verify-login-failed", {
               backLink: devLandingPageUrl,

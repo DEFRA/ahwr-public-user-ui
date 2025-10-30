@@ -48,7 +48,7 @@ const postHandler = {
           .required(),
       }),
       failAction: (request, h, err) => {
-        request.logger.setBindings({ err });
+        request.logger.setBindings({ error: err });
         return h
           .view(claimViews.whichSpecies, {
             errorMessage,

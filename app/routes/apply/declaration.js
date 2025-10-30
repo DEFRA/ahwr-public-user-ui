@@ -5,6 +5,7 @@ import {
   getSessionData,
   clearApplyRedirect,
   setSessionData,
+  setSessionEntry,
 } from "../../session/index.js";
 import { userType } from "../../constants/constants.js";
 import { config } from "../../config/index.js";
@@ -115,10 +116,9 @@ export const declarationRouteHandlers = [
             sessionKeys.farmerApplyData.reference,
             applicationReference,
           );
-          setSessionData(
+          setSessionEntry(
             request,
             sessionEntryKeys.tempApplicationReference,
-            sessionKeys.tempApplicationReference,
             tempApplicationReference,
           );
 

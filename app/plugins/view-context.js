@@ -1,5 +1,6 @@
 import { config } from "../config/index.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
+import { dashboardRoutes } from "../constants/routes.js";
 
 const { serviceName, serviceUri, customerSurvey } = config;
 
@@ -27,6 +28,7 @@ export const viewContextPlugin = {
           ctx.customerSurveyUri = customerSurvey.uri;
           ctx.userIsSignedIn = request.auth.isAuthenticated;
           ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS;
+          ctx.dashboardLink = dashboardRoutes.manageYourClaims;
 
           response.source.context = ctx;
         }
