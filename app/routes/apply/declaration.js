@@ -5,7 +5,6 @@ import {
   getSessionData,
   clearApplyRedirect,
   setSessionData,
-  setSessionEntry,
 } from "../../session/index.js";
 import { userType } from "../../constants/constants.js";
 import { config } from "../../config/index.js";
@@ -115,11 +114,6 @@ export const declarationRouteHandlers = [
             sessionEntryKeys.farmerApplyData,
             sessionKeys.farmerApplyData.reference,
             applicationReference,
-          );
-          setSessionEntry(
-            request,
-            sessionEntryKeys.tempApplicationReference,
-            tempApplicationReference,
           );
 
           // TODO - track event for an agreement being created

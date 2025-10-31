@@ -6,8 +6,7 @@ import { getHerds } from '../../../../../app/api-requests/application-api.js'
 import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
 import { previousPageUrl } from "../../../../../app/routes/claim/date-of-visit.js";
 
-jest.mock('../../../../../app/session')
-// jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock("../../../../../app/session");
 jest.mock('../../../../../app/api-requests/application-api.js')
 
 function expectPageContentOk ($, previousPageUrl) {
@@ -54,8 +53,7 @@ describe('GET /date-of-visit handler', () => {
 
   beforeAll(async () => {
     server = await createServer()
-    await server.initialize()
-    // raiseInvalidDataEvent.mockResolvedValue({})
+    await server.initialize();
     getSessionData.mockImplementation(() => {
       return {
         latestVetVisitApplication,
@@ -221,17 +219,9 @@ describe('POST /date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Enter the date of review')
-    // expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
-    //   name: 'claim-invalid-date-of-visit',
-    //   properties: {
-    //     tempClaimReference: 'TEMP-6GSE-PIR8',
-    //     journeyType: 'review',
-    //     dateOfAgreement: '2025-01-01',
-    //     dateEntered: '2000-february-second',
-    //     error: 'Enter the date of review'
-    //   }
-    // })
+    expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
+      "Enter the date of review",
+    );
   })
 
   test('redirect back to page with errors if the entered date is of a correct format, but the date isnt real', async () => { // unhappy path
@@ -266,17 +256,9 @@ describe('POST /date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('The date of review must be a real date')
-    // expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
-    //   name: 'claim-invalid-date-of-visit',
-    //   properties: {
-    //     tempClaimReference: 'TEMP-6GSE-PIR8',
-    //     journeyType: 'review',
-    //     dateOfAgreement: '2025-01-01',
-    //     dateEntered: '2025-2-31',
-    //     error: 'The date of review must be a real date'
-    //   }
-    // })
+    expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
+      "The date of review must be a real date",
+    );
   })
 
   test('redirect back to page with errors if the entered date is before the agreement date', async () => { // unhappy path
@@ -311,17 +293,9 @@ describe('POST /date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('The date of review must be the same as or after the date of your agreement')
-    // expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
-    //   name: 'claim-invalid-date-of-visit',
-    //   properties: {
-    //     tempClaimReference: 'TEMP-6GSE-PIR8',
-    //     journeyType: 'review',
-    //     dateOfAgreement: '2025-01-01',
-    //     dateEntered: '2024-12-1',
-    //     error: 'The date of review must be the same as or after the date of your agreement'
-    //   }
-    // })
+    expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
+      "The date of review must be the same as or after the date of your agreement",
+    );
   })
 
   test('redirect back to page with errors if the entered date is in the future', async () => { // unhappy path
@@ -356,19 +330,9 @@ describe('POST /date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual(
-      'The date of review must be today or in the past'
-    )
-    // expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
-    //   name: 'claim-invalid-date-of-visit',
-    //   properties: {
-    //     tempClaimReference: 'TEMP-6GSE-PIR8',
-    //     journeyType: 'review',
-    //     dateOfAgreement: '2025-01-01',
-    //     dateEntered: '2040-2-2',
-    //     error: 'The date of review must be today or in the past'
-    //   }
-    // })
+    expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
+      "The date of review must be today or in the past",
+    );
   })
 
   test('user makes a review claim and has zero previous claims', async () => { // happy path
@@ -404,8 +368,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 1))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 1),
+    );
   })
 
   test('user makes a review claim and created an application on the same day', async () => { // happy path
@@ -444,8 +412,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 1))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 1),
+    );
   })
 
   test('user makes a review claim and has a previous review claim for the same species within the last 10 months', async () => { // unhappy path
@@ -492,11 +464,14 @@ describe('POST /date-of-visit handler', () => {
     const $ = cheerio.load(res.payload)
 
     expect(res.statusCode).toBe(400)
-    expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
+    expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
 
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 1))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 1),
+    );
   })
 
   test('user makes a review claim and has a previous review claim for the same species over 10 months ago', async () => { // happy path
@@ -542,8 +517,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 1))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 1),
+    );
   })
 
   test('user makes a review claim and has a previous review claim for a different species, no others for same species and is after MS was enabled', async () => { // happy path
@@ -589,8 +568,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 1, 26))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 1, 26),
+    );
   })
 
   test(`user makes a review claim and has a previous review claim for a different species, 
@@ -637,11 +620,14 @@ describe('POST /date-of-visit handler', () => {
     const $ = cheerio.load(res.payload)
 
     expect(res.statusCode).toBe(400)
-    expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `User is attempting to claim for MS with a date of visit of ${new Date(2025, 0, 1).toString()} which is before MS was enabled.`)
+    expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
 
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 1))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 1),
+    );
   })
 
   test('user has an old world claim, and makes a new world claim over 10 months later for the same species', async () => { // happy path
@@ -678,8 +664,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 1))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 1),
+    );
   })
 
   test('user has an old world claim, and makes a new world claim over 10 months later for a different species', async () => { // happy path
@@ -716,8 +706,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 1))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 1),
+    );
   })
 
   test('user has an old world claim, and makes a new world claim within 10 months for the same species', async () => { // unhappy path
@@ -761,11 +755,14 @@ describe('POST /date-of-visit handler', () => {
     const $ = cheerio.load(res.payload)
 
     expect(res.statusCode).toBe(400)
-    expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 2).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
+    expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
 
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 2))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 2),
+    );
   })
 
   test('user has an old world claim, and makes a new world claim within 10 months for a different species', async () => { // happy path
@@ -808,8 +805,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 2))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 2),
+    );
   })
 
   test('user makes an endemics claim within 10 months of the same species of their initial review claim', async () => { // happy path
@@ -857,8 +858,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 1))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 1),
+    );
   })
 
   test('user makes an endemics dairy claim after dairy follow up release', async () => { // happy path
@@ -906,8 +911,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/species-numbers')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 21))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 21),
+    );
   })
 
   test('user makes an endemics dairy claim before dairy follow up release', async () => { // unhappy path
@@ -955,11 +964,13 @@ describe('POST /date-of-visit handler', () => {
     const $ = cheerio.load(res.payload)
 
     expect(res.statusCode).toBe(400)
-    expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `User is attempting to claim for dairy follow-up with a date of visit of ${new Date(2025, 0, 20).toString()} which is before dairy follow-ups was enabled.`)
-
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 0, 20))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 0, 20),
+    );
   })
 
   test('user makes an endemics claim within 10 months of a previous endemics claim of the same species', async () => { // unhappy path
@@ -1024,8 +1035,7 @@ describe('POST /date-of-visit handler', () => {
     )
     const link = $('a.govuk-link[rel="external"]')
     expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
-    expect(link.text()).toBe('There must be at least 10 months between your follow-ups.')
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: There must be at least 10 months between your follow-ups.`)
+    expect(link.text()).toBe("There must be at least 10 months between your follow-ups.");
   })
 
   test('user makes an endemics claim within 10 months of a previous endemics claim of a different species, assuming everything else otherwise ok', async () => { // happy path
@@ -1095,8 +1105,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 1, 27))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 1, 27),
+    );
   })
 
   test('user makes an endemics claim and the review in question is rejected', async () => { // unhappy path
@@ -1149,8 +1163,9 @@ describe('POST /date-of-visit handler', () => {
       'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
     )
     const mainMessage = $('h1.govuk-heading-l').first().nextAll('p').first()
-    expect(mainMessage.text().trim()).toBe('Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.')
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.`)
+    expect(mainMessage.text().trim()).toBe(
+      "Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.",
+    );
   })
 
   test('user makes an endemics claim and the review is not in READY_TO_PAY status', async () => { // unhappy path
@@ -1354,8 +1369,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/date-of-testing')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'reviewTestResults', 'positive')
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "reviewTestResults",
+      "positive",
+    );
   })
 
   test('should redirect to endemics date of testing page when endemics claim is for beef or dairy, the previous review test results has not been set and there are multiple previous reviews of different species with different test results', async () => {
@@ -1428,8 +1447,12 @@ describe('POST /date-of-visit handler', () => {
       }
     })
     expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date('2025/02/27'))
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'reviewTestResults', 'positive')
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "reviewTestResults",
+      "positive",
+    );
   })
 
   test('for an endemics claim, it redirects to endemics species numbers page when claim is for beef or dairy, and the previous review test results are negative', async () => {
@@ -1476,8 +1499,7 @@ describe('POST /date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/species-numbers')
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(res.headers.location).toEqual("/species-numbers");
   })
 
   test(`for an endemics claim, it redirects to endemics species numbers page when claim 
@@ -1527,8 +1549,7 @@ describe('POST /date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/species-numbers')
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(res.headers.location).toEqual("/species-numbers");
   })
 
   test(`for an endemics claim, it redirects to endemics date of testing page when claim 
@@ -1578,8 +1599,7 @@ describe('POST /date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/date-of-testing')
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(res.headers.location).toEqual("/date-of-testing");
   })
 
   test('should redirect to select the herd page when there are previous herds and is multi herds journey', async () => {
@@ -1735,8 +1755,12 @@ describe('POST /date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/species-numbers')
-    expect(setSessionData).toHaveBeenCalledWith(expect.any(Object), 'endemicsClaim', 'dateOfVisit', new Date(2025, 3, 30))
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.any(Object),
+      "endemicsClaim",
+      "dateOfVisit",
+      new Date(2025, 3, 30),
+    );
   })
 
   test('should error when trying to follow-up against post-MH review and visit date is pre-MH golive', async () => {
