@@ -6,8 +6,8 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../session/index.js";
-import { getApplicationsBySbi } from "../../api-requests/application-api.js";
 import { getRedirectPath } from "./get-redirect-path.js";
+import { refreshApplications } from "../../lib/context-helper.js";
 
 export const setSessionForErrorPage = ({
   request,
@@ -92,7 +92,8 @@ export const checkLoginValid = async ({
     return returnErrorRouting({ h, error: "NoEligibleCphError", organisation, request, crn });
   }
 
-  const applicationsForSbi = await getApplicationsBySbi(organisation.sbi, logger);
+  const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(organisation.sbi, request);
+  const applicationsForSbi = [latestEndemicsApplication, latestVetVisitApplication].filter(Boolean);
 
   if (applicationsForSbi.length && applicationsForSbi[0].redacted) {
     logger.setBindings({

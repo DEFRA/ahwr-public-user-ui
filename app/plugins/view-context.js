@@ -1,6 +1,6 @@
 import { config } from "../config/index.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
-import { applyRoutes, claimRoutes, dashboardRoutes } from "../constants/routes.js";
+import { applyRoutes, dashboardRoutes } from "../constants/routes.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 
 const { serviceName, serviceUri, customerSurvey } = config;
@@ -22,8 +22,6 @@ export const viewContextPlugin = {
           if (path.startsWith("/cookies")) {
             serviceUrl = "/cookies";
           }
-
-          console.log(path + ' ' + method);
 
           ctx.serviceName = serviceName;
           ctx.serviceUrl = serviceUrl;

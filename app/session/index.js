@@ -23,9 +23,6 @@ export const sessionKeys = {
     laboratoryURN: "laboratoryURN",
     numberAnimalsTested: "numberAnimalsTested",
     minimumNumberAnimalsRequired: "minimumNumberAnimalsRequired",
-    // TODO - is the below one needed? we have latestEndemicsApplication stored
-    // in the session already, can we not get the reference there?
-    latestEndemicsApplicationReference: "latestEndemicsApplicationReference",
     biosecurity: "biosecurity",
     diseaseStatus: "diseaseStatus",
     reference: "reference",

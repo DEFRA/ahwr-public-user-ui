@@ -1,8 +1,6 @@
-import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../session/index.js";
-import { getApplicationsBySbi } from "../api-requests/application-api.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { getClaimsByApplicationReference } from "../api-requests/claim-api.js";
 import nunjucks from "nunjucks";
-import { applicationType } from "../constants/constants.js";
 import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
 import { config } from "../config/index.js";
 import { showMultiHerdsBanner } from "./utils/show-multi-herds-banner.js";
@@ -152,27 +150,20 @@ export const vetVisitsHandlers = [
           sessionEntryKeys.customer,
           sessionKeys.customer.attachedToMultipleBusinesses,
         );
-        const applications = await getApplicationsBySbi(organisation.sbi, request.logger);
+        const { latestEndemicsApplication, latestVetVisitApplication } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-        if (applications.length === 0) {
+        if (!latestEndemicsApplication) {
           throw new Error(
             "User should not be attempting to access this page without an agreement.",
           );
         }
 
-        if (applications[0].redacted) {
+        if (latestEndemicsApplication.redacted) {
           return h.view("agreement-redacted", {
             ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             privacyPolicyUri: config.privacyPolicyUri,
           });
         }
-
-        const vetVisitApplications = applications?.filter(
-          (application) => application.type === applicationType.VET_VISITS,
-        );
-        const latestEndemicsApplication = applications?.find(
-          (application) => application.type === applicationType.ENDEMICS,
-        );
 
         const claims = latestEndemicsApplication
           ? await getClaimsByApplicationReference(
@@ -181,27 +172,17 @@ export const vetVisitsHandlers = [
             )
           : [];
 
-        const vetVisitApplicationsWithinLastTenMonths = vetVisitApplications.filter((application) =>
-          isWithin10MonthsFromNow(application.data.visitDate),
-        );
+        const vetVisitApplicationsWithinLastTenMonths = latestVetVisitApplication ? (isWithin10MonthsFromNow(latestVetVisitApplication.data.visitDate) ? latestVetVisitApplication : undefined) : undefined;
 
-        const allClaims = [...claims, ...vetVisitApplicationsWithinLastTenMonths];
-        const isOldWorld = !latestEndemicsApplication;
+        const allClaims = [...claims, vetVisitApplicationsWithinLastTenMonths].filter(Boolean);
+        const isOldWorld = !latestEndemicsApplication; // TODO: Can't come in here now unless they have a new world agreement so some concept to retire here
 
         const { beefClaimsRows, dairyClaimsRows, pigClaimsRows, sheepClaimsRows } =
           buildClaimRowsPerSpecies(allClaims, isOldWorld);
 
-        setSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.latestEndemicsApplicationReference,
-          latestEndemicsApplication?.reference,
-        );
+        const downloadedDocument = `/download-application/${organisation.sbi}/${latestEndemicsApplication.reference}`;
 
-        const downloadedDocument = `/download-application/${organisation.sbi}/${latestEndemicsApplication?.reference}`;
-
-        const showNotificationBanner =
-          Boolean(latestEndemicsApplication) && showMultiHerdsBanner(applications, claims);
+        const showNotificationBanner = showMultiHerdsBanner(latestEndemicsApplication, claims);
 
         const { sheepHeaders, nonSheepHeaders } = buildTableHeaders();
 

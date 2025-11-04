@@ -119,12 +119,12 @@ export const getConfig = () => {
     port: Number.parseInt(process.env.PORT ?? "3000", 10),
     host: "0.0.0.0",
     proxy: process.env.HTTP_PROXY,
-    serviceUri: process.env.SERVICE_URI,
+    serviceUri: process.env.SERVICE_URI ?? "http://localhost:3000/",
     useRedis: process.env.NODE_ENV !== "test",
     serviceName: "Get funding to improve animal health and welfare",
     customerSurvey: {
-      claimUri: process.env.CUSTOMER_SURVEY_CLAIM_URI,
-      applyUri: process.env.CUSTOMER_SURVEY_APPLY_URI,
+      claimUri: process.env.CUSTOMER_SURVEY_CLAIM_URI ?? "https://forms.office.com/e/SLKqfJQ499",
+      applyUri: process.env.CUSTOMER_SURVEY_APPLY_URI ?? "https://forms.office.com/e/4frXv6SqvR",
     },
     applicationApi: applicationApiConfig,
     wreckHttp: {
@@ -149,11 +149,11 @@ export const getConfig = () => {
       enabled: process.env.LFS_UPDATE_ENABLED === "true",
       uri: process.env.LFS_UPDATE_URI,
     },
-    serviceVersion: process.env.SERVICE_VERSION,
+    serviceVersion: process.env.SERVICE_VERSION ?? "1.0.0",
     name: process.env.SERVICE_NAME ?? "ahwr-public-user-ui",
     logLevel: process.env.LOG_LEVEL ?? (process.env.NODE_ENV === "test" ? "silent" : "info"),
     logFormat: process.env.USE_PRETTY_PRINT === "true" ? "pino-pretty" : "ecs",
-    logRedact: process.env.LOG_REDACT ? process.env.LOG_REDACT.split(",") : [],
+    logRedact: process.env.LOG_REDACT ? process.env.LOG_REDACT.split(",") : ["req.headers", "res.headers"],
   };
 
   const { error } = schema.validate(config, {

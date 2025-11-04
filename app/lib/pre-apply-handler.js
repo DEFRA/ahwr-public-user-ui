@@ -36,7 +36,7 @@ export const preApplyHandler = async (request, h) => {
     if (application?.status === "AGREED" && !application.redacted) {
       // TODO - event needs tracking here
       request.logger.setBindings({
-        err: "User attempted to use apply journey despite already having an agreed agreement.",
+        error: "User attempted to use apply journey despite already having an agreed agreement.",
       });
       return h.redirect(dashboardRoutes.manageYourClaims).takeover();
     }
