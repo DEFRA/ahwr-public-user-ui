@@ -9,12 +9,12 @@ export const defraIdSignInHandlers = [
       auth: false,
       validate: {
         query: joi.object({
-          relationshipId: joi.string().optional(),
+          ssoOrgId: joi.string().optional(),
         }),
       },
       handler: async (request, h) => {
-        const { relationshipId } = request.query;
-        const defraIdSignInUri = requestAuthorizationCodeUrl(request, relationshipId);
+        const { ssoOrgId } = request.query;
+        const defraIdSignInUri = requestAuthorizationCodeUrl(request, ssoOrgId);
 
         return h.redirect(defraIdSignInUri);
       },

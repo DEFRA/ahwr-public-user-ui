@@ -15,7 +15,7 @@ describe("/sign-in", () => {
     jest.resetAllMocks();
   });
 
-  test("can send a request without a relationshipId", async () => {
+  test("can send a request without a ssoOrgId", async () => {
     const res = await server.inject({
       url: "/sign-in",
       method: "GET",
@@ -25,15 +25,15 @@ describe("/sign-in", () => {
     expect(res.headers.location.href).toMatch(DEFRA_ID_BASE_URL);
   });
 
-  test("can send a request with a relationshipId and it is passed in the redirect URI", async () => {
-    const relationshipId = randomUUID();
+  test("can send a request with a ssoOrgId and it is passed in the redirect URI", async () => {
+    const ssoOrgId = randomUUID();
     const res = await server.inject({
-      url: `/sign-in?relationshipId=${relationshipId}`,
+      url: `/sign-in?ssoOrgId=${ssoOrgId}`,
       method: "GET",
     });
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location.href).toMatch(DEFRA_ID_BASE_URL);
-    expect(res.headers.location.href).toContain(relationshipId);
+    expect(res.headers.location.href).toContain(ssoOrgId);
   });
 });
