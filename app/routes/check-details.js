@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { config } from "../config/index.js";
 import { applyRoutes } from "../constants/routes.js";
+import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 
 export const checkDetailsHandlers = [
   {
@@ -71,15 +72,10 @@ export const checkDetailsHandlers = [
           return h.redirect("/vet-visits");
         }
 
-        const organisation = getSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.organisation,
-        );
-
         return h.view("update-details", {
-          devMode: config.devLogin.enabled,
-          sfdButtonLink: `/sign-in?relationshipId=${organisation.id}`,
+          lfsUpdateEnabled: config.lfsUpdate.enabled,
+          ruralPaymentsAgency: RPA_CONTACT_DETAILS,
+          lfsUpdateDetailsLink: "/update-details",
         });
       },
     },

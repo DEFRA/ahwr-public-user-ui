@@ -38,3 +38,5 @@ services:
       CUSTOMER_SURVEY_CLAIM_URI: ${CUSTOMER_SURVEY_CLAIM_URI:-https://forms.office.com/Pages/ResponsePage.aspx?id=UCQKdycCYkyQx044U38RAsIdAEqqafZCk2LjifrI4h1UOVJKOVRUWlBLMEpFQVdERzA3QVRFWUM2NS4u}
       MULTI_HERDS_RELEASE_DATE: ${MULTI_HERDS_RELEASE_DATE:-2025-05-01}
       PRIVACY_POLICY_URI: ${PRIVACY_POLICY_URI:-https://www.gov.uk/government/publications/get-funding-to-improve-animal-health-and-welfare-privacy-notice}
+      LFS_UPDATE_ENABLED: ${LFS_UPDATE_ENABLED:-true}
+      LFS_UPDATE_URI: ${LFS_UPDATE_URI:-https://fcp-sfd-frontend.dev.cdp-int.defra.cloud/home?ssoOrgId=}

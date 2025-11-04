@@ -5,7 +5,7 @@ import { generateCodeChallenge } from "./proof-key-for-code-exchange.js";
 
 export const DEFRA_ID_BASE_URL = `${authConfig.defraId.hostname}${authConfig.defraId.oAuthAuthorisePath}`;
 
-export const requestAuthorizationCodeUrl = (request, relationshipId) => {
+export const requestAuthorizationCodeUrl = (request, ssoOrgId) => {
   const url = new URL(DEFRA_ID_BASE_URL);
 
   url.searchParams.append("p", authConfig.defraId.policy);
@@ -18,8 +18,8 @@ export const requestAuthorizationCodeUrl = (request, relationshipId) => {
   url.searchParams.append("state", generateState(request));
   url.searchParams.append("forceReselection", true);
 
-  if (relationshipId) {
-    url.searchParams.append("relationshipId", relationshipId);
+  if (ssoOrgId) {
+    url.searchParams.append("relationshipId", ssoOrgId);
   }
 
   // Used to secure authorization code grants by using Proof Key for Code Exchange (PKCE)
