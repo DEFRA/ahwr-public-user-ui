@@ -51,7 +51,8 @@ export const getConfig = () => {
     serviceName: joi.string(),
     useRedis: joi.boolean(),
     customerSurvey: {
-      uri: joi.string().uri().optional(),
+      claimUri: joi.string().uri().required(),
+      applyUri: joi.string().uri().required(),
     },
     applicationApi: applicationApiConfigSchema,
     wreckHttp: {
@@ -122,7 +123,8 @@ export const getConfig = () => {
     useRedis: process.env.NODE_ENV !== "test",
     serviceName: "Get funding to improve animal health and welfare",
     customerSurvey: {
-      uri: process.env.CUSTOMER_SURVEY_CLAIM_URI,
+      claimUri: process.env.CUSTOMER_SURVEY_CLAIM_URI,
+      applyUri: process.env.CUSTOMER_SURVEY_APPLY_URI,
     },
     applicationApi: applicationApiConfig,
     wreckHttp: {
