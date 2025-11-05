@@ -1,11 +1,10 @@
 import { config } from "../../config/index.js";
 
-export const showMultiHerdsBanner = (applications, claims) => {
+export const showMultiHerdsBanner = (application, claims) => {
   const releaseDate = new Date(config.multiHerds.releaseDate).getTime();
 
-  const [latestApplication] = applications;
   const appliedBeforeMultipleHerds = Boolean(
-    latestApplication && new Date(latestApplication.createdAt).getTime() < releaseDate,
+    new Date(application.createdAt).getTime() < releaseDate,
   );
 
   const [latestClaim] = claims;

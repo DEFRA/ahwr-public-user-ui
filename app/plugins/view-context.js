@@ -1,6 +1,7 @@
 import { config } from "../config/index.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
-import { dashboardRoutes } from "../constants/routes.js";
+import { applyRoutes, dashboardRoutes } from "../constants/routes.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 
 const { serviceName, serviceUri, customerSurvey } = config;
 
@@ -14,7 +15,7 @@ export const viewContextPlugin = {
         if (response.variety === "view") {
           const ctx = response.source.context || {};
 
-          const { path } = request;
+          const { path, method } = request;
 
           let serviceUrl = "/";
 
@@ -25,7 +26,7 @@ export const viewContextPlugin = {
           ctx.serviceName = serviceName;
           ctx.serviceUrl = serviceUrl;
           ctx.serviceUri = serviceUri;
-          ctx.customerSurveyUri = customerSurvey.uri;
+          ctx.customerSurveyUri = getSurveyUri(request, path, method, customerSurvey);
           ctx.userIsSignedIn = request.auth.isAuthenticated;
           ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS;
           ctx.dashboardLink = dashboardRoutes.manageYourClaims;
@@ -38,3 +39,10 @@ export const viewContextPlugin = {
     },
   },
 };
+
+function getSurveyUri(request, currentPath, currentMethod, customerSurvey) {
+  if (currentPath === applyRoutes.declaration && currentMethod === "post") {
+    return customerSurvey.applyUri;
+  }
+  return getSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.latestEndemicsApplication) ? customerSurvey.claimUri : customerSurvey.applyUri;
+}

@@ -39,6 +39,7 @@ export async function refreshApplications(sbi, request) {
     sessionKeys.endemicsClaim.latestVetVisitApplication,
     latestVetVisitApplication,
   );
+
   setSessionData(
     request,
     sessionEntryKeys.endemicsClaim,

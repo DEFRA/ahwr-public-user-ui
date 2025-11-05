@@ -33,7 +33,7 @@ export const signinRouteHandlers = [
             stripUnknown: true,
           }),
         failAction(request, h, err) {
-          request.logger.setBindings({ error: err });
+          request.logger.setBindings({ error: err.message });
           // TODO - track this exception
 
           return h
@@ -89,7 +89,7 @@ export const signinRouteHandlers = [
 
           return h.redirect(redirectPath);
         } catch (err) {
-          request.logger.setBindings({ error: err });
+          request.logger.error({ error: { message: err.message, stack: err.stack } }, "Problem during signin-oidc processing");
           // TODO - track this exception
 
           clearAllOfSession(request);

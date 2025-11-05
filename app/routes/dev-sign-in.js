@@ -4,12 +4,12 @@ import { NoEligibleCphError } from "../exceptions/NoEligibleCphError.js";
 import { setSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { setAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { farmerApply } from "../constants/constants.js";
-import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { getRedirectPath } from "./utils/get-redirect-path.js";
 import HttpStatus from "http-status-codes";
 import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 import { setSessionForErrorPage } from "./utils/check-login-valid.js";
+import { refreshApplications } from "../lib/context-helper.js";
 
 const devLandingPageUrl = "/dev-landing-page";
 
@@ -90,7 +90,6 @@ export const devLoginHandlers = [
 
         try {
           throwErrorBasedOnSuffix(sbi);
-          const latestApplicationsForSbi = await getApplicationsBySbi(sbi, request.logger);
 
           setSessionData(
             request,
@@ -117,8 +116,10 @@ export const devLoginHandlers = [
             organisation,
           );
           setAuthCookie(request, personSummary.email, farmerApply);
+          const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(sbi, request);
+          const applicationsForSbi = [latestEndemicsApplication, latestVetVisitApplication].filter(Boolean);
 
-          const { redirectPath, error } = getRedirectPath(latestApplicationsForSbi, request);
+          const { redirectPath, error } = getRedirectPath(applicationsForSbi, request);
 
           if (error) {
             const errorToThrow = new Error(error);

@@ -35,7 +35,8 @@ services:
       APIM_SCOPE: ${APIM_SCOPE:-api://dev-futuretrade-int.defra.gov.uk/.default}
       TERMS_AND_CONDITIONS_URL: ${TERMS_AND_CONDITIONS_URL:-http://localhost:3003/terms/v3}
       MULTI_SPECIES_RELEASE_DATE: ${MULTI_SPECIES_RELEASE_DATE}
-      CUSTOMER_SURVEY_CLAIM_URI: ${CUSTOMER_SURVEY_CLAIM_URI:-https://forms.office.com/Pages/ResponsePage.aspx?id=UCQKdycCYkyQx044U38RAsIdAEqqafZCk2LjifrI4h1UOVJKOVRUWlBLMEpFQVdERzA3QVRFWUM2NS4u}
+      CUSTOMER_SURVEY_CLAIM_URI: ${CUSTOMER_SURVEY_CLAIM_URI:-https://forms.office.com/e/SLKqfJQ499}
+      CUSTOMER_SURVEY_APPLY_URI: ${CUSTOMER_SURVEY_APPLY_URI:-https://forms.office.com/e/4frXv6SqvR}
       MULTI_HERDS_RELEASE_DATE: ${MULTI_HERDS_RELEASE_DATE:-2025-05-01}
       PRIVACY_POLICY_URI: ${PRIVACY_POLICY_URI:-https://www.gov.uk/government/publications/get-funding-to-improve-animal-health-and-welfare-privacy-notice}
       LFS_UPDATE_ENABLED: ${LFS_UPDATE_ENABLED:-true}

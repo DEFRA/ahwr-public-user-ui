@@ -1,7 +1,7 @@
 import { createServer } from "../../../../app/server.js";
 import { config } from "../../../../app/config/index.js";
 import { StatusCodes } from "http-status-codes";
-import { getApplicationsBySbi } from "../../../../app/api-requests/application-api.js";
+import { refreshApplications } from "../../../../app/lib/context-helper.js";
 
 jest.mock("../../../../app/session/index.js", () => ({
   ...jest.requireActual("../../../../app/session/index.js"),
@@ -12,7 +12,7 @@ jest.mock("applicationinsights", () => ({
   defaultClient: { trackEvent: jest.fn() },
 }));
 
-jest.mock("../../../../app/api-requests/application-api.js");
+jest.mock("../../../../app/lib/context-helper.js");
 
 const auth = { credentials: {}, strategy: "cookie" };
 
@@ -27,7 +27,7 @@ describe("Dev sign in page test", () => {
     const sbi = "123456789";
     const server = await createServer();
 
-    getApplicationsBySbi.mockResolvedValueOnce([]);
+    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: undefined });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -46,13 +46,11 @@ describe("Dev sign in page test", () => {
     const sbi = "123456789";
     const server = await createServer();
 
-    getApplicationsBySbi.mockResolvedValueOnce([
-      {
+    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: {
         type: "EE",
         status: "AGREED",
         createdAt: new Date(),
-      },
-    ]);
+      }, latestVetVisitApplication: undefined });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -72,21 +70,11 @@ describe("Dev sign in page test", () => {
     const sbi = "123456789";
     const server = await createServer();
 
-    getApplicationsBySbi.mockResolvedValueOnce([
-      {
+    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: {
         type: "VV",
         status: "WITHDRAWN",
         createdAt: new Date(),
-      },
-    ]);
-
-    getApplicationsBySbi.mockResolvedValueOnce([
-      {
-        type: "VV",
-        status: "READY_TO_PAY",
-        createdAt: new Date(),
-      },
-    ]);
+      } });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -101,18 +89,16 @@ describe("Dev sign in page test", () => {
     expect(res.headers.location).toBe("/check-details");
   });
 
-  test("POST dev sign-in route forwards to cannot sign in page for a non-close VV agreement", async () => {
+  test("POST dev sign-in route forwards to cannot sign in page for a non-closed VV agreement", async () => {
     config.devLogin.enabled = true;
     const sbi = "123456789";
     const server = await createServer();
 
-    getApplicationsBySbi.mockResolvedValueOnce([
-      {
+    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: {
         type: "VV",
         status: "AGREED",
         createdAt: new Date(),
-      },
-    ]);
+      } });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -125,52 +111,6 @@ describe("Dev sign in page test", () => {
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location).toEqual("/cannot-sign-in");
-  });
-
-  test("POST dev sign-in route forwards to error page when trying to claim for an open VV application", async () => {
-    config.devLogin.enabled = true;
-    const sbi = "123456789";
-    const server = await createServer();
-
-    getApplicationsBySbi.mockResolvedValueOnce([
-      {
-        type: "VV",
-        status: "AGREED",
-        createdAt: new Date(),
-      },
-    ]);
-
-    const res = await server.inject({
-      url: "/dev-landing-page",
-      payload: {
-        sbi,
-      },
-      method: "POST",
-      auth,
-    });
-
-    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-    expect(res.headers.location).toEqual("/cannot-sign-in");
-  });
-
-  test("POST dev sign-in route forwards to check details when trying to sign in and no application exists", async () => {
-    config.devLogin.enabled = true;
-    const sbi = "123456789";
-    const server = await createServer();
-
-    getApplicationsBySbi.mockResolvedValueOnce([]);
-
-    const res = await server.inject({
-      url: "/dev-landing-page",
-      payload: {
-        sbi,
-      },
-      method: "POST",
-      auth,
-    });
-
-    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-    expect(res.headers.location).toBe("/check-details");
   });
 
   test("POST dev sign-in route forwards to error page when forced to show CPH error", async () => {
@@ -178,7 +118,7 @@ describe("Dev sign in page test", () => {
     const sbi = "123c";
     const server = await createServer();
 
-    getApplicationsBySbi.mockResolvedValueOnce([]);
+    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: undefined });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -198,7 +138,7 @@ describe("Dev sign in page test", () => {
     const sbi = "123i";
     const server = await createServer();
 
-    getApplicationsBySbi.mockResolvedValueOnce([]);
+    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: undefined });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -218,7 +158,7 @@ describe("Dev sign in page test", () => {
     const sbi = "123l";
     const server = await createServer();
 
-    getApplicationsBySbi.mockResolvedValueOnce([]);
+    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: undefined });
 
     const res = await server.inject({
       url: "/dev-landing-page",

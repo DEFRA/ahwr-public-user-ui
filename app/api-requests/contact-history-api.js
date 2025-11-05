@@ -2,7 +2,7 @@ import Wreck from "@hapi/wreck";
 import { config } from "../config/index.js";
 
 export const updateContactHistory = async (personSummary, organisation, logger) => {
-  const endpoint = `${config.applicationApiUri}/application/contact-history`;
+  const endpoint = `${config.applicationApiUri}/applications/contact-history`;
 
   const contactHistory = {
     farmerName: personSummary.name,

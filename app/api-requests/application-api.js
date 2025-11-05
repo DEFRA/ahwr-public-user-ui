@@ -30,7 +30,7 @@ export const createApplication = async (application, logger) => {
 };
 
 export const getHerds = async (applicationReference, typeOfLivestock, logger) => {
-  const endpoint = `${config.applicationApiUri}/application/${applicationReference}/herds?species=${typeOfLivestock}`;
+  const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/herds?species=${typeOfLivestock}`;
 
   try {
     const { payload } = await Wreck.get(endpoint, { json: true });

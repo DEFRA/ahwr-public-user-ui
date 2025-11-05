@@ -8,8 +8,8 @@ import {
 } from "../../../../../app/session";
 import { customerHasAtLeastOneValidCph } from "../../../../../app/api-requests/rpa-api/cph-check";
 import { requestAuthorizationCodeUrl } from "../../../../../app/auth/auth-code-grant/request-authorization-code-url";
-import { getApplicationsBySbi } from "../../../../../app/api-requests/application-api";
 import { when } from "jest-when";
+import { refreshApplications } from "../../../../../app/lib/context-helper.js";
 
 when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.customer, sessionKeys.customer.crn)
@@ -29,14 +29,15 @@ jest.mock("../../../../../app/api-requests/rpa-api/cph-check", () => ({
   customerHasAtLeastOneValidCph: jest.fn().mockResolvedValue(true),
 }));
 
-jest.mock("../../../../../app/api-requests/application-api", () => ({
-  getApplicationsBySbi: jest.fn().mockResolvedValue([
-    {
+jest.mock("../../../../../app/lib/context-helper.js", () => ({
+  refreshApplications: jest.fn().mockResolvedValue({
+    latestEndemicsApplication: {
       type: "EE",
       status: "READY_TO_PAY",
       createdAt: new Date(),
     },
-  ]),
+    latestVetVisitApplication: undefined,
+  }),
 }));
 
 jest.mock("../../../../../app/auth/auth-code-grant/request-authorization-code-url", () => ({
@@ -339,7 +340,7 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has no applications", async () => {
-    getApplicationsBySbi.mockResolvedValue([]);
+    refreshApplications.mockResolvedValue({ latestEndemicsApplication: undefined, latestVetVisitApplication: undefined });
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
       redirect: jest.fn().mockReturnValue({
@@ -390,13 +391,11 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect path to dashboard entry if there are no problems and the user an agreed new world application", async () => {
-    getApplicationsBySbi.mockResolvedValue([
-      {
+    refreshApplications.mockResolvedValue({ latestEndemicsApplication: {
         type: "EE",
         status: "AGREED",
         createdAt: new Date(),
-      },
-    ]);
+      }, latestVetVisitApplication: undefined });
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
       redirect: jest.fn().mockReturnValue({
@@ -451,13 +450,12 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user an non-agreed new world application", async () => {
-    getApplicationsBySbi.mockResolvedValue([
-      {
+    refreshApplications.mockResolvedValue({ latestEndemicsApplication: {
         type: "EE",
         status: "IN_CHECK",
         createdAt: new Date(),
-      },
-    ]);
+      }, latestVetVisitApplication: undefined });
+
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
       redirect: jest.fn().mockReturnValue({
@@ -508,13 +506,12 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application", async () => {
-    getApplicationsBySbi.mockResolvedValue([
-      {
+    refreshApplications.mockResolvedValue({ latestEndemicsApplication: undefined, latestVetVisitApplication: {
         type: "VV",
         status: "WITHDRAWN",
         createdAt: new Date(),
-      },
-    ]);
+      } });
+
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
       redirect: jest.fn().mockReturnValue({
@@ -564,14 +561,13 @@ describe("checkLoginValid", () => {
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
-  test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application specifially in the PAID state", async () => {
-    getApplicationsBySbi.mockResolvedValue([
-      {
+  test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application specifically in the PAID state", async () => {
+    refreshApplications.mockResolvedValue({ latestEndemicsApplication: undefined, latestVetVisitApplication: {
         type: "VV",
         status: "PAID",
         createdAt: new Date(),
-      },
-    ]);
+      } });
+
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
       redirect: jest.fn().mockReturnValue({
@@ -622,13 +618,12 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect callback if there are no problems but the user has a non-closed status old world application", async () => {
-    getApplicationsBySbi.mockResolvedValue([
-      {
+    refreshApplications.mockResolvedValue({ latestEndemicsApplication: undefined, latestVetVisitApplication: {
         type: "VV",
         status: "AGREED",
         createdAt: new Date(),
-      },
-    ]);
+      } });
+
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
       redirect: jest.fn().mockReturnValue({
