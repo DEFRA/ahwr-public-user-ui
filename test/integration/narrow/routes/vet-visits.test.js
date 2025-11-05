@@ -202,7 +202,7 @@ test("get /vet-visits: new world, claim has a herd", async () => {
         claimType: "REVIEW",
       },
       herd: {
-        herdName: "best beef herd",
+        name: "best beef herd",
       },
       status: "WITHDRAWN",
     },
