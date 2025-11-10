@@ -52,7 +52,6 @@ const getHandler = {
   method: "GET",
   path: "/enter-herd-details",
   options: {
-    tags: ["mh"],
     handler: async (request, h) => {
       const { backLink, checkboxItemsForHerdReasons, herdReasons, herdOrFlock } =
         getEnterHerdDetailsViewData(request);

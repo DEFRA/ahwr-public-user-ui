@@ -13,7 +13,7 @@ const getPastReviewClaimsForSpeciesAndHerd = (
       new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit) &&
       prevClaim.type === claimType.review &&
       typeOfLivestock === prevClaim.data.typeOfLivestock &&
-      (herdId ? herdId === prevClaim.herd?.id : true), // Only filtering on this if herdId is present, as we may not be on a MultiHerds journey
+      (herdId ? herdId === prevClaim.herd?.id : true), // Only filtering on this if herd.id is present, as we may not be on a MultiHerds journey
   );
 
 export const getReviewWithinLast10Months = (
@@ -74,8 +74,8 @@ export const getAllClaimsForFirstHerd = (
     (earliestClaimCanBePostMH ||
       new Date(earliestClaim.data.dateOfVisit) < MULTIPLE_HERDS_RELEASE_DATE)
   ) {
-    herdIdFromEarliestClaim = earliestClaim.data?.herdId || undefined;
+    herdIdFromEarliestClaim = earliestClaim.herd?.id || undefined;
   }
 
-  return prevLivestockClaims.filter((claim) => claim.data.herdId === herdIdFromEarliestClaim);
+  return prevLivestockClaims.filter((claim) => claim.herd?.id === herdIdFromEarliestClaim);
 };

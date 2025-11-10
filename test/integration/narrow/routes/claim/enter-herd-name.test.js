@@ -254,7 +254,7 @@ describe('/enter-herd-name tests', () => {
         previousClaims: [
           {
             herd: {
-              herdName: 'Commercial Herd'
+              name: 'Commercial Herd'
             }
           }
         ]

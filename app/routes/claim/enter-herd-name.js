@@ -95,7 +95,7 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
       );
 
-      if (previousClaims?.some((claim) => claim.herd?.herdName === herdName.trim())) {
+      if (previousClaims?.some((claim) => claim.herd?.name === herdName.trim())) {
         return h
           .view(claimViews.enterHerdName, {
             ...request.payload,

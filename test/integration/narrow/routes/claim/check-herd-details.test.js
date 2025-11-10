@@ -153,8 +153,8 @@ describe('/check-herd-details tests', () => {
         isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed'],
         herds: [{
-          herdId: '909bb722-3de1-443e-8304-0bba8fx5922050',
-          herdReasons: ['onlyHerd']
+          id: '909bb722-3de1-443e-8304-0bba8fx5922050',
+          reasons: ['onlyHerd']
         }]
       })
 
@@ -210,7 +210,7 @@ describe('/check-herd-details tests', () => {
         isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed'],
         herds: [{
-          herdId: '909bb722-3de1-443e-8304-0bba8fx5922050'
+          id: '909bb722-3de1-443e-8304-0bba8fx5922050'
         }]
       })
 
@@ -275,7 +275,7 @@ describe('/check-herd-details tests', () => {
         ...validPayloadWithPreviousClaimsWithoutHerd,
         previousClaims: [
           { createdAt: '2025-03-01T00:00:00.000Z', data: { typeOfReview: 'REVIEW', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'REVIEW', typeOfLivestock: 'beef', herdId: 'abaf864a-bda6-49b0-a17f-4a170fedd9c1' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'REVIEW', typeOfLivestock: 'beef' }, herd: { id: 'abaf864a-bda6-49b0-a17f-4a170fedd9c1' } },
           { createdAt: '2025-03-10T00:00:00.000Z', data: { typeOfReview: 'REVIEW', typeOfLivestock: 'beef' } }
         ]
       })
