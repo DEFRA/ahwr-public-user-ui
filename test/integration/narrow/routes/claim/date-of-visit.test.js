@@ -1726,7 +1726,7 @@ describe("POST /date-of-visit handler", () => {
   });
 
   test("should redirect to select the herd page when there are previous herds and is multi herds journey", async () => {
-    getHerds.mockResolvedValueOnce([{ id: "1", herdName: "herd one" }]);
+    getHerds.mockResolvedValueOnce({ herds: [{ id: "1", herdName: "herd one" }] });
     getSessionData.mockImplementation(() => {
       return {
         typeOfReview: "FOLLOW_UP",
@@ -1774,7 +1774,7 @@ describe("POST /date-of-visit handler", () => {
   });
 
   test("should redirect to enter herd name page when there are not previous herds and is multi herds journey", async () => {
-    getHerds.mockResolvedValueOnce([]);
+    getHerds.mockResolvedValueOnce({ herds: [] });
     getSessionData.mockImplementation(() => {
       return {
         typeOfReview: "FOLLOW_UP",
