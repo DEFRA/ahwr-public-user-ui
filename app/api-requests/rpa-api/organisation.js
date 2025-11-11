@@ -10,13 +10,11 @@ export const getOrganisationAuthorisation = async ({
 }) => {
   const { getOrganisationPermissionsUrl } = authConfig.ruralPaymentsAgency;
 
-  const response = await sendRPAGetRequest(
-    {
-      url: getOrganisationPermissionsUrl.replace("organisationId", organisationId),
-      defraIdAccessToken,
-      headers: { Authorization: apimAccessToken }
-  }
-  );
+  const response = await sendRPAGetRequest({
+    url: getOrganisationPermissionsUrl.replace("organisationId", organisationId),
+    defraIdAccessToken,
+    headers: { Authorization: apimAccessToken },
+  });
   return response?.data;
 };
 
@@ -32,6 +30,28 @@ export const organisationHasPermission = ({ organisationAuthorisation, personId 
   return personPrivileges.some((privilege) =>
     permissionMatcher(privilege.privilegeNames, validPermissions),
   );
+};
+
+export const detailOrganisationRoles = ({ organisationAuthorisation, personId, logger }) => {
+  try {
+    organisationAuthorisation.personRoles
+      .map((prEntry) => {
+        return `${prEntry.personId} - ${prEntry.role}`;
+      })
+      .forEach((strRole) => {
+        logger.info(`Found role for this business - ${strRole}`);
+      });
+
+    const ourRole = organisationAuthorisation.personRoles.find((prEntry) => {
+      return prEntry.personId === personId;
+    })?.role;
+    logger.info(`Current user role is ${ourRole}`);
+  } catch (error) {
+    logger.error(
+      { error: { message: error.message, stack: error.stack } },
+      "Error detailing organisation roles",
+    );
+  }
 };
 
 export const getOrganisation = async ({ organisationId, apimAccessToken, defraIdAccessToken }) => {

@@ -63,9 +63,7 @@ export const canMakeClaim = ({
   const prevReviewClaim =
     prevClaims.find((claim) => claim.type === claimType.review) ||
     getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock);
-  const prevEndemicsClaim = prevClaims.find(
-    (claim) => claim.type === claimType.endemics,
-  );
+  const prevEndemicsClaim = prevClaims.find((claim) => claim.type === claimType.endemics);
 
   return typeOfReview === claimType.review
     ? canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit)

@@ -26,6 +26,6 @@ describe("root / path", () => {
     });
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toMatch('/sign-in');
+    expect(res.headers.location).toMatch("/sign-in");
   });
 });

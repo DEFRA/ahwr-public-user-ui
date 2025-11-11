@@ -1,8 +1,8 @@
-import * as cheerio from 'cheerio'
-import { createServer } from '../../../../../app/server.js'
-import { getSessionData, setSessionData } from '../../../../../app/session/index.js'
-import expectPhaseBanner from 'assert'
-import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import * as cheerio from "cheerio";
+import { createServer } from "../../../../../app/server.js";
+import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import expectPhaseBanner from "assert";
+import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { getAmount } from "ffc-ahwr-common-library";
 
 jest.mock("../../../../../app/session/index.js");

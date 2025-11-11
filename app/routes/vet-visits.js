@@ -4,7 +4,12 @@ import nunjucks from "nunjucks";
 import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
 import { config } from "../config/index.js";
 import { showMultiHerdsBanner } from "./utils/show-multi-herds-banner.js";
-import { RPA_CONTACT_DETAILS, claimType, UNNAMED_FLOCK, UNNAMED_HERD } from "ffc-ahwr-common-library";
+import {
+  RPA_CONTACT_DETAILS,
+  claimType,
+  UNNAMED_FLOCK,
+  UNNAMED_HERD,
+} from "ffc-ahwr-common-library";
 import { isWithin10MonthsFromNow } from "../lib/utils.js";
 import { claimRoutes } from "../constants/routes.js";
 import { SHEEP } from "../constants/claim-constants.js";
@@ -29,8 +34,7 @@ const createRowsForTable = (claims) => {
     const claimTypeText =
       (claim.data.claimType ?? claimType.review) === claimType.review ? "Review" : "Follow-up";
     const herdName =
-      claim.herd?.name ??
-      (claim.data.typeOfLivestock === SHEEP ? UNNAMED_FLOCK : UNNAMED_HERD);
+      claim.herd?.name ?? (claim.data.typeOfLivestock === SHEEP ? UNNAMED_FLOCK : UNNAMED_HERD);
 
     return [
       {
@@ -150,7 +154,10 @@ export const vetVisitsHandlers = [
           sessionEntryKeys.customer,
           sessionKeys.customer.attachedToMultipleBusinesses,
         );
-        const { latestEndemicsApplication, latestVetVisitApplication } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+        const { latestEndemicsApplication, latestVetVisitApplication } = getSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+        );
 
         if (!latestEndemicsApplication) {
           throw new Error(
@@ -172,7 +179,11 @@ export const vetVisitsHandlers = [
             )
           : [];
 
-        const vetVisitApplicationsWithinLastTenMonths = latestVetVisitApplication ? (isWithin10MonthsFromNow(latestVetVisitApplication.data.visitDate) ? latestVetVisitApplication : undefined) : undefined;
+        const vetVisitApplicationsWithinLastTenMonths = latestVetVisitApplication
+          ? isWithin10MonthsFromNow(latestVetVisitApplication.data.visitDate)
+            ? latestVetVisitApplication
+            : undefined
+          : undefined;
 
         const allClaims = [...claims, vetVisitApplicationsWithinLastTenMonths].filter(Boolean);
         const isOldWorld = !latestEndemicsApplication; // TODO: Can't come in here now unless they have a new world agreement so some concept to retire here

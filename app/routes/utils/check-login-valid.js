@@ -92,7 +92,10 @@ export const checkLoginValid = async ({
     return returnErrorRouting({ h, error: "NoEligibleCphError", organisation, request, crn });
   }
 
-  const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(organisation.sbi, request);
+  const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(
+    organisation.sbi,
+    request,
+  );
   const applicationsForSbi = [latestEndemicsApplication, latestVetVisitApplication].filter(Boolean);
 
   if (applicationsForSbi.length && applicationsForSbi[0].redacted) {

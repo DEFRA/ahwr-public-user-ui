@@ -73,13 +73,13 @@ describe("getYesNoRadios", () => {
     expect(result.radios.items[1].checked).toBeFalsy();
   });
   test("should correctly handle previous answer no", () => {
-    const result = getYesNoRadios(legendText, id, 'no', undefined, options);
+    const result = getYesNoRadios(legendText, id, "no", undefined, options);
 
     expect(result.radios.items[0].checked).toBeFalsy();
     expect(result.radios.items[1].checked).toBeTruthy();
   });
   test("should correctly handle previous answer yes", () => {
-    const result = getYesNoRadios(legendText, id, 'yes', undefined, options);
+    const result = getYesNoRadios(legendText, id, "yes", undefined, options);
 
     expect(result.radios.items[0].checked).toBeTruthy();
     expect(result.radios.items[1].checked).toBeFalsy();

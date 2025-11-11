@@ -105,16 +105,14 @@ const postHandler = {
       );
 
       if (piHuntAllAnimals === "no") {
-        const claimPaymentNoPiHunt = getAmount(
-          {
-            type: typeOfReview,
-            typeOfLivestock,
-            reviewTestResults,
-            piHunt,
-            piHuntAllAnimals: "no",
-            dateOfVisit,
-          }
-        );
+        const claimPaymentNoPiHunt = getAmount({
+          type: typeOfReview,
+          typeOfLivestock,
+          reviewTestResults,
+          piHunt,
+          piHuntAllAnimals: "no",
+          dateOfVisit,
+        });
         // TODO - raise invalid data event
 
         if (piHuntAllAnimals !== previousAnswer) {

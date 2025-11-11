@@ -89,7 +89,10 @@ export const signinRouteHandlers = [
 
           return h.redirect(redirectPath);
         } catch (err) {
-          request.logger.error({ error: { message: err.message, stack: err.stack } }, "Problem during signin-oidc processing");
+          request.logger.error(
+            { error: { message: err.message, stack: err.stack } },
+            "Problem during signin-oidc processing",
+          );
           // TODO - track this exception
 
           clearAllOfSession(request);

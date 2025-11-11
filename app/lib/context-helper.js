@@ -83,10 +83,7 @@ export function canChangeSpecies(request, typeOfReview) {
     sessionKeys.endemicsClaim.previousClaims,
   );
 
-  return (
-    claimType[typeOfReview] === claimType.review &&
-    !lockedToSpecies(previousClaims)
-  );
+  return claimType[typeOfReview] === claimType.review && !lockedToSpecies(previousClaims);
 }
 
 const lockedToSpecies = (previousEndemicClaims) => {

@@ -5,7 +5,7 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../session/index.js";
-import { thresholds, claimConstants  } from "../../constants/claim-constants.js";
+import { thresholds, claimConstants } from "../../constants/claim-constants.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 

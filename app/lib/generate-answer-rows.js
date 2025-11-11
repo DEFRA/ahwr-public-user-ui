@@ -10,7 +10,9 @@ export const generatePigStatusAnswerRows = (sessionData) => {
     actions: {
       items: [
         {
-          href: sessionData.pigsElisaTestResult ? claimRoutes.pigsElisaResult : claimRoutes.pigsPcrResult,
+          href: sessionData.pigsElisaTestResult
+            ? claimRoutes.pigsElisaResult
+            : claimRoutes.pigsPcrResult,
           text: "Change",
           visuallyHiddenText: "test result",
         },

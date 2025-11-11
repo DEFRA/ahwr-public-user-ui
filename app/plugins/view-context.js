@@ -44,5 +44,11 @@ function getSurveyUri(request, currentPath, currentMethod, customerSurvey) {
   if (currentPath === applyRoutes.declaration && currentMethod === "post") {
     return customerSurvey.applyUri;
   }
-  return getSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.latestEndemicsApplication) ? customerSurvey.claimUri : customerSurvey.applyUri;
+  return getSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+    sessionKeys.endemicsClaim.latestEndemicsApplication,
+  )
+    ? customerSurvey.claimUri
+    : customerSurvey.applyUri;
 }

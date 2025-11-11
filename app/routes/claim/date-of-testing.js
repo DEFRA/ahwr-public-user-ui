@@ -1,8 +1,5 @@
 import Joi from "joi";
-import {
-  MAX_POSSIBLE_YEAR,
-  MIN_POSSIBLE_YEAR,
-} from "../../constants/claim-constants.js";
+import { MAX_POSSIBLE_YEAR, MIN_POSSIBLE_YEAR } from "../../constants/claim-constants.js";
 import {
   getSessionData,
   setSessionData,
@@ -376,8 +373,9 @@ const postHandler = {
         reviewHerdId,
       );
 
-      const dateOfTestingBeforePreviousReviewDateOfVisit = previousReviewClaim ?
-        new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit) : false;
+      const dateOfTestingBeforePreviousReviewDateOfVisit = previousReviewClaim
+        ? new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit)
+        : false;
 
       if (
         typeOfReview === claimType.endemics &&

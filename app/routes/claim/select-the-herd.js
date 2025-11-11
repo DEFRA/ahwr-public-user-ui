@@ -2,7 +2,9 @@ import Joi from "joi";
 import {
   removeSessionDataForSelectHerdChange,
   sessionKeys,
-  sessionEntryKeys, setSessionData, getSessionData
+  sessionEntryKeys,
+  setSessionData,
+  getSessionData,
 } from "../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { ONLY_HERD, ONLY_HERD_ON_SBI } from "../../constants/claim-constants.js";
@@ -12,7 +14,6 @@ import { formatDate, getHerdOrFlock } from "../../lib/display-helpers.js";
 import { getClaimInfo } from "../utils/get-claim-info.js";
 import { getReviewType } from "../../lib/utils.js";
 import { claimType } from "ffc-ahwr-common-library";
-
 
 const pageUrl = claimRoutes.selectTheHerd;
 
@@ -43,7 +44,10 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { typeOfLivestock, previousClaims, herds, herdSelected } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const { typeOfLivestock, previousClaims, herds, herdSelected } = getSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+      );
 
       const herdOrFlock = getHerdOrFlock(typeOfLivestock);
       const claimInfo = getClaimInfo(previousClaims, typeOfLivestock);
@@ -70,22 +74,55 @@ const getHandler = {
 
 const addHerdToSession = (request, existingHerd, herds) => {
   if (existingHerd) {
-    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdVersion, existingHerd.version + 1);
-    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdName, existingHerd.name);
-    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdCph, existingHerd.cph);
-    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdReasons, existingHerd.reasons);
-    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.isOnlyHerdOnSbi,
-      existingHerd.reasons?.[0] === ONLY_HERD ? ONLY_HERD_ON_SBI.YES : ONLY_HERD_ON_SBI.NO);
+    setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.herdVersion,
+      existingHerd.version + 1,
+    );
+    setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.herdName,
+      existingHerd.name,
+    );
+    setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.herdCph,
+      existingHerd.cph,
+    );
+    setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.herdReasons,
+      existingHerd.reasons,
+    );
+    setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.isOnlyHerdOnSbi,
+      existingHerd.reasons?.[0] === ONLY_HERD ? ONLY_HERD_ON_SBI.YES : ONLY_HERD_ON_SBI.NO,
+    );
   } else {
     if (herds.length) {
-      setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.isOnlyHerdOnSbi, ONLY_HERD_ON_SBI.NO);
+      setSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.isOnlyHerdOnSbi,
+        ONLY_HERD_ON_SBI.NO,
+      );
     }
-    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdVersion, 1);
+    setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.herdVersion,
+      1,
+    );
   }
 };
 
-const isUnnamedHerdClaim = (herdId, claim) =>
-  herdId === radioValueUnnamedHerd && !claim.herd?.id;
+const isUnnamedHerdClaim = (herdId, claim) => herdId === radioValueUnnamedHerd && !claim.herd?.id;
 
 const postHandler = {
   method: "POST",
@@ -99,7 +136,10 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ error: err });
-        const { typeOfLivestock, previousClaims, herds, herdSelected } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+        const { typeOfLivestock, previousClaims, herds, herdSelected } = getSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+        );
 
         const herdOrFlock = getHerdOrFlock(typeOfLivestock);
         const claimInfo = getClaimInfo(previousClaims, typeOfLivestock);
@@ -223,7 +263,7 @@ const postHandler = {
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdSame,
-          'yes',
+          "yes",
         );
       }
 
