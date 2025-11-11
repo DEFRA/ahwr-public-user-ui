@@ -45,7 +45,7 @@ export const detailOrganisationRoles = ({ organisationAuthorisation, personId, l
     const ourRole = organisationAuthorisation.personRoles.find((prEntry) => {
       return prEntry.personId === personId;
     })?.role;
-    logger.info(`Current user role is ${ourRole}`);
+    logger.info(`I am a ${ourRole}`);
   } catch (error) {
     logger.error(
       { error: { message: error.message, stack: error.stack } },
