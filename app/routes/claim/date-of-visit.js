@@ -292,7 +292,7 @@ const postHandler = {
           sessionKeys.endemicsClaim.tempHerdId,
           tempHerdId,
         );
-        const herds = await getHerds(
+        const { herds } = await getHerds(
           newWorldApplication.reference,
           typeOfLivestock,
           request.logger,

@@ -44,13 +44,11 @@ describe("Which type of review test", () => {
     });
 
     test("returns 200 and renders page", async () => {
-      getSessionData
-        .mockReturnValueOnce({ typeOfReview: "REVIEW" })
-        .mockReturnValueOnce({
-          typeOfLivestock: "beef",
-          previousClaims: [],
-          latestVetVisitApplication,
-        });
+      getSessionData.mockReturnValueOnce({ typeOfReview: "REVIEW" }).mockReturnValueOnce({
+        typeOfLivestock: "beef",
+        previousClaims: [],
+        latestVetVisitApplication,
+      });
       const options = {
         method: "GET",
         url,
