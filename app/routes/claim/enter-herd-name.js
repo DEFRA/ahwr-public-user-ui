@@ -90,10 +90,10 @@ const postHandler = {
       const { herdName } = request.payload;
       const {
         // herdId, herdVersion, // TODO: These may be needed for event emission
-        previousClaims, herds, typeOfLivestock } = getSessionData(
-        request,
-        sessionEntryKeys.endemicsClaim,
-      );
+        previousClaims,
+        herds,
+        typeOfLivestock,
+      } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
       if (previousClaims?.some((claim) => claim.herd?.name === herdName.trim())) {
         return h

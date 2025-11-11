@@ -8,7 +8,7 @@ jest.mock("../../../../app/config/index.js", () => ({
     lfsUpdate: {
       enabled: true,
       uri: "http://this-is-a-test-uri/home?ssoOrgId=",
-    }
+    },
   },
 }));
 jest.mock("../../../../app/session/index.js", () => ({
@@ -23,17 +23,17 @@ describe("/update-details", () => {
 
   beforeAll(async () => {
     server = await createServer();
-  })
+  });
 
   afterAll(async () => {
     await server.stop();
     jest.resetAllMocks();
-  })
+  });
 
   test("redirects to LFS when update is enabled", async () => {
     const res = await server.inject({
-      url: '/update-details',
-      method: 'GET',
+      url: "/update-details",
+      method: "GET",
       auth: {
         credentials: {},
         strategy: "cookie",
@@ -49,8 +49,8 @@ describe("/update-details", () => {
     config.lfsUpdate.enabled = false;
 
     const res = await server.inject({
-      url: '/update-details',
-      method: 'GET',
+      url: "/update-details",
+      method: "GET",
       auth: {
         credentials: {},
         strategy: "cookie",

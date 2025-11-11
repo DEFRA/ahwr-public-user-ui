@@ -63,8 +63,13 @@ test("get /vet-visits: new world, multiple businesses", async () => {
         name: "PARTRIDGES",
         farmerName: "Janice Harrison",
       },
-      latestEndemicsApplication: { sbi, type: "EE", reference: applicationReference, redacted: false },
-      latestVetVisitApplication: undefined
+      latestEndemicsApplication: {
+        sbi,
+        type: "EE",
+        reference: applicationReference,
+        redacted: false,
+      },
+      latestVetVisitApplication: undefined,
     },
   };
 
@@ -133,8 +138,13 @@ test("get /vet-visits: new world, multiple businesses, for sheep (flock not herd
         name: "PARTRIDGES",
         farmerName: "Janice Harrison",
       },
-      latestEndemicsApplication: { sbi, type: "EE", reference: applicationReference, redacted: false },
-      latestVetVisitApplication: undefined
+      latestEndemicsApplication: {
+        sbi,
+        type: "EE",
+        reference: applicationReference,
+        redacted: false,
+      },
+      latestVetVisitApplication: undefined,
     },
   };
 
@@ -185,8 +195,13 @@ test("get /vet-visits: new world, claim has a herd", async () => {
         name: "PARTRIDGES",
         farmerName: "Janice Harrison",
       },
-      latestEndemicsApplication: { sbi, type: "EE", reference: applicationReference, redacted: false },
-      latestVetVisitApplication: undefined
+      latestEndemicsApplication: {
+        sbi,
+        type: "EE",
+        reference: applicationReference,
+        redacted: false,
+      },
+      latestVetVisitApplication: undefined,
     },
   };
 
@@ -260,9 +275,14 @@ test("get /vet-visits: new world, no claims made, show banner", async () => {
         name: "TEST FARM",
         farmerName: "Farmer Joe",
       },
-      latestEndemicsApplication: { sbi, type: "EE", reference: "IAHW-TEST-NEW2",
-        createdAt: beforeMultiSpeciesReleaseDate, redacted: false },
-      latestVetVisitApplication: undefined
+      latestEndemicsApplication: {
+        sbi,
+        type: "EE",
+        reference: "IAHW-TEST-NEW2",
+        createdAt: beforeMultiSpeciesReleaseDate,
+        redacted: false,
+      },
+      latestVetVisitApplication: undefined,
     },
   };
 
@@ -316,7 +336,7 @@ test("get /vet-visits: old world application only - results in error page", asyn
         },
         status: "IN_CHECK",
         redacted: false,
-      }
+      },
     },
   };
 
@@ -364,7 +384,7 @@ test("get /vet-visits: shows agreement redacted", async () => {
         createdAt: beforeMultiSpeciesReleaseDate,
         redacted: true,
       },
-      latestVetVisitApplication: undefined
+      latestVetVisitApplication: undefined,
     },
   };
 

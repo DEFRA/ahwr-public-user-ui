@@ -24,7 +24,7 @@ export const claimConstants = {
   pigsFollowUpTest: {
     pcr: "pcr",
     elisa: "elisa",
-  }
+  },
 };
 
 const { review, endemics } = claimType;

@@ -1,39 +1,44 @@
-import { ecsFormat } from '@elastic/ecs-pino-format'
-import { getTraceId } from '@defra/hapi-tracing'
+import { ecsFormat } from "@elastic/ecs-pino-format";
+import { getTraceId } from "@defra/hapi-tracing";
 
-import { config } from '../config/index.js'
+import { config } from "../config/index.js";
 
-const { name, serviceVersion, logLevel, logFormat, logRedact } = config
+const { name, serviceVersion, logLevel, logFormat, logRedact } = config;
 
 const formatters = {
   ecs: {
     ...ecsFormat({
       serviceVersion,
-      serviceName: name
-    })
+      serviceName: name,
+    }),
   },
-  'pino-pretty': { transport: { target: 'pino-pretty', options: {
+  "pino-pretty": {
+    transport: {
+      target: "pino-pretty",
+      options: {
         singleLine: true,
         colorize: true,
-      } } }
-}
+      },
+    },
+  },
+};
 
 export const loggerOptions = {
-  ignorePaths: ['/health'],
+  ignorePaths: ["/health"],
   ignoreTags: ["assets"],
   redact: {
     paths: logRedact,
-    remove: true
+    remove: true,
   },
   level: logLevel,
   ...formatters[logFormat],
   nesting: true,
   mixin() {
-    const mixinValues = {}
-    const traceId = getTraceId()
+    const mixinValues = {};
+    const traceId = getTraceId();
     if (traceId) {
-      mixinValues.trace = { id: traceId }
+      mixinValues.trace = { id: traceId };
     }
-    return mixinValues
-  }
-}
+    return mixinValues;
+  },
+};

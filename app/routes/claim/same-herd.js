@@ -14,7 +14,6 @@ import { getNextMultipleHerdsPage } from "../../lib/get-next-multiple-herds-page
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { getClaimInfo } from "../utils/get-claim-info.js";
 
-
 const getHandler = {
   method: "GET",
   path: "/same-herd",

@@ -14,23 +14,23 @@ export async function getClaimsByApplicationReference(applicationReference, logg
 }
 
 export async function submitNewClaim(data, logger) {
-  const endpoint = `${config.applicationApiUri}/claims`
+  const endpoint = `${config.applicationApiUri}/claims`;
 
   try {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,
-      json: true
-    })
+      json: true,
+    });
 
-    return payload
+    return payload;
   } catch (err) {
-    logger.setBindings({ err, endpoint })
-    throw err
+    logger.setBindings({ err, endpoint });
+    throw err;
   }
 }
 
-export async function isURNUnique (data, logger) {
-  const endpoint = `${config.applicationApiUri}/claims/is-urn-unique`
+export async function isURNUnique(data, logger) {
+  const endpoint = `${config.applicationApiUri}/claims/is-urn-unique`;
   try {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,

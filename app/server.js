@@ -18,7 +18,7 @@ import { redirectAgreementRedactedPlugin } from "./plugins/redirect-agreement-re
 import { setupProxy } from "./lib/setup-proxy.js";
 
 export async function createServer() {
-  setupProxy()
+  setupProxy();
   const server = Hapi.server({
     cache: [getCacheEngine()],
     port: config.port,

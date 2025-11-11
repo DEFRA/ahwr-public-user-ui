@@ -1,6 +1,4 @@
-import {
-  createTempReference,
-} from "../../../../app/lib/create-temp-ref.js";
+import { createTempReference } from "../../../../app/lib/create-temp-ref.js";
 
 describe("createTempReference for apply references", () => {
   test("should return a string temp reference", () => {
@@ -29,27 +27,26 @@ describe("createTempReference for apply references", () => {
 });
 
 describe("createTempReference for claim references", () => {
-  test('should return a string temp reference', () => {
-    const tempRef = createTempReference({ referenceForClaim: true })
+  test("should return a string temp reference", () => {
+    const tempRef = createTempReference({ referenceForClaim: true });
 
-    expect(typeof tempRef).toBe('string')
-    const regex = /^TEMP-CLAIM-[A-NP-Z1-9]{4}-[A-NP-Z1-9]{4}$/
-    expect(tempRef).toMatch(regex)
-  })
+    expect(typeof tempRef).toBe("string");
+    const regex = /^TEMP-CLAIM-[A-NP-Z1-9]{4}-[A-NP-Z1-9]{4}$/;
+    expect(tempRef).toMatch(regex);
+  });
 
-  test('should not generate the same ID twice in 20,000 IDs', () => {
-    const ids = []
-    const numberToCreate = 20000
+  test("should not generate the same ID twice in 20,000 IDs", () => {
+    const ids = [];
+    const numberToCreate = 20000;
 
     for (let index = 0; index < numberToCreate; index++) {
-      ids.push(createTempReference({ referenceForClaim: true }))
+      ids.push(createTempReference({ referenceForClaim: true }));
     }
 
-    expect(ids.length).toEqual(numberToCreate)
+    expect(ids.length).toEqual(numberToCreate);
 
-    const set = new Set(ids)
+    const set = new Set(ids);
 
-    expect(set.size).toEqual(numberToCreate)
-  })
-})
-
+    expect(set.size).toEqual(numberToCreate);
+  });
+});

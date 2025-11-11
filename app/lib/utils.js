@@ -55,9 +55,9 @@ export const getReviewType = (typeOfReview) => {
 };
 
 export const getEndemicsClaimDetails = (typeOfLivestock, typeOfReview) => {
-  const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
-  const { isEndemicsFollowUp, isReview } = getReviewType(typeOfReview)
-  const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
+  const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock);
+  const { isEndemicsFollowUp, isReview } = getReviewType(typeOfReview);
+  const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp;
 
-  return { isBeef, isDairy, isPigs, isSheep, isEndemicsFollowUp, isBeefOrDairyEndemics, isReview }
-}
+  return { isBeef, isDairy, isPigs, isSheep, isEndemicsFollowUp, isBeefOrDairyEndemics, isReview };
+};

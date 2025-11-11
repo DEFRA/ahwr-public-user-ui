@@ -340,7 +340,10 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has no applications", async () => {
-    refreshApplications.mockResolvedValue({ latestEndemicsApplication: undefined, latestVetVisitApplication: undefined });
+    refreshApplications.mockResolvedValue({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: undefined,
+    });
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
       redirect: jest.fn().mockReturnValue({
@@ -391,11 +394,14 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect path to dashboard entry if there are no problems and the user an agreed new world application", async () => {
-    refreshApplications.mockResolvedValue({ latestEndemicsApplication: {
+    refreshApplications.mockResolvedValue({
+      latestEndemicsApplication: {
         type: "EE",
         status: "AGREED",
         createdAt: new Date(),
-      }, latestVetVisitApplication: undefined });
+      },
+      latestVetVisitApplication: undefined,
+    });
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
       redirect: jest.fn().mockReturnValue({
@@ -450,11 +456,14 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user an non-agreed new world application", async () => {
-    refreshApplications.mockResolvedValue({ latestEndemicsApplication: {
+    refreshApplications.mockResolvedValue({
+      latestEndemicsApplication: {
         type: "EE",
         status: "IN_CHECK",
         createdAt: new Date(),
-      }, latestVetVisitApplication: undefined });
+      },
+      latestVetVisitApplication: undefined,
+    });
 
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
@@ -506,11 +515,14 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application", async () => {
-    refreshApplications.mockResolvedValue({ latestEndemicsApplication: undefined, latestVetVisitApplication: {
+    refreshApplications.mockResolvedValue({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: {
         type: "VV",
         status: "WITHDRAWN",
         createdAt: new Date(),
-      } });
+      },
+    });
 
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
@@ -562,11 +574,14 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application specifically in the PAID state", async () => {
-    refreshApplications.mockResolvedValue({ latestEndemicsApplication: undefined, latestVetVisitApplication: {
+    refreshApplications.mockResolvedValue({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: {
         type: "VV",
         status: "PAID",
         createdAt: new Date(),
-      } });
+      },
+    });
 
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
@@ -618,11 +633,14 @@ describe("checkLoginValid", () => {
   });
 
   test("it returns a redirect callback if there are no problems but the user has a non-closed status old world application", async () => {
-    refreshApplications.mockResolvedValue({ latestEndemicsApplication: undefined, latestVetVisitApplication: {
+    refreshApplications.mockResolvedValue({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: {
         type: "VV",
         status: "AGREED",
         createdAt: new Date(),
-      } });
+      },
+    });
 
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {

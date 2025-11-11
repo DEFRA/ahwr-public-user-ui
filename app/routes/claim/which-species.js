@@ -1,7 +1,12 @@
 import Joi from "joi";
 import { refreshApplications, resetEndemicsClaimSession } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
-import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../session/index.js";
 import { claimRoutes, claimViews, dashboardRoutes } from "../../constants/routes.js";
 import { TYPE_OF_LIVESTOCK } from "ffc-ahwr-common-library";
 
@@ -71,7 +76,12 @@ const postHandler = {
       }
 
       // TODO: Should emit event
-      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.typeOfLivestock, typeOfLivestock);
+      setSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.typeOfLivestock,
+        typeOfLivestock,
+      );
 
       return h.redirect(claimRoutes.whichTypeOfReview);
     },

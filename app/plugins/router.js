@@ -107,7 +107,7 @@ const alwaysOnRoutes = [
   vetRCVSHandlers,
   vetVisitsReviewTestResultsHandlers,
   whichSpeciesHandlers,
-  whichReviewHandlers
+  whichReviewHandlers,
 ].flat();
 
 let routes;

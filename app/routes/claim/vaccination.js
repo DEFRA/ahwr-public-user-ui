@@ -2,7 +2,12 @@ import Joi from "joi";
 import { claimConstants } from "../../constants/claim-constants.js";
 import { radios } from "../models/form-component/radios.js";
 import HttpStatus from "http-status-codes";
-import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../session/index.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 
 const { vaccination } = claimConstants;
@@ -16,7 +21,10 @@ const getHandler = {
   path: claimRoutes.vaccination,
   options: {
     handler: async (request, h) => {
-      const { vetVisitsReviewTestResults, herdVaccinationStatus } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const { vetVisitsReviewTestResults, herdVaccinationStatus } = getSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+      );
       const vaccinatedNotVaccinatedRadios = radios(
         questionText,
         "herdVaccinationStatus",
@@ -34,9 +42,7 @@ const getHandler = {
           checked: herdVaccinationStatus === "notVaccinated",
         },
       ]);
-      const backLink = vetVisitsReviewTestResults
-        ? claimRoutes.testResults
-        : claimRoutes.vetRcvs;
+      const backLink = vetVisitsReviewTestResults ? claimRoutes.testResults : claimRoutes.vetRcvs;
       return h.view(claimViews.vaccination, { backLink, ...vaccinatedNotVaccinatedRadios });
     },
   },
@@ -54,7 +60,10 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ error: err });
-        const { vetVisitsReviewTestResults } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+        const { vetVisitsReviewTestResults } = getSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+        );
         const vaccinatedNotVaccinatedRadios = radios(
           questionText,
           "herdVaccinationStatus",
@@ -64,9 +73,7 @@ const postHandler = {
           { value: vaccination.vaccinated, text: "Vaccinated" },
           { value: vaccination.notVaccinated, text: "Not vaccinated" },
         ]);
-        const backLink = vetVisitsReviewTestResults
-          ? claimRoutes.testResults
-          : claimRoutes.vetRcvs;
+        const backLink = vetVisitsReviewTestResults ? claimRoutes.testResults : claimRoutes.vetRcvs;
         return h
           .view(claimViews.vaccination, {
             ...request.payload,
@@ -85,7 +92,12 @@ const postHandler = {
       const { herdVaccinationStatus } = request.payload;
 
       // TODO: Should emit event
-      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.herdVaccinationStatus, herdVaccinationStatus);
+      setSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.herdVaccinationStatus,
+        herdVaccinationStatus,
+      );
       return h.redirect(claimRoutes.testUrn);
     },
   },

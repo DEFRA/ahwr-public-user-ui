@@ -27,7 +27,10 @@ describe("Dev sign in page test", () => {
     const sbi = "123456789";
     const server = await createServer();
 
-    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: undefined });
+    refreshApplications.mockResolvedValueOnce({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: undefined,
+    });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -46,11 +49,14 @@ describe("Dev sign in page test", () => {
     const sbi = "123456789";
     const server = await createServer();
 
-    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: {
+    refreshApplications.mockResolvedValueOnce({
+      latestEndemicsApplication: {
         type: "EE",
         status: "AGREED",
         createdAt: new Date(),
-      }, latestVetVisitApplication: undefined });
+      },
+      latestVetVisitApplication: undefined,
+    });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -70,11 +76,14 @@ describe("Dev sign in page test", () => {
     const sbi = "123456789";
     const server = await createServer();
 
-    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: {
+    refreshApplications.mockResolvedValueOnce({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: {
         type: "VV",
         status: "WITHDRAWN",
         createdAt: new Date(),
-      } });
+      },
+    });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -94,11 +103,14 @@ describe("Dev sign in page test", () => {
     const sbi = "123456789";
     const server = await createServer();
 
-    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: {
+    refreshApplications.mockResolvedValueOnce({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: {
         type: "VV",
         status: "AGREED",
         createdAt: new Date(),
-      } });
+      },
+    });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -118,7 +130,10 @@ describe("Dev sign in page test", () => {
     const sbi = "123c";
     const server = await createServer();
 
-    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: undefined });
+    refreshApplications.mockResolvedValueOnce({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: undefined,
+    });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -138,7 +153,10 @@ describe("Dev sign in page test", () => {
     const sbi = "123i";
     const server = await createServer();
 
-    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: undefined });
+    refreshApplications.mockResolvedValueOnce({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: undefined,
+    });
 
     const res = await server.inject({
       url: "/dev-landing-page",
@@ -158,7 +176,10 @@ describe("Dev sign in page test", () => {
     const sbi = "123l";
     const server = await createServer();
 
-    refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: undefined, latestVetVisitApplication: undefined });
+    refreshApplications.mockResolvedValueOnce({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: undefined,
+    });
 
     const res = await server.inject({
       url: "/dev-landing-page",

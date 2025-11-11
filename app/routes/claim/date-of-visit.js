@@ -5,9 +5,12 @@ import {
   MAX_POSSIBLE_DAY,
   MAX_POSSIBLE_MONTH,
   MULTIPLE_SPECIES_RELEASE_DATE,
-  PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
+  PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
 } from "../../constants/claim-constants.js";
-import { getOldWorldClaimFromApplication, getAllClaimsForFirstHerd  } from "../../lib/claim-helper.js";
+import {
+  getOldWorldClaimFromApplication,
+  getAllClaimsForFirstHerd,
+} from "../../lib/claim-helper.js";
 import { isValidDate } from "../../lib/date-validations.js";
 import { getReviewType, getLivestockTypes } from "../../lib/utils.js";
 import {
@@ -56,9 +59,7 @@ export const previousPageUrl = (
 
   const isCattleEndemicsClaimForOldWorldReview =
     typeOfReview === claimType.endemics &&
-    [BEEF, DAIRY].includes(
-      oldWorldClaimTypeOfLivestock,
-    ) &&
+    [BEEF, DAIRY].includes(oldWorldClaimTypeOfLivestock) &&
     relevantClaims.length === 0 &&
     typeOfLivestock === oldWorldClaimTypeOfLivestock;
 

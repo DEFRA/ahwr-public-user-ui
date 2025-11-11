@@ -86,7 +86,6 @@ const postHandler = {
         // TODO - emit herd event that the user has set herd reasons (also uses these values)
         // const { herdId, herdVersion } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-
         return h.redirect(claimRoutes.checkHerdDetails);
       }
 

@@ -3,6 +3,7 @@ import { getPersonSummary } from "../../../../../app/api-requests/rpa-api/person
 import {
   getOrganisationAuthorisation,
   getOrganisation,
+  detailOrganisationRoles,
 } from "../../../../../app/api-requests/rpa-api/organisation";
 import {
   setSessionData,
@@ -46,6 +47,10 @@ jest.mock("../../../../../app/api-requests/rpa-api/organisation", () => {
     ...actual,
     getOrganisationAuthorisation: jest.fn().mockResolvedValue({
       personPrivileges: [{ personId: 12345, privilegeNames: ["Submit - bps"] }],
+      personRoles: [
+        { personId: 12345, role: "Agent" },
+        { personId: 54321, role: "Farmer" },
+      ],
     }),
     getOrganisation: jest.fn().mockResolvedValue({
       address: {
@@ -68,6 +73,7 @@ jest.mock("../../../../../app/api-requests/rpa-api/organisation", () => {
       name: "Unit test org",
       email: "unit@test.email.com.test",
     }),
+    detailOrganisationRoles: jest.fn(),
   };
 });
 
@@ -81,7 +87,10 @@ describe("getPersonAndOrg", () => {
     const request = { stuff: true };
     const apimAccessToken = "Apim1234";
     const crn = 123456789;
-    const logger = jest.fn();
+    const logger = jest.fn(() => ({
+      info: jest.fn(),
+      error: jest.fn(),
+    }));
     const accessToken = { currentRelationshipId: "22222" };
 
     const result = await getPersonAndOrg({
@@ -126,6 +135,7 @@ describe("getPersonAndOrg", () => {
       defraIdAccessToken: "abc123",
       organisationId: accessToken.currentRelationshipId,
     });
+    expect(detailOrganisationRoles).toHaveBeenCalledTimes(1);
     expect(setSessionData).toHaveBeenCalledWith(
       request,
       sessionEntryKeys.customer,

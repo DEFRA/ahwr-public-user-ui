@@ -67,14 +67,19 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdCph } = request.payload;
-      const { herds, isOnlyHerdOnSbi, herdId,
-      //  herdVersion // TODO: herdVersion should go in the emitted event below
-      } = getSessionData(
+      const {
+        herds,
+        isOnlyHerdOnSbi,
+        herdId,
+        //  herdVersion // TODO: herdVersion should go in the emitted event below
+      } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+
+      setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.herdCph,
+        herdCph,
       );
-
-      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.herdCph, herdCph);
 
       // TODO - Emit event saying the herd CPH number was collected
 

@@ -116,8 +116,11 @@ export const devLoginHandlers = [
             organisation,
           );
           setAuthCookie(request, personSummary.email, farmerApply);
-          const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(sbi, request);
-          const applicationsForSbi = [latestEndemicsApplication, latestVetVisitApplication].filter(Boolean);
+          const { latestEndemicsApplication, latestVetVisitApplication } =
+            await refreshApplications(sbi, request);
+          const applicationsForSbi = [latestEndemicsApplication, latestVetVisitApplication].filter(
+            Boolean,
+          );
 
           const { redirectPath, error } = getRedirectPath(applicationsForSbi, request);
 

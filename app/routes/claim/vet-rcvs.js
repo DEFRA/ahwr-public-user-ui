@@ -1,18 +1,26 @@
 import Joi from "joi";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
-import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../session/index.js";
 import { getEndemicsClaimDetails, getTestResult } from "../../lib/utils.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
 
 const errorMessages = {
-  enterRCVS: 'Enter an RCVS number',
-  validRCVS: 'An RCVS number is a 7 digit number or a 6 digit number ending in a letter.'
-}
+  enterRCVS: "Enter an RCVS number",
+  validRCVS: "An RCVS number is a 7 digit number or a 6 digit number ending in a letter.",
+};
 
 const nextPageURL = (request) => {
-  const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+  const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = getSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+  );
   const { isBeef, isDairy, isPigs, isSheep, isEndemicsFollowUp } = getEndemicsClaimDetails(
     typeOfLivestock,
     typeOfReview,
@@ -73,7 +81,10 @@ const postHandler = {
           .view(claimViews.vetRcvs, {
             ...request.payload,
             backLink: claimRoutes.vetName,
-            errorMessage: { text: err.details[0].message, href: `#${sessionKeys.endemicsClaim.vetRCVSNumber}` },
+            errorMessage: {
+              text: err.details[0].message,
+              href: `#${sessionKeys.endemicsClaim.vetRCVSNumber}`,
+            },
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -81,7 +92,10 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { vetRCVSNumber } = request.payload;
-      const { dateOfVisit, reviewTestResults, typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const { dateOfVisit, reviewTestResults, typeOfLivestock, typeOfReview } = getSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+      );
       const { isBeef, isDairy, isBeefOrDairyEndemics } = getEndemicsClaimDetails(
         typeOfLivestock,
         typeOfReview,
@@ -89,12 +103,14 @@ const postHandler = {
       const { isNegative, isPositive } = getTestResult(reviewTestResults);
 
       // TODO: Should emit event
-      setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.vetRCVSNumber, vetRCVSNumber);
+      setSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.vetRCVSNumber,
+        vetRCVSNumber,
+      );
 
-      if (
-        isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) &&
-        isBeefOrDairyEndemics
-      ) {
+      if (isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) && isBeefOrDairyEndemics) {
         return h.redirect(claimRoutes.piHunt);
       }
 

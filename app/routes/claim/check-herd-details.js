@@ -1,10 +1,7 @@
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { ONLY_HERD_ON_SBI } from "../../constants/claim-constants.js";
 import { getHerdOrFlock } from "../../lib/display-helpers.js";
-import {
-  getSessionData,
-  sessionEntryKeys,
-} from "../../session/index.js";
+import { getSessionData, sessionEntryKeys } from "../../session/index.js";
 import { MULTIPLE_HERD_REASONS } from "ffc-ahwr-common-library";
 import { skipOtherHerdsOnSbiPage, skipSameHerdPage } from "../../lib/context-helper.js";
 import { getNextMultipleHerdsPage } from "../../lib/get-next-multiple-herds-page.js";

@@ -1,11 +1,15 @@
 import Joi from "joi";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
-import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../session/index.js";
 import { getOldWorldClaimFromApplication } from "../../lib/claim-helper.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { BEEF, DAIRY } from "../../constants/claim-constants.js";
-
 
 const getPreviousAnswer = (typeOfReview) => {
   if (typeOfReview === claimType.review) {
@@ -63,7 +67,12 @@ export const whichReviewHandlers = [
         } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
         // TODO: Should emit event
-        setSessionData(request, sessionEntryKeys.endemicsClaim, sessionKeys.endemicsClaim.typeOfReview, claimType[typeOfReview]);
+        setSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.typeOfReview,
+          claimType[typeOfReview],
+        );
 
         const relevantClaims = previousClaims.filter(
           (claim) => claim.data.typeOfLivestock === typeOfLivestock,

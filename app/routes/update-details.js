@@ -17,7 +17,7 @@ export const updateDetailsHandlers = [
           sessionKeys.endemicsClaim.organisation,
         );
 
-        return h.redirect(`${config.lfsUpdate.uri}${organisation.id}`)
+        return h.redirect(`${config.lfsUpdate.uri}${organisation.id}`);
       },
     },
   },

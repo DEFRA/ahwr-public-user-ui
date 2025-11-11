@@ -1,5 +1,5 @@
-import * as cheerio from 'cheerio'
-import { createServer } from '../../../../../app/server.js'
+import * as cheerio from "cheerio";
+import { createServer } from "../../../../../app/server.js";
 import {
   getSessionData,
   sessionEntryKeys,

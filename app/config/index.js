@@ -153,7 +153,9 @@ export const getConfig = () => {
     name: process.env.SERVICE_NAME ?? "ahwr-public-user-ui",
     logLevel: process.env.LOG_LEVEL ?? (process.env.NODE_ENV === "test" ? "silent" : "info"),
     logFormat: process.env.USE_PRETTY_PRINT === "true" ? "pino-pretty" : "ecs",
-    logRedact: process.env.LOG_REDACT ? process.env.LOG_REDACT.split(",") : ["req.headers", "res.headers"],
+    logRedact: process.env.LOG_REDACT
+      ? process.env.LOG_REDACT.split(",")
+      : ["req.headers", "res.headers"],
   };
 
   const { error } = schema.validate(config, {
