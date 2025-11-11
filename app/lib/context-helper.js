@@ -117,7 +117,7 @@ export const skipSameHerdPage = (previousClaims, typeOfLivestock) => {
     return claim.data.typeOfLivestock === typeOfLivestock;
   });
   return (
-    !previousClaimsForSpecies.length || previousClaimsForSpecies.some((claim) => claim.data.herdId)
+    !previousClaimsForSpecies.length || previousClaimsForSpecies.some((claim) => claim.herd?.id)
   );
 };
 
@@ -130,7 +130,7 @@ export const getHerdBackLink = (typeOfLivestock, previousClaims) => {
 export const skipOtherHerdsOnSbiPage = (existingHerds, selectedHerdId) => {
   const hasHerds = existingHerds?.length > 0;
   const hasReasonOnlyHerd = existingHerds?.some(
-    (h) => h.herdId === selectedHerdId && h.herdReasons?.includes(ONLY_HERD),
+    (h) => h.id === selectedHerdId && h.reasons?.includes(ONLY_HERD),
   );
 
   return hasHerds && !hasReasonOnlyHerd;

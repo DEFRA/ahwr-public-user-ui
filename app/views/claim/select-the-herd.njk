@@ -45,7 +45,7 @@
                     text: herdOrFlock | title + " name"
                   },
                   value: {
-                    text: herds[0].herdName
+                    text: herds[0].name
                   }
                 },
                 {
@@ -82,9 +82,9 @@
               errorMessage: errorMessage,
               items: [
                 {
-                  value: herds[0].herdId,
+                  value: herds[0].id,
                   text: "Yes, it's the same",
-                  checked: herdSelected == herds[0].herdId
+                  checked: herdSelected == herds[0].id
                 },
                 {
                   value: radioValueNewHerd,
@@ -97,7 +97,7 @@
         {% else %}
           {% set herdOrFlockItems = [] %}
           {% for item in herds %}
-            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item.herdId, text: item.herdName, checked: herdSelected == item.herdId }]) %}
+            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item.id, text: item.name, checked: herdSelected == item.id }]) %}
           {% endfor %}
           {% set herdOrFlockItems = herdOrFlockItems.concat([{ divider: "or" }]) %}
           {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: radioValueNewHerd, text: "I am claiming for a different " + herdOrFlock, checked: herdSelected === radioValueNewHerd }]) %}

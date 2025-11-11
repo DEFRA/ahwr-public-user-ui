@@ -21,7 +21,7 @@ const radioValueNewHerd = "NEW_HERD";
 
 const getMostRecentClaimWithoutHerd = (previousClaims, typeOfLivestock) => {
   const claimsWithoutHerd = previousClaims.filter(
-    (claim) => claim.data.typeOfLivestock === typeOfLivestock && !claim.data.herdId,
+    (claim) => claim.data.typeOfLivestock === typeOfLivestock && !claim.herd?.id,
   );
 
   if (claimsWithoutHerd.length === 0) {
@@ -34,8 +34,8 @@ const getMostRecentClaimWithoutHerd = (previousClaims, typeOfLivestock) => {
 };
 
 const createUnnamedHerd = (claim, typeOfLivestock) => ({
-  herdId: radioValueUnnamedHerd,
-  herdName: `Unnamed ${getHerdOrFlock(typeOfLivestock)} (Last claim: ${claim.data.claimType === claimType.review ? "review" : "follow-up"} visit on the ${formatDate(claim.data.dateOfVisit)})`,
+  id: radioValueUnnamedHerd,
+  name: `Unnamed ${getHerdOrFlock(typeOfLivestock)} (Last claim: ${claim.data.claimType === claimType.review ? "review" : "follow-up"} visit on the ${formatDate(claim.data.dateOfVisit)})`,
 });
 
 const getHandler = {
@@ -70,12 +70,12 @@ const getHandler = {
 
 const addHerdToSession = (request, existingHerd, herds) => {
   if (existingHerd) {
-    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdVersion, existingHerd.herdVersion + 1);
-    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdName, existingHerd.herdName);
+    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdVersion, existingHerd.version + 1);
+    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdName, existingHerd.name);
     setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdCph, existingHerd.cph);
-    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdReasons, existingHerd.herdReasons);
+    setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.herdReasons, existingHerd.reasons);
     setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.isOnlyHerdOnSbi,
-      existingHerd.herdReasons?.[0] === ONLY_HERD ? ONLY_HERD_ON_SBI.YES : ONLY_HERD_ON_SBI.NO);
+      existingHerd.reasons?.[0] === ONLY_HERD ? ONLY_HERD_ON_SBI.YES : ONLY_HERD_ON_SBI.NO);
   } else {
     if (herds.length) {
       setSessionData(request, sessionEntryKeys.endemicsClaim,sessionKeys.endemicsClaim.isOnlyHerdOnSbi, ONLY_HERD_ON_SBI.NO);
@@ -85,7 +85,7 @@ const addHerdToSession = (request, existingHerd, herds) => {
 };
 
 const isUnnamedHerdClaim = (herdId, claim) =>
-  herdId === radioValueUnnamedHerd && !claim.data.herdId;
+  herdId === radioValueUnnamedHerd && !claim.herd?.id;
 
 const postHandler = {
   method: "POST",
@@ -186,7 +186,7 @@ const postHandler = {
       const prevHerdClaims = previousClaims.filter(
         (claim) =>
           claim.data.typeOfLivestock === typeOfLivestock &&
-          (isUnnamedHerdClaim(herdSelected, claim) || claim.data.herdId === herdSelected),
+          (isUnnamedHerdClaim(herdSelected, claim) || claim.herd?.id === herdSelected),
       );
       const errorMessage = canMakeClaim({
         prevClaims: prevHerdClaims,
@@ -216,7 +216,7 @@ const postHandler = {
           .takeover();
       }
 
-      const existingHerd = herds.find((herd) => herd.herdId === herdSelected);
+      const existingHerd = herds.find((herd) => herd.id === herdSelected);
       addHerdToSession(request, existingHerd, herds);
       if (herdSelected === radioValueUnnamedHerd) {
         setSessionData(

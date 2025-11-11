@@ -111,7 +111,7 @@ describe('/enter-herd-details tests', () => {
         typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdId: 'herd-one',
-        herds: [{ herdId: 'herd-one', herdReasons: ['foo'] }]
+        herds: [{ id: 'herd-one', reasons: ['foo'] }]
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
@@ -133,7 +133,7 @@ describe('/enter-herd-details tests', () => {
         typeOfReview: 'REVIEW',
         typeOfLivestock: 'beef',
         herdId: 'herd-one',
-        herds: [{ herdId: 'herd-one', herdReasons: [ONLY_HERD] }]
+        herds: [{ id: 'herd-one', reasons: [ONLY_HERD] }]
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
