@@ -26,11 +26,13 @@ export const errorPagesPlugin = {
 
           request.logger.error(
             {
-              statusCode,
-              message: payloadMessage,
-              stack: response.data ? response.data.stack : response.stack,
+              http: { response : { statusCode }},
+              error: {
+                message: payloadMessage,
+                stack: response.data ? response.data.stack : response.stack
+              },
             },
-            "pre response error",
+            "Error page plugin picked up error",
           );
 
           return h.view("error-pages/500").code(statusCode);
