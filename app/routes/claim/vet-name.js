@@ -82,7 +82,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { vetsName } = request.payload;
       // TODO: Should emit event
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.vetsName,

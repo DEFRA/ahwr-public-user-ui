@@ -198,7 +198,7 @@ const postHandler = {
       );
       const { biosecurity, assessmentPercentage } = request.payload;
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.biosecurity,

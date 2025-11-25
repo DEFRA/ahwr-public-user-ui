@@ -89,7 +89,7 @@ const postHandler = {
         dateOfVisit,
       } = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const { piHuntRecommended } = request.payload;
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.piHuntRecommended,

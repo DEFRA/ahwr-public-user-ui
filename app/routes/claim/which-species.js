@@ -18,15 +18,13 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       // get type of livestock here, before we reset the session
-      const {
-        organisation: { sbi },
-        typeOfLivestock,
-      } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const { typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
-      request.logger.setBindings({ sbi });
+      request.logger.setBindings({ sbi: organisation.sbi });
 
       // fetch latest new world (always) and latest old world (if relevant) application
-      const { latestEndemicsApplication } = await refreshApplications(sbi, request);
+      const { latestEndemicsApplication } = await refreshApplications(organisation.sbi, request);
 
       // reset the session as this is the entry point - if user goes all the way back
       // to this point to change species, we cant keep all their answers
@@ -76,7 +74,7 @@ const postHandler = {
       }
 
       // TODO: Should emit event
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.typeOfLivestock,

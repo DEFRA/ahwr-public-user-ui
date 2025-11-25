@@ -5,7 +5,7 @@ import { getReviewHerdId, isVisitDateAfterPIHuntAndDairyGoLive } from "./context
 import { clearPiHuntSessionOnChange } from "./clear-pi-hunt-session-on-change.js";
 import { claimRoutes } from "../constants/routes.js";
 
-export const getNextMultipleHerdsPage = (request) => {
+export const getNextMultipleHerdsPage = async (request) => {
   const {
     typeOfReview: typeOfClaim,
     previousClaims,
@@ -30,7 +30,7 @@ export const getNextMultipleHerdsPage = (request) => {
       reviewHerdId,
     );
 
-    setSessionData(
+    await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.relevantReviewForEndemics,
@@ -48,7 +48,7 @@ export const getNextMultipleHerdsPage = (request) => {
       const reviewTestResultsValue =
         reviewTestResults ?? reviewWithinLast10Months?.data?.testResults;
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.reviewTestResults,

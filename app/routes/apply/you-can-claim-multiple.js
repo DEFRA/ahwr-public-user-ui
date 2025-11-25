@@ -3,6 +3,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
+  setSessionEntry,
 } from "../../session/index.js";
 import { applyRoutes, applyViews, dashboardRoutes } from "../../constants/routes.js";
 import { createTempReference } from "../../lib/create-temp-ref.js";
@@ -20,18 +21,14 @@ export const claimMultipleRouteHandlers = [
         // on way in we must generate a new reference
         const tempApplicationId = createTempReference();
 
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.farmerApplyData,
           sessionKeys.farmerApplyData.reference,
           tempApplicationId,
         );
 
-        const organisation = getSessionData(
-          request,
-          sessionEntryKeys.farmerApplyData,
-          sessionKeys.farmerApplyData.organisation,
-        );
+        const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
         request.logger.setBindings({ sbi: organisation.sbi });
 
@@ -39,15 +36,10 @@ export const claimMultipleRouteHandlers = [
 
         const userType = getUserTypeByApplication(latestApplications);
 
-        setSessionData(
-          request,
-          sessionEntryKeys.farmerApplyData,
-          sessionKeys.farmerApplyData.organisation,
-          {
-            ...organisation,
-            userType,
-          },
-        );
+        await setSessionEntry(request, sessionEntryKeys.organisation, {
+          ...organisation,
+          userType,
+        });
 
         return h.view(applyViews.youCanClaimMultiple, {
           backLink: dashboardRoutes.checkDetails,
@@ -62,7 +54,7 @@ export const claimMultipleRouteHandlers = [
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {
-          setSessionData(
+          await setSessionData(
             request,
             sessionEntryKeys.farmerApplyData,
             sessionKeys.farmerApplyData.agreeMultipleSpecies,
@@ -72,7 +64,7 @@ export const claimMultipleRouteHandlers = [
           return h.redirect(applyRoutes.numbers);
         }
 
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.farmerApplyData,
           sessionKeys.farmerApplyData.agreeMultipleSpecies,

@@ -9,32 +9,32 @@ import {
 import { getRedirectPath } from "./get-redirect-path.js";
 import { refreshApplications } from "../../lib/context-helper.js";
 
-export const setSessionForErrorPage = ({
+export const setSessionForErrorPage = async ({
   request,
   error,
   hasMultipleBusinesses,
   backLink,
   organisation,
 }) => {
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.cannotSignInDetails,
     sessionKeys.cannotSignInDetails.error,
     error,
   );
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.cannotSignInDetails,
     sessionKeys.cannotSignInDetails.hasMultipleBusinesses,
     hasMultipleBusinesses,
   );
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.cannotSignInDetails,
     sessionKeys.cannotSignInDetails.backLink,
     backLink,
   );
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.cannotSignInDetails,
     sessionKeys.cannotSignInDetails.organisation,
@@ -106,7 +106,7 @@ export const checkLoginValid = async ({
     return returnErrorRouting({ h, error: "AgreementRedactedError", organisation, request, crn });
   }
 
-  const { redirectPath, error: err } = getRedirectPath(applicationsForSbi, request);
+  const { redirectPath, error: err } = await getRedirectPath(applicationsForSbi, request);
 
   if (err) {
     logReasonAndEmitEvent({
@@ -137,7 +137,7 @@ const returnErrorRouting = async ({ h, error, organisation, request, crn }) => {
     request,
     error,
     hasMultipleBusinesses,
-    backLink: requestAuthorizationCodeUrl(request),
+    backLink: await requestAuthorizationCodeUrl(request),
     organisation,
   });
 

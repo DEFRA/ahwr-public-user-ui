@@ -6,10 +6,7 @@ import { refreshApplications } from "../../../../app/lib/context-helper.js";
 jest.mock("../../../../app/session/index.js", () => ({
   ...jest.requireActual("../../../../app/session/index.js"),
   setSessionData: jest.fn(),
-}));
-
-jest.mock("applicationinsights", () => ({
-  defaultClient: { trackEvent: jest.fn() },
+  setSessionEntry: jest.fn(),
 }));
 
 jest.mock("../../../../app/lib/context-helper.js");

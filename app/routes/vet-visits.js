@@ -141,11 +141,7 @@ export const vetVisitsHandlers = [
     path: "/vet-visits",
     options: {
       handler: async (request, h) => {
-        const organisation = getSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.organisation,
-        );
+        const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
         request.logger.setBindings({ sbi: organisation.sbi });
 
@@ -154,6 +150,7 @@ export const vetVisitsHandlers = [
           sessionEntryKeys.customer,
           sessionKeys.customer.attachedToMultipleBusinesses,
         );
+
         const { latestEndemicsApplication, latestVetVisitApplication } = getSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
@@ -197,6 +194,8 @@ export const vetVisitsHandlers = [
 
         const { sheepHeaders, nonSheepHeaders } = buildTableHeaders();
 
+        const authCodeUrl = await requestAuthorizationCodeUrl(request);
+
         return h.view("vet-visits", {
           beefClaimsRows,
           dairyClaimsRows,
@@ -215,7 +214,7 @@ export const vetVisitsHandlers = [
           }),
           ...(latestEndemicsApplication?.reference && { downloadedDocument }),
           ...(attachedToMultipleBusinesses && {
-            hostname: requestAuthorizationCodeUrl(request),
+            hostname: authCodeUrl,
           }),
           latestTermsAndConditionsUri,
         });

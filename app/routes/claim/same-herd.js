@@ -71,12 +71,12 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdSame } = request.payload;
+      const organisation = getSessionData(request, sessionEntryKeys.organisation);
       const {
         herdSame: herdSameFromSession,
         previousClaims,
         typeOfReview,
         dateOfVisit,
-        organisation,
         typeOfLivestock,
         latestVetVisitApplication: oldWorldApplication,
       } = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -85,7 +85,7 @@ const postHandler = {
         removeSessionDataForSameHerdChange(request);
       }
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdSame,
@@ -142,7 +142,7 @@ const postHandler = {
           .takeover();
       }
 
-      return h.redirect(getNextMultipleHerdsPage(request));
+      return h.redirect(await getNextMultipleHerdsPage(request));
     },
   },
 };

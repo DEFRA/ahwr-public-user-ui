@@ -79,6 +79,12 @@ export const getConfig = () => {
     logLevel: joi.string().required(),
     logFormat: joi.string().required(),
     logRedact: joi.array().items(joi.string()),
+    fcpMessaging: joi.object({
+      host: joi.string().required(),
+      username: joi.string().required(),
+      password: joi.string().required(),
+      address: joi.string().required(),
+    }),
   });
 
   const config = {
@@ -156,6 +162,12 @@ export const getConfig = () => {
     logRedact: process.env.LOG_REDACT
       ? process.env.LOG_REDACT.split(",")
       : ["req.headers", "res.headers"],
+    fcpMessaging: {
+      host: process.env.MESSAGE_QUEUE_HOST,
+      username: process.env.MESSAGE_QUEUE_USER,
+      password: process.env.FCP_AHWR_EVENT_QUEUE_SA_KEY,
+      address: process.env.EVENT_QUEUE_ADDRESS,
+    },
   };
 
   const { error } = schema.validate(config, {

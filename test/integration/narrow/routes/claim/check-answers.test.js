@@ -25,11 +25,12 @@ import {
   sheepReviewClaim,
   sheepTestResults,
 } from "../../../../utils/check-answers.js";
-import { getSessionData } from "../../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys } from "../../../../../app/session/index.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { isMultipleHerdsUserJourney } from "../../../../../app/lib/context-helper.js";
 import { submitNewClaim } from "../../../../../app/api-requests/claim-api.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/lib/context-helper.js");
@@ -63,13 +64,16 @@ describe("Check answers test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+      expect(res.headers.location.toString()).toEqual("/sign-in");
     });
 
     test("shows fields for a review claim in the correct order for each species for beef", async () => {
-      getSessionData.mockImplementation(() => {
-        return beefReviewClaim;
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(beefReviewClaim);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
       const options = {
         method: "GET",
         url,
@@ -95,9 +99,12 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for a review claim in the correct order for each species for dairy", async () => {
-      getSessionData.mockImplementation(() => {
-        return dairyReviewClaim;
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(dairyReviewClaim);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
       const options = {
         method: "GET",
         url,
@@ -127,9 +134,12 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for a review claim in the correct order for each species for pigs", async () => {
-      getSessionData.mockImplementation(() => {
-        return pigsReviewClaim;
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(pigsReviewClaim);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
       const options = {
         method: "GET",
         url,
@@ -155,9 +165,12 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for a review claim in the correct order for each species for sheep", async () => {
-      getSessionData.mockImplementation(() => {
-        return sheepReviewClaim;
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(sheepReviewClaim);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
       const options = {
         method: "GET",
         url,
@@ -183,12 +196,15 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for a review claim in the correct order for each species when species is sheep, including flock information", async () => {
-      getSessionData.mockImplementation(() => {
-        return {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
           ...sheepReviewClaim,
           herdName: "Flock one",
-        };
-      });
+        });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
       const options = {
         method: "GET",
         url,
@@ -222,9 +238,12 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for an endemics claim in the correct order for each species for beef", async () => {
-      getSessionData.mockImplementation(() => {
-        return beefEndemicsFollowUpClaim;
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(beefEndemicsFollowUpClaim);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
       const options = {
         method: "GET",
         url,
@@ -250,9 +269,13 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for an endemics claim in the correct order for each species for dairy", async () => {
-      getSessionData.mockImplementation(() => {
-        return dairyEndemicsFollowUpClaim;
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(dairyEndemicsFollowUpClaim);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
+
       const options = {
         method: "GET",
         url,
@@ -278,9 +301,12 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for an endemics claim in the correct order for each species for dairy with no date of testing", async () => {
-      getSessionData.mockImplementation(() => {
-        return dairyEndemicsFollowUpClaimPiHuntDeclined;
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(dairyEndemicsFollowUpClaimPiHuntDeclined);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
       const options = {
         method: "GET",
         url,
@@ -306,9 +332,13 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for an endemics claim in the correct order for each species for pigs", async () => {
-      getSessionData.mockImplementation(() => {
-        return pigEndemicsFollowUpClaim;
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(pigEndemicsFollowUpClaim);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
+
       const options = {
         method: "GET",
         url,
@@ -336,9 +366,12 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for an endemics claim in the correct order for each species for sheep", async () => {
-      getSessionData.mockImplementation(() => {
-        return sheepEndemicsFollowUpClaim;
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(sheepEndemicsFollowUpClaim);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
       const options = {
         method: "GET",
         url,
@@ -385,12 +418,15 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for an endemics claim in the correct order for each species and herd information displayed for multi herds claim", async () => {
-      getSessionData.mockImplementation(() => {
-        return {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
           ...dairyEndemicsFollowUpClaim,
           herdName: "Herd one",
-        };
-      });
+        });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
       const options = {
         method: "GET",
         url,
@@ -480,9 +516,9 @@ describe("Check answers test", () => {
     ])(
       "check species content and back links are correct for typeOfLivestock: $typeOfLivestock and typeOfReview: $typeOfReview}",
       async ({ typeOfLivestock, typeOfReview, content, backLink }) => {
-        getSessionData.mockImplementation(() => {
-          return {
-            organisation: { name: "business name" },
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
             typeOfLivestock,
             typeOfReview,
             dateOfVisit: "2023-12-19T10:25:11.318Z",
@@ -496,8 +532,10 @@ describe("Check answers test", () => {
             testResults: "testResults",
             reference: "TEMP-6GSE-PIR8",
             latestEndemicsApplication: { flags: [] },
-          };
-        });
+          });
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.organisation)
+          .mockReturnValue({ name: "business name" });
         const options = {
           method: "GET",
           url,

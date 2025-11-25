@@ -74,7 +74,7 @@ const postHandler = {
         //  herdVersion // TODO: herdVersion should go in the emitted event below
       } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdCph,

@@ -5,7 +5,6 @@ import {
   getSessionData,
   setSessionData,
   sessionEntryKeys,
-  sessionKeys,
   setSessionEntry,
 } from "../../../../app/session";
 import { when } from "jest-when";
@@ -66,11 +65,7 @@ describe("preApplyHandler", () => {
 
   test("sends an API request to get applications if they arent in the session, but organisation is in the session", async () => {
     when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.farmerApplyData,
-        sessionKeys.farmerApplyData.organisation,
-      )
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(organisation);
 
     const closedNewWorldApplications = [
@@ -97,11 +92,7 @@ describe("preApplyHandler", () => {
 
   test("does not send an API request to get applications if the application is already in the session", async () => {
     when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.farmerApplyData,
-        sessionKeys.farmerApplyData.organisation,
-      )
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(organisation);
 
     const closedNewWorldApplication = {

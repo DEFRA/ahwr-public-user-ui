@@ -110,7 +110,7 @@ const postHandler = {
           .takeover();
       }
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdName,

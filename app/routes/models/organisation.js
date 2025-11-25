@@ -8,7 +8,7 @@ const formatAddressForDisplay = (organisation) => {
   return organisation?.address?.replaceAll(",", "<br>");
 };
 
-export const getOrganisationModel = (request, organisation, errorText) => {
+export const getOrganisationModel = async (request, organisation, errorText) => {
   const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
   request.logger.setBindings({ crn });
 
@@ -24,7 +24,7 @@ export const getOrganisationModel = (request, organisation, errorText) => {
 
   return {
     backLink: {
-      href: requestAuthorizationCodeUrl(request),
+      href: await requestAuthorizationCodeUrl(request),
     },
     organisation,
     listData: { rows },

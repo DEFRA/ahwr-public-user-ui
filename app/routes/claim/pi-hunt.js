@@ -77,7 +77,7 @@ const postHandler = {
       const piHuntEnabledAndVisitDateAfterGoLive =
         isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit);
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.piHunt,

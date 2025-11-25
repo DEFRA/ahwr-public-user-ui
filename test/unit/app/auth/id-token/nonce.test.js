@@ -33,8 +33,8 @@ describe("Nonce handling", () => {
   });
 
   describe("generate", () => {
-    test("should generate a nonce and store it in the session", () => {
-      const nonce = generate(request);
+    test("should generate a nonce and store it in the session", async () => {
+      const nonce = await generate(request);
 
       expect(randomUUID).toHaveBeenCalled();
       expect(setSessionData).toHaveBeenCalledWith(

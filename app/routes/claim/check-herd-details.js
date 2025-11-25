@@ -49,7 +49,7 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
       );
       const nextPageUrl = skipSameHerdPage(previousClaims, typeOfLivestock)
-        ? getNextMultipleHerdsPage(request)
+        ? await getNextMultipleHerdsPage(request)
         : claimRoutes.sameHerd;
       return h.redirect(nextPageUrl);
     },

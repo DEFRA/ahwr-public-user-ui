@@ -68,7 +68,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { isOnlyHerdOnSbi } = request.payload;
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.isOnlyHerdOnSbi,
@@ -76,7 +76,7 @@ const postHandler = {
       );
 
       if (isOnlyHerdOnSbi === ONLY_HERD_ON_SBI.YES) {
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdReasons,

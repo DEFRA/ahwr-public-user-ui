@@ -3,6 +3,7 @@ import {
   setSessionData,
   sessionKeys,
   getSessionData,
+  setSessionEntry,
 } from "../../session/index.js";
 import { getCphNumbers } from "./cph-numbers.js";
 import {
@@ -34,7 +35,7 @@ const formatOrganisationAddress = (address) => {
     .join(",");
 };
 
-const setOrganisationSessionData = (request, personSummary, org, crn) => {
+const setOrganisationSessionData = async (request, personSummary, org, crn) => {
   const organisation = {
     sbi: org.sbi?.toString(),
     farmerName: personSummary.name,
@@ -46,18 +47,7 @@ const setOrganisationSessionData = (request, personSummary, org, crn) => {
     id: org.id,
   };
 
-  setSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-    sessionKeys.endemicsClaim.organisation,
-    organisation,
-  );
-  setSessionData(
-    request,
-    sessionEntryKeys.farmerApplyData,
-    sessionKeys.farmerApplyData.organisation,
-    organisation,
-  );
+  await setSessionEntry(request, sessionEntryKeys.organisation, organisation);
 };
 
 export const getPersonAndOrg = async ({ request, apimAccessToken, crn, logger, accessToken }) => {
@@ -106,7 +96,12 @@ export const getPersonAndOrg = async ({ request, apimAccessToken, crn, logger, a
 
   detailOrganisationRoles({ organisationAuthorisation, personId: personSummary.id, logger });
 
-  setSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.id, personSummary.id);
+  await setSessionData(
+    request,
+    sessionEntryKeys.customer,
+    sessionKeys.customer.id,
+    personSummary.id,
+  );
 
   const personAndOrg = {
     orgDetails: {
@@ -119,7 +114,12 @@ export const getPersonAndOrg = async ({ request, apimAccessToken, crn, logger, a
     personSummary,
   };
 
-  setOrganisationSessionData(request, personSummary, personAndOrg.orgDetails.organisation, crn);
+  await setOrganisationSessionData(
+    request,
+    personSummary,
+    personAndOrg.orgDetails.organisation,
+    crn,
+  );
 
   return { ...personAndOrg, cphNumbers };
 };

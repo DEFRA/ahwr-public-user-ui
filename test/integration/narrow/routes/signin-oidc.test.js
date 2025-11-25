@@ -8,11 +8,6 @@ import * as personAndOrgModule from "../../../../app/api-requests/rpa-api/get-pe
 import * as checkLoginValidModule from "../../../../app/routes/utils/check-login-valid";
 import * as cphCheckModule from "../../../../app/api-requests/rpa-api/cph-check";
 
-jest.mock("applicationinsights", () => ({
-  defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() },
-  dispose: jest.fn(),
-}));
-
 jest.mock("../../../../app/session/index.js", () => ({
   ...jest.requireActual("../../../../app/session/index.js"),
   setFarmerApplyData: jest.fn(),

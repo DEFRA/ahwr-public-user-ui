@@ -103,7 +103,7 @@ const postHandler = {
       //   request,
       //   sessionEntryKeys.endemicsClaim,
       // );
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdReasons,

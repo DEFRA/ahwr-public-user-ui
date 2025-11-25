@@ -1,5 +1,5 @@
 import { config } from "../config/index.js";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import { getSessionData, sessionEntryKeys } from "../session/index.js";
 
 export const updateDetailsHandlers = [
   {
@@ -11,11 +11,7 @@ export const updateDetailsHandlers = [
           return h.redirect("/check-details");
         }
 
-        const organisation = getSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.organisation,
-        );
+        const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
         return h.redirect(`${config.lfsUpdate.uri}${organisation.id}`);
       },

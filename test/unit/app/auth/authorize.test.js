@@ -5,18 +5,13 @@ import { verifyState } from "../../../../app/auth/auth-code-grant/state.js";
 jest.mock("../../../../app/session");
 jest.mock("../../../../app/auth/auth-code-grant/state");
 
-jest.mock("applicationinsights", () => ({
-  defaultClient: { trackException: jest.fn() },
-  dispose: jest.fn(),
-}));
-
 describe("Generate authentication url test", () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   test("requestAuthorizationCodeUrl sets a code challenge parameter", async () => {
-    const result = requestAuthorizationCodeUrl();
+    const result = await requestAuthorizationCodeUrl();
     const params = new URL(result).searchParams;
     expect(params.get("code_challenge")).not.toBeNull();
   });

@@ -6,7 +6,6 @@ import {
   clearApplyRedirect,
   getSessionData,
   sessionEntryKeys,
-  sessionKeys,
 } from "../../../../../app/session/index.js";
 import { createServer } from "../../../../../app/server";
 import { StatusCodes } from "http-status-codes";
@@ -44,16 +43,12 @@ describe("Declaration test", () => {
   });
 
   when(getSessionData)
-    .calledWith(
-      expect.anything(),
-      sessionEntryKeys.farmerApplyData,
-      sessionKeys.farmerApplyData.organisation,
-    )
+    .calledWith(expect.anything(), sessionEntryKeys.organisation)
     .mockReturnValue(organisation);
 
   when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.farmerApplyData)
-    .mockReturnValue({ organisation, reference: "TEMP-PJ7E-WSI8" });
+    .mockReturnValue({ reference: "TEMP-PJ7E-WSI8" });
 
   when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.application)
@@ -148,12 +143,8 @@ describe("Declaration test", () => {
 
     test("returns 400 when request is not valid", async () => {
       when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.farmerApplyData,
-          sessionKeys.farmerApplyData.organisation,
-        )
-        .mockReturnValue({ organisation });
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(organisation);
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",

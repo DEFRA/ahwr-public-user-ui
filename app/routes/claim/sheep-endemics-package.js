@@ -133,13 +133,13 @@ const postHandler = {
       const { sheepEndemicsPackage } = request.payload;
       const session = getSessionData(request, sessionEntryKeys.endemicsClaim);
       if (session.sheepEndemicsPackage !== sheepEndemicsPackage) {
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.sheepTests,
           undefined,
         );
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.sheepTestResults,
@@ -148,7 +148,7 @@ const postHandler = {
         // TODO : These two previous emitted events on change
       }
       // TODO: and this
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.sheepEndemicsPackage,

@@ -77,7 +77,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { geneticSequencing } = request.payload;
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.pigsGeneticSequencing,

@@ -14,7 +14,7 @@ export const defraIdSignInHandlers = [
       },
       handler: async (request, h) => {
         const { ssoOrgId } = request.query;
-        const defraIdSignInUri = requestAuthorizationCodeUrl(request, ssoOrgId);
+        const defraIdSignInUri = await requestAuthorizationCodeUrl(request, ssoOrgId);
 
         return h.redirect(defraIdSignInUri);
       },

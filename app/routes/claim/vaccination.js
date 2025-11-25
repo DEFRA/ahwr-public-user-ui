@@ -92,7 +92,7 @@ const postHandler = {
       const { herdVaccinationStatus } = request.payload;
 
       // TODO: Should emit event
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdVaccinationStatus,

@@ -1,7 +1,12 @@
 import { LockedBusinessError } from "../exceptions/LockedBusinessError.js";
 import { InvalidPermissionsError } from "../exceptions/InvalidPermissionsError.js";
 import { NoEligibleCphError } from "../exceptions/NoEligibleCphError.js";
-import { setSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import {
+  setSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionEntry,
+} from "../session/index.js";
 import { setAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { farmerApply } from "../constants/constants.js";
 import { getRedirectPath } from "./utils/get-redirect-path.js";
@@ -91,30 +96,20 @@ export const devLoginHandlers = [
         try {
           throwErrorBasedOnSuffix(sbi);
 
-          setSessionData(
+          await setSessionData(
             request,
             sessionEntryKeys.customer,
             sessionKeys.customer.id,
             personSummary.id,
           );
-          setSessionData(
+          await setSessionData(
             request,
             sessionEntryKeys.customer,
             sessionKeys.customer.crn,
             personSummary.customerReferenceNumber,
           );
-          setSessionData(
-            request,
-            sessionEntryKeys.farmerApplyData,
-            sessionKeys.farmerApplyData.organisation,
-            organisation,
-          );
-          setSessionData(
-            request,
-            sessionEntryKeys.endemicsClaim,
-            sessionKeys.endemicsClaim.organisation,
-            organisation,
-          );
+          await setSessionEntry(request, sessionEntryKeys.organisation, organisation);
+
           setAuthCookie(request, personSummary.email, farmerApply);
           const { latestEndemicsApplication, latestVetVisitApplication } =
             await refreshApplications(sbi, request);
@@ -122,7 +117,7 @@ export const devLoginHandlers = [
             Boolean,
           );
 
-          const { redirectPath, error } = getRedirectPath(applicationsForSbi, request);
+          const { redirectPath, error } = await getRedirectPath(applicationsForSbi, request);
 
           if (error) {
             const errorToThrow = new Error(error);
@@ -142,8 +137,8 @@ export const devLoginHandlers = [
 
           if (errorNames.includes(error.name)) {
             const hasMultipleBusinesses = sbi.charAt(0) === "1";
-            const backLink = requestAuthorizationCodeUrl(request);
-            setSessionForErrorPage({
+            const backLink = await requestAuthorizationCodeUrl(request);
+            await setSessionForErrorPage({
               request,
               error: error.name,
               hasMultipleBusinesses,

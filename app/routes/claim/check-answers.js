@@ -3,7 +3,6 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
-  setSessionEntry,
 } from "../../session/index.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import {
@@ -143,8 +142,8 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const organisation = getSessionData(request, sessionEntryKeys.organisation);
       const {
-        organisation,
         typeOfLivestock,
         typeOfReview,
         dateOfVisit,
@@ -377,7 +376,7 @@ const getHandler = {
           isSheep,
           typeOfLivestock,
           dateOfVisit,
-          organisationName: organisation?.name,
+          organisationName: organisation.name,
           herdName,
           agreementFlags: latestEndemicsApplication.flags,
         }),
@@ -497,22 +496,20 @@ const postHandler = {
         request.logger,
       );
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.reference,
         claim.reference,
       );
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.amount,
         claim.data.amount,
       );
-      setSessionEntry(request, sessionEntryKeys.tempClaimReference, claim.reference);
 
       // TODO - fire an event that a claim was created
-
       return h.redirect(claimRoutes.confirmation);
     },
   },

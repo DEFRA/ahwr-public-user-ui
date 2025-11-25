@@ -10,6 +10,7 @@ import {
   sessionEntryKeys,
   sessionKeys,
   getSessionData,
+  setSessionEntry,
 } from "../../../../../app/session";
 import { getCphNumbers } from "../../../../../app/api-requests/rpa-api/cph-numbers";
 import { when } from "jest-when";
@@ -142,36 +143,16 @@ describe("getPersonAndOrg", () => {
       sessionKeys.customer.id,
       12345,
     );
-    expect(setSessionData).toHaveBeenCalledWith(
-      request,
-      sessionEntryKeys.endemicsClaim,
-      sessionKeys.endemicsClaim.organisation,
-      {
-        address:
-          "1 Brown Lane,Smithering,West Sussex,England,UK,Thompsons,Sisterdene,1-30,Grey Building,Brown Lane,Grenwald,West Sussex,WS11 2DS,GBR",
-        crn: 123456789,
-        email: "farmertomstestemail@test.com.test",
-        farmerName: "Farmer Tom",
-        name: "Unit test org",
-        orgEmail: "unit@test.email.com.test",
-        sbi: "999000",
-      },
-    );
-    expect(setSessionData).toHaveBeenCalledWith(
-      request,
-      sessionEntryKeys.farmerApplyData,
-      sessionKeys.farmerApplyData.organisation,
-      {
-        address:
-          "1 Brown Lane,Smithering,West Sussex,England,UK,Thompsons,Sisterdene,1-30,Grey Building,Brown Lane,Grenwald,West Sussex,WS11 2DS,GBR",
-        crn: 123456789,
-        email: "farmertomstestemail@test.com.test",
-        farmerName: "Farmer Tom",
-        name: "Unit test org",
-        orgEmail: "unit@test.email.com.test",
-        sbi: "999000",
-      },
-    );
+    expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.organisation, {
+      address:
+        "1 Brown Lane,Smithering,West Sussex,England,UK,Thompsons,Sisterdene,1-30,Grey Building,Brown Lane,Grenwald,West Sussex,WS11 2DS,GBR",
+      crn: 123456789,
+      email: "farmertomstestemail@test.com.test",
+      farmerName: "Farmer Tom",
+      name: "Unit test org",
+      orgEmail: "unit@test.email.com.test",
+      sbi: "999000",
+    });
     expect(getCphNumbers).toHaveBeenCalledWith({
       apimAccessToken,
       defraIdAccessToken: "abc123",

@@ -9,9 +9,14 @@ const sha256 = (buffer) => {
   return crypto.createHash("sha256").update(buffer).digest();
 };
 
-export const generateCodeChallenge = (request) => {
+export const generateCodeChallenge = async (request) => {
   const verifier = base64URLEncode(crypto.randomBytes(32));
   const codeChallenge = base64URLEncode(sha256(verifier));
-  setSessionData(request, sessionEntryKeys.pkcecodes, sessionKeys.pkcecodes.verifier, verifier);
+  await setSessionData(
+    request,
+    sessionEntryKeys.pkcecodes,
+    sessionKeys.pkcecodes.verifier,
+    verifier,
+  );
   return codeChallenge;
 };
