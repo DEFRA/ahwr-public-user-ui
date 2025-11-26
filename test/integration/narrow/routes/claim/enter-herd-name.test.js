@@ -2,12 +2,9 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import { getSessionData, setSessionData, emitHerdEvent } from "../../../../../app/session/index.js";
 
 jest.mock("../../../../../app/session/index.js");
-// jest.mock('../../../../../app/event/send-herd-event.js', () => ({
-//   sendHerdEvent: jest.fn()
-// }))
 
 describe("/enter-herd-name tests", () => {
   const url = `/enter-herd-name`;
@@ -164,6 +161,7 @@ describe("/enter-herd-name tests", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/enter-cph-number");
       expect(setSessionData).toHaveBeenCalled();
+      expect(emitHerdEvent).toHaveBeenCalled();
     });
 
     test("navigates to the correct page when payload valid and multiple previous claims with herds", async () => {
@@ -196,6 +194,7 @@ describe("/enter-herd-name tests", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/enter-cph-number");
       expect(setSessionData).toHaveBeenCalled();
+      expect(emitHerdEvent).toHaveBeenCalled();
     });
 
     test("displays errors when herd name is missing", async () => {
@@ -220,6 +219,7 @@ describe("/enter-herd-name tests", () => {
       expect($('a[href="#herdName"]').text()).toContain("Enter the herd name");
       expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
       expectHerdText($);
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("displays errors when herd name is less than 2 characters", async () => {
@@ -244,6 +244,7 @@ describe("/enter-herd-name tests", () => {
       expect($('a[href="#herdName"]').text()).toContain("Name must be between 2 and 30 characters");
       expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
       expectHerdText($);
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("displays errors when herd name is greater than 30 characters", async () => {
@@ -268,6 +269,7 @@ describe("/enter-herd-name tests", () => {
       expect($('a[href="#herdName"]').text()).toContain("Name must be between 2 and 30 characters");
       expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
       expectHerdText($);
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("displays errors when herd name contains an invalid character", async () => {
@@ -294,6 +296,7 @@ describe("/enter-herd-name tests", () => {
       );
       expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
       expectHerdText($);
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("displays errors when herd name has already been used in a previous claim", async () => {
@@ -327,6 +330,7 @@ describe("/enter-herd-name tests", () => {
       );
       expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
       expectHerdText($);
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("displays errors with back link to date of visit when no previous herds and sheep", async () => {
@@ -350,6 +354,7 @@ describe("/enter-herd-name tests", () => {
       expect($('a[href="#herdName"]').text()).toContain("Enter the flock name");
       expect($(".govuk-back-link").attr("href")).toContain("/date-of-visit");
       expectFlockText($);
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
   });
 });

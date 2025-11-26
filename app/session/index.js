@@ -1,5 +1,4 @@
-import { randomUUID } from "node:crypto";
-import { sendSessionEvent } from "../messaging/session-event-emission.js";
+import { sendHerdEvent, sendSessionEvent } from "../messaging/session-event-emission.js";
 
 export const sessionKeys = {
   farmerApplyData: {
@@ -257,6 +256,7 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
   const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
   const claimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const organisation = getSessionData(request, sessionEntryKeys.organisation);
+  const sessionId = request.yar.id;
 
   if (!organisation) {
     return;
@@ -265,7 +265,7 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
   if (entryKey === sessionEntryKeys.farmerApplyData) {
     // user is in apply journey
     await sendSessionEvent({
-      id: randomUUID(),
+      id: sessionId,
       sbi: organisation.sbi,
       email: organisation.email,
       journey: "farmerApplyData",
@@ -281,7 +281,7 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
   if (entryKey === sessionEntryKeys.endemicsClaim) {
     // user is in claim journey
     await sendSessionEvent({
-      id: randomUUID(),
+      id: sessionId,
       sbi: organisation.sbi,
       email: organisation.email,
       journey: "claim",
@@ -296,7 +296,7 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
 
   // user is logging in
   await sendSessionEvent({
-    id: randomUUID(),
+    id: sessionId,
     sbi: organisation.sbi,
     email: organisation.email,
     journey: entryKey,
@@ -305,4 +305,12 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
     claimReference: claimData?.reference ?? "N/A",
     applicationReference: farmerApplyData?.reference ?? "N/A",
   });
+};
+
+export const emitHerdEvent = async ({ request, type, message, data }) => {
+  const organisation = getSessionData(request, sessionEntryKeys.organisation);
+  const sessionId = request.yar.id;
+  const { sbi, email } = organisation;
+
+  await sendHerdEvent({ sbi, email, sessionId, type, message, data });
 };

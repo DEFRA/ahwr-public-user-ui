@@ -31,3 +31,23 @@ export const sendSessionEvent = async ({
 
   await publishEvent(payload);
 };
+
+export const sendHerdEvent = async ({ sbi, email, sessionId, type, message, data }) => {
+  const { publishEvent } = getEventPublisher();
+
+  const payload = {
+    name: SEND_SESSION_EVENT,
+    id: sessionId,
+    sbi,
+    cph: "n/a",
+    checkpoint: config.serviceName,
+    status: "success",
+    type,
+    message,
+    data,
+    raisedBy: email,
+    raisedOn: new Date().toISOString(),
+  };
+
+  await publishEvent(payload);
+};

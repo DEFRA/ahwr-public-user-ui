@@ -2,13 +2,10 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import { getSessionData, setSessionData, emitHerdEvent } from "../../../../../app/session/index.js";
 import { ONLY_HERD } from "../../../../../app/constants/claim-constants.js";
 
 jest.mock("../../../../../app/session/index.js");
-// jest.mock('../../../../../app/event/send-herd-event.js', () => ({
-//   sendHerdEvent: jest.fn()
-// }))
 
 describe("/enter-herd-details tests", () => {
   const url = `/enter-herd-details`;
@@ -192,6 +189,7 @@ describe("/enter-herd-details tests", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/check-herd-details");
       expect(setSessionData).toHaveBeenCalled();
+      expect(emitHerdEvent).toHaveBeenCalled();
     });
 
     test("display errors when payload invalid", async () => {
@@ -217,6 +215,7 @@ describe("/enter-herd-details tests", () => {
         "Select the reasons for this separate herd",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/herd-others-on-sbi");
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("display errors and no reasons selected when reasons stored in session but payload is now invalid", async () => {
@@ -243,6 +242,7 @@ describe("/enter-herd-details tests", () => {
       );
       expect($(".govuk-back-link").attr("href")).toContain("/herd-others-on-sbi");
       expect($('.govuk-checkboxes__input[value="differentBreed"]').is(":checked")).toBeFalsy();
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("display errors with flock labels when payload invalid", async () => {
@@ -267,6 +267,7 @@ describe("/enter-herd-details tests", () => {
       expect($('a[href="#herdReasons"]').text()).toContain(
         "Select the reasons for this separate flock",
       );
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
   });
 
@@ -294,5 +295,6 @@ describe("/enter-herd-details tests", () => {
       "Select the reasons for this separate flock",
     );
     expect($(".govuk-back-link").attr("href")).toContain("/enter-cph-number");
+    expect(emitHerdEvent).not.toHaveBeenCalled();
   });
 });

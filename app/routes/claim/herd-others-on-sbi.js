@@ -4,6 +4,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
+  emitHerdEvent,
 } from "../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { ONLY_HERD, ONLY_HERD_ON_SBI } from "../../constants/claim-constants.js";
@@ -83,8 +84,24 @@ const postHandler = {
           [ONLY_HERD],
         );
 
-        // TODO - emit herd event that the user has set herd reasons (also uses these values)
-        // const { herdId, herdVersion } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+        const { herdId, herdVersion } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+
+        await emitHerdEvent({
+          request,
+          type: "herd-reasons",
+          message: "Only herd for user",
+          data: {
+            herdId,
+            herdVersion,
+            herdReasonManagementNeeds: false,
+            herdReasonUniqueHealth: false,
+            herdReasonDifferentBreed: false,
+            herdReasonOtherPurpose: false,
+            herdReasonKeptSeparate: false,
+            herdReasonOnlyHerd: true,
+            herdReasonOther: false,
+          },
+        });
 
         return h.redirect(claimRoutes.checkHerdDetails);
       }

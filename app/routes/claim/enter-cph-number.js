@@ -4,6 +4,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
+  emitHerdEvent,
 } from "../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { getHerdOrFlock } from "../../lib/display-helpers.js";
@@ -67,12 +68,10 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdCph } = request.payload;
-      const {
-        herds,
-        isOnlyHerdOnSbi,
-        herdId,
-        //  herdVersion // TODO: herdVersion should go in the emitted event below
-      } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const { herds, isOnlyHerdOnSbi, herdId, herdVersion } = getSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+      );
 
       await setSessionData(
         request,
@@ -81,7 +80,12 @@ const postHandler = {
         herdCph,
       );
 
-      // TODO - Emit event saying the herd CPH number was collected
+      await emitHerdEvent({
+        request,
+        type: "herd-cph",
+        message: "Herd CPH collected from user",
+        data: { herdId, herdVersion, herdCph },
+      });
 
       let nextPageUrl;
 

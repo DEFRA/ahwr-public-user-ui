@@ -4,6 +4,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
+  emitHerdEvent,
 } from "../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { MULTIPLE_HERD_REASONS } from "ffc-ahwr-common-library";
@@ -99,10 +100,8 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdReasons } = request.payload;
-      // const { herdId, herdVersion } = getSessionData(
-      //   request,
-      //   sessionEntryKeys.endemicsClaim,
-      // );
+      const { herdId, herdVersion } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
@@ -110,7 +109,22 @@ const postHandler = {
         [].concat(herdReasons),
       );
 
-      // TODO - emit event here with the full herd information
+      await emitHerdEvent({
+        request,
+        type: "herd-reasons",
+        message: "Herd reasons collected from user",
+        data: {
+          herdId,
+          herdVersion,
+          herdReasonManagementNeeds: herdReasons.includes("separateManagementNeeds"),
+          herdReasonUniqueHealth: herdReasons.includes("uniqueHealthNeeds"),
+          herdReasonDifferentBreed: herdReasons.includes("differentBreed"),
+          herdReasonOtherPurpose: herdReasons.includes("differentPurpose"),
+          herdReasonKeptSeparate: herdReasons.includes("keptSeparate"),
+          herdReasonOnlyHerd: false,
+          herdReasonOther: herdReasons.includes("other"),
+        },
+      });
 
       return h.redirect(claimRoutes.checkHerdDetails);
     },
