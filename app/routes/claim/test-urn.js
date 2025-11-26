@@ -141,7 +141,7 @@ const postHandler = {
       );
       const { isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview);
       const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN }, request.logger);
-      // TODO: Should emit event
+
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,

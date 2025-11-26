@@ -145,9 +145,7 @@ const postHandler = {
           sessionKeys.endemicsClaim.sheepTestResults,
           undefined,
         );
-        // TODO : These two previous emitted events on change
       }
-      // TODO: and this
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
