@@ -91,7 +91,6 @@ const postHandler = {
     handler: async (request, h) => {
       const { herdVaccinationStatus } = request.payload;
 
-      // TODO: Should emit event
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,

@@ -102,7 +102,6 @@ const postHandler = {
       );
       const { isNegative, isPositive } = getTestResult(reviewTestResults);
 
-      // TODO: Should emit event
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,

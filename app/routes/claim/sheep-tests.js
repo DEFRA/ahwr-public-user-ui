@@ -33,7 +33,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { sheepTests } = request.payload;
       const session = getSessionData(request, sessionEntryKeys.endemicsClaim);
-      // TODO: Should emit event
+
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
@@ -42,7 +42,6 @@ const postHandler = {
       );
 
       if (!sheepTests) {
-        // TODO: Should emit event
         await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
@@ -91,7 +90,7 @@ const postHandler = {
         result: session?.sheepTestResults?.find((item) => item.diseaseType === test)?.result || "",
         isCurrentPage: index === 0,
       }));
-      // TODO: Should emit event
+
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,

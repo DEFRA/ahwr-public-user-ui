@@ -73,7 +73,6 @@ const postHandler = {
         await resetEndemicsClaimSession(request, latestEndemicsApplication.reference, reference);
       }
 
-      // TODO: Should emit event
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,

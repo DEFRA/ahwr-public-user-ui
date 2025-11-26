@@ -90,14 +90,13 @@ const postHandler = {
     handler: async (request, h) => {
       const { vetVisitsReviewTestResults } = request.payload;
 
-      // TODO: Should emit event
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.vetVisitsReviewTestResults,
         vetVisitsReviewTestResults,
       );
-      // TODO: Should emit event
+
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,

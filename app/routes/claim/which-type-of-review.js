@@ -66,7 +66,6 @@ export const whichReviewHandlers = [
           latestVetVisitApplication: oldWorldApplication,
         } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-        // TODO: Should emit event
         await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,

@@ -210,7 +210,7 @@ const postHandler = {
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview);
 
       const answer = request.payload[sessionKeys.endemicsClaim.speciesNumbers];
-      // TODO: Should emit event
+
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,

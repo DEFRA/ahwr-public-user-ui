@@ -111,7 +111,6 @@ const postHandler = {
     handler: async (request, h) => {
       const { testResults } = request.payload;
 
-      // TODO: Should emit event
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
