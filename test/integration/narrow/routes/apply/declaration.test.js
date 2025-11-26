@@ -31,6 +31,8 @@ describe("Declaration test", () => {
     strategy: "cookie",
   };
 
+  const farmerApplyData = { reference: "TEMP-PJ7E-WSI8" };
+
   let server;
 
   beforeAll(async () => {
@@ -42,13 +44,17 @@ describe("Declaration test", () => {
     await server.stop();
   });
 
+  beforeEach(async () => {
+    jest.clearAllMocks();
+  });
+
   when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.organisation)
     .mockReturnValue(organisation);
 
   when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.farmerApplyData)
-    .mockReturnValue({ reference: "TEMP-PJ7E-WSI8" });
+    .mockReturnValue(farmerApplyData);
 
   when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.application)
@@ -119,6 +125,10 @@ describe("Declaration test", () => {
       );
       ok($);
       expect(clearApplyRedirect).toHaveBeenCalled();
+      expect(createApplication).toHaveBeenCalledWith(
+        { organisation, ...farmerApplyData },
+        expect.anything(),
+      );
     });
 
     test("returns 200, shows offer rejection content on rejection", async () => {
@@ -139,6 +149,10 @@ describe("Declaration test", () => {
         "Agreement offer rejected - Get funding to improve animal health and welfare",
       );
       ok($);
+      expect(createApplication).toHaveBeenCalledWith(
+        { organisation, ...farmerApplyData },
+        expect.anything(),
+      );
     });
 
     test("returns 400 when request is not valid", async () => {
@@ -168,6 +182,7 @@ describe("Declaration test", () => {
       expect($("#terms-error").text()).toMatch(
         "Select yes if you have read and agree to the terms and conditions",
       );
+      expect(createApplication).not.toHaveBeenCalled();
     });
 
     test("when not logged in redirects to dashboard /sign-in", async () => {
@@ -183,24 +198,7 @@ describe("Declaration test", () => {
 
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
       expect(res.headers.location.toString()).toEqual("/sign-in");
-    });
-
-    test("returns 500 when application reference is null", async () => {
-      createApplication.mockResolvedValue(null);
-      const crumb = await getCrumbs(server);
-      const options = {
-        method: "POST",
-        url: "/declaration",
-        payload: { crumb, terms: "agree", offerStatus: "accepted" },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toEqual("Sorry, there is a problem with the service");
+      expect(createApplication).not.toHaveBeenCalled();
     });
   });
 });

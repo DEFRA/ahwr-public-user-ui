@@ -101,7 +101,10 @@ export const declarationRouteHandlers = [
 
         resetFarmerApplyDataBeforeApplication(farmerApplyData);
 
-        const { applicationReference } = await createApplication(farmerApplyData, request.logger);
+        const { applicationReference } = await createApplication(
+          { ...farmerApplyData, organisation },
+          request.logger,
+        );
 
         request.logger.setBindings({ applicationReference });
 
