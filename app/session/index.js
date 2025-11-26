@@ -1,8 +1,9 @@
+import { sendHerdEvent, sendSessionEvent } from "../messaging/session-event-emission.js";
+
 export const sessionKeys = {
   farmerApplyData: {
     eligibleSpecies: "eligibleSpecies",
     declaration: "declaration",
-    organisation: "organisation",
     whichReview: "whichReview",
     confirmCheckDetails: "confirmCheckDetails",
     agreeSameSpecies: "agreeSameSpecies",
@@ -14,7 +15,6 @@ export const sessionKeys = {
     type: "type",
   },
   endemicsClaim: {
-    organisation: "organisation",
     vetsName: "vetsName",
     typeOfReview: "typeOfReview",
     dateOfVisit: "dateOfVisit",
@@ -85,9 +85,8 @@ export const sessionKeys = {
 };
 
 // This object must always be in line with the above object.
-// The outer keys must always match. Unit tests make sure of this.
 // The only exception are the ones which are individual values,
-// for example sigInRedirect only stores a boolean, so it doesnt
+// for example signInRedirect only stores a boolean, so it doesnt
 // need an object defining above.
 export const sessionEntryKeys = {
   farmerApplyData: "farmerApplyData",
@@ -98,11 +97,16 @@ export const sessionEntryKeys = {
   cannotSignInDetails: "cannotSignInDetails",
   signInRedirect: "signInRedirect",
   application: "application",
-  tempClaimReference: "tempClaimReference",
+  organisation: "organisation",
 };
 
 // This function is used for setting individual values which are not in nested objects
-export const setSessionEntry = (request, entryKey, value) => {
+export const setSessionEntry = async (
+  request,
+  entryKey,
+  value,
+  { shouldEmitEvent } = { shouldEmitEvent: true },
+) => {
   if (!sessionEntryKeys[entryKey]) {
     throw new Error(
       `Session entry was attempted to be set with an entry key that doesnt exist: ${entryKey}.`,
@@ -110,10 +114,20 @@ export const setSessionEntry = (request, entryKey, value) => {
   }
 
   request.yar.set(entryKey, typeof value === "string" ? value.trim() : value);
+
+  if (shouldEmitEvent) {
+    await emitSessionEvent({ request, entryKey, key: entryKey, value });
+  }
 };
 
 // This function is used for updating the nested objects in the session
-export const setSessionData = (request, entryKey, key, value) => {
+export const setSessionData = async (
+  request,
+  entryKey,
+  key,
+  value,
+  { shouldEmitEvent } = { shouldEmitEvent: true },
+) => {
   if (!sessionEntryKeys[entryKey]) {
     throw new Error(
       `Session was attempted to be set with an entry key that doesnt exist: ${entryKey}.`,
@@ -129,6 +143,10 @@ export const setSessionData = (request, entryKey, key, value) => {
   const entryValue = request.yar.get(entryKey) || {};
   entryValue[key] = typeof value === "string" ? value.trim() : value;
   request.yar.set(entryKey, entryValue);
+
+  if (shouldEmitEvent) {
+    await emitSessionEvent({ request, entryKey, key, value });
+  }
 };
 
 export const getSessionData = (request, entryKey, key) => {
@@ -161,9 +179,10 @@ export function clearApplyRedirect(request) {
 
 export function clearEndemicsClaim(request) {
   const endemicsClaim = getSessionData(request, sessionEntryKeys.endemicsClaim);
+  const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
   const retained = {
-    [sessionKeys.endemicsClaim.organisation]: endemicsClaim?.organisation,
+    [sessionKeys.endemicsClaim.organisation]: organisation,
     [sessionKeys.endemicsClaim.latestVetVisitApplication]: endemicsClaim?.latestVetVisitApplication,
     [sessionKeys.endemicsClaim.latestEndemicsApplication]: endemicsClaim?.latestEndemicsApplication,
   };
@@ -190,13 +209,14 @@ export const removeMultipleHerdsSessionData = (request) => {
 
 export function removeSessionDataForSelectHerdChange(request) {
   const endClSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
+  const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
   request.yar.clear(sessionEntryKeys.endemicsClaim);
 
   const endemicsSessionKeys = sessionKeys.endemicsClaim;
 
   const remadeSession = {
-    [endemicsSessionKeys.organisation]: endClSession?.organisation,
+    [endemicsSessionKeys.organisation]: organisation,
     [endemicsSessionKeys.latestVetVisitApplication]: endClSession?.latestVetVisitApplication,
     [endemicsSessionKeys.latestEndemicsApplication]: endClSession?.latestEndemicsApplication,
     [endemicsSessionKeys.previousClaims]: endClSession?.previousClaims,
@@ -231,3 +251,66 @@ export function removeSessionDataForSameHerdChange(request) {
 
   request.yar.set(sessionEntryKeys.endemicsClaim, furtherRemadeSession);
 }
+
+export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
+  const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
+  const claimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
+  const organisation = getSessionData(request, sessionEntryKeys.organisation);
+  const sessionId = request.yar.id;
+
+  if (!organisation) {
+    return;
+  }
+
+  if (entryKey === sessionEntryKeys.farmerApplyData) {
+    // user is in apply journey
+    await sendSessionEvent({
+      id: sessionId,
+      sbi: organisation.sbi,
+      email: organisation.email,
+      journey: "farmerApplyData",
+      sessionKey: key,
+      value,
+      claimReference: claimData?.reference ?? "N/A",
+      applicationReference: farmerApplyData?.reference ?? "N/A",
+    });
+
+    return;
+  }
+
+  if (entryKey === sessionEntryKeys.endemicsClaim) {
+    // user is in claim journey
+    await sendSessionEvent({
+      id: sessionId,
+      sbi: organisation.sbi,
+      email: organisation.email,
+      journey: "claim",
+      sessionKey: key,
+      value,
+      claimReference: claimData?.reference ?? "N/A",
+      applicationReference: farmerApplyData?.reference ?? "N/A",
+    });
+
+    return;
+  }
+
+  // user is logging in
+  await sendSessionEvent({
+    id: sessionId,
+    sbi: organisation.sbi,
+    email: organisation.email,
+    journey: entryKey,
+    sessionKey: key ?? entryKey,
+    value,
+    claimReference: claimData?.reference ?? "N/A",
+    applicationReference: farmerApplyData?.reference ?? "N/A",
+  });
+};
+
+export const emitHerdEvent = async ({ request, type, message, data }) => {
+  const organisation = getSessionData(request, sessionEntryKeys.organisation);
+  const sessionId = request.yar.id;
+  const { sbi, email } = organisation;
+
+  await sendHerdEvent({ sbi, email, sessionId, type, message, data });
+};

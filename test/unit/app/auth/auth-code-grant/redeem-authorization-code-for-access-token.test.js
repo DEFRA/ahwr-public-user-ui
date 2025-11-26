@@ -6,10 +6,6 @@ import FormData from "form-data";
 import { when } from "jest-when";
 
 jest.mock("@hapi/wreck");
-jest.mock("applicationinsights", () => ({
-  defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() },
-  dispose: jest.fn(),
-}));
 
 jest.mock("../../../../../app/config/auth", () => ({
   ...jest.requireActual("../../../../../app/config/auth"),

@@ -32,11 +32,7 @@ export const declarationRouteHandlers = [
     options: {
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
-        const organisation = getSessionData(
-          request,
-          sessionEntryKeys.farmerApplyData,
-          sessionKeys.farmerApplyData.organisation,
-        );
+        const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
         return h.view(applyViews.declaration, {
           backLink: applyRoutes.timings,
@@ -59,7 +55,7 @@ export const declarationRouteHandlers = [
           }),
         }),
         failAction: async (request, h, _) => {
-          const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
+          const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
           return h
             .view(applyViews.declaration, {
@@ -68,26 +64,26 @@ export const declarationRouteHandlers = [
               errorMessage: {
                 text: "Select yes if you have read and agree to the terms and conditions",
               },
-              organisation: formatOrganisation(farmerApplyData.organisation),
+              organisation: formatOrganisation(organisation),
             })
             .code(StatusCodes.BAD_REQUEST)
             .takeover();
         },
       },
       handler: async (request, h) => {
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.farmerApplyData,
           sessionKeys.farmerApplyData.declaration,
           true,
         );
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.farmerApplyData,
           sessionKeys.farmerApplyData.offerStatus,
           request.payload.offerStatus,
         );
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.farmerApplyData,
           sessionKeys.farmerApplyData.confirmCheckDetails,
@@ -95,7 +91,8 @@ export const declarationRouteHandlers = [
         );
 
         const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
-        const { organisation, reference: tempApplicationReference } = farmerApplyData;
+        const organisation = getSessionData(request, sessionEntryKeys.organisation);
+        const { reference: tempApplicationReference } = farmerApplyData;
 
         request.logger.setBindings({
           tempApplicationReference,
@@ -109,7 +106,7 @@ export const declarationRouteHandlers = [
         request.logger.setBindings({ applicationReference });
 
         if (applicationReference) {
-          setSessionData(
+          await setSessionData(
             request,
             sessionEntryKeys.farmerApplyData,
             sessionKeys.farmerApplyData.reference,

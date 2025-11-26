@@ -12,7 +12,7 @@ export const authenticate = async (request, h, logger) => {
     logger.setBindings({
       error: "Invalid state. Redirecting back to /signin-oidc after resetting state.",
     });
-    const authRedirectCallback = h.redirect(requestAuthorizationCodeUrl(request));
+    const authRedirectCallback = h.redirect(await requestAuthorizationCodeUrl(request));
 
     return { authRedirectCallback };
   }
@@ -24,26 +24,26 @@ export const authenticate = async (request, h, logger) => {
   await jwtVerifyIss(accessToken.iss);
   verifyNonce(request, idToken);
 
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.tokens,
     sessionKeys.tokens.accessToken,
     redeemResponse.access_token,
   );
 
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.customer,
     sessionKeys.customer.crn,
     accessToken.contactId,
   );
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.customer,
     sessionKeys.customer.organisationId,
     accessToken.currentRelationshipId,
   );
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.customer,
     sessionKeys.customer.attachedToMultipleBusinesses,

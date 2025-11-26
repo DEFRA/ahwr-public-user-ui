@@ -62,7 +62,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { numberOfSamplesTested } = request.payload;
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.numberOfSamplesTested,
@@ -100,7 +100,7 @@ const postHandler = {
       } = claimConstants;
 
       if (herdVaccinationStatus === vaccinated || lastReviewTestResults === positive) {
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.pigsFollowUpTest,
@@ -109,7 +109,7 @@ const postHandler = {
         return h.redirect(claimRoutes.pigsPcrResult);
       }
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.pigsFollowUpTest,

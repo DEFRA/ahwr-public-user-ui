@@ -1,50 +1,56 @@
 import { setSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 
-const clearTestDetails = (request) => {
-  setSessionData(
+const clearTestDetails = async (request) => {
+  await setSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.dateOfTesting,
     undefined,
+    { shouldEmitEvent: false },
   );
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.laboratoryURN,
     undefined,
+    { shouldEmitEvent: false },
   );
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.testResults,
     undefined,
+    { shouldEmitEvent: false },
   );
 };
 
-const clearPiHuntAllAnimals = (request) =>
-  setSessionData(
+const clearPiHuntAllAnimals = async (request) =>
+  await setSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.piHuntAllAnimals,
     undefined,
+    { shouldEmitEvent: false },
   );
 
-const clearPiHuntRecommended = (request) =>
-  setSessionData(
+const clearPiHuntRecommended = async (request) =>
+  await setSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.piHuntRecommended,
     undefined,
+    { shouldEmitEvent: false },
   );
 
-export function clearPiHuntSessionOnChange(request, piHuntStage) {
+export async function clearPiHuntSessionOnChange(request, piHuntStage) {
   switch (piHuntStage) {
     case "dateOfVisit":
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.piHunt,
         undefined,
+        { shouldEmitEvent: false },
       );
       clearPiHuntRecommended(request);
       clearPiHuntAllAnimals(request);

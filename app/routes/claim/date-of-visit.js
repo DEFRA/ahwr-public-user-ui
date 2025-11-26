@@ -199,12 +199,12 @@ const postHandler = {
   options: {
     handler: async (request, h) => {
       const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const organisation = getSessionData(request, sessionEntryKeys.organisation);
       const {
         typeOfReview: typeOfClaim,
         previousClaims,
         latestVetVisitApplication: oldWorldApplication,
         typeOfLivestock,
-        organisation,
         // reference: tempClaimReference, // needed for the TODO event tracking
         latestEndemicsApplication: newWorldApplication,
         tempHerdId: tempHerdIdFromSession,
@@ -265,7 +265,7 @@ const postHandler = {
         request.payload[visitDateHtml.labels.day],
       );
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.dateOfVisit,
@@ -285,8 +285,8 @@ const postHandler = {
       }
 
       if (isMultipleHerdsUserJourney(dateOfVisit, newWorldApplication.flags)) {
-        const tempHerdId = getTempHerdId(request, tempHerdIdFromSession);
-        setSessionData(
+        const tempHerdId = await getTempHerdId(request, tempHerdIdFromSession);
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.tempHerdId,
@@ -297,7 +297,7 @@ const postHandler = {
           typeOfLivestock,
           request.logger,
         );
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herds,
@@ -308,14 +308,14 @@ const postHandler = {
           return h.redirect(claimRoutes.selectTheHerd);
         }
 
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdId,
           tempHerdId,
         );
 
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdVersion,
@@ -325,7 +325,7 @@ const postHandler = {
         return h.redirect(claimRoutes.enterHerdName);
       }
 
-      return nonMhRouting(request, h, {
+      return await nonMhRouting(request, h, {
         previousClaims,
         oldWorldApplication,
         typeOfLivestock,
@@ -342,8 +342,7 @@ const checkForTimingException = (
   h,
   { dateOfVisit, typeOfLivestock, previousClaims, isDairy, isEndemicsFollowUp },
 ) => {
-  let exception;
-  let exceptionView;
+  let exception, exceptionView;
 
   const claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased =
     isDairy && isEndemicsFollowUp && dateOfVisit < PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE;
@@ -373,7 +372,7 @@ const checkForTimingException = (
   return undefined;
 };
 
-const nonMhRouting = (
+const nonMhRouting = async (
   request,
   h,
   {
@@ -431,7 +430,7 @@ const nonMhRouting = (
       .takeover();
   }
 
-  return h.redirect(getNextMultipleHerdsPage(request));
+  return h.redirect(await getNextMultipleHerdsPage(request));
 };
 
 export const dateOfVisitHandlers = [getHandler, postHandler];

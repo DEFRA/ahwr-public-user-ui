@@ -3,8 +3,13 @@ import { createServer } from "../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { getHerds } from "../../../../../app/api-requests/application-api.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
 import { previousPageUrl } from "../../../../../app/routes/claim/date-of-visit.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session");
 // jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -70,16 +75,16 @@ describe("GET /date-of-visit handler", () => {
   });
 
   test("returns 200 when you dont have any previous claims", async () => {
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         latestEndemicsApplication,
         latestVetVisitApplication,
         typeOfReview: "endemics",
         typeOfLivestock: "beef",
         previousClaims: [],
         reference: "TEMP-6GSE-PIR8",
-      };
-    });
+      });
     const options = {
       method: "GET",
       url,
@@ -95,8 +100,9 @@ describe("GET /date-of-visit handler", () => {
   });
 
   test("returns 200 when you do have previous claims", async () => {
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         latestEndemicsApplication,
         latestVetVisitApplication,
         typeOfReview: "endemics",
@@ -109,8 +115,7 @@ describe("GET /date-of-visit handler", () => {
           },
         ],
         reference: "TEMP-6GSE-PIR8",
-      };
-    });
+      });
     const options = {
       method: "GET",
       url,
@@ -126,8 +131,9 @@ describe("GET /date-of-visit handler", () => {
   });
 
   test("returns 200 and fills input with value in session", async () => {
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         latestEndemicsApplication,
         latestVetVisitApplication,
         typeOfReview: "endemics",
@@ -141,8 +147,7 @@ describe("GET /date-of-visit handler", () => {
         ],
         dateOfVisit: "2024-05-01",
         reference: "TEMP-6GSE-PIR8",
-      };
-    });
+      });
     const options = {
       method: "GET",
       url,
@@ -195,8 +200,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("redirect back to page with errors if the entered date is of an incorrect format", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [],
         typeOfLivestock: "beef",
@@ -207,8 +213,7 @@ describe("POST /date-of-visit handler", () => {
         reviewTestResults: "positive",
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -243,8 +248,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("redirect back to page with errors if the entered date is of a correct format, but the date isnt real", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [],
         typeOfLivestock: "beef",
@@ -255,8 +261,7 @@ describe("POST /date-of-visit handler", () => {
         reviewTestResults: "positive",
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -291,8 +296,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("redirect back to page with errors if the entered date is before the agreement date", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [],
         typeOfLivestock: "beef",
@@ -303,8 +309,7 @@ describe("POST /date-of-visit handler", () => {
         reviewTestResults: "positive",
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -339,8 +344,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("redirect back to page with errors if the entered date is in the future", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [],
         typeOfLivestock: "beef",
@@ -351,8 +357,7 @@ describe("POST /date-of-visit handler", () => {
         reviewTestResults: "positive",
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -387,8 +392,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes a review claim and has zero previous claims", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [],
         typeOfLivestock: "beef",
@@ -400,8 +406,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -430,8 +435,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes a review claim and created an application on the same day", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [],
         typeOfLivestock: "beef",
@@ -446,8 +452,7 @@ describe("POST /date-of-visit handler", () => {
           createdAt: new Date("2025/01/01 14:30:00"),
         },
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -476,8 +481,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes a review claim and has a previous review claim for the same species within the last 10 months", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [
           {
@@ -501,8 +507,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -535,8 +540,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes a review claim and has a previous review claim for the same species over 10 months ago", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [
           {
@@ -560,8 +566,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -590,8 +595,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes a review claim and has a previous review claim for a different species, no others for same species and is after MS was enabled", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [
           {
@@ -615,8 +621,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-02-26",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -646,8 +651,9 @@ describe("POST /date-of-visit handler", () => {
   test(`user makes a review claim and has a previous review claim for a different species, 
     no others for same species and is before MS was enabled`, async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [
           {
@@ -671,8 +677,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -704,8 +709,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user has an old world claim, and makes a new world claim over 10 months later for the same species", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [],
         typeOfLivestock: "beef",
@@ -718,8 +724,7 @@ describe("POST /date-of-visit handler", () => {
         latestVetVisitApplication,
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -748,8 +753,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user has an old world claim, and makes a new world claim over 10 months later for a different species", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [],
         typeOfLivestock: "pigs",
@@ -762,8 +768,7 @@ describe("POST /date-of-visit handler", () => {
         latestVetVisitApplication,
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -792,8 +797,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user has an old world claim, and makes a new world claim within 10 months for the same species", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [],
         typeOfLivestock: "beef",
@@ -812,8 +818,7 @@ describe("POST /date-of-visit handler", () => {
         },
         latestEndemicsApplication,
         dateOfVisit: "2025-01-02",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -846,8 +851,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user has an old world claim, and makes a new world claim within 10 months for a different species", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "REVIEW",
         previousClaims: [],
         typeOfLivestock: "beef",
@@ -866,8 +872,7 @@ describe("POST /date-of-visit handler", () => {
         },
         latestEndemicsApplication,
         dateOfVisit: "2025-01-02",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -896,8 +901,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes an endemics claim within 10 months of the same species of their initial review claim", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -921,8 +927,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -951,8 +956,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes an endemics dairy claim after dairy follow up release", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -976,8 +982,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-21",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1006,8 +1011,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes an endemics dairy claim before dairy follow up release", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1031,8 +1037,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-20",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1064,8 +1069,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes an endemics claim within 10 months of a previous endemics claim of the same species", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1100,8 +1106,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1133,8 +1138,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes an endemics claim within 10 months of a previous endemics claim of a different species, assuming everything else otherwise ok", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1180,8 +1186,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-02-27",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1210,8 +1215,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes an endemics claim and the review in question is rejected", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1227,16 +1233,17 @@ describe("POST /date-of-visit handler", () => {
           },
         ],
         typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
         reviewTestResults: "positive",
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue({
+        name: "Farmer Johns",
+        sbi: "12345",
+      });
     const options = {
       method: "POST",
       url,
@@ -1267,8 +1274,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes an endemics claim and the review is not in READY_TO_PAY status", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1292,8 +1300,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1326,8 +1333,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user makes an endemics claim and the review is not in PAID status", async () => {
     // unhappy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1351,8 +1359,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1385,8 +1392,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("user has an old world claim, and makes a new world endemics claim", async () => {
     // happy path
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [],
         typeOfLivestock: "beef",
@@ -1406,8 +1414,7 @@ describe("POST /date-of-visit handler", () => {
         },
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1433,8 +1440,9 @@ describe("POST /date-of-visit handler", () => {
   });
 
   test("for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive", async () => {
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1458,8 +1466,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1487,8 +1494,9 @@ describe("POST /date-of-visit handler", () => {
   });
 
   test("should redirect to endemics date of testing page when endemics claim is for beef or dairy, the previous review test results has not been set and there are multiple previous reviews of different species with different test results", async () => {
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1524,8 +1532,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2024-10-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1576,8 +1583,9 @@ describe("POST /date-of-visit handler", () => {
   });
 
   test("for an endemics claim, it redirects to endemics species numbers page when claim is for beef or dairy, and the previous review test results are negative", async () => {
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1601,8 +1609,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-01",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1626,8 +1633,9 @@ describe("POST /date-of-visit handler", () => {
   test(`for an endemics claim, it redirects to endemics species numbers page when claim 
         is for beef or dairy, and the previous review test results are positive 
         BUT visit date post go live`, async () => {
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1651,8 +1659,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-21",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1677,8 +1684,9 @@ describe("POST /date-of-visit handler", () => {
   test(`for an endemics claim, it redirects to endemics date of testing page when claim 
     is for beef or dairy, and the previous review test results are positive 
     AND optional PI hunt is enabled BUT visit date pre go live`, async () => {
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1702,8 +1710,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-01-20",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1727,8 +1734,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("should redirect to select the herd page when there are previous herds and is multi herds journey", async () => {
     getHerds.mockResolvedValueOnce({ herds: [{ id: "1", herdName: "herd one" }] });
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1752,8 +1760,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-05-13",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1775,8 +1782,9 @@ describe("POST /date-of-visit handler", () => {
 
   test("should redirect to enter herd name page when there are not previous herds and is multi herds journey", async () => {
     getHerds.mockResolvedValueOnce({ herds: [] });
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1800,8 +1808,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-05-13",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1822,8 +1829,9 @@ describe("POST /date-of-visit handler", () => {
   });
 
   test("should redirect to species-numbers page when making a follow-up claim with visit date of pre-MH golive, against a pre-MH review, and already made post-MH review for another herd", async () => {
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1861,8 +1869,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-CBLH-C9CC",
         latestEndemicsApplication,
         dateOfVisit: "2025-04-30",
-      };
-    });
+      });
     const options = {
       method: "POST",
       url,
@@ -1890,8 +1897,9 @@ describe("POST /date-of-visit handler", () => {
   });
 
   test("should error when trying to follow-up against post-MH review and visit date is pre-MH golive", async () => {
-    getSessionData.mockImplementation(() => {
-      return {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
         typeOfReview: "FOLLOW_UP",
         previousClaims: [
           {
@@ -1918,7 +1926,6 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-CBLH-C9CC",
         latestEndemicsApplication,
         dateOfVisit: "2025-04-30",
-      };
     });
     const options = {
       method: "POST",

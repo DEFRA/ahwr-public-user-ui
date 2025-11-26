@@ -33,14 +33,14 @@ export async function refreshApplications(sbi, request) {
     );
   });
 
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.latestVetVisitApplication,
     latestVetVisitApplication,
   );
 
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.latestEndemicsApplication,
@@ -53,7 +53,7 @@ export async function refreshApplications(sbi, request) {
 export async function refreshClaims(request, applicationRef) {
   const claims = await getClaimsByApplicationReference(applicationRef, request.logger);
 
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.previousClaims,
@@ -67,7 +67,7 @@ export const resetEndemicsClaimSession = async (request, applicationRef, claimRe
   const tempClaimRef = claimRef ?? createTempReference({ referenceForClaim: true });
 
   clearEndemicsClaim(request);
-  setSessionData(
+  await setSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.reference,

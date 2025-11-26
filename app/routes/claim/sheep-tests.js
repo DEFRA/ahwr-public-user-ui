@@ -34,7 +34,7 @@ const postHandler = {
       const { sheepTests } = request.payload;
       const session = getSessionData(request, sessionEntryKeys.endemicsClaim);
       // TODO: Should emit event
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.sheepTests,
@@ -43,7 +43,7 @@ const postHandler = {
 
       if (!sheepTests) {
         // TODO: Should emit event
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.sheepTestResults,
@@ -92,7 +92,7 @@ const postHandler = {
         isCurrentPage: index === 0,
       }));
       // TODO: Should emit event
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.sheepTestResults,

@@ -1,5 +1,5 @@
 import { config } from "../config/index.js";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import { getSessionData, sessionEntryKeys } from "../session/index.js";
 
 export const authPlugin = {
   plugin: {
@@ -19,13 +19,7 @@ export const authPlugin = {
           return "/sign-in";
         },
         validateFunc: async (request) => {
-          const sessionWasSet = Boolean(
-            getSessionData(
-              request,
-              sessionEntryKeys.endemicsClaim,
-              sessionKeys.endemicsClaim.organisation,
-            ),
-          );
+          const sessionWasSet = Boolean(getSessionData(request, sessionEntryKeys.organisation));
 
           return { valid: sessionWasSet };
         },

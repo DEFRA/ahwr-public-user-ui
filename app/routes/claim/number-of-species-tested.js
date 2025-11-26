@@ -103,7 +103,7 @@ const postHandler = {
           ? Number(numberAnimalsTested) === threshold
           : Number(numberAnimalsTested) >= threshold;
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.numberAnimalsTested,

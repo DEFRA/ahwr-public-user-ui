@@ -368,7 +368,7 @@ const getHandler = {
         );
 
         // TODO: This should emit event
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.sheepTestResults,
@@ -416,7 +416,7 @@ const postHandler = {
         updatedSheepTestResults[diseaseTypeIndex] = diseaseType;
 
         // TODO: This should emit event
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.sheepTestResults,
@@ -473,7 +473,7 @@ const postHandler = {
       updatedSheepTestResults[diseaseTypeIndex] = diseaseType;
 
       // TODO: This should emit event
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.sheepTestResults,

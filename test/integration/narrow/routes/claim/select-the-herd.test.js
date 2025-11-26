@@ -5,9 +5,11 @@ import expectPhaseBanner from "assert";
 import {
   getSessionData,
   removeSessionDataForSelectHerdChange,
+  sessionEntryKeys,
   setSessionData,
 } from "../../../../../app/session/index.js";
 import { canMakeClaim } from "../../../../../app/lib/can-make-claim.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/api-requests/claim-api");
@@ -368,40 +370,43 @@ describe("select-the-herd tests", () => {
       crumb = await getCrumbs(server);
     });
 
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue({ farmerName: "John Doe" });
+
     test("navigates to enter herd name when herds does not exist", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
-          },
-          {
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
             },
-          },
-          {
-            createdAt: "2025-04-30T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-        ],
-        herds: [{ herdId: "1" }],
-        dateOfVisit: "2025-04-14T00:00:00.000Z",
-        organisation: {
-          farmerName: "John Doe",
-        },
-      });
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
+            },
+            {
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+            },
+            {
+              createdAt: "2025-04-30T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
+            },
+          ],
+          herds: [{ herdId: "1" }],
+          dateOfVisit: "2025-04-14T00:00:00.000Z",
+        });
 
       const res = await server.inject({
         method: "POST",
@@ -443,52 +448,54 @@ describe("select-the-herd tests", () => {
     });
 
     test("navigates to enter herd name when multiple herds exists and does not match herd id", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
-            herd: { id: "1" },
-          },
-          {
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
             },
-            herd: { id: "2" },
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
+              herd: { id: "1" },
+            },
+            {
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+              herd: { id: "2" },
+            },
+            {
+              createdAt: "2025-04-30T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
+            },
+          ],
+          herds: [
+            {
+              id: "1",
+              name: "Barn animals",
+              version: 1,
+              cph: "22/333/4444",
+              reasons: ["reasonOne"],
+            },
+            {
+              id: "2",
+            },
+          ],
+          organisation: {
+            farmerName: "John Doe",
           },
-          {
-            createdAt: "2025-04-30T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-        ],
-        herds: [
-          {
-            id: "1",
-            name: "Barn animals",
-            version: 1,
-            cph: "22/333/4444",
-            reasons: ["reasonOne"],
-          },
-          {
-            id: "2",
-          },
-        ],
-        organisation: {
-          farmerName: "John Doe",
-        },
-        dateOfVisit: "2025-04-14T00:00:00.000Z",
-      });
+          dateOfVisit: "2025-04-14T00:00:00.000Z",
+        });
 
       const payload = { crumb, herdSelected: "NEW_HERD" };
       const res = await server.inject({
@@ -537,51 +544,53 @@ describe("select-the-herd tests", () => {
     });
 
     test("navigates to enter herd name when herdId is unnamed herd", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-          {
-            createdAt: "2025-03-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
-          },
-          {
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
             },
-            herd: { id: "1" },
+            {
+              createdAt: "2025-03-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
+            },
+            {
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+              herd: { id: "1" },
+            },
+            {
+              createdAt: "2025-04-30T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
+            },
+          ],
+          herds: [
+            {
+              herdId: "1",
+              herdName: "Barn animals",
+              herdVersion: 1,
+              cph: "22/333/4444",
+              herdReasons: ["reasonOne"],
+            },
+            {
+              herdId: "2",
+            },
+          ],
+          dateOfVisit: "2025-04-14T00:00:00.000Z",
+          organisation: {
+            farmerName: "John Doe",
           },
-          {
-            createdAt: "2025-04-30T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-        ],
-        herds: [
-          {
-            herdId: "1",
-            herdName: "Barn animals",
-            herdVersion: 1,
-            cph: "22/333/4444",
-            herdReasons: ["reasonOne"],
-          },
-          {
-            herdId: "2",
-          },
-        ],
-        dateOfVisit: "2025-04-14T00:00:00.000Z",
-        organisation: {
-          farmerName: "John Doe",
-        },
-      });
+        });
 
       const payload = { crumb, herdSelected: "UNNAMED_HERD" };
       const res = await server.inject({
@@ -645,43 +654,45 @@ describe("select-the-herd tests", () => {
     });
 
     test("navigates to check herd details when herd exists and matches herd id", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
-          },
-          {
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
             },
-          },
-          {
-            createdAt: "2025-04-30T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-        ],
-        herds: [
-          {
-            id: fakeHerdId,
-            name: "Barn animals",
-            version: 1,
-            cph: "22/333/4444",
-            reasons: ["onlyHerd"],
-          },
-        ],
-      });
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
+            },
+            {
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+            },
+            {
+              createdAt: "2025-04-30T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
+            },
+          ],
+          herds: [
+            {
+              id: fakeHerdId,
+              name: "Barn animals",
+              version: 1,
+              cph: "22/333/4444",
+              reasons: ["onlyHerd"],
+            },
+          ],
+        });
 
       const payload = { crumb, herdSelected: fakeHerdId };
       const res = await server.inject({
@@ -739,52 +750,54 @@ describe("select-the-herd tests", () => {
     });
 
     test("navigates to check herd details when multiple herds exists and matches herd id", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
-            herd: { id: fakeHerdId },
-          },
-          {
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
             },
-            herd: { id: fakeHerdId },
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
+              herd: { id: fakeHerdId },
+            },
+            {
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+              herd: { id: fakeHerdId },
+            },
+            {
+              createdAt: "2025-04-30T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
+            },
+          ],
+          herds: [
+            {
+              id: fakeHerdId,
+              name: "Barn animals",
+              version: 1,
+              cph: "22/333/4444",
+              reasons: ["reasonOne"],
+            },
+            {
+              id: "2",
+            },
+          ],
+          organisation: {
+            farmerName: "John Doe",
           },
-          {
-            createdAt: "2025-04-30T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-        ],
-        herds: [
-          {
-            id: fakeHerdId,
-            name: "Barn animals",
-            version: 1,
-            cph: "22/333/4444",
-            reasons: ["reasonOne"],
-          },
-          {
-            id: "2",
-          },
-        ],
-        organisation: {
-          farmerName: "John Doe",
-        },
-        dateOfVisit: "2025-04-14T00:00:00.000Z",
-      });
+          dateOfVisit: "2025-04-14T00:00:00.000Z",
+        });
 
       const payload = { crumb, herdSelected: fakeHerdId };
       const res = await server.inject({
@@ -870,35 +883,37 @@ describe("select-the-herd tests", () => {
     });
 
     test("display errors when payload invalid", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
-          },
-          {
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
             },
-          },
-          {
-            createdAt: "2025-04-30T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-        ],
-        herds: [],
-      });
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
+            },
+            {
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+            },
+            {
+              createdAt: "2025-04-30T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
+            },
+          ],
+          herds: [],
+        });
 
       const res = await server.inject({
         method: "POST",
@@ -917,35 +932,37 @@ describe("select-the-herd tests", () => {
     });
 
     test("display errors when endemics and selects different herd", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
-          },
-          {
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
             },
-          },
-          {
-            createdAt: "2025-04-30T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-        ],
-        herds: [],
-      });
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
+            },
+            {
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+            },
+            {
+              createdAt: "2025-04-30T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
+            },
+          ],
+          herds: [],
+        });
 
       const res = await server.inject({
         method: "POST",
@@ -970,36 +987,38 @@ describe("select-the-herd tests", () => {
     });
 
     test("display date errors when canMakeClaim returns false", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
-          },
-          {
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
             },
-          },
-          {
-            createdAt: "2025-04-30T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-        ],
-        herds: [],
-        dateOfVisit: "2025-05-01",
-      });
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
+            },
+            {
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+            },
+            {
+              createdAt: "2025-04-30T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
+            },
+          ],
+          herds: [],
+          dateOfVisit: "2025-05-01",
+        });
       canMakeClaim.mockReturnValue("Invalid claim message");
 
       const res = await server.inject({
@@ -1031,24 +1050,26 @@ describe("select-the-herd tests", () => {
     });
 
     test("does call removeSessionDataForSelectHerdChange and sets herdId when herd selection changes", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        previousClaims: [],
-        herds: [
-          {
-            id: fakeHerdId,
-            name: "Barn animals",
-            version: 1,
-            cph: "22/333/4444",
-            reasons: ["onlyHerd"],
-          },
-        ],
-        herdSelected: "previously-selected-herdId",
-        herdId: "previously-selected-herdId",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          previousClaims: [],
+          herds: [
+            {
+              id: fakeHerdId,
+              name: "Barn animals",
+              version: 1,
+              cph: "22/333/4444",
+              reasons: ["onlyHerd"],
+            },
+          ],
+          herdSelected: "previously-selected-herdId",
+          herdId: "previously-selected-herdId",
+        });
 
       const payload = { crumb, herdSelected: fakeHerdId };
       const res = await server.inject({
@@ -1076,24 +1097,26 @@ describe("select-the-herd tests", () => {
     });
 
     test("does NOT call removeSessionDataForSelectHerdChange when herd selection stays the same", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        previousClaims: [],
-        herds: [
-          {
-            id: fakeHerdId,
-            name: "Barn animals",
-            version: 1,
-            cph: "22/333/4444",
-            reasons: ["onlyHerd"],
-          },
-        ],
-        herdSelected: fakeHerdId,
-        herdId: fakeHerdId,
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          previousClaims: [],
+          herds: [
+            {
+              id: fakeHerdId,
+              name: "Barn animals",
+              version: 1,
+              cph: "22/333/4444",
+              reasons: ["onlyHerd"],
+            },
+          ],
+          herdSelected: fakeHerdId,
+          herdId: fakeHerdId,
+        });
 
       const payload = { crumb, herdSelected: fakeHerdId };
       const res = await server.inject({

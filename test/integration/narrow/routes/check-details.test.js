@@ -51,11 +51,7 @@ describe("/check-details", () => {
 
   test("GET /check-details with organisation in the session, happy path", async () => {
     when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.organisation,
-      )
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(mockOrg);
 
     const res = await server.inject({
@@ -72,11 +68,7 @@ describe("/check-details", () => {
 
   test("POST /check-details with no payload returns a 400", async () => {
     when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.organisation,
-      )
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(mockOrg);
 
     const res = await server.inject({
@@ -95,11 +87,7 @@ describe("/check-details", () => {
 
   test("POST /check-details with confirmCheckDetails in payload but not a valid answer returns a 400", async () => {
     when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.organisation,
-      )
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(mockOrg);
 
     const res = await server.inject({
@@ -158,11 +146,7 @@ describe("/check-details", () => {
 
   test("POST /check-details with valid confirmCheckDetails = no in payload, and renders update details page", async () => {
     when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.organisation,
-      )
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(mockOrg);
 
     const res = await server.inject({

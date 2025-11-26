@@ -289,7 +289,7 @@ describe("/check-herd-details tests", () => {
         ...validPayloadWithPreviousClaimsWithoutHerd,
         previousClaims: [],
       });
-      getNextMultipleHerdsPage.mockReturnValue("/date-of-testing");
+      getNextMultipleHerdsPage.mockResolvedValue("/date-of-testing");
 
       const res = await server.inject({
         method: "POST",
@@ -322,7 +322,7 @@ describe("/check-herd-details tests", () => {
           },
         ],
       });
-      getNextMultipleHerdsPage.mockReturnValue("/date-of-testing");
+      getNextMultipleHerdsPage.mockResolvedValue("/date-of-testing");
 
       const res = await server.inject({
         method: "POST",

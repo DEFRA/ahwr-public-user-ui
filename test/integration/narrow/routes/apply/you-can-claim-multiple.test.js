@@ -38,11 +38,7 @@ when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.application)
   .mockReturnValue({ reference: "IAHW-1234-ABCD" });
 when(getSessionData)
-  .calledWith(
-    expect.anything(),
-    sessionEntryKeys.farmerApplyData,
-    sessionKeys.farmerApplyData.organisation,
-  )
+  .calledWith(expect.anything(), sessionEntryKeys.organisation)
   .mockReturnValue(organisation);
 
 const sanitizeHTML = (html) => {

@@ -15,11 +15,7 @@ export const numbersRouteHandlers = [
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
         const backLink = applyRoutes.youCanClaimMultiple;
-        const organisation = getSessionData(
-          request,
-          sessionEntryKeys.farmerApplyData,
-          sessionKeys.farmerApplyData.organisation,
-        );
+        const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
         return h.view(applyViews.numbers, {
           backLink,
@@ -34,7 +30,7 @@ export const numbersRouteHandlers = [
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {
-          setSessionData(
+          await setSessionData(
             request,
             sessionEntryKeys.farmerApplyData,
             sessionKeys.farmerApplyData.agreeSpeciesNumbers,
@@ -44,7 +40,7 @@ export const numbersRouteHandlers = [
           return h.redirect(applyRoutes.timings);
         }
 
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.farmerApplyData,
           sessionKeys.farmerApplyData.agreeSpeciesNumbers,

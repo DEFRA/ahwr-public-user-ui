@@ -4,6 +4,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
+  emitHerdEvent,
 } from "../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { getHerdOrFlock } from "../../lib/display-helpers.js";
@@ -88,12 +89,10 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdName } = request.payload;
-      const {
-        // herdId, herdVersion, // TODO: These may be needed for event emission
-        previousClaims,
-        herds,
-        typeOfLivestock,
-      } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const { herdId, herdVersion, previousClaims, herds, typeOfLivestock } = getSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+      );
 
       if (previousClaims?.some((claim) => claim.herd?.name === herdName.trim())) {
         return h
@@ -110,24 +109,23 @@ const postHandler = {
           .takeover();
       }
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdName,
         herdName.trim(),
       );
 
-      // TODO - Emit an event here saying the herd name has been collected
-      // await sendHerdEvent({
-      //   request,
-      //   type: 'herd-name',
-      //   message: 'Herd name collected from user',
-      //   data: {
-      //     herdId,
-      //     herdVersion,
-      //     herdName
-      //   }
-      // })
+      await emitHerdEvent({
+        request,
+        type: "herd-name",
+        message: "Herd name collected from user",
+        data: {
+          herdId,
+          herdVersion,
+          herdName,
+        },
+      });
 
       return h.redirect(claimRoutes.enterCphNumber);
     },

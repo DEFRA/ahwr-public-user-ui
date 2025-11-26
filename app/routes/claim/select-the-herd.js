@@ -72,33 +72,33 @@ const getHandler = {
   },
 };
 
-const addHerdToSession = (request, existingHerd, herds) => {
+const addHerdToSession = async (request, existingHerd, herds) => {
   if (existingHerd) {
-    setSessionData(
+    await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.herdVersion,
       existingHerd.version + 1,
     );
-    setSessionData(
+    await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.herdName,
       existingHerd.name,
     );
-    setSessionData(
+    await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.herdCph,
       existingHerd.cph,
     );
-    setSessionData(
+    await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.herdReasons,
       existingHerd.reasons,
     );
-    setSessionData(
+    await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.isOnlyHerdOnSbi,
@@ -106,14 +106,14 @@ const addHerdToSession = (request, existingHerd, herds) => {
     );
   } else {
     if (herds.length) {
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.isOnlyHerdOnSbi,
         ONLY_HERD_ON_SBI.NO,
       );
     }
-    setSessionData(
+    await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.herdVersion,
@@ -172,6 +172,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdSelected } = request.payload;
+      const organisation = getSessionData(request, sessionEntryKeys.organisation);
       const {
         tempHerdId,
         herds,
@@ -179,7 +180,6 @@ const postHandler = {
         previousClaims,
         typeOfLivestock,
         dateOfVisit,
-        organisation,
         latestVetVisitApplication: oldWorldApplication,
         herdSelected: herdSelectedFromSession,
       } = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -188,7 +188,7 @@ const postHandler = {
         removeSessionDataForSelectHerdChange(request);
       }
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdSelected,
@@ -196,14 +196,14 @@ const postHandler = {
       );
 
       if ([radioValueUnnamedHerd, radioValueNewHerd].includes(herdSelected)) {
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdId,
           tempHerdId,
         );
       } else {
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdId,
@@ -257,9 +257,9 @@ const postHandler = {
       }
 
       const existingHerd = herds.find((herd) => herd.id === herdSelected);
-      addHerdToSession(request, existingHerd, herds);
+      await addHerdToSession(request, existingHerd, herds);
       if (herdSelected === radioValueUnnamedHerd) {
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdSame,

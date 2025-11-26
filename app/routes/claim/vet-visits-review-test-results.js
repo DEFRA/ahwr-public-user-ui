@@ -91,14 +91,14 @@ const postHandler = {
       const { vetVisitsReviewTestResults } = request.payload;
 
       // TODO: Should emit event
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.vetVisitsReviewTestResults,
         vetVisitsReviewTestResults,
       );
       // TODO: Should emit event
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.reviewTestResults,

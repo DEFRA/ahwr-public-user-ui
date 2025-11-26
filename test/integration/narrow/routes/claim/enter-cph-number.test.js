@@ -2,12 +2,9 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import { getSessionData, setSessionData, emitHerdEvent } from "../../../../../app/session/index.js";
 
 jest.mock("../../../../../app/session/index.js");
-// jest.mock('../../../../../app/event/send-herd-event.js', () => ({
-//   sendHerdEvent: jest.fn()
-// }))
 
 describe("/enter-cph-number tests", () => {
   const url = `/enter-cph-number`;
@@ -145,6 +142,7 @@ describe("/enter-cph-number tests", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/herd-others-on-sbi");
       expect(setSessionData).toHaveBeenCalled();
+      expect(emitHerdEvent).toHaveBeenCalled();
     });
 
     test("navigates to check herd details when there are previous herds and othersOnSbi is yes", async () => {
@@ -167,6 +165,7 @@ describe("/enter-cph-number tests", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/check-herd-details");
       expect(setSessionData).toHaveBeenCalled();
+      expect(emitHerdEvent).toHaveBeenCalled();
     });
 
     test("navigates to enter herd details when there are previous herds and othersOnSbi is no", async () => {
@@ -189,6 +188,7 @@ describe("/enter-cph-number tests", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/enter-herd-details");
       expect(setSessionData).toHaveBeenCalled();
+      expect(emitHerdEvent).toHaveBeenCalled();
     });
 
     test("display errors when cph number is missing", async () => {
@@ -216,6 +216,7 @@ describe("/enter-cph-number tests", () => {
         "Enter the CPH for this herd, format should be nn/nnn/nnnn",
       );
       expectHerdText($);
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("display errors when cph number does not contain digits", async () => {
@@ -243,6 +244,7 @@ describe("/enter-cph-number tests", () => {
         "Enter the CPH for this herd, format should be nn/nnn/nnnn",
       );
       expectHerdText($);
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("display errors with flock label when payload invalid", async () => {
@@ -270,6 +272,7 @@ describe("/enter-cph-number tests", () => {
         "Enter the CPH for this flock, format should be nn/nnn/nnnn",
       );
       expectFlockText($);
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("display errors with back link to select herd when payload invalid and updating an existing herd", async () => {
@@ -299,6 +302,7 @@ describe("/enter-cph-number tests", () => {
       );
       expectHerdText($);
       expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
   });
 });

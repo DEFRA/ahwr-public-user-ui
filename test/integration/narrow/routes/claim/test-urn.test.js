@@ -4,7 +4,12 @@ import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { isURNUnique } from "../../../../../app/api-requests/claim-api.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../app/lib/context-helper.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/api-requests/claim-api");
@@ -18,10 +23,6 @@ describe("Test URN GET", () => {
   let server;
 
   beforeAll(async () => {
-    getSessionData.mockImplementation(() => {
-      return { typeOfLivestock: "beef" };
-    });
-    setSessionData.mockImplementation(() => {});
     server = await createServer();
     await server.initialize();
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
@@ -62,9 +63,16 @@ describe("Test URN GET", () => {
     ])(
       "Return 200 with Title $title when type of species is $typeOfLivestock and type of review is $typeOfReview",
       async ({ title, typeOfLivestock, typeOfReview, reviewTestResults }) => {
-        getSessionData.mockImplementation(() => {
-          return { typeOfLivestock, typeOfReview, reviewTestResults, reference: "TEMP-6GSE-PIR8" };
-        });
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
+            typeOfLivestock,
+            typeOfReview,
+            reviewTestResults,
+            reference: "TEMP-6GSE-PIR8",
+            laboratoryURN: "ABC123",
+          });
+
         const options = {
           method: "GET",
           url,
@@ -175,14 +183,14 @@ describe("Test URN GET", () => {
         isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
           return visitDateAfterPIHuntLive === true;
         });
-        getSessionData.mockImplementation(() => {
-          return {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
             typeOfLivestock,
             typeOfReview,
             latestVetVisitApplication,
             reference: "TEMP-6GSE-PIR8",
-          };
-        });
+          });
         const options = {
           method: "GET",
           url,
@@ -246,19 +254,19 @@ describe("Test URN GET", () => {
         nextPageUrl: "/number-of-samples-tested",
       },
     ])(
-      "redirects to check answers page when payload is valid for $typeOfLivestock and $typeOfReview",
+      "redirects to $nextPageUrl page when payload is valid for $typeOfLivestock and $typeOfReview",
       async ({ nextPageUrl, typeOfLivestock, typeOfReview }) => {
-        getSessionData.mockImplementation(() => {
-          return {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValueOnce({
             typeOfLivestock,
             typeOfReview,
             laboratoryURN: "12345",
-            organisation: { sbi: "12345678" },
-          };
-        });
-        isURNUnique.mockImplementation(() => {
-          return { isURNUnique: true };
-        });
+          });
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.organisation)
+          .mockReturnValueOnce({ sbi: "12345678" });
+        isURNUnique.mockResolvedValueOnce({ isURNUnique: true });
         const options = {
           method: "POST",
           url,
@@ -290,17 +298,17 @@ describe("Test URN GET", () => {
     ])(
       "redirects to exception screen when the URN number is not unique",
       async ({ typeOfLivestock, typeOfReview, message }) => {
-        getSessionData.mockImplementationOnce(() => {
-          return {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValueOnce({
             typeOfLivestock,
             typeOfReview,
             laboratoryURN: "12345",
-            organisation: { sbi: "12345678" },
-          };
-        });
-        isURNUnique.mockImplementationOnce(() => {
-          return { isURNUnique: false };
-        });
+          });
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.organisation)
+          .mockReturnValueOnce({ sbi: "12345678" });
+        isURNUnique.mockResolvedValueOnce({ isURNUnique: false });
         const options = {
           method: "POST",
           url,
@@ -319,6 +327,13 @@ describe("Test URN GET", () => {
       },
     );
     test("shows error when payload is invalid", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValueOnce({
+          typeOfLivestock: "beef",
+          typeOfReview: "REVIEW",
+        });
+
       const options = {
         method: "POST",
         url,

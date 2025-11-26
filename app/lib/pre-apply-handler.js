@@ -1,20 +1,11 @@
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { applicationType } from "../constants/constants.js";
 import { dashboardRoutes } from "../constants/routes.js";
-import {
-  getSessionData,
-  sessionEntryKeys,
-  sessionKeys,
-  setSessionEntry,
-} from "../session/index.js";
+import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
 
 export const preApplyHandler = async (request, h) => {
   if (request.method === "get") {
-    const organisation = getSessionData(
-      request,
-      sessionEntryKeys.farmerApplyData,
-      sessionKeys.farmerApplyData.organisation,
-    );
+    const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
     if (!organisation) {
       throw new Error("No organisation found in session");
@@ -28,7 +19,7 @@ export const preApplyHandler = async (request, h) => {
         (newWorldApp) => newWorldApp.type === applicationType.ENDEMICS,
       );
       application = newWorldApplications.length ? newWorldApplications[0] : null;
-      setSessionEntry(request, sessionEntryKeys.application, application);
+      await setSessionEntry(request, sessionEntryKeys.application, application);
     }
 
     request.logger.setBindings({ sbi: organisation.sbi });

@@ -15,11 +15,7 @@ export const timingsRouteHandlers = [
     options: {
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
-        const organisation = getSessionData(
-          request,
-          sessionEntryKeys.farmerApplyData,
-          sessionKeys.farmerApplyData.organisation,
-        );
+        const organisation = getSessionData(request, sessionEntryKeys.organisation);
         const hasOldWorldApplication = organisation.userType !== userType.NEW_USER;
 
         return h.view(applyViews.timings, {
@@ -36,7 +32,7 @@ export const timingsRouteHandlers = [
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {
-          setSessionData(
+          await setSessionData(
             request,
             sessionEntryKeys.farmerApplyData,
             sessionKeys.farmerApplyData.agreeVisitTimings,
@@ -46,7 +42,7 @@ export const timingsRouteHandlers = [
           return h.redirect(applyRoutes.declaration);
         }
 
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.farmerApplyData,
           sessionKeys.farmerApplyData.agreeVisitTimings,

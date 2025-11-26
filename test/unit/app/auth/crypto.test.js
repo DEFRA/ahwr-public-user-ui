@@ -18,7 +18,7 @@ describe("generateCodeChallenge", () => {
         setBindings: jest.fn(),
       },
     };
-    const result = generateCodeChallenge(mockRequest);
+    const result = await generateCodeChallenge(mockRequest);
     expect(result).toEqual(expect.any(String));
     expect(setSessionData).toHaveBeenCalledWith(
       mockRequest,

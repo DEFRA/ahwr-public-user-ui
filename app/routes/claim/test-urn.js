@@ -14,8 +14,7 @@ import { isURNUnique } from "../../api-requests/claim-api.js";
 const ENTER_THE_URN = "Enter the URN";
 const MAX_URN_LENGTH = 50;
 
-const title = (request) => {
-  const { typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+const title = ({ typeOfLivestock, typeOfReview }) => {
   const { isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview);
 
   if (isBeefOrDairyEndemics) {
@@ -25,11 +24,7 @@ const title = (request) => {
   return "What’s the laboratory unique reference number (URN) for the test results?";
 };
 
-const previousPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview, reviewTestResults, dateOfVisit } = getSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-  );
+const previousPageUrl = ({ typeOfLivestock, typeOfReview, reviewTestResults, dateOfVisit }) => {
   const { isEndemicsFollowUp, isBeefOrDairyEndemics, isReview, isBeef, isDairy, isPigs } =
     getEndemicsClaimDetails(typeOfLivestock, typeOfReview);
   const { isPositive } = getTestResult(reviewTestResults);
@@ -50,8 +45,7 @@ const previousPageUrl = (request) => {
   return claimRoutes.vetRcvs;
 };
 
-const nextPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+const nextPageUrl = ({ typeOfLivestock, typeOfReview }) => {
   const { isBeef, isDairy, isPigs, isReview, isEndemicsFollowUp } = getEndemicsClaimDetails(
     typeOfLivestock,
     typeOfReview,
@@ -75,11 +69,18 @@ const getHandler = {
   path: claimRoutes.testUrn,
   options: {
     handler: async (request, h) => {
-      const { laboratoryURN } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const { laboratoryURN, typeOfLivestock, typeOfReview, reviewTestResults, dateOfVisit } =
+        getSessionData(request, sessionEntryKeys.endemicsClaim);
+
       return h.view(claimViews.testUrn, {
-        title: title(request),
+        title: title({ typeOfLivestock, typeOfReview }),
         laboratoryURN,
-        backLink: previousPageUrl(request),
+        backLink: previousPageUrl({
+          typeOfLivestock,
+          typeOfReview,
+          reviewTestResults,
+          dateOfVisit,
+        }),
       });
     },
   },
@@ -106,7 +107,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err });
-        const { typeOfLivestock, typeOfReview } = getSessionData(
+        const { typeOfLivestock, typeOfReview, reviewTestResults, dateOfVisit } = getSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
         );
@@ -118,9 +119,14 @@ const postHandler = {
         return h
           .view(claimViews.testUrn, {
             ...request.payload,
-            title: title(request),
+            title: title({ typeOfLivestock, typeOfReview }),
             errorMessage: { text: errorMessage, href: "#laboratoryURN" },
-            backLink: previousPageUrl(request),
+            backLink: previousPageUrl({
+              typeOfLivestock,
+              typeOfReview,
+              reviewTestResults,
+              dateOfVisit,
+            }),
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -128,14 +134,15 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { laboratoryURN } = request.payload;
-      const { organisation, typeOfLivestock, typeOfReview } = getSessionData(
+      const organisation = getSessionData(request, sessionEntryKeys.organisation);
+      const { typeOfLivestock, typeOfReview } = getSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
       );
       const { isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview);
       const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN }, request.logger);
       // TODO: Should emit event
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.laboratoryURN,
@@ -154,7 +161,7 @@ const postHandler = {
           .takeover();
       }
 
-      return h.redirect(nextPageUrl(request));
+      return h.redirect(nextPageUrl({ typeOfLivestock, typeOfReview }));
     },
   },
 };

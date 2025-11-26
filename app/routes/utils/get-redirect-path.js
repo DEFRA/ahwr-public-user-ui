@@ -2,11 +2,11 @@ import { applicationType } from "../../constants/constants.js";
 import { sessionEntryKeys, setSessionEntry } from "../../session/index.js";
 import { closedViewStatuses } from "ffc-ahwr-common-library";
 
-export function getRedirectPath(applicationsForSbi, request) {
+export async function getRedirectPath(applicationsForSbi, request) {
   const checkDetails = "/check-details";
 
   if (applicationsForSbi.length === 0) {
-    setSessionEntry(request, sessionEntryKeys.signInRedirect, true);
+    await setSessionEntry(request, sessionEntryKeys.signInRedirect, true);
     return { redirectPath: checkDetails, error: "" };
   }
 
@@ -17,14 +17,14 @@ export function getRedirectPath(applicationsForSbi, request) {
       return { redirectPath: checkDetails, error: "" };
     }
 
-    setSessionEntry(request, sessionEntryKeys.signInRedirect, true);
+    await setSessionEntry(request, sessionEntryKeys.signInRedirect, true);
     return { redirectPath: checkDetails, error: "" };
   }
 
   if (closedViewStatuses.includes(latestApplication.status)) {
     // User has claimed on their OW agreement, and needs a new world agreement.
     // Send to endemics apply journey
-    setSessionEntry(request, sessionEntryKeys.signInRedirect, true);
+    await setSessionEntry(request, sessionEntryKeys.signInRedirect, true);
     return { redirectPath: checkDetails, error: "" };
   }
 

@@ -53,7 +53,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { elisaResult } = request.payload;
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.pigsElisaTestResult,
@@ -62,7 +62,7 @@ const postHandler = {
 
       // Clearing this from the session in-case they filled it out, then went back.
       // Not emitting because its just clearing that part of the session
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.pigsGeneticSequencing,

@@ -4,13 +4,15 @@ import { createServer } from "../../../../app/server.js";
 import { getTableCells } from "../../../helpers/get-table-cells.js";
 import globalJsdom from "global-jsdom";
 import { getByRole, queryByRole } from "@testing-library/dom";
-import { authConfig } from "../../../../app/config/auth.js";
 import { getClaimsByApplicationReference } from "../../../../app/api-requests/claim-api.js";
 
 const nunJucksInternalTimerMethods = ["nextTick"];
 let cleanUpFunction;
 
 jest.mock("../../../../app/api-requests/claim-api.js");
+jest.mock("../../../../app/auth/auth-code-grant/request-authorization-code-url.js", () => ({
+  requestAuthorizationCodeUrl: jest.fn().mockReturnValue("auth-code-url"),
+}));
 
 test("get /vet-visits: no agreement throws an error", async () => {
   const server = await createServer();
@@ -18,14 +20,13 @@ test("get /vet-visits: no agreement throws an error", async () => {
   const sbi = "106354662";
   const state = {
     customer: {
-      attachedToMultipleBusinesses: true,
+      attachedToMultipleBusinesses: false,
     },
-    endemicsClaim: {
-      organisation: {
-        sbi,
-        name: "PARTRIDGES",
-        farmerName: "Janice Harrison",
-      },
+    endemicsClaim: {},
+    organisation: {
+      sbi,
+      name: "PARTRIDGES",
+      farmerName: "Janice Harrison",
     },
   };
 
@@ -58,11 +59,6 @@ test("get /vet-visits: new world, multiple businesses", async () => {
       attachedToMultipleBusinesses: true,
     },
     endemicsClaim: {
-      organisation: {
-        sbi,
-        name: "PARTRIDGES",
-        farmerName: "Janice Harrison",
-      },
       latestEndemicsApplication: {
         sbi,
         type: "EE",
@@ -70,6 +66,11 @@ test("get /vet-visits: new world, multiple businesses", async () => {
         redacted: false,
       },
       latestVetVisitApplication: undefined,
+    },
+    organisation: {
+      sbi,
+      name: "PARTRIDGES",
+      farmerName: "Janice Harrison",
     },
   };
 
@@ -120,7 +121,7 @@ test("get /vet-visits: new world, multiple businesses", async () => {
     getByRole(document.body, "link", {
       name: "Claim for a different business",
     }),
-  ).toHaveProperty("href", expect.stringContaining(authConfig.defraId.hostname));
+  ).toHaveProperty("href", expect.stringContaining("auth-code-url"));
 });
 
 test("get /vet-visits: new world, multiple businesses, for sheep (flock not herd)", async () => {
@@ -133,11 +134,6 @@ test("get /vet-visits: new world, multiple businesses, for sheep (flock not herd
       attachedToMultipleBusinesses: true,
     },
     endemicsClaim: {
-      organisation: {
-        sbi,
-        name: "PARTRIDGES",
-        farmerName: "Janice Harrison",
-      },
       latestEndemicsApplication: {
         sbi,
         type: "EE",
@@ -145,6 +141,11 @@ test("get /vet-visits: new world, multiple businesses, for sheep (flock not herd
         redacted: false,
       },
       latestVetVisitApplication: undefined,
+    },
+    organisation: {
+      sbi,
+      name: "PARTRIDGES",
+      farmerName: "Janice Harrison",
     },
   };
 
@@ -190,11 +191,6 @@ test("get /vet-visits: new world, claim has a herd", async () => {
       attachedToMultipleBusinesses: true,
     },
     endemicsClaim: {
-      organisation: {
-        sbi,
-        name: "PARTRIDGES",
-        farmerName: "Janice Harrison",
-      },
       latestEndemicsApplication: {
         sbi,
         type: "EE",
@@ -202,6 +198,11 @@ test("get /vet-visits: new world, claim has a herd", async () => {
         redacted: false,
       },
       latestVetVisitApplication: undefined,
+    },
+    organisation: {
+      sbi,
+      name: "PARTRIDGES",
+      farmerName: "Janice Harrison",
     },
   };
 
@@ -255,7 +256,7 @@ test("get /vet-visits: new world, claim has a herd", async () => {
     getByRole(document.body, "link", {
       name: "Claim for a different business",
     }),
-  ).toHaveProperty("href", expect.stringContaining(authConfig.defraId.hostname));
+  ).toHaveProperty("href", expect.stringContaining("auth-code-url"));
 });
 
 test("get /vet-visits: new world, no claims made, show banner", async () => {
@@ -270,11 +271,6 @@ test("get /vet-visits: new world, no claims made, show banner", async () => {
       attachedToMultipleBusinesses: true,
     },
     endemicsClaim: {
-      organisation: {
-        sbi,
-        name: "TEST FARM",
-        farmerName: "Farmer Joe",
-      },
       latestEndemicsApplication: {
         sbi,
         type: "EE",
@@ -283,6 +279,11 @@ test("get /vet-visits: new world, no claims made, show banner", async () => {
         redacted: false,
       },
       latestVetVisitApplication: undefined,
+    },
+    organisation: {
+      sbi,
+      name: "TEST FARM",
+      farmerName: "Farmer Joe",
     },
   };
 
@@ -320,11 +321,6 @@ test("get /vet-visits: old world application only - results in error page", asyn
       attachedToMultipleBusinesses: false,
     },
     endemicsClaim: {
-      organisation: {
-        sbi: "106354662",
-        name: "PARTRIDGES",
-        farmerName: "Janice Harrison",
-      },
       latestEndemicsApplication: undefined,
       latestVetVisitApplication: {
         sbi,
@@ -337,6 +333,11 @@ test("get /vet-visits: old world application only - results in error page", asyn
         status: "IN_CHECK",
         redacted: false,
       },
+    },
+    organisation: {
+      sbi: "106354662",
+      name: "PARTRIDGES",
+      farmerName: "Janice Harrison",
     },
   };
 
@@ -372,11 +373,6 @@ test("get /vet-visits: shows agreement redacted", async () => {
       attachedToMultipleBusinesses: true,
     },
     endemicsClaim: {
-      organisation: {
-        sbi,
-        name: "TEST FARM",
-        farmerName: "Farmer Joe",
-      },
       latestEndemicsApplication: {
         sbi,
         type: "EE",
@@ -385,6 +381,11 @@ test("get /vet-visits: shows agreement redacted", async () => {
         redacted: true,
       },
       latestVetVisitApplication: undefined,
+    },
+    organisation: {
+      sbi,
+      name: "TEST FARM",
+      farmerName: "Farmer Joe",
     },
   };
 

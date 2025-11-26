@@ -32,13 +32,13 @@ export const signinRouteHandlers = [
           .options({
             stripUnknown: true,
           }),
-        failAction(request, h, err) {
+        async failAction(request, h, err) {
           request.logger.setBindings({ error: err.message });
           // TODO - track this exception
 
           return h
             .view("verify-login-failed", {
-              backLink: requestAuthorizationCodeUrl(request),
+              backLink: await requestAuthorizationCodeUrl(request),
               ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             })
             .code(StatusCodes.BAD_REQUEST)
@@ -100,7 +100,7 @@ export const signinRouteHandlers = [
 
           return h
             .view("verify-login-failed", {
-              backLink: requestAuthorizationCodeUrl(request),
+              backLink: await requestAuthorizationCodeUrl(request),
               ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             })
             .code(StatusCodes.INTERNAL_SERVER_ERROR)

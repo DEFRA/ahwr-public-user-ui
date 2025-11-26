@@ -6,9 +6,9 @@ import {
   sessionKeys,
 } from "../../session/index.js";
 
-export const generate = (request) => {
+export const generate = async (request) => {
   const nonce = randomUUID();
-  setSessionData(request, sessionEntryKeys.tokens, sessionKeys.tokens.nonce, nonce);
+  await setSessionData(request, sessionEntryKeys.tokens, sessionKeys.tokens.nonce, nonce);
   return nonce;
 };
 

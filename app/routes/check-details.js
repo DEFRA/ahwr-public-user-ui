@@ -12,17 +12,13 @@ export const checkDetailsHandlers = [
     path: "/check-details",
     options: {
       handler: async (request, h) => {
-        const organisation = getSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.organisation,
-        );
+        const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
         if (!organisation) {
           throw new Error("Organisation not in session.");
         }
 
-        return h.view("check-details", getOrganisationModel(request, organisation));
+        return h.view("check-details", await getOrganisationModel(request, organisation));
       },
     },
   },
@@ -34,13 +30,9 @@ export const checkDetailsHandlers = [
         payload: joi.object({
           confirmCheckDetails: joi.string().valid("yes", "no").required(),
         }),
-        failAction: (request, h, err) => {
+        failAction: async (request, h, err) => {
           request.logger.setBindings({ error: err });
-          const organisation = getSessionData(
-            request,
-            sessionEntryKeys.endemicsClaim,
-            sessionKeys.endemicsClaim.organisation,
-          );
+          const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
           if (!organisation) {
             throw new Error("Organisation not in session.");
@@ -49,7 +41,11 @@ export const checkDetailsHandlers = [
           return h
             .view("check-details", {
               errorMessage: { text: "Select if these details are correct" },
-              ...getOrganisationModel(request, organisation, "Select if these details are correct"),
+              ...(await getOrganisationModel(
+                request,
+                organisation,
+                "Select if these details are correct",
+              )),
             })
             .code(StatusCodes.BAD_REQUEST)
             .takeover();

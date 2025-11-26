@@ -67,7 +67,7 @@ export const whichReviewHandlers = [
         } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
         // TODO: Should emit event
-        setSessionData(
+        await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.typeOfReview,

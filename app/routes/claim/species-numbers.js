@@ -211,7 +211,7 @@ const postHandler = {
 
       const answer = request.payload[sessionKeys.endemicsClaim.speciesNumbers];
       // TODO: Should emit event
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.speciesNumbers,

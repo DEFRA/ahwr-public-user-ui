@@ -97,7 +97,7 @@ const postHandler = {
       } = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const { piHuntAllAnimals } = request.payload;
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.piHuntAllAnimals,

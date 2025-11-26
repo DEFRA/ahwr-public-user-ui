@@ -28,11 +28,6 @@ jest.mock("../../../../app/auth/auth-code-grant/state.js", () => ({
   verifyState: jest.fn(),
 }));
 
-jest.mock("applicationinsights", () => ({
-  defaultClient: { trackException: jest.fn(), trackEvent: () => "hello" },
-  dispose: jest.fn(),
-}));
-
 jest.mock("../../../../app/config/auth.js", () => ({
   authConfig: {
     defraId: {

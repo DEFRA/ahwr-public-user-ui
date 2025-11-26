@@ -49,7 +49,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { diseaseStatus } = request.payload;
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.diseaseStatus,

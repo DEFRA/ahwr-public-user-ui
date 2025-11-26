@@ -2,12 +2,9 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import { emitHerdEvent, getSessionData, setSessionData } from "../../../../../app/session/index.js";
 
 jest.mock("../../../../../app/session/index.js");
-// jest.mock('../../../../../app/event/send-herd-event.js', () => ({
-//   sendHerdEvent: jest.fn()
-// }))
 
 describe("/herd-others-on-sbi tests", () => {
   const url = `/herd-others-on-sbi`;
@@ -181,7 +178,7 @@ describe("/herd-others-on-sbi tests", () => {
         "herdReasons",
         ["onlyHerd"],
       );
-      // expect(sendHerdEvent).toHaveBeenCalled()
+      expect(emitHerdEvent).toHaveBeenCalled();
     });
 
     test("navigates to check herd details when no existing herd and they select no", async () => {
@@ -208,7 +205,7 @@ describe("/herd-others-on-sbi tests", () => {
         "isOnlyHerdOnSbi",
         "no",
       );
-      // expect(sendHerdEvent).not.toHaveBeenCalled()
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("display errors with flock labels when no answer selected and typeOfLivestock is sheep", async () => {
@@ -236,6 +233,7 @@ describe("/herd-others-on-sbi tests", () => {
         "Is this the only flock of sheep associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-hint").text()).toContain("Tell us about this flock");
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("display errors with herd labels when no answer selected and typeOfLivestock is not sheep", async () => {
@@ -263,6 +261,7 @@ describe("/herd-others-on-sbi tests", () => {
         "Is this the only beef cattle herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-hint").text()).toContain("Tell us about this herd");
+      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
   });
 });
