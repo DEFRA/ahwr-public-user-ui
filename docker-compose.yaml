@@ -41,3 +41,5 @@ services:
       PRIVACY_POLICY_URI: ${PRIVACY_POLICY_URI:-https://www.gov.uk/government/publications/get-funding-to-improve-animal-health-and-welfare-privacy-notice}
       LFS_UPDATE_ENABLED: ${LFS_UPDATE_ENABLED:-true}
       LFS_UPDATE_URI: ${LFS_UPDATE_URI:-https://fcp-sfd-frontend.dev.cdp-int.defra.cloud/home?ssoOrgId=}
+      DOCUMENT_BUCKET_NAME: ${DOCUMENT_BUCKET_NAME:-local-ahwr-documents}
+      AWS_REGION: eu-west-2

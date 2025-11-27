@@ -1,23 +1,39 @@
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { config } from "../config/index.js";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getS3Client } from "../s3/index.js";
+
 export const downloadApplicationHandlers = {
   method: "GET",
   path: "/download-application/{sbi}/{reference}",
   handler: async (request, h) => {
-    // const { sbi, reference } = request.params;
-    // request.logger.setBindings({ sbi, reference });
-    // const { latestEndemicsApplicationReference, organisation } = getEndemicsClaim(request);
-    // const blobName = `${sbi}/${reference}.pdf`;
-    // if (latestEndemicsApplicationReference === reference && organisation.sbi === sbi) {
-    //   const blobBuffer = await getBlob(blobName);
-    //   return h
-    //     .response(blobBuffer)
-    //     .type("application/pdf")
-    //     .header("Content-type", "application/pdf")
-    //     .header("Content-length", blobBuffer.length);
-    // }
-    // throw new Error("Application not found, could not be downloaded.");
+    const { sbi, reference } = request.params;
+    request.logger.setBindings({ sbi, reference });
 
-    console.log("Here is the application for the user...");
+    const organisation = getSessionData(request, sessionEntryKeys.organisation);
+    const latestEndemicsApplication = getSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.latestEndemicsApplication,
+    );
 
-    return h.response("ok").code(200);
+    if (latestEndemicsApplication.reference === reference && organisation.sbi === sbi) {
+      const s3Client = getS3Client();
+
+      const command = new GetObjectCommand({
+        Bucket: config.documentBucketName,
+        Key: `${sbi}/${reference}.pdf`,
+        ResponseContentDisposition: `attachment; filename="${latestEndemicsApplication.reference}.pdf"`,
+      });
+
+      const signedUrl = await getSignedUrl(s3Client, command, {
+        expiresIn: 60,
+      });
+
+      return h.redirect(signedUrl);
+    }
+
+    throw new Error("Application not found, could not be downloaded.");
   },
 };

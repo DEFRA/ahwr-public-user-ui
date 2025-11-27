@@ -85,6 +85,8 @@ export const getConfig = () => {
       password: joi.string().required(),
       address: joi.string().required(),
     }),
+    documentBucketName: joi.string().required(),
+    awsRegion: joi.string().required(),
   });
 
   const config = {
@@ -168,6 +170,8 @@ export const getConfig = () => {
       password: process.env.FCP_AHWR_EVENT_QUEUE_SA_KEY,
       address: process.env.EVENT_QUEUE_ADDRESS,
     },
+    documentBucketName: process.env.DOCUMENT_BUCKET_NAME,
+    awsRegion: process.env.AWS_REGION,
   };
 
   const { error } = schema.validate(config, {
