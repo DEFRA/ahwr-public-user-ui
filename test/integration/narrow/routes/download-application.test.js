@@ -2,9 +2,11 @@ import { createServer } from "../../../../app/server.js";
 import { StatusCodes } from "http-status-codes";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
 import { when } from "jest-when";
-import { config } from "../../../../app/config/index.js";
 
 jest.mock("../../../../app/session/index.js");
+jest.mock("@aws-sdk/s3-request-presigner", () => ({
+  getSignedUrl: jest.fn().mockResolvedValue("I am a presigned url"),
+}));
 
 when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.organisation)
@@ -34,9 +36,7 @@ describe("/download-application", () => {
     });
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-    expect(res.headers.location).toContain(sbi);
-    expect(res.headers.location).toContain(reference);
-    expect(res.headers.location).toContain(config.documentBucketName);
+    expect(res.headers.location).toEqual("I am a presigned url");
   });
 
   test("throws an error if the sbi in the session does not match the sbi in the request", async () => {
