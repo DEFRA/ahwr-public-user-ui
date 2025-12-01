@@ -1926,7 +1926,7 @@ describe("POST /date-of-visit handler", () => {
         reference: "TEMP-CBLH-C9CC",
         latestEndemicsApplication,
         dateOfVisit: "2025-04-30",
-    });
+      });
     const options = {
       method: "POST",
       url,

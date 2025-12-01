@@ -6,7 +6,7 @@ let server;
 const init = async () => {
   server = await createServer();
   await server.start();
-  await startMessagingService(server.logger)
+  await startMessagingService(server.logger);
 };
 
 process.on("unhandledRejection", async (err) => {

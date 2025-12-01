@@ -36,7 +36,7 @@ const getMostRecentClaimWithoutHerd = (previousClaims, typeOfLivestock) => {
 
 const createUnnamedHerd = (claim, typeOfLivestock) => ({
   id: radioValueUnnamedHerd,
-  name: `Unnamed ${getHerdOrFlock(typeOfLivestock)} (Last claim: ${claim.data.claimType === claimType.review ? "review" : "follow-up"} visit on the ${formatDate(claim.data.dateOfVisit)})`,
+  name: `Unnamed ${getHerdOrFlock(typeOfLivestock)} (Last claim: ${claim.type === claimType.review ? "review" : "follow-up"} visit on the ${formatDate(claim.data.dateOfVisit)})`,
 });
 
 const getHandler = {

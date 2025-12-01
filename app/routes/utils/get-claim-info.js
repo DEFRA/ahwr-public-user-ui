@@ -11,12 +11,13 @@ export const getClaimInfo = (previousClaims, typeOfLivestock) => {
   if (previousClaimsForSpecies && previousClaimsForSpecies.length > 0) {
     const {
       createdAt,
-      data: { dateOfVisit, claimType },
+      type,
+      data: { dateOfVisit },
     } = previousClaimsForSpecies.reduce((latest, claim) => {
       return claim.createdAt > latest.createdAt ? claim : latest;
     });
 
-    claimTypeText = claimType === CLAIM_TYPE.review ? "Review" : "Endemics";
+    claimTypeText = type === CLAIM_TYPE.review ? "Review" : "Endemics";
     dateOfVisitText = new Date(dateOfVisit).toLocaleDateString("en-GB", {
       day: "numeric",
       month: "long",
