@@ -32,7 +32,7 @@ const createRowsForTable = (claims) => {
     });
 
     const claimTypeText =
-      (claim.data.claimType ?? claimType.review) === claimType.review ? "Review" : "Follow-up";
+      (claim.type ?? claimType.review) === claimType.review ? "Review" : "Follow-up";
     const herdName =
       claim.herd?.name ?? (claim.data.typeOfLivestock === SHEEP ? UNNAMED_FLOCK : UNNAMED_HERD);
 
