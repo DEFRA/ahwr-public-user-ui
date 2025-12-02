@@ -28,7 +28,7 @@ jobs:
       - run: |
           ./scripts/test
 
-     - name: SonarCloud Scan
+      - name: SonarCloud Scan
         if: github.actor != 'dependabot[bot]'
         uses: SonarSource/sonarqube-scan-action@v5.3.1
         env:
