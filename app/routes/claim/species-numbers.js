@@ -152,8 +152,8 @@ const postHandler = {
       payload: Joi.object({
         [sessionKeys.endemicsClaim.speciesNumbers]: Joi.string().valid("yes", "no").required(),
       }),
-      failAction: (request, h, err) => {
-        request.logger.setBindings({ err });
+      failAction: (request, h, error) => {
+        request.logger.error({ error });
         const claim = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
         if (!claim) {

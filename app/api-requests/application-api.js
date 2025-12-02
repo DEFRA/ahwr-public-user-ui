@@ -8,9 +8,9 @@ export async function getApplicationsBySbi(sbi, logger) {
     const { payload } = await Wreck.get(endpoint, { json: true });
 
     return payload;
-  } catch (err) {
-    logger.setBindings({ error: err });
-    throw err;
+  } catch (error) {
+    logger.error({ error });
+    throw error;
   }
 }
 
@@ -23,9 +23,9 @@ export const createApplication = async (application, logger) => {
     });
 
     return payload;
-  } catch (err) {
-    logger.setBindings({ error: err });
-    throw err;
+  } catch (error) {
+    logger.error({ error });
+    throw error;
   }
 };
 
@@ -35,11 +35,13 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
   try {
     const { payload } = await Wreck.get(endpoint, { json: true });
     return payload;
-  } catch (err) {
-    if (err.output.statusCode === StatusCodes.NOT_FOUND) {
+  } catch (error) {
+    const statusCode = error?.output?.statusCode;
+    if (statusCode && statusCode === StatusCodes.NOT_FOUND) {
       return [];
     }
-    logger.setBindings({ error: err });
-    throw err;
+
+    logger.error({ error });
+    throw error;
   }
 };

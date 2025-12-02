@@ -21,6 +21,7 @@ const getHandler = {
       const { typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
+      // TODO - find an alternative to setBindings
       request.logger.setBindings({ sbi: organisation.sbi });
 
       // fetch latest new world (always) and latest old world (if relevant) application
@@ -50,8 +51,8 @@ const postHandler = {
           .valid(...Object.values(TYPE_OF_LIVESTOCK))
           .required(),
       }),
-      failAction: (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: (request, h, error) => {
+        request.logger.error({ error });
         return h
           .view(claimViews.whichSpecies, {
             errorMessage,

@@ -45,7 +45,7 @@ describe("redeemAuthorizationCodeForAccessToken", () => {
       code: "test-code",
     },
     logger: {
-      setBindings: jest.fn(),
+      error: jest.fn(),
     },
   };
 

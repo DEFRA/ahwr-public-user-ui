@@ -43,8 +43,8 @@ const postHandler = {
       payload: Joi.object({
         piHunt: Joi.string().valid("yes", "no").required(),
       }),
-      failAction: (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: (request, h, error) => {
+        request.logger.error({ error });
         const { piHunt: previousPiHuntAnswer, dateOfVisit } = getSessionData(
           request,
           sessionEntryKeys.endemicsClaim,

@@ -45,8 +45,8 @@ const postHandler = {
           .pattern(/^\d{2}\/\d{3}\/\d{4}$/)
           .required(),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const { typeOfLivestock, herdVersion } = getSessionData(
           request,
           sessionEntryKeys.endemicsClaim,

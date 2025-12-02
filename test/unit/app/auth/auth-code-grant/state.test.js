@@ -21,7 +21,7 @@ describe("auth-code-grant state tests", () => {
     const request = {
       query: { description: "Error", error: true },
       yar: { id: 1 },
-      logger: { setBindings: jest.fn() },
+      logger: { error: jest.fn() },
     };
     expect(verifyState(request)).toEqual(false);
   });
@@ -30,7 +30,7 @@ describe("auth-code-grant state tests", () => {
     const request = {
       query: { description: "No state", error: false, state: false },
       yar: { id: 1 },
-      logger: { setBindings: jest.fn() },
+      logger: { error: jest.fn() },
     };
     expect(verifyState(request)).toEqual(false);
   });

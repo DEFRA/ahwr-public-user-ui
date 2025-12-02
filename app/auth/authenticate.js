@@ -9,7 +9,7 @@ import { acquireSigningKey } from "./token-verify/acquire-signing-key.js";
 
 export const authenticate = async (request, h, logger) => {
   if (!verifyState(request)) {
-    logger.setBindings({
+    logger.error({
       error: "Invalid state. Redirecting back to /signin-oidc after resetting state.",
     });
     const authRedirectCallback = h.redirect(await requestAuthorizationCodeUrl(request));

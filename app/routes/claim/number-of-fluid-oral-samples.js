@@ -41,13 +41,13 @@ const postHandler = {
           "string.pattern.base": "The amount of oral fluid samples must only include numbers",
         }),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
 
         return h
           .view(claimViews.numberOfFluidOralSamples, {
             ...request.payload,
-            errorMessage: { text: err.details[0].message, href: "#numberOfOralFluidSamples" },
+            errorMessage: { text: error.details[0].message, href: "#numberOfOralFluidSamples" },
             backLink: claimRoutes.testUrn,
           })
           .code(HttpStatus.BAD_REQUEST)

@@ -46,8 +46,8 @@ export const whichReviewHandlers = [
         payload: Joi.object({
           typeOfReview: Joi.string().valid("review", "endemics").required(),
         }),
-        failAction: (request, h, err) => {
-          request.logger.setBindings({ error: err });
+        failAction: (request, h, error) => {
+          request.logger.error({ error });
 
           return h
             .view(claimViews.whichTypeOfReview, {

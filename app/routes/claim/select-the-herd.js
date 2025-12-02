@@ -134,8 +134,8 @@ const postHandler = {
           .try(Joi.string().valid(radioValueUnnamedHerd, radioValueNewHerd), Joi.string().uuid())
           .required(),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const { typeOfLivestock, previousClaims, herds, herdSelected } = getSessionData(
           request,
           sessionEntryKeys.endemicsClaim,

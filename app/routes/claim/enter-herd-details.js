@@ -77,8 +77,8 @@ const postHandler = {
           .try(Joi.string(), Joi.array().items(Joi.string()).min(1))
           .required(),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const { backLink, checkboxItemsForHerdReasons, herdReasons, herdOrFlock } =
           getEnterHerdDetailsViewData(request, true);
 

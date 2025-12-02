@@ -43,7 +43,7 @@ export const setSessionForErrorPage = async ({
 };
 
 const logReasonAndEmitEvent = ({ logger, reason, sbi, crn }) => {
-  logger.setBindings({ error: reason, crn });
+  logger.error({ error: reason, crn });
   // TODO - track this exception
 };
 
@@ -99,6 +99,7 @@ export const checkLoginValid = async ({
   const applicationsForSbi = [latestEndemicsApplication, latestVetVisitApplication].filter(Boolean);
 
   if (applicationsForSbi.length && applicationsForSbi[0].redacted) {
+    // TODO - find an alternative to setBindings
     logger.setBindings({
       error: `Agreement ${applicationsForSbi[0].reference} has been redacted`,
       crn,

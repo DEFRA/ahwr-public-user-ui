@@ -30,8 +30,8 @@ export const checkDetailsHandlers = [
         payload: joi.object({
           confirmCheckDetails: joi.string().valid("yes", "no").required(),
         }),
-        failAction: async (request, h, err) => {
-          request.logger.setBindings({ error: err });
+        failAction: async (request, h, error) => {
+          request.logger.error({ error });
           const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
           if (!organisation) {

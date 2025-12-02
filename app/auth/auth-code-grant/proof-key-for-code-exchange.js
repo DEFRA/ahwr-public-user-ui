@@ -1,9 +1,8 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { setSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
 
-export const base64URLEncode = (str) => {
-  return str.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-};
+export const base64URLEncode = (str) =>
+  str.toString("base64").replaceAll(/\+/g, "-").replaceAll(/\//g, "_").replaceAll(/=/g, "");
 
 const sha256 = (buffer) => {
   return crypto.createHash("sha256").update(buffer).digest();

@@ -48,8 +48,8 @@ const postHandler = {
       payload: Joi.object({
         isOnlyHerdOnSbi: Joi.string().required(),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const { typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
         return h

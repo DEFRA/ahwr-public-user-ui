@@ -105,8 +105,8 @@ const postHandler = {
           )
           .required(),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const sheepEndemicsPackageRadios = radios(
           pageHeading,
           "sheepEndemicsPackage",

@@ -64,14 +64,14 @@ const postHandler = {
             "string.pattern.base": errorMessages.namePattern,
           }),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         return h
           .view(claimViews.vetName, {
             ...request.payload,
             backLink: backLink(request),
             errorMessage: {
-              text: err.details[0].message,
+              text: error.details[0].message,
               href: `#${sessionKeys.endemicsClaim.vetsName}`,
             },
           })

@@ -144,7 +144,7 @@ export const isWithin4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesti
   const visitDate = new Date(dateOfVisit);
   const testingDate = new Date(dateOfTesting);
 
-  if (isNaN(visitDate) || isNaN(testingDate)) {
+  if (Number.isNaN(visitDate) || Number.isNaN(testingDate)) {
     return false;
   }
 

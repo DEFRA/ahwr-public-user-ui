@@ -53,12 +53,12 @@ export async function retrieveApimAccessToken(request) {
 
   try {
     await fetchNewToken();
-  } catch (err) {
-    request.logger.setBindings({
-      err,
+  } catch (error) {
+    request.logger.error({
+      error,
       apimTokenEndpoint,
     });
-    throw err;
+    throw error;
   }
 
   return tokenCache.accessToken;

@@ -20,9 +20,8 @@ export const updateContactHistory = async (personSummary, organisation, logger) 
     });
 
     return payload;
-  } catch (err) {
-    logger.setBindings({ err, endpoint });
-    // TODO - track this exception
-    throw err;
+  } catch (error) {
+    logger.error({ error, endpoint });
+    throw error;
   }
 };
