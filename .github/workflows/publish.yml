@@ -29,8 +29,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: |
-          npm ci
-          npm test
+          ./scripts/test
 
       - name: Build and Publish
         uses: DEFRA/cdp-build-action/build@main
