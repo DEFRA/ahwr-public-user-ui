@@ -77,6 +77,7 @@ export const devLoginHandlers = [
       handler: async (request, h) => {
         const { sbi } = request.payload;
 
+        // TODO - find an alternative to setBindings
         request.logger.setBindings({ sbi });
 
         const { personSummary, organisationSummary } = createDevDetails(sbi);

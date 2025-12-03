@@ -31,9 +31,8 @@ export const redeemAuthorizationCodeForAccessToken = async (request) => {
       json: true,
     });
     return payload;
-  } catch (err) {
-    request.logger.setBindings({ err, endpoint });
-    // TODO - track this exception
-    throw err;
+  } catch (error) {
+    request.logger.error({ error, endpoint });
+    throw error;
   }
 };

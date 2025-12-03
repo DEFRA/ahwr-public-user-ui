@@ -7,9 +7,9 @@ export async function getClaimsByApplicationReference(applicationReference, logg
     const { payload } = await Wreck.get(endpoint, { json: true });
 
     return payload;
-  } catch (err) {
-    logger.setBindings({ error: err });
-    throw err;
+  } catch (error) {
+    logger.error({ error });
+    throw error;
   }
 }
 
@@ -23,9 +23,9 @@ export async function submitNewClaim(data, logger) {
     });
 
     return payload;
-  } catch (err) {
-    logger.setBindings({ err, endpoint });
-    throw err;
+  } catch (error) {
+    logger.error({ error });
+    throw error;
   }
 }
 
@@ -38,10 +38,8 @@ export async function isURNUnique(data, logger) {
     });
 
     return payload;
-  } catch (err) {
-    logger.setBindings({ err, endpoint });
-    // Should we actually be tracking this in appInsights? The other endpoints dont
-    // appInsights.defaultClient.trackException({ exception: err })
-    throw err;
+  } catch (error) {
+    logger.error({ error });
+    throw error;
   }
 }

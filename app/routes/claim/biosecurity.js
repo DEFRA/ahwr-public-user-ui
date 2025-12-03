@@ -156,8 +156,8 @@ const postHandler = {
           then: Joi.string().pattern(/^(?!0$)(100|\d{1,2})$/),
         }),
       }),
-      failAction: (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: (request, h, error) => {
+        request.logger.error({ error });
         const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
         const { biosecurity, assessmentPercentage } = request.payload;
         const assessmentPercentageErrorMessage = getAssessmentPercentageErrorMessage(

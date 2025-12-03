@@ -63,15 +63,15 @@ const postHandler = {
           })
           .required(),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const { herds, typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
         const herdOrFlock = getHerdOrFlock(typeOfLivestock);
-        const errorType = err.details[0].type;
+        const errorType = error.details[0].type;
 
         const errorText = isHerdNameEmpty(errorType)
           ? `Enter the ${herdOrFlock} name`
-          : err.details[0].message;
+          : error.details[0].message;
 
         return h
           .view(claimViews.enterHerdName, {

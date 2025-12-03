@@ -143,6 +143,7 @@ export const vetVisitsHandlers = [
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
+        // TODO - find an alternative to setBindings
         request.logger.setBindings({ sbi: organisation.sbi });
 
         const attachedToMultipleBusinesses = getSessionData(

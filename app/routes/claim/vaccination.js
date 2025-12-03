@@ -58,8 +58,8 @@ const postHandler = {
           .valid(vaccination.vaccinated, vaccination.notVaccinated)
           .required(),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const { vetVisitsReviewTestResults } = getSessionData(
           request,
           sessionEntryKeys.endemicsClaim,

@@ -67,14 +67,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
 
@@ -96,7 +96,7 @@ describe("checkLoginValid", () => {
     );
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockSetBindings).not.toHaveBeenCalled();
+    expect(mockErrorFn).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect callback if the user's organisation is locked", async () => {
@@ -117,14 +117,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
 
@@ -152,7 +152,7 @@ describe("checkLoginValid", () => {
       true,
     );
     expect(customerHasAtLeastOneValidCph).not.toHaveBeenCalled(); // only gets called if an error hasnt been found yet
-    expect(mockSetBindings).toHaveBeenCalledWith({
+    expect(mockErrorFn).toHaveBeenCalledWith({
       crn: 124,
       error: "Organisation id 111 is locked by RPA",
     });
@@ -176,14 +176,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = false;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
 
@@ -211,7 +211,7 @@ describe("checkLoginValid", () => {
       true,
     );
     expect(customerHasAtLeastOneValidCph).not.toHaveBeenCalled(); // only gets called if an error hasnt been found yet
-    expect(mockSetBindings).toHaveBeenCalledWith({
+    expect(mockErrorFn).toHaveBeenCalledWith({
       crn: 124,
       error: "Person id 12345 does not have the required permissions for organisation id 111",
     });
@@ -236,14 +236,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
 
@@ -271,7 +271,7 @@ describe("checkLoginValid", () => {
       true,
     );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers); // only gets called if an error hasnt been found yet
-    expect(mockSetBindings).toHaveBeenCalledWith({
+    expect(mockErrorFn).toHaveBeenCalledWith({
       crn: 124,
       error: "Organisation id 111 has no valid CPH's associated",
     });
@@ -296,14 +296,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
 
@@ -331,7 +331,7 @@ describe("checkLoginValid", () => {
       true,
     );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers); // only gets called if an error hasnt been found yet
-    expect(mockSetBindings).toHaveBeenCalledWith({
+    expect(mockErrorFn).toHaveBeenCalledWith({
       crn: 124,
       error: "Organisation id 111 has no valid CPH's associated",
     });
@@ -360,14 +360,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
 
@@ -389,7 +389,7 @@ describe("checkLoginValid", () => {
     );
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockSetBindings).not.toHaveBeenCalled();
+    expect(mockErrorFn).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
@@ -418,14 +418,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
 
@@ -451,7 +451,7 @@ describe("checkLoginValid", () => {
       true,
     );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockSetBindings).not.toHaveBeenCalled();
+    expect(mockErrorFn).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
@@ -481,14 +481,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
 
@@ -510,7 +510,7 @@ describe("checkLoginValid", () => {
     );
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockSetBindings).not.toHaveBeenCalled();
+    expect(mockErrorFn).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
@@ -540,14 +540,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
 
@@ -569,7 +569,7 @@ describe("checkLoginValid", () => {
     );
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockSetBindings).not.toHaveBeenCalled();
+    expect(mockErrorFn).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
@@ -599,14 +599,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
 
@@ -628,7 +628,7 @@ describe("checkLoginValid", () => {
     );
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockSetBindings).not.toHaveBeenCalled();
+    expect(mockErrorFn).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
@@ -658,14 +658,14 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockSetBindings = jest.fn();
+    const mockErrorFn = jest.fn();
 
     const request = {
       yar: {
         id: 1,
       },
       logger: {
-        setBindings: mockSetBindings,
+        error: mockErrorFn,
       },
     };
     const result = await checkLoginValid({
@@ -691,7 +691,7 @@ describe("checkLoginValid", () => {
       true,
     );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockSetBindings).toHaveBeenCalledWith({
+    expect(mockErrorFn).toHaveBeenCalledWith({
       error: "User has an expired old world application",
       crn: 124,
     });

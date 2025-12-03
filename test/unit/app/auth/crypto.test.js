@@ -15,7 +15,7 @@ describe("generateCodeChallenge", () => {
   test("when createCryptoProvider verifier value set in session", async () => {
     const mockRequest = {
       logger: {
-        setBindings: jest.fn(),
+        error: jest.fn(),
       },
     };
     const result = await generateCodeChallenge(mockRequest);

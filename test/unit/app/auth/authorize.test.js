@@ -18,9 +18,9 @@ describe("Generate authentication url test", () => {
 
   test("when invalid state occurs", async () => {
     verifyState.mockReturnValueOnce(false);
-    const request = { yar: { id: "33" }, logger: { setBindings: jest.fn() } };
+    const request = { yar: { id: "33" }, logger: { error: jest.fn() } };
     const mockLogger = {
-      setBindings: jest.fn(),
+      error: jest.fn(),
     };
     const mockRedirect = jest.fn();
     const mockH = {

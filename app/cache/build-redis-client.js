@@ -2,32 +2,30 @@ import { Cluster, Redis } from "ioredis";
 import { config } from "../config/index.js";
 import { getLogger } from "../logging/logger.js";
 
-const redisConfig = config.cache.options;
-
 export function buildRedisClient() {
+  const redisConfig = config.cache.options;
+  const { keyPrefix, host, username, password, useSingleInstanceCache, useTLS } = redisConfig;
   const port = 6379;
   const db = 0;
-  const keyPrefix = redisConfig.keyPrefix;
-  const host = redisConfig.host;
 
   let credentials = {};
 
-  if (redisConfig.username) {
+  if (username && password) {
     credentials = {
-      username: redisConfig.username,
-      password: redisConfig.password,
+      username,
+      password,
     };
   }
 
   let tls = {};
 
-  if (redisConfig.useTLS) {
+  if (useTLS) {
     tls = { tls: {} };
   }
 
   let redisClient;
 
-  if (redisConfig.useSingleInstanceCache) {
+  if (useSingleInstanceCache) {
     redisClient = new Redis({
       port,
       host,

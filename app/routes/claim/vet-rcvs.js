@@ -75,14 +75,14 @@ const postHandler = {
             "string.pattern.base": errorMessages.validRCVS,
           }),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ error: err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         return h
           .view(claimViews.vetRcvs, {
             ...request.payload,
             backLink: claimRoutes.vetName,
             errorMessage: {
-              text: err.details[0].message,
+              text: error.details[0].message,
               href: `#${sessionKeys.endemicsClaim.vetRCVSNumber}`,
             },
           })

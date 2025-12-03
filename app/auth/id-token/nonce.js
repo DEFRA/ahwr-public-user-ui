@@ -13,7 +13,7 @@ export const generate = async (request) => {
 };
 
 export const verify = (request, idToken) => {
-  if (typeof idToken === "undefined") {
+  if (idToken === undefined) {
     throw new Error("Empty id_token");
   }
   const nonce = getSessionData(request, sessionEntryKeys.tokens, sessionKeys.tokens.nonce);

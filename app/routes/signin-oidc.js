@@ -32,8 +32,9 @@ export const signinRouteHandlers = [
           .options({
             stripUnknown: true,
           }),
-        async failAction(request, h, err) {
-          request.logger.setBindings({ error: err.message });
+        async failAction(request, h, error) {
+          // TODO - find an alternative to setBindings
+          request.logger.error({ error: error.message });
           // TODO - track this exception
 
           return h

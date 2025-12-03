@@ -105,17 +105,18 @@ const postHandler = {
             "string.pattern.base": "URN must only include letters a to z, numbers and a hyphen",
           }),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const { typeOfLivestock, typeOfReview, reviewTestResults, dateOfVisit } = getSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
         );
         const { isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview);
         const errorMessage =
-          err.details[0].message === ENTER_THE_URN && isBeefOrDairyEndemics
+          error.details[0].message === ENTER_THE_URN && isBeefOrDairyEndemics
             ? "Enter the URN or certificate number"
-            : err.details[0].message;
+            : error.details[0].message;
+
         return h
           .view(claimViews.testUrn, {
             ...request.payload,

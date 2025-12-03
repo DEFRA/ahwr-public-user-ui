@@ -61,8 +61,8 @@ const postHandler = {
       payload: Joi.object({
         vetVisitsReviewTestResults: Joi.string().valid("positive", "negative").required(),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const { typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
         const positiveNegativeRadios = radios(
           "",

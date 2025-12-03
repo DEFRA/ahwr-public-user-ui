@@ -22,13 +22,15 @@ export const preApplyHandler = async (request, h) => {
       await setSessionEntry(request, sessionEntryKeys.application, application);
     }
 
+    // TODO - find an alternative to setBindings
     request.logger.setBindings({ sbi: organisation.sbi });
 
     if (application?.status === "AGREED" && !application.redacted) {
       // TODO - event needs tracking here
-      request.logger.setBindings({
+      request.logger.error({
         error: "User attempted to use apply journey despite already having an agreed agreement.",
       });
+
       return h.redirect(dashboardRoutes.manageYourClaims).takeover();
     }
   }

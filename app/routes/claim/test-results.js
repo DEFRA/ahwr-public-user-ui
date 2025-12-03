@@ -82,8 +82,8 @@ const postHandler = {
       payload: Joi.object({
         testResults: Joi.string().valid("positive", "negative").required(),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const positiveNegativeRadios = radios(
           pageTitle(request),
           "testResults",

@@ -27,14 +27,14 @@ describe("Retrieve apim access token", () => {
 
     wreck.post = jest.fn().mockResolvedValueOnce(wreckResponse);
 
-    const request = { logger: { setBindings: jest.fn(), info: jest.fn() } };
+    const request = { logger: { error: jest.fn(), info: jest.fn() } };
     const result = await retrieveApimAccessToken(request);
 
     expect(result).toMatch(`${tokenType} ${token}`);
   });
 
   test("when retrieveApimAccessToken called for second time - wreck not used as cache was present", async () => {
-    const request = { logger: { setBindings: jest.fn(), info: jest.fn() } };
+    const request = { logger: { error: jest.fn(), info: jest.fn() } };
     const result = await retrieveApimAccessToken(request);
 
     expect(result).toMatch("Bearer access-token");
@@ -53,7 +53,7 @@ describe("Retrieve apim access token", () => {
 
     wreck.post = jest.fn().mockRejectedValueOnce(wreckResponse);
 
-    const request = { logger: { setBindings: jest.fn(), info: jest.fn() } };
+    const request = { logger: { error: jest.fn(), info: jest.fn() } };
     await expect(async () => await retrieveApimAccessToken(request)).rejects.toEqual(wreckResponse);
   });
 });

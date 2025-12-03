@@ -40,7 +40,7 @@ export const verifyState = (request) => {
 
     return decodedState.id === savedState.id;
   } else {
-    request.logger.setBindings({ err: request.query.error });
+    request.logger.error({ error: request.query.error });
     return false;
   }
 };

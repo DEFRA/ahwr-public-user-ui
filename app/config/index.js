@@ -4,8 +4,13 @@ import {
   applicationApiConfigSchema,
 } from "../api-requests/application-api.config.js";
 
-const threeDaysInMs = 1000 * 3600 * 24 * 3;
-const oneYearInMs = 1000 * 60 * 60 * 24 * 365;
+const SECONDS_IN_HOUR = 3600;
+const HOURS_IN_DAY = 24;
+const DAYS_IN_YEAR = 365;
+const MS_IN_SECOND = 1000;
+const THREE = 3;
+const threeDaysInMs = MS_IN_SECOND * SECONDS_IN_HOUR * HOURS_IN_DAY * THREE;
+const oneYearInMs = MS_IN_SECOND * SECONDS_IN_HOUR * HOURS_IN_DAY * DAYS_IN_YEAR;
 
 export const getConfig = () => {
   const schema = joi.object({
@@ -89,7 +94,7 @@ export const getConfig = () => {
     awsRegion: joi.string().required(),
   });
 
-  const config = {
+  const builtConfig = {
     namespace: process.env.NAMESPACE,
     cache: {
       expiresIn: threeDaysInMs,
@@ -174,7 +179,7 @@ export const getConfig = () => {
     awsRegion: process.env.AWS_REGION,
   };
 
-  const { error } = schema.validate(config, {
+  const { error } = schema.validate(builtConfig, {
     abortEarly: false,
   });
 
@@ -182,7 +187,7 @@ export const getConfig = () => {
     throw new Error(`The server config is invalid. ${error.message}`);
   }
 
-  return config;
+  return builtConfig;
 };
 
 export const config = getConfig();

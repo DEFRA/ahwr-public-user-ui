@@ -94,6 +94,7 @@ export const declarationRouteHandlers = [
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
         const { reference: tempApplicationReference } = farmerApplyData;
 
+        // TODO - find an alternative to setBindings
         request.logger.setBindings({
           tempApplicationReference,
           sbi: organisation.sbi,
@@ -106,6 +107,7 @@ export const declarationRouteHandlers = [
           request.logger,
         );
 
+        // TODO - find an alternative to setBindings
         request.logger.setBindings({ applicationReference });
 
         if (applicationReference) {
