@@ -37,7 +37,7 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
     return payload;
   } catch (error) {
     const statusCode = error?.output?.statusCode;
-    if (statusCode && statusCode === StatusCodes.NOT_FOUND) {
+    if (statusCode === StatusCodes.NOT_FOUND) {
       return [];
     }
 
