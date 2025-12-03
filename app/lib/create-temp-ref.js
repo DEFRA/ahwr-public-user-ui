@@ -7,7 +7,7 @@ const containsSwearWord = (input) => {
   return profanity.exists(input);
 };
 
-export const createTempReference = ({ referenceForClaim } = { referenceForClaim: false }) => {
+export const createTempReference = ({ referenceForClaim }) => {
   const charset = "ABCDEFGHIJKLMNPQRSTUVWXYZ123456789";
   const id = Array.from({ length: 8 }, () => charset.charAt(randomInt(0, charset.length))).join("");
   const firstFour = id.slice(0, 4);

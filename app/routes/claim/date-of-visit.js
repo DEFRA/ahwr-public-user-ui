@@ -70,6 +70,18 @@ export const previousPageUrl = (
   return claimRoutes.whichTypeOfReview;
 };
 
+const buildErrorSummary = ({ errorMessage, href, inputsInError }) => {
+  return {
+    errorSummary: [
+      {
+        text: errorMessage,
+        href,
+      },
+    ],
+    inputsInError,
+  };
+};
+
 const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   const dateSchema = joi
     .object({
@@ -97,15 +109,11 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
 
   if (inputKeysInError.length > 0) {
     const inputNameInError = inputKeysInError[0];
-    return {
-      errorSummary: [
-        {
-          text: `Enter the date of ${reviewOrFollowUpText}`,
-          href: `#${inputNameInError}`,
-        },
-      ],
+    return buildErrorSummary({
+      errorMessage: `Enter the date of ${reviewOrFollowUpText}`,
+      href: `#${inputNameInError}`,
       inputsInError,
-    };
+    });
   }
 
   const [day, month, year] = Object.values(request.payload);
@@ -113,44 +121,32 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   const visitDateDayHref = "#visit-date-day";
 
   if (!dateEnteredIsValid) {
-    return {
-      errorSummary: [
-        {
-          text: `The date of ${reviewOrFollowUpText} must be a real date`,
-          href: visitDateDayHref,
-        },
-      ],
+    return buildErrorSummary({
+      errorMessage: `The date of ${reviewOrFollowUpText} must be a real date`,
+      href: visitDateDayHref,
       inputsInError: { day: true, month: true, year: true },
-    };
+    });
   }
 
   const now = new Date();
   const dateOfVisit = new Date(year, month - 1, day);
 
   if (dateOfVisit > now) {
-    return {
-      errorSummary: [
-        {
-          text: `The date of ${reviewOrFollowUpText} must be today or in the past`,
-          href: visitDateDayHref,
-        },
-      ],
+    return buildErrorSummary({
+      errorMessage: `The date of ${reviewOrFollowUpText} must be today or in the past`,
+      href: visitDateDayHref,
       inputsInError: { day: true, month: true, year: true },
-    };
+    });
   }
 
   const applicationCreatedTime = new Date(newWorldApplication.createdAt).setHours(0, 0, 0, 0);
 
   if (applicationCreatedTime > dateOfVisit.getTime()) {
-    return {
-      errorSummary: [
-        {
-          text: `The date of ${reviewOrFollowUpText} must be the same as or after the date of your agreement`,
-          href: visitDateDayHref,
-        },
-      ],
+    return buildErrorSummary({
+      errorMessage: `The date of ${reviewOrFollowUpText} must be the same as or after the date of your agreement`,
+      href: visitDateDayHref,
       inputsInError: { day: true, month: true, year: true },
-    };
+    });
   }
 
   return {

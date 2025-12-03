@@ -26,7 +26,7 @@ export const viewContextPlugin = {
           ctx.serviceName = serviceName;
           ctx.serviceUrl = serviceUrl;
           ctx.serviceUri = serviceUri;
-          ctx.customerSurveyUri = getSurveyUri(request, path, method, customerSurvey);
+          ctx.customerSurveyUri = getSurveyUri(request, path, method);
           ctx.userIsSignedIn = request.auth.isAuthenticated;
           ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS;
           ctx.dashboardLink = dashboardRoutes.manageYourClaims;
@@ -40,7 +40,7 @@ export const viewContextPlugin = {
   },
 };
 
-function getSurveyUri(request, currentPath, currentMethod, customerSurvey) {
+function getSurveyUri(request, currentPath, currentMethod) {
   if (currentPath === applyRoutes.declaration && currentMethod === "post") {
     return customerSurvey.applyUri;
   }

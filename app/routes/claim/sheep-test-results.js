@@ -270,6 +270,8 @@ const newDiseaseInTheListValidation = (payload) => {
         testResult: { value: payload.testResult[lastIndex] },
       };
     }
+  } else {
+    newPayloadData = payload;
   }
 
   return { newPayloadData, newDiseaseTypeErrorMessage };

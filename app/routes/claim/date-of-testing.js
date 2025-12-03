@@ -19,7 +19,6 @@ import {
   isMultipleHerdsUserJourney,
   isVisitDateAfterPIHuntAndDairyGoLive,
   getHerdBackLink,
-  isWithin4MonthsBeforeOrAfterDateOfVisit,
 } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
@@ -360,9 +359,9 @@ const postHandler = {
               request.payload[`${onAnotherDateInputId}-day`],
             );
 
-      if (!isWithin4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
-        // TODO - raise an invalid data event here
-      }
+      // if (!isWithin4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
+      // TODO - raise an invalid data event here
+      // }
 
       const reviewHerdId = getReviewHerdId({ herdId, tempHerdId });
       const previousReviewClaim = getReviewWithinLast10Months(
