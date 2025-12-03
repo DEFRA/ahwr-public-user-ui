@@ -12,7 +12,20 @@ jest.mock("ioredis", () => ({
   })),
 }));
 
-jest.mock("../../../../app/logging/logger.js");
+jest.mock("../../../../app/logging/logger.js", () => ({
+  getLogger: jest.fn(),
+}));
+jest.mock("../../../../app/config/index.js", () => ({
+  config: {
+    cache: {
+      options: {
+        host: "test-host",
+        keyPrefix: "test-keyprefix",
+        useSingleInstanceCache: true,
+      },
+    },
+  },
+}));
 
 describe("buildRedisClient", () => {
   let mockLogger;
@@ -28,9 +41,9 @@ describe("buildRedisClient", () => {
 
     expect(Redis).toHaveBeenCalledWith({
       port: 6379,
-      host: "redis-hostname.default",
+      host: "test-host",
       db: 0,
-      keyPrefix: "ahwr-public-user-ui",
+      keyPrefix: "test-keyprefix",
     });
 
     expect(Cluster).not.toHaveBeenCalled();
@@ -43,9 +56,9 @@ describe("buildRedisClient", () => {
     const client = buildRedisClient();
 
     expect(Cluster).toHaveBeenCalledWith(
-      [{ host: "redis-hostname.default", port: 6379 }],
+      [{ host: "test-host", port: 6379 }],
       expect.objectContaining({
-        keyPrefix: "ahwr-public-user-ui",
+        keyPrefix: "test-keyprefix",
         slotsRefreshTimeout: 10000,
         dnsLookup: expect.any(Function),
         redisOptions: expect.objectContaining({ db: 0 }),
