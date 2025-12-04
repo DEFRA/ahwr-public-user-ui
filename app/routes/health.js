@@ -1,3 +1,5 @@
+import { StatusCodes } from "http-status-codes";
+
 export const healthHandlers = [
   {
     method: "GET",
@@ -9,7 +11,7 @@ export const healthHandlers = [
       },
     },
     handler: (_request, h) => {
-      return h.response("ok").code(200);
+      return h.response("ok").code(StatusCodes.OK);
     },
   },
 ];

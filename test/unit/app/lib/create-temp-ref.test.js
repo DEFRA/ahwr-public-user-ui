@@ -2,7 +2,7 @@ import { createTempReference } from "../../../../app/lib/create-temp-ref.js";
 
 describe("createTempReference for apply references", () => {
   test("should return a string temp reference", () => {
-    const tempRef = createTempReference();
+    const tempRef = createTempReference({ referenceForClaim: false });
 
     expect(typeof tempRef).toBe("string");
     // A-Z excluding O, and 1-9
@@ -15,7 +15,7 @@ describe("createTempReference for apply references", () => {
     const numberToCreate = 20000;
 
     for (let index = 0; index < numberToCreate; index++) {
-      ids.push(createTempReference());
+      ids.push(createTempReference({ referenceForClaim: false }));
     }
 
     expect(ids.length).toEqual(numberToCreate);

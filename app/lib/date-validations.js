@@ -23,7 +23,9 @@ const isYearEmpty = (helpers, namePrefix) =>
   helpers.state.ancestors[0][`${namePrefix}-year`] === "";
 const isMonthEmpty = (helpers, namePrefix) =>
   helpers.state.ancestors[0][`${namePrefix}-month`] === "";
-const isLeapYear = (year) => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+const LEAP_YEAR_DIVISIBLE_FOUR_HUNDRED = 400;
+const isLeapYear = (year) =>
+  (year % 4 === 0 && year % 100 !== 0) || year % LEAP_YEAR_DIVISIBLE_FOUR_HUNDRED === 0;
 
 export const validateDateInputDay = (namePrefix, dateName) => {
   return Joi.when(`${namePrefix}-day`, {

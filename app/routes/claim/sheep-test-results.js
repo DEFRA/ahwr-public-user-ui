@@ -217,50 +217,59 @@ const newDiseaseTypeErrorMessageContinue = (
   };
 };
 const newDiseaseInTheListValidation = (payload) => {
-  let newDiseaseTypeErrorMessage;
-  let newPayloadData = payload;
   const lastIndex = payload.diseaseType.length - 1;
-  const diseaseTypeValidationError = fieldValidator(DISEASE_TYPE_ELEMENT_ID).validate(
+
+  const diseaseError = fieldValidator(DISEASE_TYPE_ELEMENT_ID).validate(
     `${payload.diseaseType[lastIndex]}`,
   )?.error?.details[0]?.message;
-  const testResultValidationError = fieldValidator(TEST_RESULT_ELEMENT_ID).validate(
+
+  const resultError = fieldValidator(TEST_RESULT_ELEMENT_ID).validate(
     `${payload.testResult[lastIndex]}`,
   )?.error?.details[0]?.message;
 
-  if (diseaseTypeValidationError || testResultValidationError) {
+  let newDiseaseTypeErrorMessage;
+  let newPayloadData = payload;
+
+  const hasValidationError = diseaseError || resultError;
+  const isDuplicate = payload.diseaseType
+    .slice(0, lastIndex)
+    .includes(payload.diseaseType[lastIndex]);
+
+  if (hasValidationError) {
     newPayloadData = {
       ...payload,
       diseaseType: payload.diseaseType.slice(0, lastIndex),
       testResult: payload.testResult.slice(0, lastIndex),
     };
 
-    if (!payload?.delete && payload?.submitButton === "addAnother") {
+    if (!payload.delete && payload.submitButton === "addAnother") {
       newDiseaseTypeErrorMessage = newDiseaseTypeErrorMessageAddAnother(
         payload,
-        diseaseTypeValidationError,
-        testResultValidationError,
+        diseaseError,
+        resultError,
         lastIndex,
       );
     }
+
     if (
-      payload?.submitButton === "continue" &&
+      payload.submitButton === "continue" &&
       (payload.diseaseType[lastIndex] || payload.testResult[lastIndex])
     ) {
       newDiseaseTypeErrorMessage = newDiseaseTypeErrorMessageContinue(
         payload,
-        diseaseTypeValidationError,
-        testResultValidationError,
+        diseaseError,
+        resultError,
         lastIndex,
       );
     }
-  } else if (payload.diseaseType.slice(0, lastIndex).includes(payload.diseaseType[lastIndex])) {
+  } else if (isDuplicate) {
     newPayloadData = {
       ...payload,
       diseaseType: payload.diseaseType.slice(0, lastIndex),
       testResult: payload.testResult.slice(0, lastIndex),
     };
 
-    if (!payload?.delete) {
+    if (!payload.delete) {
       newDiseaseTypeErrorMessage = {
         diseaseType: {
           value: payload.diseaseType[lastIndex],
@@ -270,10 +279,13 @@ const newDiseaseInTheListValidation = (payload) => {
         testResult: { value: payload.testResult[lastIndex] },
       };
     }
+  } else {
+    // Intentionally left blank - fixing Sonar complaint
   }
 
   return { newPayloadData, newDiseaseTypeErrorMessage };
 };
+
 
 const getDiseaseTypeErrorMessage = (diseaseTypeEmptyItems, duplicateItems) => {
   let diseaseTypeErrorList;

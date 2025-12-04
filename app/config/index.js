@@ -12,88 +12,88 @@ const THREE = 3;
 const threeDaysInMs = MS_IN_SECOND * SECONDS_IN_HOUR * HOURS_IN_DAY * THREE;
 const oneYearInMs = MS_IN_SECOND * SECONDS_IN_HOUR * HOURS_IN_DAY * DAYS_IN_YEAR;
 
-export const getConfig = () => {
-  const schema = joi.object({
-    namespace: joi.string().optional(),
-    cache: {
-      expiresIn: joi.number().required(),
-      options: {
-        host: joi.string(),
-        keyPrefix: joi.string(),
-        username: joi.string().allow(""),
-        password: joi.string().allow(""),
-        useSingleInstanceCache: joi.boolean(),
-        useTLS: joi.boolean(),
-      },
+const configSchema = joi.object({
+  namespace: joi.string().optional(),
+  cache: {
+    expiresIn: joi.number().required(),
+    options: {
+      host: joi.string(),
+      keyPrefix: joi.string(),
+      username: joi.string().allow(""),
+      password: joi.string().allow(""),
+      useSingleInstanceCache: joi.boolean(),
+      useTLS: joi.boolean(),
     },
-    cookie: {
-      cookieNameCookiePolicy: joi.string(),
-      cookieNameAuth: joi.string(),
-      cookieNameSession: joi.string(),
-      isSameSite: [joi.string(), joi.bool()],
-      isSecure: joi.boolean(),
-      password: joi.string().min(32).required(),
-      ttl: joi.number().required(),
-    },
-    cookiePolicy: {
-      clearInvalid: joi.bool(),
-      encoding: joi.string().valid("base64json"),
-      isSameSite: [joi.string(), joi.bool()],
-      isSecure: joi.bool(),
-      password: joi.string().min(32).required(),
-      path: joi.string().default("/"),
-      ttl: joi.number().required(),
-    },
-    env: joi.string().valid("development", "test", "production").default("development"),
-    displayPageSize: joi.number().required(),
-    googleTagManagerKey: joi.string().allow(null, ""),
-    isDev: joi.boolean(),
-    applicationApiUri: joi.string().uri(),
-    port: joi.number().required(),
+  },
+  cookie: {
+    cookieNameCookiePolicy: joi.string(),
+    cookieNameAuth: joi.string(),
+    cookieNameSession: joi.string(),
+    isSameSite: [joi.string(), joi.bool()],
+    isSecure: joi.boolean(),
+    password: joi.string().min(32).required(),
+    ttl: joi.number().required(),
+  },
+  cookiePolicy: {
+    clearInvalid: joi.bool(),
+    encoding: joi.string().valid("base64json"),
+    isSameSite: [joi.string(), joi.bool()],
+    isSecure: joi.bool(),
+    password: joi.string().min(32).required(),
+    path: joi.string().default("/"),
+    ttl: joi.number().required(),
+  },
+  env: joi.string().valid("development", "test", "production").default("development"),
+  displayPageSize: joi.number().required(),
+  googleTagManagerKey: joi.string().allow(null, ""),
+  isDev: joi.boolean(),
+  applicationApiUri: joi.string().uri(),
+  port: joi.number().required(),
+  host: joi.string().required(),
+  proxy: joi.string().optional(),
+  serviceUri: joi.string().uri(),
+  serviceName: joi.string(),
+  useRedis: joi.boolean(),
+  customerSurvey: {
+    claimUri: joi.string().uri().required(),
+    applyUri: joi.string().uri().required(),
+  },
+  applicationApi: applicationApiConfigSchema,
+  wreckHttp: {
+    timeoutMilliseconds: joi.number().required(),
+  },
+  multiSpecies: joi.object({
+    releaseDate: joi.string().required(),
+  }),
+  devLogin: {
+    enabled: joi.bool().required(),
+  },
+  latestTermsAndConditionsUri: joi.string().required(),
+  reapplyTimeLimitMonths: joi.number(),
+  multiHerds: joi.object({
+    releaseDate: joi.string().required(),
+  }),
+  privacyPolicyUri: joi.string().uri(),
+  lfsUpdate: {
+    enabled: joi.boolean(),
+    uri: joi.string().uri().optional(),
+  },
+  serviceVersion: joi.string().required(),
+  name: joi.string().required(),
+  logLevel: joi.string().required(),
+  logFormat: joi.string().required(),
+  logRedact: joi.array().items(joi.string()),
+  fcpMessaging: joi.object({
     host: joi.string().required(),
-    proxy: joi.string().optional(),
-    serviceUri: joi.string().uri(),
-    serviceName: joi.string(),
-    useRedis: joi.boolean(),
-    customerSurvey: {
-      claimUri: joi.string().uri().required(),
-      applyUri: joi.string().uri().required(),
-    },
-    applicationApi: applicationApiConfigSchema,
-    wreckHttp: {
-      timeoutMilliseconds: joi.number().required(),
-    },
-    multiSpecies: joi.object({
-      releaseDate: joi.string().required(),
-    }),
-    devLogin: {
-      enabled: joi.bool().required(),
-    },
-    latestTermsAndConditionsUri: joi.string().required(),
-    reapplyTimeLimitMonths: joi.number(),
-    multiHerds: joi.object({
-      releaseDate: joi.string().required(),
-    }),
-    privacyPolicyUri: joi.string().uri(),
-    lfsUpdate: {
-      enabled: joi.boolean(),
-      uri: joi.string().uri().optional(),
-    },
-    serviceVersion: joi.string().required(),
-    name: joi.string().required(),
-    logLevel: joi.string().required(),
-    logFormat: joi.string().required(),
-    logRedact: joi.array().items(joi.string()),
-    fcpMessaging: joi.object({
-      host: joi.string().required(),
-      username: joi.string().required(),
-      password: joi.string().required(),
-      address: joi.string().required(),
-    }),
-    documentBucketName: joi.string().required(),
-    awsRegion: joi.string().required(),
-  });
+    username: joi.string().required(),
+    password: joi.string().required(),
+    address: joi.string().required(),
+  }),
+  documentBucketName: joi.string().required(),
+  awsRegion: joi.string().required(),
+});
 
+export const getConfig = () => {
   const builtConfig = {
     namespace: process.env.NAMESPACE,
     cache: {
@@ -179,7 +179,7 @@ export const getConfig = () => {
     awsRegion: process.env.AWS_REGION,
   };
 
-  const { error } = schema.validate(builtConfig, {
+  const { error } = configSchema.validate(builtConfig, {
     abortEarly: false,
   });
 

@@ -19,7 +19,7 @@ export const claimMultipleRouteHandlers = [
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
         // on way in we must generate a new reference
-        const tempApplicationId = createTempReference();
+        const tempApplicationId = createTempReference({ referenceForClaim: false });
 
         await setSessionData(
           request,
