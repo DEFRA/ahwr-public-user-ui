@@ -177,11 +177,11 @@ export const vetVisitsHandlers = [
             )
           : [];
 
-          const vetVisitApplicationsWithinLastTenMonths =
-            latestVetVisitApplication &&
-            isWithin10MonthsFromNow(latestVetVisitApplication.data.visitDate)
-              ? latestVetVisitApplication
-              : undefined;
+        const vetVisitApplicationsWithinLastTenMonths =
+          latestVetVisitApplication &&
+          isWithin10MonthsFromNow(latestVetVisitApplication.data.visitDate)
+            ? latestVetVisitApplication
+            : undefined;
 
         const allClaims = [...claims, vetVisitApplicationsWithinLastTenMonths].filter(Boolean);
         const isOldWorld = !latestEndemicsApplication; // TODO: Can't come in here now unless they have a new world agreement so some concept to retire here

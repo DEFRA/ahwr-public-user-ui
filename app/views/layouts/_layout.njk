@@ -52,10 +52,10 @@
     containerClasses: "govuk-width-container"
   }) }}
 
+  {% set nav = [] %}
+
   {% if userHasAgreement %}
-    {% set nav = [{ "href": dashboardLink, "text": "Manage your claims" }] %}
-  {% else %}
-    {% set nav = [] %}
+    {% set nav = nav.concat([{ "href": dashboardLink, "text": "Manage your claims" }]) %}
   {% endif %}
   
   {% if userIsSignedIn %}
