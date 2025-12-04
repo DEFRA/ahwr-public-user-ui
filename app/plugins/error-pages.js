@@ -6,16 +6,19 @@ export const errorPagesPlugin = {
     register: (server, _) => {
       server.ext("onPreResponse", (request, h) => {
         const { response } = request;
-
+      
         if (response.isBoom) {
-          const { payload } = response.output;
-          const { statusCode, message } = payload;
+          const { statusCode, message } = response.output.payload;
 
-          const error = new Error(message);
-          error.stack = response.data ? response.data.stack : response.stack;
+          const originalError = response instanceof Error ? response : response.data?.error;
+
           request.logger.error({
-            statusCode,
-            error,
+            error: {
+              code: statusCode,
+              message,
+              stack_trace: originalError?.stack,
+              id: request.logger.mixins?.trace?.id,
+            },
           });
 
           if (statusCode === StatusCodes.NOT_FOUND) {
@@ -27,12 +30,12 @@ export const errorPagesPlugin = {
             statusCode >= StatusCodes.BAD_REQUEST &&
             statusCode < StatusCodes.INTERNAL_SERVER_ERROR
           ) {
-            return h.view("error-pages/4xx", { payload }).code(statusCode);
+            return h.view("error-pages/4xx", { payload: response.output.payload }).code(statusCode);
           }
 
           return h.view("error-pages/500").code(statusCode);
         }
-
+      
         return h.continue;
       });
     },
