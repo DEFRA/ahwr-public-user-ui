@@ -222,13 +222,7 @@ export const buildRows = ({
   };
 };
 
-const buildSheepTestResultRows = ({
-  endemicsClaimSession,
-  isEndemicsFollowUp,
-  sheepTestTypes,
-  sheepTestResultsType,
-  claimRoutes,
-}) => {
+const buildSheepTestResultRows = ({ endemicsClaimSession, isEndemicsFollowUp }) => {
   const sheepTests = endemicsClaimSession.sheepTestResults || [];
 
   if (!isEndemicsFollowUp || sheepTests.length === 0) {
@@ -245,7 +239,6 @@ const buildSheepTestResultRows = ({
           result,
           endemicsClaimSession,
           sheepTestTypes,
-          sheepTestResultsType,
         });
 
     return {
@@ -264,13 +257,7 @@ const buildSheepTestResultRows = ({
   });
 };
 
-const buildSingleResultHtml = ({
-  diseaseType,
-  result,
-  endemicsClaimSession,
-  sheepTestTypes,
-  sheepTestResultsType,
-}) => {
+const buildSingleResultHtml = ({ diseaseType, result, endemicsClaimSession, sheepTestTypes }) => {
   const packageKey = endemicsClaimSession.sheepEndemicsPackage;
   const disease = sheepTestTypes[packageKey].find((d) => d.value === diseaseType);
   const resultLabel = sheepTestResultsType[diseaseType].find((r) => r.value === result);
@@ -278,59 +265,51 @@ const buildSingleResultHtml = ({
   return `${disease.text} (${resultLabel.text})`;
 };
 
-export const collateRows = ({
-  vetVisitsReviewTestResultsRow,
-  dateOfVisitRow,
-  isReview,
-  dateOfSamplingRow,
-  speciesNumbersRow,
-  numberOfAnimalsTestedRow,
-  vetDetailsRows,
-  piHuntRow,
-  piHuntRecommendedRow,
-  piHuntAllAnimalsRow,
-  isEndemicsFollowUp,
-  laboratoryUrnRow,
-  testResultsRow,
-  biosecurityAssessmentRow,
-  herdVaccinationStatusRow,
-  oralFluidSamplesRow,
-  samplesTestedRow,
-  endemicsClaimSession,
-  sheepPackageRow,
-  sheepDiseasesTestedRow,
-}) => {
-  const beefRows = [
+export const collateRows = (rows) => {
+  const {
+    vetVisitsReviewTestResultsRow,
+    dateOfVisitRow,
+    isReview,
+    dateOfSamplingRow,
+    speciesNumbersRow,
+    numberOfAnimalsTestedRow,
+    vetDetailsRows,
+    piHuntRow,
+    piHuntRecommendedRow,
+    piHuntAllAnimalsRow,
+    isEndemicsFollowUp,
+    laboratoryUrnRow,
+    testResultsRow,
+    biosecurityAssessmentRow,
+    herdVaccinationStatusRow,
+    oralFluidSamplesRow,
+    samplesTestedRow,
+    endemicsClaimSession,
+    sheepPackageRow,
+    sheepDiseasesTestedRow,
+  } = rows;
+
+  const commonVisitRows = () => [
     vetVisitsReviewTestResultsRow,
     dateOfVisitRow,
     isReview && dateOfSamplingRow,
     speciesNumbersRow,
     numberOfAnimalsTestedRow,
     ...vetDetailsRows,
-    piHuntRow,
-    piHuntRecommendedRow,
-    piHuntAllAnimalsRow,
+  ];
+
+  const piHuntRows = () => [piHuntRow, piHuntRecommendedRow, piHuntAllAnimalsRow];
+
+  const beefRows = [
+    ...commonVisitRows(),
+    ...piHuntRows(),
     isEndemicsFollowUp && dateOfSamplingRow,
     laboratoryUrnRow,
     testResultsRow,
     isEndemicsFollowUp && biosecurityAssessmentRow,
   ];
 
-  const dairyRows = [
-    vetVisitsReviewTestResultsRow,
-    dateOfVisitRow,
-    isReview && dateOfSamplingRow,
-    speciesNumbersRow,
-    numberOfAnimalsTestedRow,
-    ...vetDetailsRows,
-    piHuntRow,
-    piHuntRecommendedRow,
-    piHuntAllAnimalsRow,
-    isEndemicsFollowUp && dateOfSamplingRow,
-    laboratoryUrnRow,
-    testResultsRow,
-    isEndemicsFollowUp && biosecurityAssessmentRow,
-  ];
+  const dairyRows = [...beefRows];
 
   const pigRows = [
     dateOfVisitRow,
@@ -361,9 +340,6 @@ export const collateRows = ({
     ...buildSheepTestResultRows({
       endemicsClaimSession,
       isEndemicsFollowUp,
-      sheepTestTypes,
-      sheepTestResultsType,
-      claimRoutes,
     }),
   ];
 
@@ -419,38 +395,20 @@ export const buildClaimPayload = (endemicsClaimSession) => {
   const {
     typeOfLivestock,
     typeOfReview,
-    dateOfVisit,
     latestEndemicsApplication,
     reference: tempClaimReference,
-    dateOfTesting,
-    speciesNumbers,
-    vetsName,
-    vetRCVSNumber,
-    laboratoryURN,
-    piHunt,
-    piHuntRecommended,
-    piHuntAllAnimals,
-    numberOfOralFluidSamples,
-    numberAnimalsTested,
-    testResults,
-    vetVisitsReviewTestResults,
-    biosecurity,
-    herdVaccinationStatus,
-    diseaseStatus,
-    pigsFollowUpTest,
-    pigsElisaTestResult,
-    pigsPcrTestResult,
-    pigsGeneticSequencing,
-    sheepEndemicsPackage,
-    numberOfSamplesTested,
-    reviewTestResults,
-    sheepTestResults,
     herdId,
     herdVersion,
     herdName,
     herdCph,
     herdReasons,
     herdSame,
+    sheepEndemicsPackage,
+    sheepTestResults,
+    latestVetVisitApplication,
+    ...rest // Contains: dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, piHunt, piHuntRecommended, piHuntAllAnimals
+    // numberOfOralFluidSamples, numberAnimalsTested, testResults, vetVisitsReviewTestResults, biosecurity, herdVaccinationStatus, diseaseStatus
+    // pigsFollowUpTest, pigsElisaTestResult, pigsPcrTestResult, pigsGeneticSequencing, numberOfSamplesTested, reviewTestResults
   } = endemicsClaimSession;
 
   const { isSheep } = getLivestockTypes(typeOfLivestock);
@@ -463,32 +421,15 @@ export const buildClaimPayload = (endemicsClaimSession) => {
     createdBy: "admin",
     data: {
       typeOfLivestock,
-      dateOfVisit,
-      dateOfTesting,
-      speciesNumbers,
-      vetsName,
-      vetRCVSNumber,
-      laboratoryURN,
-      piHunt,
-      piHuntRecommended,
-      piHuntAllAnimals,
-      numberOfOralFluidSamples,
-      numberAnimalsTested,
-      testResults,
-      vetVisitsReviewTestResults,
-      biosecurity,
-      herdVaccinationStatus,
-      diseaseStatus,
-      pigsFollowUpTest,
-      pigsElisaTestResult,
-      pigsPcrTestResult,
-      pigsGeneticSequencing,
+      ...rest,
       sheepEndemicsPackage,
-      numberOfSamplesTested,
-      reviewTestResults,
-      ...getSheepFollowUpTestResults({ isEndemicsFollowUp, isSheep, sheepTestResults }),
+      ...getSheepFollowUpTestResults({
+        isEndemicsFollowUp,
+        isSheep,
+        sheepTestResults,
+      }),
       ...getHerdInformation({
-        dateOfVisit,
+        dateOfVisit: endemicsClaimSession.dateOfVisit,
         latestEndemicsApplication,
         herdId,
         herdName,

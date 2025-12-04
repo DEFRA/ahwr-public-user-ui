@@ -279,6 +279,8 @@ const newDiseaseInTheListValidation = (payload) => {
         testResult: { value: payload.testResult[lastIndex] },
       };
     }
+  } else {
+    // Intentionally left blank - fixing Sonar complaint
   }
 
   return { newPayloadData, newDiseaseTypeErrorMessage };
