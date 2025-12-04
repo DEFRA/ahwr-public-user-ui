@@ -218,7 +218,7 @@ const newDiseaseTypeErrorMessageContinue = (
 };
 const newDiseaseInTheListValidation = (payload) => {
   let newDiseaseTypeErrorMessage;
-  let newPayloadData = payload;
+  let newPayloadData = { ...payload };
   const lastIndex = payload.diseaseType.length - 1;
   const diseaseTypeValidationError = fieldValidator(DISEASE_TYPE_ELEMENT_ID).validate(
     `${payload.diseaseType[lastIndex]}`,
@@ -271,7 +271,7 @@ const newDiseaseInTheListValidation = (payload) => {
       };
     }
   } else {
-    newPayloadData = payload;
+    newPayloadData = { ...payload };
   }
 
   return { newPayloadData, newDiseaseTypeErrorMessage };
