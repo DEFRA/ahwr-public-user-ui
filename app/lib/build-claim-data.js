@@ -1,18 +1,18 @@
-import { isMultipleHerdsUserJourney } from "./context-helper";
+import { isMultipleHerdsUserJourney } from "./context-helper.js";
 import {
   formatDate,
   getSpeciesEligibleNumberForDisplay,
   getVaccinationStatusForDisplay,
   upperFirstLetter,
-} from "./display-helpers";
+} from "./display-helpers.js";
 import { claimRoutes } from "../constants/routes.js";
 import {
   sheepPackages,
   sheepTestResultsType,
   sheepTestTypes,
 } from "../constants/claim-constants.js";
-import { generatePigStatusAnswerRows } from "./generate-answer-rows";
-import { getLivestockTypes, getReviewType } from "./utils";
+import { generatePigStatusAnswerRows } from "./generate-answer-rows.js";
+import { getLivestockTypes, getReviewType } from "./utils.js";
 
 const createdHerdRowObject = (keyText, htmlValue, href, visuallyHiddenText) => {
   return {
