@@ -52,10 +52,14 @@
     containerClasses: "govuk-width-container"
   }) }}
 
-  {% set nav = [] %}
-
+  {% if userHasAgreement %}
+    {% set nav = [{ "href": dashboardLink, "text": "Manage your claims" }] %}
+  {% else %}
+    {% set nav = [] %}
+  {% endif %}
+  
   {% if userIsSignedIn %}
-    {% set nav = [{ href: "/sign-out", text: 'Sign out' }] %}
+    {% set nav = nav.concat([{ href: "/sign-out", text: 'Sign out' }]) %}
   {% endif %}
 
   {{ govukServiceNavigation({
