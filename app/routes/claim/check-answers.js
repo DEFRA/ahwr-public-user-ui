@@ -9,7 +9,12 @@ import { upperFirstLetter } from "../../lib/display-helpers.js";
 import { getLivestockTypes, getReviewType } from "../../lib/utils.js";
 import { submitNewClaim } from "../../api-requests/claim-api.js";
 import { isMultipleHerdsUserJourney } from "../../lib/context-helper.js";
-import { buildClaimPayload, buildRows, collateRows } from "../../lib/build-claim-data.js";
+import {
+  buildClaimPayload,
+  buildRows,
+  buildVetTestandPiHuntRows,
+  collateRows,
+} from "../../lib/build-claim-data.js";
 
 const getBackLink = (isReview, isSheep) => {
   if (isReview) {
@@ -77,11 +82,14 @@ const getHandler = {
         isEndemicsFollowUp,
       });
 
+      const testVetAndPiRows = buildVetTestandPiHuntRows({ endemicsClaimSession, isReview });
+
       const { beefRows, dairyRows, pigRows, sheepRows } = collateRows({
         isReview,
         isEndemicsFollowUp,
         endemicsClaimSession,
         ...builtRows,
+        ...testVetAndPiRows,
       });
 
       const speciesRows = () => {
