@@ -286,7 +286,6 @@ const newDiseaseInTheListValidation = (payload) => {
   return { newPayloadData, newDiseaseTypeErrorMessage };
 };
 
-
 const getDiseaseTypeErrorMessage = (diseaseTypeEmptyItems, duplicateItems) => {
   let diseaseTypeErrorList;
 

@@ -28,6 +28,7 @@ export const viewContextPlugin = {
           ctx.serviceUri = serviceUri;
           ctx.customerSurveyUri = getSurveyUri(request, path, method);
           ctx.userIsSignedIn = request.auth.isAuthenticated;
+          ctx.userHasAgreement = getUserHasAgreement(request);
           ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS;
           ctx.dashboardLink = dashboardRoutes.manageYourClaims;
 
@@ -52,3 +53,12 @@ function getSurveyUri(request, currentPath, currentMethod) {
     ? customerSurvey.claimUri
     : customerSurvey.applyUri;
 }
+
+const getUserHasAgreement = (request) => {
+  const latestEndemicsApplication = getSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+    sessionKeys.endemicsClaim.latestEndemicsApplication,
+  );
+  return Boolean(latestEndemicsApplication);
+};
