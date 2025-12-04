@@ -238,7 +238,6 @@ const buildSheepTestResultRows = ({ endemicsClaimSession, isEndemicsFollowUp }) 
           diseaseType,
           result,
           endemicsClaimSession,
-          sheepTestTypes,
         });
 
     return {
@@ -257,7 +256,7 @@ const buildSheepTestResultRows = ({ endemicsClaimSession, isEndemicsFollowUp }) 
   });
 };
 
-const buildSingleResultHtml = ({ diseaseType, result, endemicsClaimSession, sheepTestTypes }) => {
+const buildSingleResultHtml = ({ diseaseType, result, endemicsClaimSession }) => {
   const packageKey = endemicsClaimSession.sheepEndemicsPackage;
   const disease = sheepTestTypes[packageKey].find((d) => d.value === diseaseType);
   const resultLabel = sheepTestResultsType[diseaseType].find((r) => r.value === result);
