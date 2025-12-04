@@ -13,12 +13,12 @@ export const errorPagesPlugin = {
           const originalError = response instanceof Error ? response : response.data?.error;
 
           request.logger.error({
-            statusCode,
-            message,
-            stack: originalError?.stack,
-            url: request.url.pathname,
-            method: request.method,
-            trace: request.logger.mixins?.trace?.id,
+            error: {
+              code: statusCode,
+              message,
+              stack_trace: originalError?.stack,
+              id: request.logger.mixins?.trace?.id,
+            },
           });
 
           if (statusCode === StatusCodes.NOT_FOUND) {
