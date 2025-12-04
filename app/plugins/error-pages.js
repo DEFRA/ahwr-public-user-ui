@@ -6,7 +6,7 @@ export const errorPagesPlugin = {
     register: (server, _) => {
       server.ext("onPreResponse", (request, h) => {
         const { response } = request;
-      
+
         if (response.isBoom) {
           const { statusCode, message } = response.output.payload;
 
@@ -39,7 +39,7 @@ export const errorPagesPlugin = {
 
           return h.view("error-pages/500").code(statusCode);
         }
-      
+
         return h.continue;
       });
     },

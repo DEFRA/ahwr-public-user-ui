@@ -137,12 +137,16 @@ const buildTableHeaders = () => {
 };
 
 const getOrRefreshApplications = async (request, sbi) => {
-  let data = getSessionData(request, sessionEntryKeys.endemicsClaim);
-  if (!data.latestEndemicsApplication) {
-    await refreshApplications(sbi, request);
-    data = getSessionData(request, sessionEntryKeys.endemicsClaim);
+  const { latestEndemicsApplication, latestVetVisitApplication } = getSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+  );
+
+  if (!latestEndemicsApplication) {
+    return refreshApplications(sbi, request);
   }
-  return data;
+
+  return { latestEndemicsApplication, latestVetVisitApplication };
 };
 
 export const vetVisitsHandlers = [
