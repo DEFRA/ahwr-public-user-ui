@@ -57,6 +57,7 @@ const postHandler = {
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.pigsPcrTestResult,
+        pcrResult,
       );
 
       if (pcrResult === claimConstants.result.positive) {
