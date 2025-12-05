@@ -414,8 +414,6 @@ export const buildClaimPayload = (endemicsClaimSession) => {
     // pigsFollowUpTest, pigsElisaTestResult, pigsPcrTestResult, pigsGeneticSequencing, numberOfSamplesTested, reviewTestResults
   } = endemicsClaimSession;
 
-  console.log(rest);
-
   const { isSheep } = getLivestockTypes(typeOfLivestock);
   const { isEndemicsFollowUp } = getReviewType(typeOfReview);
 
