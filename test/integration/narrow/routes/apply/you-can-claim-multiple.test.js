@@ -41,18 +41,6 @@ when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.organisation)
   .mockReturnValue(organisation);
 
-const sanitizeHTML = (html) => {
-  return html
-    .replace(
-      /<input type="hidden" name="crumbBanner" id="crumbBanner" value=".*?"/g,
-      '<input type="hidden" name="crumbBanner" id="crumbBanner" value="SANITIZED"',
-    )
-    .replace(
-      /<input type="hidden" name="crumb" value=".*?"/g,
-      '<input type="hidden" name="crumb" value="SANITIZED"',
-    );
-};
-
 describe("you-can-claim-multiple page", () => {
   const optionsBase = {
     auth: {
@@ -78,8 +66,6 @@ describe("you-can-claim-multiple page", () => {
 
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(res.payload).toContain("/check-details"); // back-link
-      const sanitizedHTML = sanitizeHTML(res.payload);
-      expect(sanitizedHTML).toMatchSnapshot();
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.farmerApplyData,

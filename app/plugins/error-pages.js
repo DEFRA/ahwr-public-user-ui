@@ -11,15 +11,19 @@ export const errorPagesPlugin = {
           const { statusCode, message } = response.output.payload;
 
           const originalError = response instanceof Error ? response : response.data?.error;
+          const firstLineOfError = originalError?.stack.split("\n")[0] ?? message;
 
-          request.logger.error({
-            error: {
-              code: statusCode,
-              message,
-              stack_trace: originalError?.stack,
-              id: request.logger.mixins?.trace?.id,
+          request.logger.error(
+            {
+              error: {
+                code: statusCode,
+                message,
+                stack_trace: originalError?.stack,
+                id: request.logger.mixins?.trace?.id,
+              },
             },
-          });
+            firstLineOfError,
+          );
 
           if (statusCode === StatusCodes.NOT_FOUND) {
             // handled specifically by a route handler that renders a 404 page for unknown pages. This allows us to still track which user it is
