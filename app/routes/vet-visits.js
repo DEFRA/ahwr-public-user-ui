@@ -13,6 +13,7 @@ import {
 import { isWithin10MonthsFromNow } from "../lib/utils.js";
 import { claimRoutes } from "../constants/routes.js";
 import { SHEEP } from "../constants/claim-constants.js";
+import { refreshApplications } from "../lib/context-helper.js";
 
 const { latestTermsAndConditionsUri } = config;
 
@@ -135,6 +136,19 @@ const buildTableHeaders = () => {
   return { sheepHeaders, nonSheepHeaders };
 };
 
+const getOrRefreshApplications = async (request, sbi) => {
+  const { latestEndemicsApplication, latestVetVisitApplication } = getSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+  );
+
+  if (!latestEndemicsApplication) {
+    return refreshApplications(sbi, request);
+  }
+
+  return { latestEndemicsApplication, latestVetVisitApplication };
+};
+
 export const vetVisitsHandlers = [
   {
     method: "GET",
@@ -152,10 +166,8 @@ export const vetVisitsHandlers = [
           sessionKeys.customer.attachedToMultipleBusinesses,
         );
 
-        const { latestEndemicsApplication, latestVetVisitApplication } = getSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-        );
+        const { latestEndemicsApplication, latestVetVisitApplication } =
+          await getOrRefreshApplications(request, organisation.sbi);
 
         if (!latestEndemicsApplication) {
           throw new Error(

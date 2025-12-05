@@ -13,6 +13,7 @@ jest.mock("../../../../app/api-requests/claim-api.js");
 jest.mock("../../../../app/auth/auth-code-grant/request-authorization-code-url.js", () => ({
   requestAuthorizationCodeUrl: jest.fn().mockReturnValue("auth-code-url"),
 }));
+jest.mock("../../../../app/lib/context-helper.js");
 
 test("get /vet-visits: no agreement throws an error", async () => {
   const server = await createServer();
