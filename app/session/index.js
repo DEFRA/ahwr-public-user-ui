@@ -182,12 +182,12 @@ export function clearEndemicsClaim(request) {
   const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
   const retained = {
-    [sessionKeys.endemicsClaim.organisation]: organisation,
     [sessionKeys.endemicsClaim.latestVetVisitApplication]: endemicsClaim?.latestVetVisitApplication,
     [sessionKeys.endemicsClaim.latestEndemicsApplication]: endemicsClaim?.latestEndemicsApplication,
   };
 
   request.yar.set(sessionEntryKeys.endemicsClaim, retained);
+  request.yar.set(sessionEntryKeys.organisation, organisation);
 }
 
 export const removeMultipleHerdsSessionData = (request) => {

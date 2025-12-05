@@ -405,6 +405,10 @@ export const buildClaimPayload = (endemicsClaimSession) => {
     sheepEndemicsPackage,
     sheepTestResults,
     latestVetVisitApplication,
+    previousClaims,
+    isOnlyHerdOnSbi,
+    herds,
+    tempHerdId,
     ...rest // Contains: dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, piHunt, piHuntRecommended, piHuntAllAnimals
     // numberOfOralFluidSamples, numberAnimalsTested, testResults, vetVisitsReviewTestResults, biosecurity, herdVaccinationStatus, diseaseStatus
     // pigsFollowUpTest, pigsElisaTestResult, pigsPcrTestResult, pigsGeneticSequencing, numberOfSamplesTested, reviewTestResults
