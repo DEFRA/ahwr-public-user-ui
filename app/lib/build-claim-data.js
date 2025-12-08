@@ -390,8 +390,8 @@ const getHerdInformation = ({
   return {};
 };
 
-// NOSONAR
 export const buildClaimPayload = (endemicsClaimSession) => {
+  // NOSONAR
   const {
     typeOfLivestock,
     typeOfReview,
