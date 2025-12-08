@@ -78,7 +78,7 @@ export const previousPageUrl = (request) => {
   const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isNegative, isPositive } = getTestResult(endemicsClaimSession.reviewTestResults);
   const { isBeef, isDairy, isPigs } = getLivestockTypes(endemicsClaimSession.typeOfLivestock);
-  const dateOfVisit = endemicsClaimSession.date;
+  const dateOfVisit = endemicsClaimSession.dateOfVisit;
 
   if ((isBeef || isDairy) && isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)) {
     return getBeefOrDairyPage(endemicsClaimSession, isNegative, isPositive);
