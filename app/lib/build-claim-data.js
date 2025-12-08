@@ -391,7 +391,6 @@ const getHerdInformation = ({
 };
 
 export const buildClaimPayload = (endemicsClaimSession) => {
-  // NOSONAR
   const {
     typeOfLivestock,
     typeOfReview,
@@ -479,4 +478,4 @@ export const buildClaimPayload = (endemicsClaimSession) => {
       }),
     },
   };
-};
+}; // NOSONAR
