@@ -394,7 +394,9 @@ export const buildClaimPayload = (endemicsClaimSession) => {
   const {
     typeOfLivestock,
     typeOfReview,
+    dateOfVisit,
     latestEndemicsApplication,
+    sheepTestResults,
     reference: tempClaimReference,
     herdId,
     herdVersion,
@@ -402,16 +404,6 @@ export const buildClaimPayload = (endemicsClaimSession) => {
     herdCph,
     herdReasons,
     herdSame,
-    sheepEndemicsPackage,
-    sheepTestResults,
-    latestVetVisitApplication,
-    previousClaims,
-    isOnlyHerdOnSbi,
-    herds,
-    tempHerdId,
-    ...rest // Contains: dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, piHunt, piHuntRecommended, piHuntAllAnimals
-    // numberOfOralFluidSamples, numberAnimalsTested, testResults, vetVisitsReviewTestResults, biosecurity, herdVaccinationStatus, diseaseStatus
-    // pigsFollowUpTest, pigsElisaTestResult, pigsPcrTestResult, pigsGeneticSequencing, numberOfSamplesTested, reviewTestResults
   } = endemicsClaimSession;
 
   const { isSheep } = getLivestockTypes(typeOfLivestock);
@@ -423,16 +415,37 @@ export const buildClaimPayload = (endemicsClaimSession) => {
     type: typeOfReview,
     createdBy: "admin",
     data: {
-      typeOfLivestock,
-      ...rest,
-      sheepEndemicsPackage,
+      typeOfLivestock: endemicsClaimSession.typeOfLivestock,
+      dateOfVisit: endemicsClaimSession.dateOfVisit,
+      dateOfTesting: endemicsClaimSession.dateOfTesting,
+      speciesNumbers: endemicsClaimSession.speciesNumbers,
+      vetsName: endemicsClaimSession.vetsName,
+      vetRCVSNumber: endemicsClaimSession.vetRCVSNumber,
+      laboratoryURN: endemicsClaimSession.laboratoryURN,
+      piHunt: endemicsClaimSession.piHunt,
+      piHuntRecommended: endemicsClaimSession.piHuntRecommended,
+      piHuntAllAnimals: endemicsClaimSession.piHuntAllAnimals,
+      numberOfOralFluidSamples: endemicsClaimSession.numberOfOralFluidSamples,
+      numberAnimalsTested: endemicsClaimSession.numberAnimalsTested,
+      testResults: endemicsClaimSession.testResults,
+      vetVisitsReviewTestResults: endemicsClaimSession.vetVisitsReviewTestResults,
+      biosecurity: endemicsClaimSession.biosecurity,
+      herdVaccinationStatus: endemicsClaimSession.herdVaccinationStatus,
+      diseaseStatus: endemicsClaimSession.diseaseStatus,
+      pigsFollowUpTest: endemicsClaimSession.pigsFollowUpTest,
+      pigsElisaTestResult: endemicsClaimSession.pigsElisaTestResult,
+      pigsPcrTestResult: endemicsClaimSession.pigsPcrTestResult,
+      pigsGeneticSequencing: endemicsClaimSession.pigsGeneticSequencing,
+      sheepEndemicsPackage: endemicsClaimSession.sheepEndemicsPackage,
+      numberOfSamplesTested: endemicsClaimSession.numberOfSamplesTested,
+      reviewTestResults: endemicsClaimSession.reviewTestResults,
       ...getSheepFollowUpTestResults({
         isEndemicsFollowUp,
         isSheep,
         sheepTestResults,
       }),
       ...getHerdInformation({
-        dateOfVisit: endemicsClaimSession.dateOfVisit,
+        dateOfVisit,
         latestEndemicsApplication,
         herdId,
         herdName,

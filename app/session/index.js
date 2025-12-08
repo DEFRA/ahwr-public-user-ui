@@ -216,7 +216,6 @@ export function removeSessionDataForSelectHerdChange(request) {
   const endemicsSessionKeys = sessionKeys.endemicsClaim;
 
   const remadeSession = {
-    [endemicsSessionKeys.organisation]: organisation,
     [endemicsSessionKeys.latestVetVisitApplication]: endClSession?.latestVetVisitApplication,
     [endemicsSessionKeys.latestEndemicsApplication]: endClSession?.latestEndemicsApplication,
     [endemicsSessionKeys.previousClaims]: endClSession?.previousClaims,
@@ -230,6 +229,7 @@ export function removeSessionDataForSelectHerdChange(request) {
   };
 
   request.yar.set(sessionEntryKeys.endemicsClaim, remadeSession);
+  request.yar.set(sessionEntryKeys.organisation, organisation);
 
   return { originalSession: endClSession, remadeSession };
 }
