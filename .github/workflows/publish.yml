@@ -36,6 +36,15 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Notify Test Repo
+        if: success()
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.UI_TESTS_PAT }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/DEFRA/ahwr-ui-tests/dispatches \
+            -d '{"event_type": "run-tests", "client_payload": {"repo": "ahwr-public-user-ui"}}'
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.3.1
         continue-on-error: true
