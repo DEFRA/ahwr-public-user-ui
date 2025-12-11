@@ -52,6 +52,7 @@ import { vetRCVSHandlers } from "../routes/claim/vet-rcvs.js";
 import { vetVisitsReviewTestResultsHandlers } from "../routes/claim/vet-visits-review-test-results.js";
 import { whichSpeciesHandlers } from "../routes/claim/which-species.js";
 import { whichReviewHandlers } from "../routes/claim/which-type-of-review.js";
+import { connectHandlers } from "../routes/connect.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
@@ -108,6 +109,7 @@ const alwaysOnRoutes = [
   vetVisitsReviewTestResultsHandlers,
   whichSpeciesHandlers,
   whichReviewHandlers,
+  connectHandlers
 ].flat();
 
 let routes;
