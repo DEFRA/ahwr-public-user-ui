@@ -14,7 +14,7 @@ export const connectHandlers = [
       },
     },
     handler: async (request, h) => {
-      request.logger.info(`Retrieving an APIM access token from ${`${authConfig.apim.hostname}${authConfig.apim.oAuthPath}`}`);
+      request.logger.info(`Retrieving an APIM access token from ${authConfig.apim.hostname}${authConfig.apim.oAuthPath}`);
       const apimAccessToken = await fetchNewToken();
       request.logger.info(`Checking connectivity to ${authConfig.ruralPaymentsAgency.hostname}${authConfig.ruralPaymentsAgency.getPersonSummaryUrl}`);
       await getPersonSummary({ apimAccessToken, crn: '123abc', logger: request.logger, defraIdAccessToken: 'no-defra-id-token' })
