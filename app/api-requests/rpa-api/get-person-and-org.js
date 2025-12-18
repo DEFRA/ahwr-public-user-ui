@@ -7,7 +7,7 @@ import {
 } from "../../session/index.js";
 import { getCphNumbers } from "./cph-numbers.js";
 import {
-  detailOrganisationRoles,
+  getOrganisationRole,
   getOrganisation,
   getOrganisationAuthorisation,
   organisationHasPermission,
@@ -94,7 +94,11 @@ export const getPersonAndOrg = async ({ request, apimAccessToken, crn, logger, a
     personId: personSummary.id,
   });
 
-  detailOrganisationRoles({ organisationAuthorisation, personId: personSummary.id, logger });
+  const personRole = getOrganisationRole({
+    organisationAuthorisation,
+    personId: personSummary.id,
+    logger,
+  });
 
   await setSessionData(
     request,
@@ -112,6 +116,7 @@ export const getPersonAndOrg = async ({ request, apimAccessToken, crn, logger, a
       },
     },
     personSummary,
+    personRole,
   };
 
   await setOrganisationSessionData(

@@ -31,6 +31,7 @@ const mockOrgAndPerson = {
     name: "Farmer Tom",
     email: "farmertomstestemail@test.com.test",
   },
+  personRole: "Farmer",
 };
 
 jest.mock("../../../../app/auth/auth-code-grant/request-authorization-code-url", () => ({
@@ -68,9 +69,7 @@ const getEncodedTestState = async (server, { invalid } = { invalid: false }) => 
       id: randomUUID(),
       source: "dashboard",
     };
-    const differentEncodedState = Buffer.from(JSON.stringify(rawState)).toString("base64");
-
-    return differentEncodedState;
+    return Buffer.from(JSON.stringify(rawState)).toString("base64");
   }
 
   return encodedState;

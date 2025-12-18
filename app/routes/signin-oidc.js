@@ -61,7 +61,7 @@ export const signinRouteHandlers = [
 
           const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
 
-          const { orgDetails, personSummary, cphNumbers } = await getPersonAndOrg({
+          const { orgDetails, personSummary, cphNumbers, personRole } = await getPersonAndOrg({
             request,
             apimAccessToken,
             crn,
@@ -69,7 +69,13 @@ export const signinRouteHandlers = [
             accessToken,
           });
 
-          await updateContactHistory(personSummary, orgDetails.organisation, logger);
+          await updateContactHistory(
+            personSummary,
+            orgDetails.organisation,
+            crn,
+            personRole,
+            logger,
+          );
 
           setAuthCookie(request, personSummary.email, farmerApply);
 
