@@ -32,25 +32,17 @@ export const organisationHasPermission = ({ organisationAuthorisation, personId 
   );
 };
 
-export const detailOrganisationRoles = ({ organisationAuthorisation, personId, logger }) => {
+export const getOrganisationRole = ({ organisationAuthorisation, personId, logger }) => {
   try {
-    organisationAuthorisation.personRoles
-      .map((prEntry) => {
-        return `${prEntry.personId} - ${prEntry.role}`;
-      })
-      .forEach((strRole) => {
-        logger.info(`Found role for this business - ${strRole}`);
-      });
-
-    const ourRole = organisationAuthorisation.personRoles.find((prEntry) => {
+    return organisationAuthorisation.personRoles.find((prEntry) => {
       return prEntry.personId === personId;
     })?.role;
-    logger.info(`I am a ${ourRole}`);
   } catch (error) {
     logger.error(
       { error: { message: error.message, stack: error.stack } },
-      "Error detailing organisation roles",
+      "Error finding organisation roles",
     );
+    return null;
   }
 };
 

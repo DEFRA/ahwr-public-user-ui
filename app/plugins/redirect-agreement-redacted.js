@@ -16,7 +16,6 @@ export const redirectAgreementRedactedPlugin = {
           !request.path.includes("timings") &&
           !request.path.includes("you-can-claim-multiple") &&
           !request.path.includes("health") &&
-          !request.path.includes("connect") &&
           !request.path.includes("cannot-sign-in")
         ) {
           const latestEndemicsApplication = getSessionData(

@@ -20,7 +20,7 @@ function isTokenValid(buffer = 60) {
   return now < tokenCache.expiresAt - bufferSeconds;
 }
 
-export async function fetchNewToken() {
+async function fetchNewToken() {
   const data = new FormData();
   data.append("client_id", String(authConfig.apim.clientId));
   data.append("client_secret", String(authConfig.apim.clientSecret));

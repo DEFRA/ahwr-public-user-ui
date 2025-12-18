@@ -1,7 +1,13 @@
 import Wreck from "@hapi/wreck";
 import { config } from "../config/index.js";
 
-export const updateContactHistory = async (personSummary, organisation, logger) => {
+export const updateContactHistory = async (
+  personSummary,
+  organisation,
+  crn,
+  personRole,
+  logger,
+) => {
   const endpoint = `${config.applicationApiUri}/applications/contact-history`;
 
   const contactHistory = {
@@ -9,6 +15,8 @@ export const updateContactHistory = async (personSummary, organisation, logger) 
     orgEmail: organisation.email,
     email: personSummary.email ?? organisation.email,
     sbi: organisation.sbi,
+    crn,
+    personRole,
     address: organisation.address,
     user: "admin",
   };

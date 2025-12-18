@@ -3,7 +3,7 @@ import { getPersonSummary } from "../../../../../app/api-requests/rpa-api/person
 import {
   getOrganisationAuthorisation,
   getOrganisation,
-  detailOrganisationRoles,
+  getOrganisationRole,
 } from "../../../../../app/api-requests/rpa-api/organisation";
 import {
   setSessionData,
@@ -74,7 +74,7 @@ jest.mock("../../../../../app/api-requests/rpa-api/organisation", () => {
       name: "Unit test org",
       email: "unit@test.email.com.test",
     }),
-    detailOrganisationRoles: jest.fn(),
+    getOrganisationRole: jest.fn().mockReturnValue("Agent"),
   };
 });
 
@@ -118,6 +118,7 @@ describe("getPersonAndOrg", () => {
         name: "Farmer Tom",
         email: "farmertomstestemail@test.com.test",
       },
+      personRole: "Agent",
       cphNumbers: [1, 2, 3],
     });
     expect(getPersonSummary).toHaveBeenCalledWith({
@@ -136,7 +137,7 @@ describe("getPersonAndOrg", () => {
       defraIdAccessToken: "abc123",
       organisationId: accessToken.currentRelationshipId,
     });
-    expect(detailOrganisationRoles).toHaveBeenCalledTimes(1);
+    expect(getOrganisationRole).toHaveBeenCalledTimes(1);
     expect(setSessionData).toHaveBeenCalledWith(
       request,
       sessionEntryKeys.customer,

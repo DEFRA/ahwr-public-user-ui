@@ -5,6 +5,7 @@ export async function testWreckApiFunction({
   method,
   endpoint,
   args = [],
+  errorLogItems = [],
   outboundPayload,
   returnPayload,
   logger,
@@ -18,7 +19,7 @@ export async function testWreckApiFunction({
   if (method === "get") {
     expect(Wreck.get).toHaveBeenCalledWith(endpoint, { json: true });
   } else {
-    expect(Wreck.post).toHaveBeenCalledWith(endpoint, {
+    expect(Wreck[method]).toHaveBeenCalledWith(endpoint, {
       payload: outboundPayload,
       json: true,
     });
@@ -36,11 +37,11 @@ export async function testWreckApiFunction({
   if (method === "get") {
     expect(Wreck.get).toHaveBeenCalledWith(endpoint, { json: true });
   } else {
-    expect(Wreck.post).toHaveBeenCalledWith(endpoint, {
+    expect(Wreck[method]).toHaveBeenCalledWith(endpoint, {
       payload: outboundPayload,
       json: true,
     });
   }
 
-  expect(logger.error).toHaveBeenCalledWith({ error: expectedError });
+  expect(logger.error).toHaveBeenCalledWith({ ...errorLogItems, error: expectedError });
 }
