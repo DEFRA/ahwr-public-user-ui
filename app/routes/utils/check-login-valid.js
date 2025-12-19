@@ -134,7 +134,7 @@ const returnErrorRouting = async ({ h, error, organisation, request, crn }) => {
     ),
   );
 
-  setSessionForErrorPage({
+  await setSessionForErrorPage({
     request,
     error,
     hasMultipleBusinesses,
