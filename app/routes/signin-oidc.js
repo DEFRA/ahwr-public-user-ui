@@ -69,14 +69,6 @@ export const signinRouteHandlers = [
             accessToken,
           });
 
-          await updateContactHistory(
-            personSummary,
-            orgDetails.organisation,
-            crn,
-            personRole,
-            logger,
-          );
-
           setAuthCookie(request, personSummary.email, farmerApply);
 
           const { redirectPath, redirectCallback } = await checkLoginValid({
@@ -91,6 +83,14 @@ export const signinRouteHandlers = [
           if (redirectCallback) {
             return redirectCallback;
           }
+
+          await updateContactHistory(
+            personSummary,
+            orgDetails.organisation,
+            crn,
+            personRole,
+            logger,
+          );
 
           // TODO - track this event
 
