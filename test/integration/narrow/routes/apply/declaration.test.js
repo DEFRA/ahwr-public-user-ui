@@ -6,6 +6,8 @@ import {
   clearApplyRedirect,
   getSessionData,
   sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
 } from "../../../../../app/session/index.js";
 import { createServer } from "../../../../../app/server";
 import { StatusCodes } from "http-status-codes";
@@ -144,6 +146,13 @@ describe("Declaration test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(StatusCodes.OK);
+      // Asserting a new reference has been set in the session
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.farmerApplyData,
+        sessionKeys.farmerApplyData.reference,
+        expect.any(String),
+      );
       const $ = cheerio.load(res.payload);
       expect($("title").text()).toMatch(
         "Agreement offer rejected - Get funding to improve animal health and welfare",

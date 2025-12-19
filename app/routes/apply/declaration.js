@@ -12,6 +12,7 @@ import { applyRoutes, applyViews } from "../../constants/routes.js";
 import { StatusCodes } from "http-status-codes";
 import { preApplyHandler } from "../../lib/pre-apply-handler.js";
 import { createApplication } from "../../api-requests/application-api.js";
+import { createTempReference } from "../../lib/create-temp-ref.js";
 
 const resetFarmerApplyDataBeforeApplication = (application) => {
   delete application.agreeSpeciesNumbers;
@@ -123,6 +124,19 @@ export const declarationRouteHandlers = [
         }
 
         if (request.payload.offerStatus === "rejected") {
+          // create new tempApplicationId as the current one has been used to create a rejected application
+          const tempApplicationId = createTempReference({ referenceForClaim: false });
+
+          // TODO - find an alternative to setBindings
+          request.logger.setBindings({ newTempApplicationId: tempApplicationId });
+
+          await setSessionData(
+            request,
+            sessionEntryKeys.farmerApplyData,
+            sessionKeys.farmerApplyData.reference,
+            tempApplicationId,
+          );
+
           return h.view(applyViews.offerRejected, {
             offerRejected: true,
           });
