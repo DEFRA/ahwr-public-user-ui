@@ -80,6 +80,10 @@ export const signinRouteHandlers = [
             personSummary,
           });
 
+          if (redirectCallback) {
+            return redirectCallback;
+          }
+
           await updateContactHistory(
             personSummary,
             orgDetails.organisation,
@@ -87,10 +91,6 @@ export const signinRouteHandlers = [
             personRole,
             logger,
           );
-
-          if (redirectCallback) {
-            return redirectCallback;
-          }
 
           // TODO - track this event
 
