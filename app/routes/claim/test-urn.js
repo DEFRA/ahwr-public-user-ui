@@ -10,6 +10,7 @@ import HttpStatus from "http-status-codes";
 import { getEndemicsClaimDetails, getTestResult } from "../../lib/utils.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { isURNUnique } from "../../api-requests/claim-api.js";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const ENTER_THE_URN = "Enter the URN";
 const MAX_URN_LENGTH = 50;
@@ -151,8 +152,12 @@ const postHandler = {
       );
 
       if (!response?.isURNUnique) {
-        // TODO: raise invalid data event here
-        // raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.laboratoryURN,
+          exception: "urnReference entered is not unique",
+        });
+
         return h
           .view(claimViews.testUrnException, {
             backLink: claimRoutes.testUrn,

@@ -3,11 +3,10 @@ import { createServer } from "../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../app/session");
-// jest.mock('../../../../../app/event/raise-invalid-data-event')
-
-// raiseInvalidDataEvent.mockResolvedValue({})
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 
 describe("Which type of review test", () => {
   const url = `/which-type-of-review`;
@@ -270,7 +269,7 @@ describe("Which type of review test", () => {
         "FOLLOW_UP",
       );
       expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-      // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'typeOfReview', 'Cannot claim for endemics without a previous review.')
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
 
     test("user is redirected to exception page when they select endemics and they dont have a review for that species (they have an old world application but different species)", async () => {
@@ -324,7 +323,7 @@ describe("Which type of review test", () => {
         "FOLLOW_UP",
       );
       expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-      // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'typeOfReview', 'Cannot claim for endemics without a previous review.')
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
 
     test("Returns 400 and redirects to error page for dairy follow-up when optionalPiHunt flag is false", async () => {

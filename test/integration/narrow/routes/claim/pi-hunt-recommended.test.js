@@ -4,9 +4,11 @@ import { getSessionData, setSessionData } from "../../../../../app/session/index
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { getAmount } from "ffc-ahwr-common-library";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("ffc-ahwr-common-library");
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 
 const auth = { credentials: {}, strategy: "cookie" };
 const url = "/pi-hunt-recommended";
@@ -20,7 +22,6 @@ describe("PI Hunt recommended tests", () => {
     getSessionData.mockImplementation(() => {
       return { reference: "TEMP-6GSE-PIR8" };
     });
-    setSessionData.mockImplementation(() => {});
   });
 
   afterAll(async () => {
@@ -80,6 +81,7 @@ describe("PI Hunt recommended tests", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location.toString()).toEqual(`/sign-in`);
     });
+
     test("Continue to eligible page if user select yes", async () => {
       const options = {
         method: "POST",
@@ -95,6 +97,7 @@ describe("PI Hunt recommended tests", () => {
       expect(res.headers.location).toEqual("/pi-hunt-all-animals");
       expect(setSessionData).toHaveBeenCalled();
     });
+
     test("Continue to ineligible page if user select no", async () => {
       const options = {
         method: "POST",
@@ -110,7 +113,9 @@ describe("PI Hunt recommended tests", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-heading-l").text()).toMatch("There could be a problem with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
+
     test("shows error when payload is invalid", async () => {
       const options = {
         method: "POST",

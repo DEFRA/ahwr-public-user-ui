@@ -11,6 +11,7 @@ import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../lib/context-helper.j
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const getHandler = {
   method: "GET",
@@ -84,8 +85,12 @@ const postHandler = {
         answer,
       );
 
-      if (answer === "no") {
-        // TODO - raise invalid data event
+      if (answer !== "yes") {
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.piHunt,
+          exception: `Value '${answer}' is not equal to required value yes`,
+        });
 
         if (isFollowUpOfNewWorldReview(relevantReviewForEndemics) && answer !== previousAnswer) {
           clearPiHuntSessionOnChange(request, "piHunt");

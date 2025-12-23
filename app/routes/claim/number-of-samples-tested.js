@@ -8,6 +8,7 @@ import {
 import { thresholds, claimConstants } from "../../constants/claim-constants.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const getHandler = {
   method: "GET",
@@ -81,10 +82,12 @@ const postHandler = {
           : thresholds.negativeReviewNumberOfSamplesTested;
 
       if (numberOfSamplesTested !== threshold) {
-        request.logger.info(
-          `Value ${numberOfSamplesTested} is not equal to required value ${threshold}`,
-        );
-        // TODO - raise invalid data event
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.numberOfSamplesTested,
+          exception: `Value ${numberOfSamplesTested} is not equal to required value ${threshold}`,
+        });
+
         return h
           .view(claimViews.numberOfSamplesTestedException, {
             backLink: claimRoutes.numberOfSamplesTested,

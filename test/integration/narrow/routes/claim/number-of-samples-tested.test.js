@@ -3,9 +3,10 @@ import { createServer } from "../../../../../app/server.js";
 import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session/index.js");
-// jest.mock('../../../../../app/event/raise-invalid-data-event')
 
 const auth = { credentials: {}, strategy: "cookie" };
 const url = "/number-of-samples-tested";
@@ -14,7 +15,6 @@ describe("Number of samples tested test", () => {
   let server;
 
   beforeAll(async () => {
-    // raiseInvalidDataEvent.mockImplementation(() => {})
     setSessionData.mockImplementation(() => {});
     getSessionData.mockImplementation(() => {
       return { typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" };
@@ -152,7 +152,7 @@ describe("Number of samples tested test", () => {
         expect(res.statusCode).toBe(400);
         const $ = cheerio.load(res.payload);
         expect($("h1").text()).toMatch("You cannot continue with your claim");
-        // expect(raiseInvalidDataEvent).toHaveBeenCalled()
+        expect(sendInvalidDataEvent).toHaveBeenCalled()
       },
     );
 

@@ -9,7 +9,9 @@ import {
 } from "../../../../../app/lib/context-helper.js";
 import HttpStatus from "http-status-codes";
 import { getSessionData } from "../../../../../app/session/index.js";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session");
 jest.mock("../../../../../app/lib/context-helper.js", () => ({
   ...jest.requireActual("../../../../../app/lib/context-helper.js"),
@@ -244,46 +246,47 @@ describe("Date of testing", () => {
 
       expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual("/species-numbers");
-      // expect(raiseInvalidDataEvent).toHaveBeenCalledTimes(0)
+      expect(sendInvalidDataEvent).toHaveBeenCalledTimes(0);
     });
 
-    // test('should emit an invalid event when the date of visit is over 4 months away from the date of testing', async () => {
-    //   getSessionData
-    //     .mockImplementationOnce(() => ({
-    //       dateOfVisit: '2024-01-01',
-    //       typeOfReview: 'FOLLOW_UP',
-    //       typeOfLivestock: 'sheep',
-    //       previousClaims: [{
-    //         type: 'REVIEW',
-    //         data: {
-    //           typeOfLivestock: 'beef',
-    //           dateOfVisit: '2024-01-01',
-    //           testResults: 'negative'
-    //         }
-    //       }]
-    //     }))
-    //   const options = {
-    //     method: 'POST',
-    //     url,
-    //     payload: {
-    //       crumb,
-    //       whenTestingWasCarriedOut: 'onAnotherDate',
-    //       dateOfVisit: '2024-01-01',
-    //       dateOfAgreementAccepted: '2022-01-01',
-    //       'on-another-date-day': '01',
-    //       'on-another-date-month': '01',
-    //       'on-another-date-year': '2023'
-    //     },
-    //     auth,
-    //     headers: { cookie: `crumb=${crumb}` }
-    //   }
-    //
-    //   const res = await server.inject(options)
-    //
-    //   expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfTesting', expect.stringContaining('is outside of the recommended 4 month period from the date of visit 2024-01-01'))
-    //   expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY)
-    //   expect(res.headers.location).toEqual('/species-numbers')
-    // })
+    test("should emit an invalid event when the date of visit is over 4 months away from the date of testing", async () => {
+      getSessionData.mockImplementationOnce(() => ({
+        dateOfVisit: "2024-01-01",
+        typeOfReview: "FOLLOW_UP",
+        typeOfLivestock: "sheep",
+        previousClaims: [
+          {
+            type: "REVIEW",
+            data: {
+              typeOfLivestock: "beef",
+              dateOfVisit: "2024-01-01",
+              testResults: "negative",
+            },
+          },
+        ],
+      }));
+      const options = {
+        method: "POST",
+        url,
+        payload: {
+          crumb,
+          whenTestingWasCarriedOut: "onAnotherDate",
+          dateOfVisit: "2024-01-01",
+          dateOfAgreementAccepted: "2022-01-01",
+          "on-another-date-day": "01",
+          "on-another-date-month": "01",
+          "on-another-date-year": "2023",
+        },
+        auth,
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      const res = await server.inject(options);
+
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
+      expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
+      expect(res.headers.location).toEqual("/species-numbers");
+    });
 
     test("should redirect to date of testing exception when endemics claim and previous review claim of same species with date of testing less than date of visit", async () => {
       getSessionData.mockRestore();
@@ -323,7 +326,7 @@ describe("Date of testing", () => {
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      // expect(raiseInvalidDataEvent).toHaveBeenCalledTimes(1)
+      expect(sendInvalidDataEvent).toHaveBeenCalledTimes(1);
       expect($(".govuk-body").text()).toContain(
         "You must do a review, including sampling, before you do the resulting follow-up.",
       );

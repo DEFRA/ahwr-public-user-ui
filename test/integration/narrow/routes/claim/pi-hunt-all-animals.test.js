@@ -9,9 +9,11 @@ import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { getAmount } from "ffc-ahwr-common-library";
 import { when } from "jest-when";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("ffc-ahwr-common-library");
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 
 const auth = { credentials: {}, strategy: "cookie" };
 const url = "/pi-hunt-all-animals";
@@ -139,6 +141,7 @@ describe("PI Hunt recommended tests", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-heading-l").text()).toMatch("There could be a problem with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
 
     test("Continue to ineligible page if user selects no and show correct content with positive review test result", async () => {
@@ -160,6 +163,7 @@ describe("PI Hunt recommended tests", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-heading-l").text()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
 
     test("shows error when payload is invalid", async () => {

@@ -13,6 +13,7 @@ import { getHerdOrFlock } from "../../lib/display-helpers.js";
 import { getNextMultipleHerdsPage } from "../../lib/get-next-multiple-herds-page.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { getClaimInfo } from "../utils/get-claim-info.js";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const getHandler = {
   method: "GET",
@@ -109,7 +110,11 @@ const postHandler = {
         });
 
         if (errorMessage) {
-          // TODO - raise invalid data event
+          await sendInvalidDataEvent({
+            request,
+            sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+            exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
+          });
 
           return h
             .view(claimViews.sameHerdException, {
@@ -126,7 +131,11 @@ const postHandler = {
       }
 
       if (herdSame === "no" && isEndemicsFollowUp) {
-        // TODO - raise invalid data event
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.typeOfReview,
+          exception: "Cannot claim for endemics without a previous review.",
+        });
 
         return h
           .view(claimViews.sameHerdException, {

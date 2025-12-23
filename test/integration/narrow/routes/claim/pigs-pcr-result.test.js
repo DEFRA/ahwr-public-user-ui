@@ -5,7 +5,6 @@ import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 
 jest.mock("../../../../../app/session/index.js");
-// jest.mock('../../../../../app/event/raise-invalid-data-event')
 
 describe("pigs pcr result test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
@@ -14,7 +13,6 @@ describe("pigs pcr result test", () => {
   let server;
 
   beforeAll(async () => {
-    // raiseInvalidDataEvent.mockImplementation(() => {})
     setSessionData.mockImplementation(() => {});
     getSessionData.mockImplementation(() => {
       return { typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" };

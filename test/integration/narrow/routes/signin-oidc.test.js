@@ -8,6 +8,8 @@ import * as personAndOrgModule from "../../../../app/api-requests/rpa-api/get-pe
 import * as checkLoginValidModule from "../../../../app/routes/utils/check-login-valid";
 import * as cphCheckModule from "../../../../app/api-requests/rpa-api/cph-check";
 
+jest.mock("../../../../app/messaging/ineligibility-event-emission");
+
 jest.mock("../../../../app/session/index.js", () => ({
   ...jest.requireActual("../../../../app/session/index.js"),
   setFarmerApplyData: jest.fn(),

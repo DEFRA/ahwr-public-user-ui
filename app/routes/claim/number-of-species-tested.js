@@ -10,6 +10,7 @@ import { getReviewType, getLivestockTypes } from "../../lib/utils.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const getTheQuestionText = (typeOfLivestock, typeOfReview) => {
   const { isReview } = getReviewType(typeOfReview);
@@ -130,7 +131,11 @@ const postHandler = {
           .takeover();
       }
       if (isPigs && isEndemicsFollowUp) {
-        // TODO - raise invalid data event
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.numberAnimalsTested,
+          exception: `Value ${numberAnimalsTested} is not equal to required value ${threshold} for ${typeOfLivestock}`,
+        });
 
         return h
           .view(claimViews.numberOfSpeciesPigsException, {
@@ -142,7 +147,11 @@ const postHandler = {
       }
 
       if (isSheep) {
-        // TODO - raise invalid data event
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.numberAnimalsTested,
+          exception: `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`,
+        });
 
         return h
           .view(claimViews.numberOfSpeciesSheepException, {
@@ -153,7 +162,11 @@ const postHandler = {
           .takeover();
       }
 
-      // TODO - raise invalid data event
+      await sendInvalidDataEvent({
+        request,
+        sessionKey: sessionKeys.endemicsClaim.numberAnimalsTested,
+        exception: `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`,
+      });
 
       return h
         .view(claimViews.numberOfSpeciesException, {

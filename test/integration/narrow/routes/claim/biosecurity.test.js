@@ -3,8 +3,9 @@ import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../app/lib/context-helper.js";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
-// jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/lib/context-helper.js");
 
@@ -25,7 +26,6 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
   beforeAll(async () => {
     server = await createServer();
     await server.initialize();
-    // raiseInvalidDataEvent.mockImplementation(() => { })
     setSessionData.mockImplementation(() => {});
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
       return false;
@@ -242,7 +242,7 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
 
       expect(response.statusCode).toBe(400);
       expect($("h1").text()).toMatch("You cannot continue with your claim");
-      // expect(raiseInvalidDataEvent).toHaveBeenCalled()
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
     test("continue without providing biosecurity", async () => {
       const options = {

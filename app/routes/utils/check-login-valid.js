@@ -8,6 +8,7 @@ import {
 } from "../../session/index.js";
 import { getRedirectPath } from "./get-redirect-path.js";
 import { refreshApplications } from "../../lib/context-helper.js";
+import { sendIneligibilityEvent } from "../../messaging/ineligibility-event-emission.js";
 
 export const setSessionForErrorPage = async ({
   request,
@@ -124,7 +125,13 @@ export const checkLoginValid = async ({
 };
 
 const returnErrorRouting = async ({ h, error, organisation, request, crn }) => {
-  // raise an ineligibility event here
+  await sendIneligibilityEvent({
+    sessionId: request.yar.id,
+    sbi: organisation.sbi,
+    email: organisation.sbi,
+    crn,
+    exception: error,
+  });
 
   const hasMultipleBusinesses = Boolean(
     getSessionData(

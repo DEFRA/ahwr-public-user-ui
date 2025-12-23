@@ -10,11 +10,12 @@ import {
 } from "../../../../../app/session/index.js";
 import { canMakeClaim } from "../../../../../app/lib/can-make-claim.js";
 import { when } from "jest-when";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/api-requests/claim-api");
 jest.mock("../../../../../app/lib/can-make-claim.js");
-// jest.mock('../../../../../app/event/raise-invalid-data-event.js')
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js")
 
 describe("select-the-herd tests", () => {
   const url = `/select-the-herd`;
@@ -1074,7 +1075,7 @@ describe("select-the-herd tests", () => {
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
 
-      // expect(raiseInvalidDataEvent).toBeCalledWith(expect.any(Object), 'dateOfVisit', 'Value 2025-05-01 is invalid. Error: Invalid claim message')
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
       expect($("h1.govuk-heading-l").text().trim()).toBe("You cannot continue with your claim");
       const link = $("h1.govuk-heading-l").nextAll("p.govuk-body").first().find("a.govuk-link");
       expect(link.attr("href")).toBe(

@@ -10,6 +10,7 @@ import { getTestResult, getLivestockTypes } from "../../lib/utils.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
 import { claimConstants, PIGS } from "../../constants/claim-constants.js";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const YES_TO_ASSESSMENT_TEXT = "Select yes if the vet did a biosecurity assessment";
 
@@ -206,7 +207,11 @@ const postHandler = {
       );
 
       if (biosecurity === "no") {
-        // TODO - raise an invalid input event here
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.biosecurity,
+          exception: `Value ${biosecurity} is not equal to required value yes`,
+        });
 
         return h
           .view(claimViews.biosecurityException, { backLink: claimRoutes.biosecurity })

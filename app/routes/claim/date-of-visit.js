@@ -28,6 +28,7 @@ import { getNextMultipleHerdsPage } from "../../lib/get-next-multiple-herds-page
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const labelPrefix = "visit-date-";
 
@@ -268,7 +269,7 @@ const postHandler = {
         dateOfVisit,
       );
 
-      const timingExceptionRedirect = checkForTimingException(h, {
+      const timingExceptionRedirect = await checkForTimingException(h, request, {
         dateOfVisit,
         typeOfLivestock,
         previousClaims,
@@ -334,8 +335,9 @@ const postHandler = {
   },
 };
 
-const checkForTimingException = (
+const checkForTimingException = async (
   h,
+  request,
   { dateOfVisit, typeOfLivestock, previousClaims, isDairy, isEndemicsFollowUp },
 ) => {
   let exception, exceptionView;
@@ -357,7 +359,11 @@ const checkForTimingException = (
   }
 
   if (exception) {
-    // TODO - raise an invalid event here
+    await sendInvalidDataEvent({
+      request,
+      sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+      exception,
+    });
 
     return h
       .view(exceptionView, { backLink: claimRoutes.dateOfVisit })
@@ -393,7 +399,11 @@ const nonMhRouting = async (
     !getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock) &&
     claimsForFirstHerdIfPreMH.length === 0
   ) {
-    // TODO - raise an invalid data event here
+    await sendInvalidDataEvent({
+      request,
+      sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+      exception: "Cannot claim for endemics without a previous review.",
+    });
 
     return h
       .view(claimViews.whichTypeOfReviewException, {
@@ -414,7 +424,11 @@ const nonMhRouting = async (
   });
 
   if (errorMessage) {
-    // TODO - raise an invalid data event here
+    await sendInvalidDataEvent({
+      request,
+      sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+      exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
+    });
 
     return h
       .view(claimViews.dateOfVisitException, {

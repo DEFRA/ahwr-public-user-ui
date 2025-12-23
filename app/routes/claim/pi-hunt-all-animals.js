@@ -11,6 +11,7 @@ import { clearPiHuntSessionOnChange } from "../../lib/clear-pi-hunt-session-on-c
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { getAmount } from "ffc-ahwr-common-library";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const backLink = (reviewTestResults) => {
   const { isPositive } = getTestResult(reviewTestResults);
@@ -104,7 +105,7 @@ const postHandler = {
         piHuntAllAnimals,
       );
 
-      if (piHuntAllAnimals === "no") {
+      if (piHuntAllAnimals !== "yes") {
         const claimPaymentNoPiHunt = getAmount({
           type: typeOfReview,
           typeOfLivestock,
@@ -113,7 +114,12 @@ const postHandler = {
           piHuntAllAnimals: "no",
           dateOfVisit,
         });
-        // TODO - raise invalid data event
+
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.piHuntAllAnimals,
+          exception: `Value ${piHuntAllAnimals} should be yes for PI hunt all cattle tested`,
+        });
 
         if (piHuntAllAnimals !== previousAnswer) {
           clearPiHuntSessionOnChange(request, "piHuntAllAnimals");
