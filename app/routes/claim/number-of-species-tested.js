@@ -96,27 +96,13 @@ const postHandler = {
         request,
         sessionEntryKeys.endemicsClaim,
       );
+
+      const numOfAnimalsTested = Number(numberAnimalsTested);
       const { isPigs, isSheep } = getLivestockTypes(typeOfLivestock);
       const { isEndemicsFollowUp } = getReviewType(typeOfReview);
       const threshold = thresholds.numberOfSpeciesTested[typeOfLivestock][typeOfReview];
-      const isEligible =
-        isPigs && isEndemicsFollowUp
-          ? Number(numberAnimalsTested) === threshold
-          : Number(numberAnimalsTested) >= threshold;
 
-      await setSessionData(
-        request,
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.numberAnimalsTested,
-        numberAnimalsTested,
-      );
-
-      if (isEligible) {
-        return h.redirect(claimRoutes.vetName);
-      }
-
-      // This ought to be moved to the above failAction validation, not live in the main handler
-      if (numberAnimalsTested === "0") {
+      if (numOfAnimalsTested === 0) {
         return h
           .view(claimViews.numberOfSpeciesTested, {
             ...request.payload,
@@ -130,13 +116,35 @@ const postHandler = {
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
       }
-      if (isPigs && isEndemicsFollowUp) {
-        await sendInvalidDataEvent({
-          request,
-          sessionKey: sessionKeys.endemicsClaim.numberAnimalsTested,
-          exception: `Value ${numberAnimalsTested} is not equal to required value ${threshold} for ${typeOfLivestock}`,
-        });
 
+      const isEligible =
+        isPigs && isEndemicsFollowUp
+          ? numOfAnimalsTested === threshold
+          : numOfAnimalsTested >= threshold;
+
+      await setSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.numberAnimalsTested,
+        numberAnimalsTested,
+      );
+
+      if (isEligible) {
+        return h.redirect(claimRoutes.vetName);
+      }
+
+      const exceptionMessage =
+        isPigs && isEndemicsFollowUp
+          ? `Value ${numOfAnimalsTested} is not equal to required value ${threshold} for ${typeOfLivestock}`
+          : `Value ${numOfAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`;
+
+      await sendInvalidDataEvent({
+        request,
+        sessionKey: sessionKeys.endemicsClaim.numberAnimalsTested,
+        exception: exceptionMessage,
+      });
+
+      if (isPigs && isEndemicsFollowUp) {
         return h
           .view(claimViews.numberOfSpeciesPigsException, {
             continueClaimLink: claimRoutes.vetName,
@@ -147,12 +155,6 @@ const postHandler = {
       }
 
       if (isSheep) {
-        await sendInvalidDataEvent({
-          request,
-          sessionKey: sessionKeys.endemicsClaim.numberAnimalsTested,
-          exception: `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`,
-        });
-
         return h
           .view(claimViews.numberOfSpeciesSheepException, {
             continueClaimLink: claimRoutes.vetName,
@@ -162,12 +164,6 @@ const postHandler = {
           .takeover();
       }
 
-      await sendInvalidDataEvent({
-        request,
-        sessionKey: sessionKeys.endemicsClaim.numberAnimalsTested,
-        exception: `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`,
-      });
-
       return h
         .view(claimViews.numberOfSpeciesException, {
           backLink: claimRoutes.numberOfSpeciesTested,
@@ -175,7 +171,8 @@ const postHandler = {
         })
         .code(HttpStatus.BAD_REQUEST)
         .takeover();
-    },
+    }
+    
   },
 };
 

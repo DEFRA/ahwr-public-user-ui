@@ -31,10 +31,9 @@ export const updateContactHistory = async (
   } catch (error) {
     if (error.message.includes("404")) {
       logger.info(`No agreement found to update contact history for CRN: ${crn}`);
-      return;
+    } else {
+      logger.error({ error, endpoint });
+      throw error;
     }
-
-    logger.error({ error, endpoint });
-    throw error;
   }
 };

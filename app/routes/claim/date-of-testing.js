@@ -145,6 +145,15 @@ const getHandler = {
   },
 };
 
+const resolveDateOfTesting = (request, dateOfVisit) =>
+  request.payload.whenTestingWasCarriedOut === "whenTheVetVisitedTheFarmToCarryOutTheReview"
+    ? dateOfVisit
+    : new Date(
+        request.payload[`${onAnotherDateInputId}-year`],
+        request.payload[`${onAnotherDateInputId}-month`] - 1,
+        request.payload[`${onAnotherDateInputId}-day`],
+      );
+
 const postHandler = {
   method: "POST",
   path: "/date-of-testing",
@@ -349,17 +358,11 @@ const postHandler = {
         herdId,
         tempHerdId,
       } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+
       const { isEndemicsFollowUp } = getReviewType(typeOfReview);
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock);
 
-      const dateOfTesting =
-        request.payload.whenTestingWasCarriedOut === "whenTheVetVisitedTheFarmToCarryOutTheReview"
-          ? dateOfVisit
-          : new Date(
-              request.payload[`${onAnotherDateInputId}-year`],
-              request.payload[`${onAnotherDateInputId}-month`] - 1,
-              request.payload[`${onAnotherDateInputId}-day`],
-            );
+      const dateOfTesting = resolveDateOfTesting(request, dateOfVisit);
 
       if (!isWithin4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
         await sendInvalidDataEvent({
@@ -369,28 +372,21 @@ const postHandler = {
         });
       }
 
-      const reviewHerdId = getReviewHerdId({ herdId, tempHerdId });
       const previousReviewClaim = getReviewWithinLast10Months(
         dateOfVisit,
         previousClaims,
         latestVetVisitApplication,
         typeOfLivestock,
-        reviewHerdId,
+        getReviewHerdId({ herdId, tempHerdId }),
       );
 
-      const dateOfTestingBeforePreviousReviewDateOfVisit = previousReviewClaim
-        ? new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit)
-        : false;
-
-      if (
-        typeOfReview === claimType.endemics &&
+      const isDateOfTestingBeforePreviousReview =
         previousReviewClaim &&
-        dateOfTestingBeforePreviousReviewDateOfVisit
-      ) {
+        new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit);
+
+      if (typeOfReview === claimType.endemics && isDateOfTestingBeforePreviousReview) {
         const errorMessage =
           "You must do a review, including sampling, before you do the resulting follow-up.";
-        const errorLink =
-          "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups";
 
         await sendInvalidDataEvent({
           request,
@@ -402,7 +398,8 @@ const postHandler = {
           .view(claimViews.dateOfTestingException, {
             backLink: claimRoutes.dateOfTesting,
             errorMessage,
-            errorLink,
+            errorLink:
+              "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups",
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
