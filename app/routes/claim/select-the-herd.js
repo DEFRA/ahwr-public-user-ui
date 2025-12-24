@@ -14,6 +14,7 @@ import { formatDate, getHerdOrFlock } from "../../lib/display-helpers.js";
 import { getClaimInfo } from "../utils/get-claim-info.js";
 import { getReviewType } from "../../lib/utils.js";
 import { claimType } from "ffc-ahwr-common-library";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const pageUrl = claimRoutes.selectTheHerd;
 
@@ -238,12 +239,11 @@ const postHandler = {
       });
 
       if (errorMessage) {
-        // TODO - raise invalid data event
-        // raiseInvalidDataEvent(
-        //   request,
-        //   dateOfVisitKey,
-        //   `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
-        // );
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+          exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
+        });
 
         return h
           .view(claimViews.selectTheHerdDateException, {

@@ -10,9 +10,10 @@ import {
 } from "../../../../../app/session/index.js";
 import { previousPageUrl } from "../../../../../app/routes/claim/date-of-visit.js";
 import { when } from "jest-when";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../app/session");
-// jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/api-requests/application-api.js");
 
 function expectPageContentOk($, previousPageUrl) {
@@ -60,7 +61,6 @@ describe("GET /date-of-visit handler", () => {
   beforeAll(async () => {
     server = await createServer();
     await server.initialize();
-    // raiseInvalidDataEvent.mockResolvedValue({})
     getSessionData.mockImplementation(() => {
       return {
         latestVetVisitApplication,
@@ -527,7 +527,7 @@ describe("POST /date-of-visit handler", () => {
 
     expect(res.statusCode).toBe(400);
     expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
+    expect(sendInvalidDataEvent).toHaveBeenCalled();
 
     expect(setSessionData).toHaveBeenCalledWith(
       expect.any(Object),
@@ -696,7 +696,7 @@ describe("POST /date-of-visit handler", () => {
 
     expect(res.statusCode).toBe(400);
     expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `User is attempting to claim for MS with a date of visit of ${new Date(2025, 0, 1).toString()} which is before MS was enabled.`)
+    expect(sendInvalidDataEvent).toHaveBeenCalled();
 
     expect(setSessionData).toHaveBeenCalledWith(
       expect.any(Object),
@@ -838,7 +838,7 @@ describe("POST /date-of-visit handler", () => {
 
     expect(res.statusCode).toBe(400);
     expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 2).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
+    expect(sendInvalidDataEvent).toHaveBeenCalled();
 
     expect(setSessionData).toHaveBeenCalledWith(
       expect.any(Object),
@@ -1056,7 +1056,7 @@ describe("POST /date-of-visit handler", () => {
 
     expect(res.statusCode).toBe(400);
     expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `User is attempting to claim for dairy follow-up with a date of visit of ${new Date(2025, 0, 20).toString()} which is before dairy follow-ups was enabled.`)
+    expect(sendInvalidDataEvent).toHaveBeenCalled();
 
     expect(setSessionData).toHaveBeenCalledWith(
       expect.any(Object),
@@ -1133,7 +1133,7 @@ describe("POST /date-of-visit handler", () => {
       "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups",
     );
     expect(link.text()).toBe("There must be at least 10 months between your follow-ups.");
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: There must be at least 10 months between your follow-ups.`)
+    expect(sendInvalidDataEvent).toHaveBeenCalled();
   });
 
   test("user makes an endemics claim within 10 months of a previous endemics claim of a different species, assuming everything else otherwise ok", async () => {
@@ -1269,7 +1269,7 @@ describe("POST /date-of-visit handler", () => {
     expect(mainMessage.text().trim()).toBe(
       "Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.",
     );
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.`)
+    expect(sendInvalidDataEvent).toHaveBeenCalled();
   });
 
   test("user makes an endemics claim and the review is not in READY_TO_PAY status", async () => {

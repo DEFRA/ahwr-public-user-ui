@@ -10,10 +10,11 @@ import {
   setSessionData,
 } from "../../../../../app/session/index.js";
 import { when } from "jest-when";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/api-requests/claim-api");
-// jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/lib/context-helper.js");
 
 const auth = { credentials: {}, strategy: "cookie" };
@@ -323,7 +324,7 @@ describe("Test URN GET", () => {
         expect(res.statusCode).toBe(400);
         expect($("h1").text()).toMatch("You cannot continue with your claim");
         expect($("p").text()).toContain(message);
-        // expect(raiseInvalidDataEvent).toHaveBeenCalled()
+        expect(sendInvalidDataEvent).toHaveBeenCalled();
       },
     );
     test("shows error when payload is invalid", async () => {

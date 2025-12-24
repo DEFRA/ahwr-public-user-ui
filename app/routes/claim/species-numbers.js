@@ -20,6 +20,7 @@ import {
   setSessionData,
 } from "../../session/index.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const backLink = (request) => {
   const {
@@ -208,7 +209,6 @@ const postHandler = {
       );
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock);
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview);
-
       const answer = request.payload[sessionKeys.endemicsClaim.speciesNumbers];
 
       await setSessionData(
@@ -226,8 +226,12 @@ const postHandler = {
         return h.redirect(claimRoutes.numberOfSpeciesTested);
       }
 
-      // TODO: Raise event
-      // raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
+      await sendInvalidDataEvent({
+        request,
+        sessionKey: sessionKeys.endemicsClaim.speciesNumbers,
+        exception: `Value ${answer} is not equal to required value yes`,
+      });
+
       return h
         .view(claimViews.speciesNumbersException, {
           backLink: claimRoutes.speciesNumbers,

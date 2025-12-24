@@ -8,6 +8,7 @@ import {
 import { thresholds } from "../../constants/claim-constants.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const getHandler = {
   method: "GET",
@@ -65,7 +66,11 @@ const postHandler = {
       );
 
       if (numberOfOralFluidSamples < thresholds.minimumNumberFluidOralSamples) {
-        // TODO - raise invalid data event
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.numberOfOralFluidSamples,
+          exception: `Value ${numberOfOralFluidSamples} is less than required threshold ${thresholds.minimumNumberFluidOralSamples}`,
+        });
 
         return h
           .view(claimViews.numberOfFluidOralSamplesException, {

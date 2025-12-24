@@ -10,6 +10,7 @@ import {
 import { getOldWorldClaimFromApplication } from "../../lib/claim-helper.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { BEEF, DAIRY } from "../../constants/claim-constants.js";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const getPreviousAnswer = (typeOfReview) => {
   if (typeOfReview === claimType.review) {
@@ -85,12 +86,11 @@ export const whichReviewHandlers = [
             getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock);
 
           if (!prevReviewClaim) {
-            // TODO: Raise invalid data event
-            // raiseInvalidDataEvent(
-            //   request,
-            //   typeOfReviewKey,
-            //   "Cannot claim for endemics without a previous review.",
-            // );
+            await sendInvalidDataEvent({
+              request,
+              sessionKey: sessionKeys.endemicsClaim.typeOfReview,
+              exception: "Cannot claim for endemics without a previous review.",
+            });
 
             return h
               .view(claimViews.whichTypeOfReviewException, {

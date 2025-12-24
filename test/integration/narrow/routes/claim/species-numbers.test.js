@@ -9,9 +9,10 @@ import {
 } from "../../../../../app/lib/context-helper.js";
 import { StatusCodes } from "http-status-codes";
 import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../app/session/index.js");
-// jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/lib/context-helper.js");
 jest.mock("../../../../../app/lib/context-helper.js", () => ({
   ...jest.requireActual("../../../../../app/lib/context-helper.js"),
@@ -27,7 +28,6 @@ describe("Species numbers page", () => {
   let server;
 
   beforeAll(async () => {
-    // raiseInvalidDataEvent.mockImplementation(() => { })
     setSessionData.mockImplementation(() => {});
     getSessionData.mockImplementation(() => {
       return { typeOfLivestock: "beef" };
@@ -304,7 +304,7 @@ describe("Species numbers page", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("You cannot continue with your claim");
-      // expect(raiseInvalidDataEvent).toHaveBeenCalled()
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
     test("shows error when payload is invalid", async () => {
       getSessionData.mockImplementation(() => {

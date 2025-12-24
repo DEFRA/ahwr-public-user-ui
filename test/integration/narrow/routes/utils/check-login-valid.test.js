@@ -10,10 +10,13 @@ import { customerHasAtLeastOneValidCph } from "../../../../../app/api-requests/r
 import { requestAuthorizationCodeUrl } from "../../../../../app/auth/auth-code-grant/request-authorization-code-url";
 import { when } from "jest-when";
 import { refreshApplications } from "../../../../../app/lib/context-helper.js";
+import { sendIneligibilityEvent } from "../../../../../app/messaging/ineligibility-event-emission";
 
 when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.customer, sessionKeys.customer.crn)
   .mockReturnValue(124);
+
+jest.mock("../../../../../app/messaging/ineligibility-event-emission");
 
 jest.mock("../../../../../app/session", () => {
   const actual = jest.requireActual("../../../../../app/session");
@@ -157,6 +160,7 @@ describe("checkLoginValid", () => {
       error: "Organisation id 111 is locked by RPA",
     });
     expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
+    expect(sendIneligibilityEvent).toHaveBeenCalled();
   });
 
   test("it returns a redirect callback if there is no organisation permission", async () => {
@@ -216,6 +220,7 @@ describe("checkLoginValid", () => {
       error: "Person id 12345 does not have the required permissions for organisation id 111",
     });
     expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
+    expect(sendIneligibilityEvent).toHaveBeenCalled();
   });
 
   test("it returns a redirect callback if there is no valid CPH", async () => {
@@ -276,6 +281,7 @@ describe("checkLoginValid", () => {
       error: "Organisation id 111 has no valid CPH's associated",
     });
     expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
+    expect(sendIneligibilityEvent).toHaveBeenCalled();
   });
 
   test("it returns a redirect callback if there is no valid CPH", async () => {
@@ -337,6 +343,7 @@ describe("checkLoginValid", () => {
     });
     expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
     customerHasAtLeastOneValidCph.mockReturnValue(true);
+    expect(sendIneligibilityEvent).toHaveBeenCalled();
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has no applications", async () => {

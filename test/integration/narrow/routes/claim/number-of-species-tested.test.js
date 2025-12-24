@@ -10,7 +10,9 @@ import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../app/lib/context-helper.js";
 import { when } from "jest-when";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/lib/context-helper.js");
 
@@ -228,7 +230,7 @@ describe("Number of species tested test", () => {
         expect(res.statusCode).toBe(400);
         const $ = cheerio.load(res.payload);
         expect($("h1").text()).toMatch(title);
-        // expect(raiseInvalidDataEvent).toHaveBeenCalled()
+        expect(sendInvalidDataEvent).toHaveBeenCalled();
       },
     );
     test("shows error page when number of animals tested is 0 ", async () => {

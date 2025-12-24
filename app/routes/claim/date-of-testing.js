@@ -19,10 +19,12 @@ import {
   isMultipleHerdsUserJourney,
   isVisitDateAfterPIHuntAndDairyGoLive,
   getHerdBackLink,
+  isWithin4MonthsBeforeOrAfterDateOfVisit,
 } from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
+import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const addError = (error, label, type, href) => {
   if (
@@ -142,6 +144,15 @@ const getHandler = {
     },
   },
 };
+
+const resolveDateOfTesting = (request, dateOfVisit) =>
+  request.payload.whenTestingWasCarriedOut === "whenTheVetVisitedTheFarmToCarryOutTheReview"
+    ? dateOfVisit
+    : new Date(
+        request.payload[`${onAnotherDateInputId}-year`],
+        request.payload[`${onAnotherDateInputId}-month`] - 1,
+        request.payload[`${onAnotherDateInputId}-day`],
+      );
 
 const postHandler = {
   method: "POST",
@@ -347,52 +358,48 @@ const postHandler = {
         herdId,
         tempHerdId,
       } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+
       const { isEndemicsFollowUp } = getReviewType(typeOfReview);
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock);
 
-      const dateOfTesting =
-        request.payload.whenTestingWasCarriedOut === "whenTheVetVisitedTheFarmToCarryOutTheReview"
-          ? dateOfVisit
-          : new Date(
-              request.payload[`${onAnotherDateInputId}-year`],
-              request.payload[`${onAnotherDateInputId}-month`] - 1,
-              request.payload[`${onAnotherDateInputId}-day`],
-            );
+      const dateOfTesting = resolveDateOfTesting(request, dateOfVisit);
 
-      // if (!isWithin4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
-      // TODO - raise an invalid data event here
-      // }
+      if (!isWithin4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.dateOfTesting,
+          exception: `${dateOfTesting} is outside of the recommended 4 month period from the date of visit ${dateOfVisit}`,
+        });
+      }
 
-      const reviewHerdId = getReviewHerdId({ herdId, tempHerdId });
       const previousReviewClaim = getReviewWithinLast10Months(
         dateOfVisit,
         previousClaims,
         latestVetVisitApplication,
         typeOfLivestock,
-        reviewHerdId,
+        getReviewHerdId({ herdId, tempHerdId }),
       );
 
-      const dateOfTestingBeforePreviousReviewDateOfVisit = previousReviewClaim
-        ? new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit)
-        : false;
-
-      if (
-        typeOfReview === claimType.endemics &&
+      const isDateOfTestingBeforePreviousReview =
         previousReviewClaim &&
-        dateOfTestingBeforePreviousReviewDateOfVisit
-      ) {
+        new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit);
+
+      if (typeOfReview === claimType.endemics && isDateOfTestingBeforePreviousReview) {
         const errorMessage =
           "You must do a review, including sampling, before you do the resulting follow-up.";
-        const errorLink =
-          "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups";
 
-        // TODO - raise an invalid data event here
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.dateOfTesting,
+          exception: `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`,
+        });
 
         return h
           .view(claimViews.dateOfTestingException, {
             backLink: claimRoutes.dateOfTesting,
             errorMessage,
-            errorLink,
+            errorLink:
+              "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups",
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();

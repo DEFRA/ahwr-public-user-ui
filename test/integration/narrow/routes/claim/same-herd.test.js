@@ -9,12 +9,13 @@ import {
 } from "../../../../../app/session/index.js";
 import { canMakeClaim } from "../../../../../app/lib/can-make-claim.js";
 import { getReviewWithinLast10Months } from "../../../../../app/lib/claim-helper.js";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/api-requests/claim-api");
 jest.mock("../../../../../app/lib/can-make-claim.js");
 jest.mock("../../../../../app/lib/claim-helper.js");
-// jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 
 describe("select-the-herd tests", () => {
   const url = "/same-herd";
@@ -429,7 +430,7 @@ describe("select-the-herd tests", () => {
       expect(link.text().trim()).toBe(
         "There must be no more than 10 months between your reviews and follow-ups.",
       );
-      // expect(raiseInvalidDataEvent).toHaveBeenCalled()
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
 
     test("error when claiming for follow-up and choose not to link to previous review", async () => {
@@ -467,7 +468,7 @@ describe("select-the-herd tests", () => {
       expect(link.text().trim()).toBe(
         "You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.",
       );
-      // expect(raiseInvalidDataEvent).toHaveBeenCalled()
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
 
     test("does call removeSessionDataForSameHerdChange when herdSame answer changes", async () => {

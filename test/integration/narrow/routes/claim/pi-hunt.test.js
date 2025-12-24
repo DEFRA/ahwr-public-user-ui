@@ -5,9 +5,10 @@ import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../app/lib/context-helper.js";
 import { clearPiHuntSessionOnChange } from "../../../../../app/lib/clear-pi-hunt-session-on-change.js";
+import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../app/session/index.js");
-// jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/lib/context-helper.js");
 jest.mock("../../../../../app/lib/clear-pi-hunt-session-on-change.js");
 
@@ -23,7 +24,6 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
     getSessionData.mockImplementation(() => {
       return { typeOfLivestock: "beef", reference: "TEMP-6GSE-PIR8" };
     });
-    // raiseInvalidDataEvent.mockImplementation(() => { })
     setSessionData.mockImplementation(() => {});
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
       return false;
@@ -127,7 +127,7 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("You cannot continue with your claim");
-      // expect(raiseInvalidDataEvent).toHaveBeenCalled()
+     expect(sendInvalidDataEvent).toHaveBeenCalled()
       expect(clearPiHuntSessionOnChange).toHaveBeenCalled();
     });
 
@@ -148,7 +148,7 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("You cannot continue with your claim");
-      // expect(raiseInvalidDataEvent).toHaveBeenCalled()
+     expect(sendInvalidDataEvent).toHaveBeenCalled()
       expect(clearPiHuntSessionOnChange).not.toHaveBeenCalled();
     });
 
@@ -185,7 +185,6 @@ describe("PI Hunt tests when Optional PI Hunt is ON", () => {
     getSessionData.mockImplementation(() => {
       return { typeOfLivestock: "beef" };
     });
-    // raiseInvalidDataEvent.mockImplementation(() => { })
     setSessionData.mockImplementation(() => {});
     server = await createServer();
     await server.initialize();
@@ -245,7 +244,7 @@ describe("PI Hunt tests when Optional PI Hunt is ON", () => {
 
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/biosecurity");
-      // expect(raiseInvalidDataEvent).toHaveBeenCalled()
+     expect(sendInvalidDataEvent).toHaveBeenCalled()
     });
   });
 });
