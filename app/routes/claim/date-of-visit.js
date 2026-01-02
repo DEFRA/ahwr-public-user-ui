@@ -31,6 +31,7 @@ import { claimType } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 import { trackEvent } from "../../logging/logger.js";
 
+const INVALID_DATE_OF_VISIT_EVENT = "claim-invalid-date-of-visit";
 const labelPrefix = "visit-date-";
 
 const visitDateHtml = {
@@ -242,7 +243,7 @@ const postHandler = {
 
         const readableApplicationCreatedDate = getReadableDate(newWorldApplication.createdAt);
 
-        trackEvent(request.logger, "claim-invalid-date-of-visit", reviewOrFollowUpText, {
+        trackEvent(request.logger, INVALID_DATE_OF_VISIT_EVENT, reviewOrFollowUpText, {
           reference: tempClaimReference,
           kind: `dateEntered: ${data.dateOfVisit.year}-${data.dateOfVisit.month}-${data.dateOfVisit.day}, dateOfAgreement: ${readableApplicationCreatedDate}`,
           reason: errorSummary[0].text,
@@ -277,7 +278,7 @@ const postHandler = {
       );
 
       if (timingExceptionRedirect) {
-        trackEvent(request.logger, "claim-invalid-date-of-visit", reviewOrFollowUpText, {
+        trackEvent(request.logger, INVALID_DATE_OF_VISIT_EVENT, reviewOrFollowUpText, {
           reference: tempClaimReference,
           reason: timingException,
         });
@@ -407,7 +408,7 @@ const nonMhRouting = async (
     !getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock) &&
     claimsForFirstHerdIfPreMH.length === 0
   ) {
-    trackEvent(request.logger, "claim-invalid-date-of-visit", reviewOrFollowUpText, {
+    trackEvent(request.logger, INVALID_DATE_OF_VISIT_EVENT, reviewOrFollowUpText, {
       reference: tempClaimReference,
       reason: "Cannot claim for endemics without a previous review.",
     });
@@ -437,7 +438,7 @@ const nonMhRouting = async (
   });
 
   if (errorMessage) {
-    trackEvent(request.logger, "claim-invalid-date-of-visit", reviewOrFollowUpText, {
+    trackEvent(request.logger, INVALID_DATE_OF_VISIT_EVENT, reviewOrFollowUpText, {
       reference: tempClaimReference,
       kind: `${getReadableDate(dateOfVisit)} is invalid`,
       reason: errorMessage,
