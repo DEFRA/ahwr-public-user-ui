@@ -1,7 +1,7 @@
 import Wreck from "@hapi/wreck";
 import { config } from "../config/index.js";
 import { StatusCodes } from "http-status-codes";
-import { trackError } from "../logging/logger.js";
+import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 
 export async function getApplicationsBySbi(sbi, logger) {
   const endpoint = `${config.applicationApi.uri}/applications?sbi=${sbi}`;
@@ -10,7 +10,7 @@ export async function getApplicationsBySbi(sbi, logger) {
 
     return payload;
   } catch (error) {
-    trackError(logger, error, "api-call-failed", "Failed to get applications by SBI", {
+    trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to get applications by SBI", {
       kind: endpoint,
     });
     throw error;
@@ -27,7 +27,7 @@ export const createApplication = async (application, logger) => {
 
     return payload;
   } catch (error) {
-    trackError(logger, error, "api-call-failed", "Failed to create application", {
+    trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to create application", {
       kind: endpoint,
     });
     throw error;
@@ -46,7 +46,7 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
       return [];
     }
 
-    trackError(logger, error, "api-call-failed", "Failed to get herds", {
+    trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to get herds", {
       kind: endpoint,
     });
     throw error;

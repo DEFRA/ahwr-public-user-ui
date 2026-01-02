@@ -48,12 +48,8 @@ const isMSClaimBeforeMSRelease = (previousClaims, typeOfLivestock, dateOfVisit) 
   dateOfVisit < MULTIPLE_SPECIES_RELEASE_DATE;
 
 const getReadableDate = (dateStringOrDate) => {
-  return  new Date(dateStringOrDate)
-    .toLocaleDateString("en-GB")
-    .split("/")
-    .reverse()
-    .join("-");
-}
+  return new Date(dateStringOrDate).toLocaleDateString("en-GB").split("/").reverse().join("-");
+};
 
 export const previousPageUrl = (
   latestVetVisitApplication,

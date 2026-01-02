@@ -1,6 +1,6 @@
 import Wreck from "@hapi/wreck";
 import { config } from "../config/index.js";
-import { trackError } from "../logging/logger.js";
+import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 
 export async function getClaimsByApplicationReference(applicationReference, logger) {
   const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/claims`;
@@ -9,9 +9,15 @@ export async function getClaimsByApplicationReference(applicationReference, logg
 
     return payload;
   } catch (error) {
-    trackError(logger, error, "api-call-failed", "Failed to get claims by application reference", {
-      kind: endpoint,
-    });
+    trackError(
+      logger,
+      error,
+      API_CALL_FAILED_CATEGORY,
+      "Failed to get claims by application reference",
+      {
+        kind: endpoint,
+      },
+    );
     throw error;
   }
 }
@@ -27,7 +33,7 @@ export async function submitNewClaim(data, logger) {
 
     return payload;
   } catch (error) {
-    trackError(logger, error, "api-call-failed", "Failed to get submit new claim", {
+    trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to get submit new claim", {
       kind: endpoint,
     });
     throw error;
@@ -44,7 +50,7 @@ export async function isURNUnique(data, logger) {
 
     return payload;
   } catch (error) {
-    trackError(logger, error, "api-call-failed", "Failed to check Unique URN", {
+    trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to check Unique URN", {
       kind: endpoint,
     });
     throw error;

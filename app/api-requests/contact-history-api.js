@@ -1,6 +1,6 @@
 import Wreck from "@hapi/wreck";
 import { config } from "../config/index.js";
-import { trackError } from "../logging/logger.js";
+import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 
 export const updateContactHistory = async (
   personSummary,
@@ -34,7 +34,7 @@ export const updateContactHistory = async (
       logger.info(`No agreement found to update contact history for CRN: ${crn}`);
     } else {
       logger.error({ error, endpoint });
-      trackError(logger, error, "api-call-failed", "Failed to update contact history", {
+      trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to update contact history", {
         kind: endpoint,
       });
       throw error;
