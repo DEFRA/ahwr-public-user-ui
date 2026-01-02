@@ -33,7 +33,6 @@ export const updateContactHistory = async (
     if (error.message.includes("404")) {
       logger.info(`No agreement found to update contact history for CRN: ${crn}`);
     } else {
-      logger.error({ error, endpoint });
       trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to update contact history", {
         kind: endpoint,
       });
