@@ -1,11 +1,11 @@
 import Wreck from "@hapi/wreck";
+import { trackError } from "../../app/logging/logger.js";
 
 export async function testWreckApiFunction({
   fn,
   method,
   endpoint,
   args = [],
-  errorLogItems = [],
   outboundPayload,
   returnPayload,
   logger,
@@ -43,5 +43,13 @@ export async function testWreckApiFunction({
     });
   }
 
-  expect(logger.error).toHaveBeenCalledWith({ ...errorLogItems, error: expectedError });
+  expect(trackError).toHaveBeenCalledWith(
+    logger,
+    expectedError,
+    "api-call-failed",
+    expect.any(String),
+    {
+      kind: endpoint,
+    },
+  );
 }

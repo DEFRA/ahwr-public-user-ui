@@ -7,6 +7,10 @@ import { config } from "../../../../../app/config";
 import { testWreckApiFunction } from "../../../../helpers/test-wreck-api";
 
 jest.mock("@hapi/wreck");
+jest.mock("../../../../../app/logging/logger.js", () => ({
+  ...jest.requireActual("../../../../../app/logging/logger.js"),
+  trackError: jest.fn(),
+}));
 
 describe("claim api", () => {
   beforeEach(() => {
@@ -15,8 +19,8 @@ describe("claim api", () => {
 
   const makeLogger = () => ({ error: jest.fn() });
 
-  test("getClaimsByApplicationReference", () => {
-    testWreckApiFunction({
+  test("getClaimsByApplicationReference", async () => {
+    await testWreckApiFunction({
       fn: getClaimsByApplicationReference,
       method: "get",
       endpoint: `${config.applicationApiUri}/applications/REF123/claims`,
@@ -27,8 +31,8 @@ describe("claim api", () => {
     });
   });
 
-  test("submitNewClaim", () => {
-    testWreckApiFunction({
+  test("submitNewClaim", async () => {
+    await testWreckApiFunction({
       fn: submitNewClaim,
       method: "post",
       endpoint: `${config.applicationApiUri}/claims`,
@@ -39,8 +43,8 @@ describe("claim api", () => {
     });
   });
 
-  test("isURNUnique", () => {
-    testWreckApiFunction({
+  test("isURNUnique", async () => {
+    await testWreckApiFunction({
       fn: isURNUnique,
       method: "post",
       endpoint: `${config.applicationApiUri}/claims/is-urn-unique`,

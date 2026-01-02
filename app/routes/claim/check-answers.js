@@ -15,6 +15,7 @@ import {
   buildVetTestandPiHuntRows,
   collateRows,
 } from "../../lib/build-claim-data.js";
+import { trackEvent } from "../../logging/logger.js";
 
 const getBackLink = (isReview, isSheep) => {
   if (isReview) {
@@ -149,7 +150,14 @@ const postHandler = {
         claim.data.amount,
       );
 
-      // TODO - fire an event that a claim was created
+      trackEvent(
+        request.logger,
+        "submit-claim",
+        `status: ${claim.status}, sbi:${getSessionData(request, sessionEntryKeys.organisation).sbi}`,
+        {
+          reference: `applicationReference: ${claimPayload.applicationReference}, claimReference: ${claim.reference}, tempClaimReference: ${claimPayload.reference}`,
+        },
+      );
       return h.redirect(claimRoutes.confirmation);
     },
   },

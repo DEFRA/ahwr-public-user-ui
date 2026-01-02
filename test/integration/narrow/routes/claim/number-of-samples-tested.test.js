@@ -152,7 +152,7 @@ describe("Number of samples tested test", () => {
         expect(res.statusCode).toBe(400);
         const $ = cheerio.load(res.payload);
         expect($("h1").text()).toMatch("You cannot continue with your claim");
-        expect(sendInvalidDataEvent).toHaveBeenCalled()
+        expect(sendInvalidDataEvent).toHaveBeenCalled();
       },
     );
 

@@ -6,3 +6,28 @@ const logger = pino(loggerOptions);
 export function getLogger() {
   return logger;
 }
+
+export const trackError = (loggerInstance, error, category, message, properties) => {
+  loggerInstance.error(
+    {
+      error,
+      event: {
+        type: "exception",
+        severity: "error",
+        category,
+        ...properties,
+      },
+    },
+    message,
+  );
+};
+
+export const trackEvent = (loggerInstance, type, category, properties) => {
+  loggerInstance.info({
+    event: {
+      type,
+      category,
+      ...properties,
+    },
+  });
+};

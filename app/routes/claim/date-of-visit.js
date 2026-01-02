@@ -29,6 +29,7 @@ import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
+import { trackEvent } from "../../logging/logger.js";
 
 const labelPrefix = "visit-date-";
 
@@ -202,7 +203,7 @@ const postHandler = {
         previousClaims,
         latestVetVisitApplication: oldWorldApplication,
         typeOfLivestock,
-        // reference: tempClaimReference, // needed for the TODO event tracking
+        reference: tempClaimReference,
         latestEndemicsApplication: newWorldApplication,
         tempHerdId: tempHerdIdFromSession,
       } = endemicsClaimSession;
@@ -235,23 +236,17 @@ const postHandler = {
           inputsInError,
         };
 
-        // const readableApplicationCreatedDate = new Date(newWorldApplication.createdAt)
-        //   .toLocaleDateString("en-GB")
-        //   .split("/")
-        //   .reverse()
-        //   .join("-");
+        const readableApplicationCreatedDate = new Date(newWorldApplication.createdAt)
+          .toLocaleDateString("en-GB")
+          .split("/")
+          .reverse()
+          .join("-");
 
-        // TODO - track event...
-        // appInsights.defaultClient.trackEvent({
-        //   name: "claim-invalid-date-of-visit",
-        //   properties: {
-        //     tempClaimReference,
-        //     dateOfAgreement: readableApplicationCreatedDate,
-        //     dateEntered: `${data.dateOfVisit.year}-${data.dateOfVisit.month}-${data.dateOfVisit.day}`,
-        //     journeyType: reviewOrFollowUpText,
-        //     error: errorSummary[0].text,
-        //   },
-        // });
+        trackEvent(request.logger, "claim-invalid-date-of-visit", reviewOrFollowUpText, {
+          reference: tempClaimReference,
+          kind: `dateEntered: ${data.dateOfVisit.year}-${data.dateOfVisit.month}-${data.dateOfVisit.day}, dateOfAgreement: ${readableApplicationCreatedDate}`,
+          reason: errorSummary[0].text,
+        });
 
         return h.view(claimViews.dateOfVisit, data).code(HttpStatus.BAD_REQUEST).takeover();
       }
@@ -269,15 +264,23 @@ const postHandler = {
         dateOfVisit,
       );
 
-      const timingExceptionRedirect = await checkForTimingException(h, request, {
-        dateOfVisit,
-        typeOfLivestock,
-        previousClaims,
-        isDairy,
-        isEndemicsFollowUp,
-      });
+      const { timingExceptionRedirect, timingException } = await checkForTimingException(
+        h,
+        request,
+        {
+          dateOfVisit,
+          typeOfLivestock,
+          previousClaims,
+          isDairy,
+          isEndemicsFollowUp,
+        },
+      );
 
       if (timingExceptionRedirect) {
+        trackEvent(request.logger, "claim-invalid-date-of-visit", reviewOrFollowUpText, {
+          reference: tempClaimReference,
+          reason: timingException,
+        });
         return timingExceptionRedirect;
       }
 
@@ -330,6 +333,7 @@ const postHandler = {
         dateOfVisit,
         reviewOrFollowUpText,
         organisation,
+        tempClaimReference,
       });
     },
   },
@@ -365,13 +369,16 @@ const checkForTimingException = async (
       exception,
     });
 
-    return h
-      .view(exceptionView, { backLink: claimRoutes.dateOfVisit })
-      .code(HttpStatus.BAD_REQUEST)
-      .takeover();
+    return {
+      timingExceptionRedirect: h
+        .view(exceptionView, { backLink: claimRoutes.dateOfVisit })
+        .code(HttpStatus.BAD_REQUEST)
+        .takeover(),
+      timingException: exception,
+    };
   }
 
-  return undefined;
+  return {};
 };
 
 const nonMhRouting = async (
@@ -385,6 +392,7 @@ const nonMhRouting = async (
     dateOfVisit,
     reviewOrFollowUpText,
     organisation,
+    tempClaimReference,
   },
 ) => {
   // all the below only applies when user rejects T&Cs or the visit date is pre-MH golive
@@ -399,6 +407,11 @@ const nonMhRouting = async (
     !getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock) &&
     claimsForFirstHerdIfPreMH.length === 0
   ) {
+    trackEvent(request.logger, "claim-invalid-date-of-visit", reviewOrFollowUpText, {
+      reference: tempClaimReference,
+      reason: "Cannot claim for endemics without a previous review.",
+    });
+
     await sendInvalidDataEvent({
       request,
       sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
@@ -424,6 +437,12 @@ const nonMhRouting = async (
   });
 
   if (errorMessage) {
+    trackEvent(request.logger, "claim-invalid-date-of-visit", reviewOrFollowUpText, {
+      reference: tempClaimReference,
+      kind: `${dateOfVisit} is invalid`,
+      reason: errorMessage,
+    });
+
     await sendInvalidDataEvent({
       request,
       sessionKey: sessionKeys.endemicsClaim.dateOfVisit,

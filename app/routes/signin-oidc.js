@@ -16,6 +16,8 @@ import { updateContactHistory } from "../api-requests/contact-history-api.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 import { checkLoginValid } from "./utils/check-login-valid.js";
 import { getPersonAndOrg } from "../api-requests/rpa-api/get-person-and-org.js";
+import { trackError, trackEvent } from "../logging/logger.js";
+import { metricsCounter } from "../lib/metrics.js";
 
 export const signinRouteHandlers = [
   {
@@ -33,9 +35,12 @@ export const signinRouteHandlers = [
             stripUnknown: true,
           }),
         async failAction(request, h, error) {
-          // TODO - find an alternative to setBindings
-          request.logger.error({ error: error.message });
-          // TODO - track this exception
+          trackError(
+            request.logger,
+            error,
+            "signin-oidc-validation-failed",
+            "Signin OIDC validation failed",
+          );
 
           return h
             .view("verify-login-failed", {
@@ -47,6 +52,7 @@ export const signinRouteHandlers = [
         },
       },
       handler: async (request, h) => {
+        await metricsCounter("process_sign_in");
         try {
           const { logger } = request;
           await generateNewCrumb(request, h);
@@ -78,6 +84,7 @@ export const signinRouteHandlers = [
             request,
             cphNumbers,
             personSummary,
+            personRole,
           });
 
           if (redirectCallback) {
@@ -92,15 +99,19 @@ export const signinRouteHandlers = [
             logger,
           );
 
-          // TODO - track this event
+          trackEvent(request.logger, "successful-login", "success", {
+            reference: `sbi: ${orgDetails.organisation.sbi}, crn: ${crn}`,
+            kind: personRole,
+          });
 
           return h.redirect(redirectPath);
         } catch (err) {
-          request.logger.error(
-            { error: { message: err.message, stack: err.stack } },
+          trackError(
+            request.logger,
+            err,
+            "signin-oidc-failed",
             "Problem during signin-oidc processing",
           );
-          // TODO - track this exception
 
           clearAllOfSession(request);
           clearAuthCookie(request);

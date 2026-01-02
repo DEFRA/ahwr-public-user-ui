@@ -2,6 +2,7 @@ import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { applicationType } from "../constants/constants.js";
 import { dashboardRoutes } from "../constants/routes.js";
 import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
+import { trackError } from "../logging/logger.js";
 
 export const preApplyHandler = async (request, h) => {
   if (request.method === "get") {
@@ -26,10 +27,14 @@ export const preApplyHandler = async (request, h) => {
     request.logger.setBindings({ sbi: organisation.sbi });
 
     if (application?.status === "AGREED" && !application.redacted) {
-      // TODO - event needs tracking here
-      request.logger.error({
-        error: "User attempted to use apply journey despite already having an agreed agreement.",
-      });
+      trackError(
+        request.logger,
+        new Error(
+          "User attempted to use apply journey despite already having an agreed agreement.",
+        ),
+        "user-action",
+        "User attempted to use apply journey despite already having an agreed agreement.",
+      );
 
       return h.redirect(dashboardRoutes.manageYourClaims).takeover();
     }

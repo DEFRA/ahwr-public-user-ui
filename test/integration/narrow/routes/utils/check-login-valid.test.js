@@ -11,6 +11,7 @@ import { requestAuthorizationCodeUrl } from "../../../../../app/auth/auth-code-g
 import { when } from "jest-when";
 import { refreshApplications } from "../../../../../app/lib/context-helper.js";
 import { sendIneligibilityEvent } from "../../../../../app/messaging/ineligibility-event-emission";
+import { trackError } from "../../../../../app/logging/logger.js";
 
 when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.customer, sessionKeys.customer.crn)
@@ -44,7 +45,12 @@ jest.mock("../../../../../app/lib/context-helper.js", () => ({
 }));
 
 jest.mock("../../../../../app/auth/auth-code-grant/request-authorization-code-url", () => ({
-  requestAuthorizationCodeUrl: jest.fn().mockReturnValue("back link"),
+  requestAuthorizationCodeUrl: jest.fn().mockReturnValueOnce("back link"),
+}));
+
+jest.mock("../../../../../app/logging/logger.js", () => ({
+  ...jest.requireActual("../../../../../app/logging/logger.js"),
+  trackError: jest.fn(),
 }));
 
 describe("checkLoginValid", () => {
@@ -54,6 +60,7 @@ describe("checkLoginValid", () => {
     name: "Farmer Tom",
     email: "farmertomstestemail@test.com.test",
   };
+  const personRole = "Farmer";
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -70,14 +77,9 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockErrorFn = jest.fn();
-
     const request = {
       yar: {
         id: 1,
-      },
-      logger: {
-        error: mockErrorFn,
       },
     };
 
@@ -88,6 +90,7 @@ describe("checkLoginValid", () => {
       request,
       cphNumbers,
       personSummary,
+      personRole,
     });
 
     expect(result.redirectPath).toEqual("/check-details");
@@ -99,14 +102,14 @@ describe("checkLoginValid", () => {
     );
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockErrorFn).not.toHaveBeenCalled();
+    expect(trackError).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect callback if the user's organisation is locked", async () => {
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
-      redirect: jest.fn().mockReturnValue({
-        takeover: jest.fn().mockReturnValue(mockRedirectCallBackAsString),
+      redirect: jest.fn().mockReturnValueOnce({
+        takeover: jest.fn().mockReturnValueOnce(mockRedirectCallBackAsString),
       }),
     };
     const organisation = {
@@ -120,15 +123,11 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockErrorFn = jest.fn();
-
     const request = {
       yar: {
         id: 1,
       },
-      logger: {
-        error: mockErrorFn,
-      },
+      logger: jest.fn(),
     };
 
     const result = await checkLoginValid({
@@ -138,6 +137,7 @@ describe("checkLoginValid", () => {
       request,
       cphNumbers,
       personSummary,
+      personRole,
     });
 
     expect(result).toEqual({
@@ -155,10 +155,16 @@ describe("checkLoginValid", () => {
       true,
     );
     expect(customerHasAtLeastOneValidCph).not.toHaveBeenCalled(); // only gets called if an error hasnt been found yet
-    expect(mockErrorFn).toHaveBeenCalledWith({
-      crn: 124,
-      error: "Organisation id 111 is locked by RPA",
-    });
+    expect(trackError).toHaveBeenCalledWith(
+      request.logger,
+      expect.any(Error),
+      "signin-oidc-failed-login",
+      "Organisation id 111 is locked by RPA",
+      {
+        kind: "Farmer",
+        reference: "sbi 999000, crn 124",
+      },
+    );
     expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
     expect(sendIneligibilityEvent).toHaveBeenCalled();
   });
@@ -166,8 +172,8 @@ describe("checkLoginValid", () => {
   test("it returns a redirect callback if there is no organisation permission", async () => {
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
-      redirect: jest.fn().mockReturnValue({
-        takeover: jest.fn().mockReturnValue(mockRedirectCallBackAsString),
+      redirect: jest.fn().mockReturnValueOnce({
+        takeover: jest.fn().mockReturnValueOnce(mockRedirectCallBackAsString),
       }),
     };
     const organisation = {
@@ -180,15 +186,11 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = false;
 
-    const mockErrorFn = jest.fn();
-
     const request = {
       yar: {
         id: 1,
       },
-      logger: {
-        error: mockErrorFn,
-      },
+      logger: jest.fn(),
     };
 
     const result = await checkLoginValid({
@@ -198,6 +200,7 @@ describe("checkLoginValid", () => {
       request,
       cphNumbers,
       personSummary,
+      personRole,
     });
 
     expect(result).toEqual({
@@ -214,21 +217,27 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.signInRedirect,
       true,
     );
-    expect(customerHasAtLeastOneValidCph).not.toHaveBeenCalled(); // only gets called if an error hasnt been found yet
-    expect(mockErrorFn).toHaveBeenCalledWith({
-      crn: 124,
-      error: "Person id 12345 does not have the required permissions for organisation id 111",
-    });
+    expect(customerHasAtLeastOneValidCph).not.toHaveBeenCalled(); // only gets called if an error hasn't been found yet
+    expect(trackError).toHaveBeenCalledWith(
+      request.logger,
+      expect.any(Error),
+      "signin-oidc-failed-login",
+      "Person id 12345 does not have the required permissions for organisation id 111",
+      {
+        kind: "Farmer",
+        reference: "sbi 999000, crn 124",
+      },
+    );
     expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
     expect(sendIneligibilityEvent).toHaveBeenCalled();
   });
 
   test("it returns a redirect callback if there is no valid CPH", async () => {
-    customerHasAtLeastOneValidCph.mockReturnValue(false);
+    customerHasAtLeastOneValidCph.mockReturnValueOnce(false);
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
-      redirect: jest.fn().mockReturnValue({
-        takeover: jest.fn().mockReturnValue(mockRedirectCallBackAsString),
+      redirect: jest.fn().mockReturnValueOnce({
+        takeover: jest.fn().mockReturnValueOnce(mockRedirectCallBackAsString),
       }),
     };
     const organisation = {
@@ -241,15 +250,11 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockErrorFn = jest.fn();
-
     const request = {
       yar: {
         id: 1,
       },
-      logger: {
-        error: mockErrorFn,
-      },
+      logger: jest.fn(),
     };
 
     const result = await checkLoginValid({
@@ -259,6 +264,7 @@ describe("checkLoginValid", () => {
       request,
       cphNumbers,
       personSummary,
+      personRole,
     });
 
     expect(result).toEqual({
@@ -275,74 +281,18 @@ describe("checkLoginValid", () => {
       sessionEntryKeys.signInRedirect,
       true,
     );
-    expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers); // only gets called if an error hasnt been found yet
-    expect(mockErrorFn).toHaveBeenCalledWith({
-      crn: 124,
-      error: "Organisation id 111 has no valid CPH's associated",
-    });
-    expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
-    expect(sendIneligibilityEvent).toHaveBeenCalled();
-  });
-
-  test("it returns a redirect callback if there is no valid CPH", async () => {
-    customerHasAtLeastOneValidCph.mockReturnValue(false);
-    const mockRedirectCallBackAsString = "im a redirect callback";
-    const h = {
-      redirect: jest.fn().mockReturnValue({
-        takeover: jest.fn().mockReturnValue(mockRedirectCallBackAsString),
-      }),
-    };
-    const organisation = {
-      address:
-        "1 Brown Lane,Smithering,West Sussex,England,UK,Thompsons,Sisterdene,1-30,Grey Building,Brown Lane,Grenwald,West Sussex,WS11 2DS,GBR",
-      email: "unit@test.email.com.test",
-      name: "Unit test org",
-      sbi: 999000,
-      id: 111,
-    };
-    const organisationPermission = true;
-
-    const mockErrorFn = jest.fn();
-
-    const request = {
-      yar: {
-        id: 1,
+    expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers); // only gets called if an error hasn't been found yet
+    expect(trackError).toHaveBeenCalledWith(
+      request.logger,
+      expect.any(Error),
+      "signin-oidc-failed-login",
+      "Organisation id 111 has no valid CPH's associated",
+      {
+        kind: "Farmer",
+        reference: "sbi 999000, crn 124",
       },
-      logger: {
-        error: mockErrorFn,
-      },
-    };
-
-    const result = await checkLoginValid({
-      h,
-      organisation,
-      organisationPermission,
-      request,
-      cphNumbers,
-      personSummary,
-    });
-
-    expect(result).toEqual({
-      redirectPath: null,
-      redirectCallback: mockRedirectCallBackAsString,
-    });
-    expect(getSessionData).toHaveBeenCalledWith(
-      request,
-      sessionEntryKeys.customer,
-      sessionKeys.customer.crn,
     );
-    expect(setSessionEntry).not.toHaveBeenCalledWith(
-      request,
-      sessionEntryKeys.signInRedirect,
-      true,
-    );
-    expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers); // only gets called if an error hasnt been found yet
-    expect(mockErrorFn).toHaveBeenCalledWith({
-      crn: 124,
-      error: "Organisation id 111 has no valid CPH's associated",
-    });
     expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
-    customerHasAtLeastOneValidCph.mockReturnValue(true);
     expect(sendIneligibilityEvent).toHaveBeenCalled();
   });
 
@@ -353,8 +303,8 @@ describe("checkLoginValid", () => {
     });
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
-      redirect: jest.fn().mockReturnValue({
-        takeover: jest.fn().mockReturnValue(mockRedirectCallBackAsString),
+      redirect: jest.fn().mockReturnValueOnce({
+        takeover: jest.fn().mockReturnValueOnce(mockRedirectCallBackAsString),
       }),
     };
     const organisation = {
@@ -367,15 +317,11 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockErrorFn = jest.fn();
-
     const request = {
       yar: {
         id: 1,
       },
-      logger: {
-        error: mockErrorFn,
-      },
+      logger: jest.fn(),
     };
 
     const result = await checkLoginValid({
@@ -385,6 +331,7 @@ describe("checkLoginValid", () => {
       request,
       cphNumbers,
       personSummary,
+      personRole,
     });
 
     expect(result.redirectPath).toEqual("/check-details");
@@ -396,11 +343,11 @@ describe("checkLoginValid", () => {
     );
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockErrorFn).not.toHaveBeenCalled();
+    expect(trackError).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
-  test("it returns a redirect path to dashboard entry if there are no problems and the user an agreed new world application", async () => {
+  test("it returns a redirect path to dashboard entry if there are no problems and the user has an agreed new world application", async () => {
     refreshApplications.mockResolvedValue({
       latestEndemicsApplication: {
         type: "EE",
@@ -411,8 +358,8 @@ describe("checkLoginValid", () => {
     });
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
-      redirect: jest.fn().mockReturnValue({
-        takeover: jest.fn().mockReturnValue(mockRedirectCallBackAsString),
+      redirect: jest.fn().mockReturnValueOnce({
+        takeover: jest.fn().mockReturnValueOnce(mockRedirectCallBackAsString),
       }),
     };
     const organisation = {
@@ -425,15 +372,11 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockErrorFn = jest.fn();
-
     const request = {
       yar: {
         id: 1,
       },
-      logger: {
-        error: mockErrorFn,
-      },
+      logger: jest.fn(),
     };
 
     const result = await checkLoginValid({
@@ -443,6 +386,7 @@ describe("checkLoginValid", () => {
       request,
       cphNumbers,
       personSummary,
+      personRole,
     });
 
     expect(result.redirectPath).toEqual("/check-details");
@@ -458,7 +402,7 @@ describe("checkLoginValid", () => {
       true,
     );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockErrorFn).not.toHaveBeenCalled();
+    expect(trackError).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
@@ -474,8 +418,8 @@ describe("checkLoginValid", () => {
 
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
-      redirect: jest.fn().mockReturnValue({
-        takeover: jest.fn().mockReturnValue(mockRedirectCallBackAsString),
+      redirect: jest.fn().mockReturnValueOnce({
+        takeover: jest.fn().mockReturnValueOnce(mockRedirectCallBackAsString),
       }),
     };
     const organisation = {
@@ -488,15 +432,11 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockErrorFn = jest.fn();
-
     const request = {
       yar: {
         id: 1,
       },
-      logger: {
-        error: mockErrorFn,
-      },
+      logger: jest.fn(),
     };
 
     const result = await checkLoginValid({
@@ -506,6 +446,7 @@ describe("checkLoginValid", () => {
       request,
       cphNumbers,
       personSummary,
+      personRole,
     });
 
     expect(result.redirectPath).toEqual("/check-details");
@@ -517,7 +458,7 @@ describe("checkLoginValid", () => {
     );
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockErrorFn).not.toHaveBeenCalled();
+    expect(trackError).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
@@ -533,8 +474,8 @@ describe("checkLoginValid", () => {
 
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
-      redirect: jest.fn().mockReturnValue({
-        takeover: jest.fn().mockReturnValue(mockRedirectCallBackAsString),
+      redirect: jest.fn().mockReturnValueOnce({
+        takeover: jest.fn().mockReturnValueOnce(mockRedirectCallBackAsString),
       }),
     };
     const organisation = {
@@ -547,15 +488,11 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockErrorFn = jest.fn();
-
     const request = {
       yar: {
         id: 1,
       },
-      logger: {
-        error: mockErrorFn,
-      },
+      logger: jest.fn(),
     };
 
     const result = await checkLoginValid({
@@ -565,6 +502,7 @@ describe("checkLoginValid", () => {
       request,
       cphNumbers,
       personSummary,
+      personRole,
     });
 
     expect(result.redirectPath).toEqual("/check-details");
@@ -576,11 +514,11 @@ describe("checkLoginValid", () => {
     );
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockErrorFn).not.toHaveBeenCalled();
+    expect(trackError).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
-  test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application specifically in the PAID state", async () => {
+  test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application specifically in the PAID status", async () => {
     refreshApplications.mockResolvedValue({
       latestEndemicsApplication: undefined,
       latestVetVisitApplication: {
@@ -592,8 +530,8 @@ describe("checkLoginValid", () => {
 
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
-      redirect: jest.fn().mockReturnValue({
-        takeover: jest.fn().mockReturnValue(mockRedirectCallBackAsString),
+      redirect: jest.fn().mockReturnValueOnce({
+        takeover: jest.fn().mockReturnValueOnce(mockRedirectCallBackAsString),
       }),
     };
     const organisation = {
@@ -606,15 +544,11 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockErrorFn = jest.fn();
-
     const request = {
       yar: {
         id: 1,
       },
-      logger: {
-        error: mockErrorFn,
-      },
+      logger: jest.fn(),
     };
 
     const result = await checkLoginValid({
@@ -624,6 +558,7 @@ describe("checkLoginValid", () => {
       request,
       cphNumbers,
       personSummary,
+      personRole,
     });
 
     expect(result.redirectPath).toEqual("/check-details");
@@ -635,7 +570,7 @@ describe("checkLoginValid", () => {
     );
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockErrorFn).not.toHaveBeenCalled();
+    expect(trackError).not.toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
@@ -651,8 +586,8 @@ describe("checkLoginValid", () => {
 
     const mockRedirectCallBackAsString = "im a redirect callback";
     const h = {
-      redirect: jest.fn().mockReturnValue({
-        takeover: jest.fn().mockReturnValue(mockRedirectCallBackAsString),
+      redirect: jest.fn().mockReturnValueOnce({
+        takeover: jest.fn().mockReturnValueOnce(mockRedirectCallBackAsString),
       }),
     };
     const organisation = {
@@ -665,15 +600,11 @@ describe("checkLoginValid", () => {
     };
     const organisationPermission = true;
 
-    const mockErrorFn = jest.fn();
-
     const request = {
       yar: {
         id: 1,
       },
-      logger: {
-        error: mockErrorFn,
-      },
+      logger: jest.fn(),
     };
     const result = await checkLoginValid({
       h,
@@ -682,6 +613,7 @@ describe("checkLoginValid", () => {
       request,
       cphNumbers,
       personSummary,
+      personRole,
     });
 
     expect(result.redirectPath).toBeNull();
@@ -698,10 +630,16 @@ describe("checkLoginValid", () => {
       true,
     );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
-    expect(mockErrorFn).toHaveBeenCalledWith({
-      error: "User has an expired old world application",
-      crn: 124,
-    });
+    expect(trackError).toHaveBeenCalledWith(
+      request.logger,
+      expect.any(Error),
+      "signin-oidc-failed-login",
+      "User has an expired old world application",
+      {
+        kind: "Farmer",
+        reference: "sbi 999000, crn 124",
+      },
+    );
     expect(requestAuthorizationCodeUrl).toHaveBeenCalled();
   });
 });

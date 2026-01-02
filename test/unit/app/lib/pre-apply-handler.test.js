@@ -13,11 +13,13 @@ jest.mock("../../../../app/session");
 jest.mock("../../../../app/api-requests/application-api");
 
 const mockSetBindings = jest.fn();
+const error = jest.fn();
 
 const getRequest = {
   method: "get",
   logger: {
     setBindings: mockSetBindings,
+    error,
   },
 };
 
@@ -32,6 +34,8 @@ const mockContinue = jest.fn();
 
 const h = {
   continue: mockContinue,
+  redirect: jest.fn().mockReturnThis(),
+  takeover: jest.fn(),
 };
 
 const organisation = {
@@ -111,5 +115,38 @@ describe("preApplyHandler", () => {
 
     expect(getApplicationsBySbi).not.toHaveBeenCalled();
     expect(setSessionData).not.toHaveBeenCalled();
+  });
+
+  test("returns a redirect if user already has an agreed agreement", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue(organisation);
+
+    const closedNewWorldApplication = {
+      sbi: 112231312,
+      type: "EE",
+      reference: "IAHW-1111-2222",
+      redacted: false,
+      status: "AGREED",
+    };
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.application)
+      .mockReturnValue(closedNewWorldApplication);
+
+    await preApplyHandler(getRequest, h);
+
+    expect(error).toHaveBeenCalledWith(
+      {
+        error: expect.any(Error),
+        event: {
+          category: "user-action",
+          severity: "error",
+          type: "exception",
+        },
+      },
+      "User attempted to use apply journey despite already having an agreed agreement.",
+    );
+    expect(h.redirect).toHaveBeenCalledWith("/vet-visits");
   });
 });

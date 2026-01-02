@@ -42,6 +42,7 @@
     "@hapi/wreck": "18.1.0",
     "@hapi/yar": "10.1.1",
     "@ministryofjustice/frontend": "5.2.1",
+    "aws-embedded-metrics": "4.2.0",
     "ffc-ahwr-common-library": "3.3.5",
     "form-data": "4.0.4",
     "global-agent": "3.0.0",

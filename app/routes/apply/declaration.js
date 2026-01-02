@@ -13,6 +13,7 @@ import { StatusCodes } from "http-status-codes";
 import { preApplyHandler } from "../../lib/pre-apply-handler.js";
 import { createApplication } from "../../api-requests/application-api.js";
 import { createTempReference } from "../../lib/create-temp-ref.js";
+import { trackEvent } from "../../logging/logger.js";
 
 const resetFarmerApplyDataBeforeApplication = (application) => {
   delete application.agreeSpeciesNumbers;
@@ -111,6 +112,15 @@ export const declarationRouteHandlers = [
         // TODO - find an alternative to setBindings
         request.logger.setBindings({ applicationReference });
 
+        trackEvent(
+          request.logger,
+          "submit-application",
+          `status: ${request.payload.offerStatus} sbi:${organisation.sbi}`,
+          {
+            reference: `applicationReference: ${applicationReference}, tempApplicationReference: ${tempApplicationReference}`,
+          },
+        );
+
         if (applicationReference) {
           await setSessionData(
             request,
@@ -119,7 +129,6 @@ export const declarationRouteHandlers = [
             applicationReference,
           );
 
-          // TODO - track event for an agreement being created
           clearApplyRedirect(request);
         }
 

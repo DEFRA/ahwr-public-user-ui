@@ -2,6 +2,9 @@ import { StatusCodes } from "http-status-codes";
 import { createServer } from "../../../../app/server";
 import { DEFRA_ID_BASE_URL } from "../../../../app/auth/auth-code-grant/request-authorization-code-url";
 import { randomUUID } from "crypto";
+import { metricsCounter } from "../../../../app/lib/metrics.js";
+
+jest.mock("../../../../app/lib/metrics.js");
 
 describe("/sign-in", () => {
   let server;
@@ -23,6 +26,7 @@ describe("/sign-in", () => {
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location.href).toMatch(DEFRA_ID_BASE_URL);
+    expect(metricsCounter).toHaveBeenCalledWith("sign_in");
   });
 
   test("can send a request with a ssoOrgId and it is passed in the redirect URI", async () => {
@@ -35,5 +39,6 @@ describe("/sign-in", () => {
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location.href).toMatch(DEFRA_ID_BASE_URL);
     expect(res.headers.location.href).toContain(ssoOrgId);
+    expect(metricsCounter).toHaveBeenCalledWith("sign_in");
   });
 });

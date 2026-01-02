@@ -7,6 +7,10 @@ import { config } from "../../../../../app/config";
 import { testWreckApiFunction } from "../../../../helpers/test-wreck-api";
 
 jest.mock("@hapi/wreck");
+jest.mock("../../../../../app/logging/logger.js", () => ({
+  ...jest.requireActual("../../../../../app/logging/logger.js"),
+  trackError: jest.fn(),
+}));
 
 describe("application api", () => {
   beforeEach(() => {
@@ -15,8 +19,8 @@ describe("application api", () => {
 
   const makeLogger = () => ({ error: jest.fn() });
 
-  test("getApplicationsBySbi", () => {
-    testWreckApiFunction({
+  test("getApplicationsBySbi", async () => {
+    await testWreckApiFunction({
       fn: getApplicationsBySbi,
       method: "get",
       endpoint: `${config.applicationApiUri}/applications?sbi=SBI123`,
@@ -27,8 +31,8 @@ describe("application api", () => {
     });
   });
 
-  test("createApplication", () => {
-    testWreckApiFunction({
+  test("createApplication", async () => {
+    await testWreckApiFunction({
       fn: createApplication,
       method: "post",
       endpoint: `${config.applicationApiUri}/applications`,
@@ -39,8 +43,8 @@ describe("application api", () => {
     });
   });
 
-  test("getHerds", () => {
-    testWreckApiFunction({
+  test("getHerds", async () => {
+    await testWreckApiFunction({
       fn: getHerds,
       method: "get",
       endpoint: `${config.applicationApiUri}/applications/IAHW-ABVR-1234/herds?species=beef`,

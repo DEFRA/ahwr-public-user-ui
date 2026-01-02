@@ -31,10 +31,15 @@ import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { isMultipleHerdsUserJourney } from "../../../../../app/lib/context-helper.js";
 import { submitNewClaim } from "../../../../../app/api-requests/claim-api.js";
 import { when } from "jest-when";
+import { trackEvent } from "../../../../../app/logging/logger.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/lib/context-helper.js");
 jest.mock("../../../../../app/api-requests/claim-api.js");
+jest.mock("../../../../../app/logging/logger.js", () => ({
+  ...jest.requireActual("../../../../../app/logging/logger.js"),
+  trackEvent: jest.fn(),
+}));
 
 describe("Check answers test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
@@ -653,17 +658,30 @@ describe("Check answers test", () => {
       jest.resetAllMocks();
     });
 
-    // function expectAppInsightsEventRaised (tempClaimReference, claimReference, status) {
-    //   expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
-    //     name: 'claim-submitted',
-    //     properties: {
-    //       tempClaimReference,
-    //       claimReference,
-    //       state: status,
-    //       scheme: 'new-world'
-    //     }
-    //   })
-    // }
+    function expectAppInsightsEventRaised(
+      tempClaimReference,
+      claimReference,
+      applicationReference,
+      status,
+    ) {
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.any(Object),
+        "submit-claim",
+        `status: ${status}, sbi:undefined`,
+        {
+          reference: `applicationReference: ${applicationReference}, claimReference: ${claimReference}, tempClaimReference: ${tempClaimReference}`,
+        },
+      );
+      // expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
+      //   name: 'claim-submitted',
+      //   properties: {
+      //     tempClaimReference,
+      //     claimReference,
+      //     state: status,
+      //     scheme: 'new-world'
+      //   }
+      // })
+    }
 
     test.each([
       { latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths },
@@ -698,6 +716,7 @@ describe("Check answers test", () => {
         });
         submitNewClaim.mockImplementation(() => ({
           reference: "REPI-6GSE-PIR8",
+          status: "ON_HOLD",
           data: { amount: 200 },
         }));
 
@@ -739,7 +758,12 @@ describe("Check answers test", () => {
           expect.any(Object),
         );
 
-        // expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
+        expectAppInsightsEventRaised(
+          "tempClaimReference",
+          "REPI-6GSE-PIR8",
+          "TEMP-6GSE-PIR8",
+          "ON_HOLD",
+        );
       },
     );
 
@@ -777,6 +801,7 @@ describe("Check answers test", () => {
         });
         submitNewClaim.mockImplementation(() => ({
           reference: "FUSH-6GSE-PIR8",
+          status: "ON_HOLD",
           data: { amount: 200 },
         }));
 
@@ -828,7 +853,12 @@ describe("Check answers test", () => {
           expect.any(Object),
         );
 
-        // expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
+        expectAppInsightsEventRaised(
+          "tempClaimReference",
+          "FUSH-6GSE-PIR8",
+          "TEMP-6GSE-PIR8",
+          "ON_HOLD",
+        );
       },
     );
 
@@ -869,6 +899,7 @@ describe("Check answers test", () => {
       isMultipleHerdsUserJourney.mockReturnValue(true);
       submitNewClaim.mockImplementation(() => ({
         reference: "FUSH-6GSE-PIR8",
+        status: "IN_CHECK",
         data: { amount: 200 },
       }));
 
@@ -928,7 +959,12 @@ describe("Check answers test", () => {
         expect.any(Object),
       );
 
-      // expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
+      expectAppInsightsEventRaised(
+        "tempClaimReference",
+        "FUSH-6GSE-PIR8",
+        "TEMP-6GSE-PIR8",
+        "IN_CHECK",
+      );
     });
 
     test("when not logged in redirects to /sign-in", async () => {

@@ -16,9 +16,14 @@ import {
   getApplicationsBySbi,
 } from "../../../../../app/api-requests/application-api";
 import { when } from "jest-when";
+import { trackEvent } from "../../../../../app/logging/logger.js";
 
 jest.mock("../../../../../app/session/index");
 jest.mock("../../../../../app/api-requests/application-api");
+jest.mock("../../../../../app/logging/logger.js", () => ({
+  ...jest.requireActual("../../../../../app/logging/logger.js"),
+  trackEvent: jest.fn(),
+}));
 
 describe("Declaration test", () => {
   const organisation = {
@@ -131,6 +136,15 @@ describe("Declaration test", () => {
         { organisation, ...farmerApplyData },
         expect.anything(),
       );
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.anything(),
+        "submit-application",
+        "status: accepted sbi:0123456789",
+        {
+          reference:
+            "applicationReference: IAHW-PJ7E-WSI8, tempApplicationReference: TEMP-PJ7E-WSI8",
+        },
+      );
     });
 
     test("returns 200, shows offer rejection content on rejection", async () => {
@@ -162,6 +176,15 @@ describe("Declaration test", () => {
         { organisation, ...farmerApplyData },
         expect.anything(),
       );
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.anything(),
+        "submit-application",
+        "status: rejected sbi:0123456789",
+        {
+          reference:
+            "applicationReference: IAHW-PJ7E-WSI8, tempApplicationReference: TEMP-PJ7E-WSI8",
+        },
+      );
     });
 
     test("returns 400 when request is not valid", async () => {
@@ -192,6 +215,7 @@ describe("Declaration test", () => {
         "Select yes if you have read and agree to the terms and conditions",
       );
       expect(createApplication).not.toHaveBeenCalled();
+      expect(trackEvent).not.toHaveBeenCalled();
     });
 
     test("when not logged in redirects to dashboard /sign-in", async () => {

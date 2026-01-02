@@ -7,12 +7,19 @@ import * as apimModule from "../../../../app/auth/client-credential-grant/retrie
 import * as personAndOrgModule from "../../../../app/api-requests/rpa-api/get-person-and-org";
 import * as checkLoginValidModule from "../../../../app/routes/utils/check-login-valid";
 import * as cphCheckModule from "../../../../app/api-requests/rpa-api/cph-check";
+import { trackError, trackEvent } from "../../../../app/logging/logger.js";
+import { metricsCounter } from "../../../../app/lib/metrics.js";
 
 jest.mock("../../../../app/messaging/ineligibility-event-emission");
 
 jest.mock("../../../../app/session/index.js", () => ({
   ...jest.requireActual("../../../../app/session/index.js"),
   setFarmerApplyData: jest.fn(),
+}));
+jest.mock("../../../../app/logging/logger.js", () => ({
+  ...jest.requireActual("../../../../app/logging/logger.js"),
+  trackEvent: jest.fn(),
+  trackError: jest.fn(),
 }));
 
 const unitTestDefraId = "https://local-defra-id.com/stuff";
@@ -41,6 +48,7 @@ jest.mock("../../../../app/auth/auth-code-grant/request-authorization-code-url",
 }));
 
 jest.mock("../../../../app/api-requests/contact-history-api");
+jest.mock("../../../../app/lib/metrics.js");
 
 const getEncodedTestState = async (server, { invalid } = { invalid: false }) => {
   const rawState = {
@@ -94,6 +102,12 @@ describe("signin-oidc", () => {
     });
 
     expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+    expect(trackError).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.any(Error),
+      "signin-oidc-validation-failed",
+      "Signin OIDC validation failed",
+    );
   });
 
   test("state is not valid, 302 redirect user to defra id", async () => {
@@ -109,6 +123,7 @@ describe("signin-oidc", () => {
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location).toBe(unitTestDefraId);
+    expect(metricsCounter).toHaveBeenCalledWith("process_sign_in");
   });
 
   test("happy path", async () => {
@@ -133,6 +148,11 @@ describe("signin-oidc", () => {
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location).toBe("/the-happy-path");
+    expect(trackEvent).toHaveBeenCalledWith(expect.any(Object), "successful-login", "success", {
+      kind: "Farmer",
+      reference: "sbi: 999000, crn: 1100021396",
+    });
+    expect(metricsCounter).toHaveBeenCalledWith("process_sign_in");
   });
 
   test("user is not eligible to sign in, show the error page", async () => {
@@ -158,6 +178,7 @@ describe("signin-oidc", () => {
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location).toEqual("/cannot-sign-in");
+    expect(metricsCounter).toHaveBeenCalledWith("process_sign_in");
   });
 
   test("something unexpectedly throws an error, return 500", async () => {
@@ -177,5 +198,12 @@ describe("signin-oidc", () => {
     });
 
     expect(res.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
+    expect(trackError).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.any(Error),
+      "signin-oidc-failed",
+      "Problem during signin-oidc processing",
+    );
+    expect(metricsCounter).toHaveBeenCalledWith("process_sign_in");
   });
 });

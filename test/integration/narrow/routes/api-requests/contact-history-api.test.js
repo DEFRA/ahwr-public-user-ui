@@ -3,6 +3,10 @@ import { updateContactHistory } from "../../../../../app/api-requests/contact-hi
 import { testWreckApiFunction } from "../../../../helpers/test-wreck-api.js";
 
 jest.mock("@hapi/wreck");
+jest.mock("../../../../../app/logging/logger.js", () => ({
+  ...jest.requireActual("../../../../../app/logging/logger.js"),
+  trackError: jest.fn(),
+}));
 
 describe("contact history api", () => {
   beforeEach(() => {
@@ -11,8 +15,8 @@ describe("contact history api", () => {
 
   const makeLogger = () => ({ error: jest.fn() });
 
-  test("updateContactHistory", () => {
-    testWreckApiFunction({
+  test("updateContactHistory", async () => {
+    await testWreckApiFunction({
       fn: updateContactHistory,
       method: "put",
       endpoint: `${config.applicationApiUri}/applications/contact-history`,
@@ -33,7 +37,6 @@ describe("contact history api", () => {
         user: "admin",
       },
       returnPayload: "ABC123",
-      errorLogItems: { endpoint: `${config.applicationApiUri}/applications/contact-history` },
       logger: makeLogger(),
     });
   });
