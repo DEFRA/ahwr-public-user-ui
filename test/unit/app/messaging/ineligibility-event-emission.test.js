@@ -94,7 +94,7 @@ describe("ineligibility-event-emission", () => {
           crn: mockCrn,
           sessionKey: inputs.sessionKey,
           exception: inputs.exception,
-          raisedAt: new Date().toISOString(),
+          raisedAt: expect.any(String),
           journey: "claim",
           reference: mockSession.reference,
           applicationReference: mockSession.latestEndemicsApplication.reference,

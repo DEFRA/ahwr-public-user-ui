@@ -545,7 +545,7 @@ describe("POST /date-of-visit handler", () => {
       "claim-invalid-date-of-visit",
       "review",
       {
-        kind: "Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid",
+        kind: "2025-01-01 is invalid",
         reason: "There must be at least 10 months between your reviews.",
         reference: "TEMP-6GSE-PIR8",
       },
@@ -725,7 +725,7 @@ describe("POST /date-of-visit handler", () => {
       "review",
       {
         reason:
-          "User is attempting to claim for MS with a date of visit of Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) which is before MS was enabled.",
+          "User is attempting to claim for MS with a date of visit of 2025-01-01 which is before MS was enabled.",
         reference: "TEMP-6GSE-PIR8",
       },
     );
@@ -875,7 +875,7 @@ describe("POST /date-of-visit handler", () => {
       "claim-invalid-date-of-visit",
       "review",
       {
-        kind: "Thu Jan 02 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid",
+        kind: "2025-01-02 is invalid",
         reason: "There must be at least 10 months between your reviews.",
         reference: "TEMP-6GSE-PIR8",
       },
@@ -1103,7 +1103,7 @@ describe("POST /date-of-visit handler", () => {
       "follow-up",
       {
         reason:
-          "User is attempting to claim for dairy follow-up with a date of visit of Mon Jan 20 2025 00:00:00 GMT+0000 (Greenwich Mean Time) which is before dairy follow-ups was enabled.",
+          "User is attempting to claim for dairy follow-up with a date of visit of 2025-01-20 which is before dairy follow-ups was enabled.",
         reference: "TEMP-6GSE-PIR8",
       },
     );
@@ -1181,7 +1181,7 @@ describe("POST /date-of-visit handler", () => {
       "claim-invalid-date-of-visit",
       "follow-up",
       {
-        kind: "Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid",
+        kind: "2025-01-01 is invalid",
         reason: "There must be at least 10 months between your follow-ups.",
         reference: "TEMP-6GSE-PIR8",
       },
@@ -1327,7 +1327,7 @@ describe("POST /date-of-visit handler", () => {
       "claim-invalid-date-of-visit",
       "follow-up",
       {
-        kind: "Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid",
+        kind: "2025-01-01 is invalid",
         reason:
           "Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.",
         reference: "TEMP-6GSE-PIR8",
@@ -1397,7 +1397,7 @@ describe("POST /date-of-visit handler", () => {
       "claim-invalid-date-of-visit",
       "follow-up",
       {
-        kind: "Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid",
+        kind: "2025-01-01 is invalid",
         reason:
           "Your review claim must have been approved before you claim for the follow-up that happened after it.",
         reference: "TEMP-6GSE-PIR8",

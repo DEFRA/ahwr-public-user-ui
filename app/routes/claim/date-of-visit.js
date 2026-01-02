@@ -47,6 +47,14 @@ const isMSClaimBeforeMSRelease = (previousClaims, typeOfLivestock, dateOfVisit) 
   previousClaims?.some((claim) => claim.data.typeOfLivestock !== typeOfLivestock) &&
   dateOfVisit < MULTIPLE_SPECIES_RELEASE_DATE;
 
+const getReadableDate = (dateStringOrDate) => {
+  return  new Date(dateStringOrDate)
+    .toLocaleDateString("en-GB")
+    .split("/")
+    .reverse()
+    .join("-");
+}
+
 export const previousPageUrl = (
   latestVetVisitApplication,
   typeOfReview,
@@ -236,11 +244,7 @@ const postHandler = {
           inputsInError,
         };
 
-        const readableApplicationCreatedDate = new Date(newWorldApplication.createdAt)
-          .toLocaleDateString("en-GB")
-          .split("/")
-          .reverse()
-          .join("-");
+        const readableApplicationCreatedDate = getReadableDate(newWorldApplication.createdAt);
 
         trackEvent(request.logger, "claim-invalid-date-of-visit", reviewOrFollowUpText, {
           reference: tempClaimReference,
@@ -350,7 +354,7 @@ const checkForTimingException = async (
     isDairy && isEndemicsFollowUp && dateOfVisit < PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE;
 
   if (claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased) {
-    exception = `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`;
+    exception = `User is attempting to claim for dairy follow-up with a date of visit of ${getReadableDate(dateOfVisit)} which is before dairy follow-ups was enabled.`;
     exceptionView = claimViews.dairyFollowUpDateException;
   }
 
@@ -358,7 +362,7 @@ const checkForTimingException = async (
     !claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased &&
     isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)
   ) {
-    exception = `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`;
+    exception = `User is attempting to claim for MS with a date of visit of ${getReadableDate(dateOfVisit)} which is before MS was enabled.`;
     exceptionView = claimViews.multipleSpeciesDateException;
   }
 
@@ -439,7 +443,7 @@ const nonMhRouting = async (
   if (errorMessage) {
     trackEvent(request.logger, "claim-invalid-date-of-visit", reviewOrFollowUpText, {
       reference: tempClaimReference,
-      kind: `${dateOfVisit} is invalid`,
+      kind: `${getReadableDate(dateOfVisit)} is invalid`,
       reason: errorMessage,
     });
 
