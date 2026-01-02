@@ -127,7 +127,7 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("You cannot continue with your claim");
-     expect(sendInvalidDataEvent).toHaveBeenCalled()
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
       expect(clearPiHuntSessionOnChange).toHaveBeenCalled();
     });
 
@@ -148,7 +148,7 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("You cannot continue with your claim");
-     expect(sendInvalidDataEvent).toHaveBeenCalled()
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
       expect(clearPiHuntSessionOnChange).not.toHaveBeenCalled();
     });
 
@@ -244,7 +244,7 @@ describe("PI Hunt tests when Optional PI Hunt is ON", () => {
 
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/biosecurity");
-     expect(sendInvalidDataEvent).toHaveBeenCalled()
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
   });
 });

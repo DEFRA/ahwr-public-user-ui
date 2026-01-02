@@ -1,27 +1,29 @@
 import { StatusCodes } from "http-status-codes";
 import { createServer } from "../../../../app/server.js";
 import {
+  clearAllOfSession,
   getSessionData,
   sessionEntryKeys,
   sessionKeys,
-  clearAllOfSession,
 } from "../../../../app/session/index.js";
 import { clearAuthCookie } from "../../../../app/auth/cookie-auth/cookie-auth.js";
 import { signOutUrl } from "../../../../app/routes/sign-out.js";
 import { config } from "../../../../app/config/index.js";
 import { when } from "jest-when";
+import { metricsCounter } from "../../../../app/lib/metrics.js";
 
 jest.mock("../../../../app/session", () => {
   const actual = jest.requireActual("../../../../app/session");
   // Mocking everything apart from sessionKeys and sessionEntryKeys
-  const mocked = Object.keys(actual).reduce((acc, key) => {
+  return Object.keys(actual).reduce((acc, key) => {
     acc[key] = key === "sessionKeys" || key === "sessionEntryKeys" ? actual[key] : jest.fn();
     return acc;
   }, {});
-  return mocked;
 });
 
 jest.mock("../../../../app/auth/cookie-auth/cookie-auth.js");
+
+jest.mock("../../../../app/lib/metrics.js");
 
 const accessToken = "access-token";
 
@@ -61,5 +63,6 @@ describe("GET /sign-out handler", () => {
     expect(url.pathname).toMatch(/\/oauth2\/v2\.0\/logout$/);
     expect(searchParams.get("post_logout_redirect_uri")).toBe(`${config.serviceUri}sign-in`);
     expect(searchParams.get("id_token_hint")).toBe(accessToken);
+    expect(metricsCounter).toHaveBeenCalledWith("sign_out");
   });
 });

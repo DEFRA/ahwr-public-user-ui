@@ -171,8 +171,7 @@ const postHandler = {
         })
         .code(HttpStatus.BAD_REQUEST)
         .takeover();
-    }
-    
+    },
   },
 };
 

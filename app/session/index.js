@@ -105,7 +105,7 @@ export const setSessionEntry = async (
   request,
   entryKey,
   value,
-  { shouldEmitEvent } = { shouldEmitEvent: true },
+  { shouldEmitEvent = true } = {},
 ) => {
   if (!sessionEntryKeys[entryKey]) {
     throw new Error(
@@ -126,7 +126,7 @@ export const setSessionData = async (
   entryKey,
   key,
   value,
-  { shouldEmitEvent } = { shouldEmitEvent: true },
+  { shouldEmitEvent = true } = {},
 ) => {
   if (!sessionEntryKeys[entryKey]) {
     throw new Error(

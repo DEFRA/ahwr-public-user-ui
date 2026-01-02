@@ -15,7 +15,7 @@ import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/api-requests/claim-api");
 jest.mock("../../../../../app/lib/can-make-claim.js");
-jest.mock("../../../../../app/messaging/ineligibility-event-emission.js")
+jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 
 describe("select-the-herd tests", () => {
   const url = `/select-the-herd`;

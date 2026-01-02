@@ -7,6 +7,7 @@ import {
 import { clearAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { authConfig } from "../config/auth.js";
 import { config } from "../config/index.js";
+import { metricsCounter } from "../lib/metrics.js";
 
 export const signOutUrl = `${authConfig.defraId.hostname}/${authConfig.defraId.policy}/oauth2/v2.0/logout`;
 
@@ -33,6 +34,7 @@ export const signOutHandlers = [
         );
         clearAllOfSession(request);
         clearAuthCookie(request);
+        await metricsCounter("sign_out");
 
         return h.redirect(getSignOutUrl(token));
       },
