@@ -32,9 +32,13 @@ export const signOutHandlers = [
           sessionEntryKeys.tokens,
           sessionKeys.tokens.accessToken,
         );
-        clearAllOfSession(request);
-        clearAuthCookie(request);
-        await metricsCounter("sign_out");
+
+        if (request.auth.isAuthenticated) {
+          await clearAllOfSession(request);
+          clearAuthCookie(request);
+          await metricsCounter("sign_out");
+        }
+       
 
         return h.redirect(getSignOutUrl(token));
       },

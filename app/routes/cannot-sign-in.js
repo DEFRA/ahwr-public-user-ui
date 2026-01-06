@@ -38,7 +38,7 @@ export const cannotSignInExceptionHandlers = [
         const signOutLink = getSignOutUrl(token);
 
         // log them out on our end, not defra id
-        clearAllOfSession(request);
+        await clearAllOfSession(request);
         clearAuthCookie(request);
 
         return h.view("cannot-sign-in-exception", {
