@@ -169,8 +169,14 @@ export const getSessionData = (request, entryKey, key) => {
   return request.yar.get(entryKey);
 };
 
-export function clearAllOfSession(request) {
+export async function clearAllOfSession(request) {
+  // This line may not be required, but it cant hurt to clean up everything first
   Object.keys(sessionEntryKeys).forEach((value) => request.yar.clear(value));
+
+  if (request.auth.credentials?.sessionId) {
+    // Clear the session cache before redirecting to Defra ID to clear SSO session
+    await request.server.app.cache.drop(request.auth.credentials.sessionId);
+  }
 }
 
 export function clearApplyRedirect(request) {

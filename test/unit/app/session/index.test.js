@@ -28,9 +28,15 @@ describe("session", () => {
   });
 
   describe("clearAllOfSession", () => {
-    test("yar.clear is called for all entries (no exclusions)", () => {
-      const request = { yar: yarMock };
-      clearAllOfSession(request);
+    test("yar.clear is called for all entries (no exclusions)", async () => {
+      const mockDropFn = jest.fn();
+      const sessionId = 123;
+      const request = {
+        yar: yarMock,
+        auth: { credentials: { sessionId } },
+        server: { app: { cache: { drop: mockDropFn } } },
+      };
+      await clearAllOfSession(request);
 
       const entryKeyValuePairs = Object.entries(sessionEntryKeys);
       expect(yarMock.clear).toHaveBeenCalledTimes(entryKeyValuePairs.length);
@@ -38,6 +44,8 @@ describe("session", () => {
       entryKeyValuePairs.forEach(([key, value]) => {
         expect(yarMock.clear).toHaveBeenCalledWith(value);
       });
+
+      expect(mockDropFn).toHaveBeenCalledWith(sessionId);
     });
   });
 

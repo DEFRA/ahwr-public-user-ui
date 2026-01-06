@@ -113,7 +113,7 @@ export const signinRouteHandlers = [
             "Problem during signin-oidc processing",
           );
 
-          clearAllOfSession(request);
+          await clearAllOfSession(request);
           clearAuthCookie(request);
 
           return h
