@@ -26,7 +26,7 @@ export const trackHandlers = [
       },
     },
     handler: (request, h) => {
-      request.logger.error(
+      request.logger.info(
         {
           error: new Error("test error direct"),
           event: {
