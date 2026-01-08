@@ -31,7 +31,6 @@ export const trackHandlers = [
           error: new Error("test error direct"),
           event: {
             type: "exception",
-            severity: "error",
             category: "test-trackerror-direct"
           },
         },
@@ -42,7 +41,6 @@ export const trackHandlers = [
           error: new Error("test error direct"),
           event: {
             type: "exception",
-            severity: "error",
             category: "test-trackerror-direct"
           },
         },
@@ -65,7 +63,6 @@ export const trackHandlers = [
         {
           event: {
             type: "exception",
-            severity: "error",
             category: "test-trackerror-direct-noerror"
           },
         },
@@ -75,7 +72,6 @@ export const trackHandlers = [
         {
           event: {
             type: "exception",
-            severity: "error",
             category: "test-trackerror-direct-noerror"
           },
         },

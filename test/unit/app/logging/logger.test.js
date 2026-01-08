@@ -23,7 +23,6 @@ describe("logger", () => {
         error: testError,
         event: {
           type: "exception",
-          severity: "error",
           category,
         },
       },
