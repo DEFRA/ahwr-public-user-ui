@@ -52,11 +52,9 @@ import { vetRCVSHandlers } from "../routes/claim/vet-rcvs.js";
 import { vetVisitsReviewTestResultsHandlers } from "../routes/claim/vet-visits-review-test-results.js";
 import { whichSpeciesHandlers } from "../routes/claim/which-species.js";
 import { whichReviewHandlers } from "../routes/claim/which-type-of-review.js";
-import { trackHandlers } from "../routes/track.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
-  trackHandlers,
   assetsRouteHandlers,
   cookieHandlers,
   entryPointHandlers,
