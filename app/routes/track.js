@@ -35,6 +35,17 @@ export const trackHandlers = [
             category: "test-trackerror-direct"
           },
         },
+        "This is a direct tracking error - but info level",
+      );
+      request.logger.error(
+        {
+          error: new Error("test error direct"),
+          event: {
+            type: "exception",
+            severity: "error",
+            category: "test-trackerror-direct"
+          },
+        },
         "This is a direct tracking error",
       );
       return h.response("ok").code(StatusCodes.OK);
