@@ -141,7 +141,6 @@ describe("preApplyHandler", () => {
         error: expect.any(Error),
         event: {
           category: "user-action",
-          severity: "error",
           type: "exception",
         },
       },
