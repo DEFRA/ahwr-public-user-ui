@@ -35,7 +35,7 @@ export const trackHandlers = [
             category: "test-trackerror-direct"
           },
         },
-        "This is a direct tracking error - but info level",
+        "This is (info) with both event and error",
       );
       request.logger.error(
         {
@@ -46,7 +46,7 @@ export const trackHandlers = [
             category: "test-trackerror-direct"
           },
         },
-        "This is a direct tracking error",
+        "This is (error) with both event and error",
       );
       return h.response("ok").code(StatusCodes.OK);
     },
@@ -69,7 +69,17 @@ export const trackHandlers = [
             category: "test-trackerror-direct-noerror"
           },
         },
-        "This is a direct tracking error with event but no error",
+        "This is (error) with event but no error",
+      );
+      request.logger.info(
+        {
+          event: {
+            type: "exception",
+            severity: "error",
+            category: "test-trackerror-direct-noerror"
+          },
+        },
+        "This is (info) with event but no error",
       );
       return h.response("ok").code(StatusCodes.OK);
     },
@@ -88,7 +98,13 @@ export const trackHandlers = [
         {
           error: new Error("test error only direct"),
         },
-        "This is a direct tracking error with no event",
+        "This is (error) with error but no event",
+      );
+      request.logger.info(
+        {
+          error: new Error("test error only direct"),
+        },
+        "This is (info) with error but no event",
       );
       return h.response("ok").code(StatusCodes.OK);
     },
