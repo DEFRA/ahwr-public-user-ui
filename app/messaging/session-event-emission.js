@@ -11,6 +11,8 @@ const EVENT_KEY_BY_SESSION_KEY = {
   numberAnimalsTested: "animalsTested",
 };
 
+const renameSessionKeysForEventReporting = (key) => EVENT_KEY_BY_SESSION_KEY[key] ?? key;
+
 export const sendSessionEvent = async ({
   id,
   sbi,
