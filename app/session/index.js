@@ -1,6 +1,7 @@
 import { sendHerdEvent, sendSessionEvent } from "../messaging/session-event-emission.js";
 
 export const sessionKeys = {
+  tempReference: "tempReference",
   farmerApplyData: {
     eligibleSpecies: "eligibleSpecies",
     declaration: "declaration",
@@ -89,6 +90,7 @@ export const sessionKeys = {
 // for example signInRedirect only stores a boolean, so it doesnt
 // need an object defining above.
 export const sessionEntryKeys = {
+  tempReference: "tempReference",
   farmerApplyData: "farmerApplyData",
   endemicsClaim: "endemicsClaim",
   pkcecodes: "pkcecodes",
@@ -277,8 +279,8 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
       journey: "farmerApplyData",
       sessionKey: key,
       value,
-      claimReference: claimData?.reference ?? "N/A",
-      applicationReference: farmerApplyData?.reference ?? "N/A",
+      claimReference: claimData?.reference,
+      reference: farmerApplyData?.reference,
     });
 
     return;
@@ -293,8 +295,8 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
       journey: "claim",
       sessionKey: key,
       value,
-      claimReference: claimData?.reference ?? "N/A",
-      applicationReference: farmerApplyData?.reference ?? "N/A",
+      claimReference: claimData?.reference,
+      applicationReference: farmerApplyData?.reference,
     });
 
     return;
@@ -308,8 +310,8 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
     journey: entryKey,
     sessionKey: key ?? entryKey,
     value,
-    claimReference: claimData?.reference ?? "N/A",
-    applicationReference: farmerApplyData?.reference ?? "N/A",
+    claimReference: claimData?.reference,
+    applicationReference: farmerApplyData?.reference,
   });
 };
 

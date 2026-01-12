@@ -27,6 +27,25 @@ const formatOrganisation = (organisation) => ({
   address: organisation.address.split(",").map((line) => line.trim()),
 });
 
+const processRejectedApplication = async (h, request) => {
+  // create new tempApplicationId as the current one has been used to create a rejected application
+  const tempApplicationId = createTempReference({ referenceForClaim: false });
+
+  // TODO - find an alternative to setBindings
+  request.logger.setBindings({ newTempApplicationId: tempApplicationId });
+
+  await setSessionData(
+    request,
+    sessionEntryKeys.farmerApplyData,
+    sessionKeys.farmerApplyData.reference,
+    tempApplicationId,
+  );
+
+  return h.view(applyViews.offerRejected, {
+    offerRejected: true,
+  });
+};
+
 export const declarationRouteHandlers = [
   {
     method: "get",
@@ -91,7 +110,6 @@ export const declarationRouteHandlers = [
           sessionKeys.farmerApplyData.confirmCheckDetails,
           "yes",
         );
-
         const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
         const { reference: tempApplicationReference } = farmerApplyData;
@@ -128,27 +146,17 @@ export const declarationRouteHandlers = [
             sessionKeys.farmerApplyData.reference,
             applicationReference,
           );
-
+          await setSessionData(
+            request,
+            sessionEntryKeys.tempReference,
+            sessionKeys.tempReference,
+            tempApplicationReference,
+          );
           clearApplyRedirect(request);
         }
 
         if (request.payload.offerStatus === "rejected") {
-          // create new tempApplicationId as the current one has been used to create a rejected application
-          const tempApplicationId = createTempReference({ referenceForClaim: false });
-
-          // TODO - find an alternative to setBindings
-          request.logger.setBindings({ newTempApplicationId: tempApplicationId });
-
-          await setSessionData(
-            request,
-            sessionEntryKeys.farmerApplyData,
-            sessionKeys.farmerApplyData.reference,
-            tempApplicationId,
-          );
-
-          return h.view(applyViews.offerRejected, {
-            offerRejected: true,
-          });
+          return processRejectedApplication(h, request);
         }
 
         if (!applicationReference) {

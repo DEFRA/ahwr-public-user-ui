@@ -3,6 +3,14 @@ import { getEventPublisher } from "./fcp-messaging-service.js";
 
 const SEND_SESSION_EVENT = "send-session-event";
 
+const EVENT_KEY_BY_SESSION_KEY = {
+  laboratoryURN: "urnResult",
+  vetsName: "vetName",
+  vetRCVSNumber: "vetRcvs",
+  dateOfVisit: "visitDate",
+  numberAnimalsTested: "animalsTested",
+};
+
 export const sendSessionEvent = async ({
   id,
   sbi,
@@ -11,9 +19,11 @@ export const sendSessionEvent = async ({
   sessionKey,
   value,
   claimReference,
-  applicationReference,
+  applicationReference = undefined,
+  reference = undefined, // apply applicationReference
 }) => {
   const { publishEvent } = getEventPublisher();
+  const eventKey = EVENT_KEY_BY_SESSION_KEY[sessionKey] ?? sessionKey;
 
   const payload = {
     name: SEND_SESSION_EVENT,
@@ -22,9 +32,9 @@ export const sendSessionEvent = async ({
     cph: "n/a",
     checkpoint: config.serviceName,
     status: "success",
-    type: `${journey}-${sessionKey}`, // e.g. claim-vetsName or farmerApplyData-agreeMultipleSpecies
-    message: `Session set for ${journey} and ${sessionKey}.`,
-    data: { claimReference, applicationReference, [sessionKey]: value },
+    type: `${journey}-${eventKey}`, // e.g. claim-vetsName or farmerApplyData-agreeMultipleSpecies
+    message: `Session set for ${journey} and ${eventKey}.`,
+    data: { claimReference, applicationReference, reference, [eventKey]: value },
     raisedBy: email,
     raisedOn: new Date().toISOString(),
   };

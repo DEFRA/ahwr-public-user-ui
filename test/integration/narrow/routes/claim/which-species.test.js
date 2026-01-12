@@ -95,6 +95,10 @@ describe("Endemics which species test", () => {
   );
 
   describe("POST claim/endemics/which-species", () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
     test("should display error when livestock not selected", async () => {
       const options = {
         method: "POST",
@@ -123,7 +127,6 @@ describe("Endemics which species test", () => {
         payload: { crumb, typeOfLivestock: "sheep" },
       };
       getSessionData.mockReturnValue({
-        typeOfLivestock: "sheep",
         latestEndemicsApplication: { reference: "TEMP-6GSE-PIR8" },
       });
 
@@ -132,6 +135,7 @@ describe("Endemics which species test", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/which-type-of-review");
       expect(setSessionData).toHaveBeenCalled();
+      expect(resetEndemicsClaimSession).not.toHaveBeenCalled();
     });
 
     test("should redirect to next page when livestock selected has changed from previous session", async () => {

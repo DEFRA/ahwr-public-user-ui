@@ -38,7 +38,6 @@ export const signOutHandlers = [
           clearAuthCookie(request);
           await metricsCounter("sign_out");
         }
-       
 
         return h.redirect(getSignOutUrl(token));
       },
