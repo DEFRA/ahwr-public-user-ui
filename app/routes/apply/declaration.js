@@ -27,6 +27,25 @@ const formatOrganisation = (organisation) => ({
   address: organisation.address.split(",").map((line) => line.trim()),
 });
 
+const processRejectedApplication = async (h, request) => {
+  // create new tempApplicationId as the current one has been used to create a rejected application
+  const tempApplicationId = createTempReference({ referenceForClaim: false });
+
+  // TODO - find an alternative to setBindings
+  request.logger.setBindings({ newTempApplicationId: tempApplicationId });
+
+  await setSessionData(
+    request,
+    sessionEntryKeys.farmerApplyData,
+    sessionKeys.farmerApplyData.reference,
+    tempApplicationId,
+  );
+
+  return h.view(applyViews.offerRejected, {
+    offerRejected: true,
+  });
+};
+
 export const declarationRouteHandlers = [
   {
     method: "get",
@@ -95,10 +114,12 @@ export const declarationRouteHandlers = [
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
         const { reference: tempApplicationReference } = farmerApplyData;
 
+        // TODO - find an alternative to setBindings
         request.logger.setBindings({
           tempApplicationReference,
           sbi: organisation.sbi,
-        }); // TODO - find an alternative to setBindings
+        });
+
         resetFarmerApplyDataBeforeApplication(farmerApplyData);
 
         const { applicationReference } = await createApplication(
@@ -106,7 +127,8 @@ export const declarationRouteHandlers = [
           request.logger,
         );
 
-        request.logger.setBindings({ applicationReference }); // TODO - find an alternative to setBindings
+        // TODO - find an alternative to setBindings
+        request.logger.setBindings({ applicationReference });
 
         trackEvent(
           request.logger,
@@ -134,20 +156,7 @@ export const declarationRouteHandlers = [
         }
 
         if (request.payload.offerStatus === "rejected") {
-          // create new tempApplicationId as the current one has been used to create a rejected application
-          const tempApplicationId = createTempReference({ referenceForClaim: false });
-
-          // TODO - find an alternative to setBindings
-          request.logger.setBindings({ newTempApplicationId: tempApplicationId });
-          await setSessionData(
-            request,
-            sessionEntryKeys.farmerApplyData,
-            sessionKeys.farmerApplyData.reference,
-            tempApplicationId,
-          );
-          return h.view(applyViews.offerRejected, {
-            offerRejected: true,
-          });
+          return processRejectedApplication(h, request);
         }
 
         if (!applicationReference) {
