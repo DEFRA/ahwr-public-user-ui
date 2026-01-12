@@ -46,10 +46,27 @@ describe("Send event on session set", () => {
       jest.resetAllMocks();
     });
 
-    test("should call publishEvent when a valid event is received", async () => {
+    test("should call publishEvent when a valid event", async () => {
       await sendSessionEvent(event);
 
       expect(mockPublishEvent).toHaveBeenCalledWith(publishedEvent);
+    });
+
+    test("should call publishEvent with apply applicationReference when valid event", async () => {
+      await sendSessionEvent({
+        ...event,
+        applicationReference: undefined,
+        reference: "IAHW-G3CL-V59P",
+      });
+
+      expect(mockPublishEvent).toHaveBeenCalledWith({
+        ...publishedEvent,
+        data: {
+          ...publishedEvent.data,
+          reference: publishedEvent.data.applicationReference,
+          applicationReference: undefined,
+        },
+      });
     });
 
     describe("should call publishEvent with renamed keys when identified", () => {
