@@ -8,37 +8,37 @@ jest.mock("./fcp-messaging-service.js", () => ({
   })),
 }));
 
+const event = {
+  id: "9e016c50-046b-4597-b79a-ebe4f0bf8505",
+  sbi: "123456789",
+  email: "email@email.com",
+  journey: "claim",
+  sessionKey: "agreeMultipleSpecies",
+  value: "yes",
+  claimReference: "FUBC-JTTU-SDQ7",
+  applicationReference: "IAHW-G3CL-V59P",
+};
+
+const publishedEvent = {
+  name: "send-session-event",
+  id: "9e016c50-046b-4597-b79a-ebe4f0bf8505",
+  sbi: "123456789",
+  cph: "n/a",
+  checkpoint: "Get funding to improve animal health and welfare",
+  status: "success",
+  type: "claim-agreeMultipleSpecies",
+  message: "Session set for claim and agreeMultipleSpecies.",
+  data: {
+    claimReference: "FUBC-JTTU-SDQ7",
+    applicationReference: "IAHW-G3CL-V59P",
+    agreeMultipleSpecies: "yes",
+  },
+  raisedBy: "email@email.com",
+  raisedOn: expect.any(String),
+};
+
 describe("Send event on session set", () => {
   describe("sendSessionEvent", () => {
-    const event = {
-      id: "9e016c50-046b-4597-b79a-ebe4f0bf8505",
-      sbi: "123456789",
-      email: "email@email.com",
-      journey: "claim",
-      sessionKey: "agreeMultipleSpecies",
-      value: "yes",
-      claimReference: "FUBC-JTTU-SDQ7",
-      applicationReference: "IAHW-G3CL-V59P",
-    };
-
-    const publishedEvent = {
-      name: "send-session-event",
-      id: "9e016c50-046b-4597-b79a-ebe4f0bf8505",
-      sbi: "123456789",
-      cph: "n/a",
-      checkpoint: "Get funding to improve animal health and welfare",
-      status: "success",
-      type: "claim-agreeMultipleSpecies",
-      message: "Session set for claim and agreeMultipleSpecies.",
-      data: {
-        claimReference: "FUBC-JTTU-SDQ7",
-        applicationReference: "IAHW-G3CL-V59P",
-        agreeMultipleSpecies: "yes",
-      },
-      raisedBy: "email@email.com",
-      raisedOn: expect.any(String),
-    };
-
     test("should call publishEvent when a valid event is received", async () => {
       await sendSessionEvent(event);
 
@@ -54,8 +54,7 @@ describe("Send event on session set", () => {
           type: `claim-urnResult`,
           message: `Session set for claim and urnResult.`,
           data: {
-            claimReference: "FUBC-JTTU-SDQ7",
-            applicationReference: "IAHW-G3CL-V59P",
+            ...publishedEvent.data,
             urnResult: "URN34567ddd",
           },
         });
@@ -69,8 +68,7 @@ describe("Send event on session set", () => {
           type: `claim-vetName`,
           message: `Session set for claim and vetName.`,
           data: {
-            claimReference: "FUBC-JTTU-SDQ7",
-            applicationReference: "IAHW-G3CL-V59P",
+            ...publishedEvent.data,
             vetName: "John Doe",
           },
         });
@@ -84,8 +82,7 @@ describe("Send event on session set", () => {
           type: `claim-vetRcvs`,
           message: `Session set for claim and vetRcvs.`,
           data: {
-            claimReference: "FUBC-JTTU-SDQ7",
-            applicationReference: "IAHW-G3CL-V59P",
+            ...publishedEvent.data,
             vetRcvs: "1111111",
           },
         });
@@ -103,8 +100,7 @@ describe("Send event on session set", () => {
           type: `claim-visitDate`,
           message: `Session set for claim and visitDate.`,
           data: {
-            claimReference: "FUBC-JTTU-SDQ7",
-            applicationReference: "IAHW-G3CL-V59P",
+            ...publishedEvent.data,
             visitDate: new Date("2025-08-15T00:00:00.000Z").toISOString(),
           },
         });
@@ -118,8 +114,7 @@ describe("Send event on session set", () => {
           type: `claim-animalsTested`,
           message: `Session set for claim and animalsTested.`,
           data: {
-            claimReference: "FUBC-JTTU-SDQ7",
-            applicationReference: "IAHW-G3CL-V59P",
+            ...publishedEvent.data,
             animalsTested: "10",
           },
         });
