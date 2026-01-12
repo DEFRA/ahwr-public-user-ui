@@ -99,7 +99,7 @@ export const declarationRouteHandlers = [
         request.logger.setBindings({
           tempApplicationReference,
           sbi: organisation.sbi,
-        });  // TODO - find an alternative to setBindings
+        }); // TODO - find an alternative to setBindings
         resetFarmerApplyDataBeforeApplication(farmerApplyData);
 
         const { applicationReference } = await createApplication(

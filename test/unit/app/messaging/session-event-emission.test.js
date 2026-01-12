@@ -1,11 +1,11 @@
-import { sendSessionEvent } from "./session-event-emission.js";
+import { sendSessionEvent } from "../../../../app/messaging/session-event-emission.js";
 
 const mockPublishEvent = jest.fn();
 
-jest.mock("./fcp-messaging-service.js", () => ({
-  getEventPublisher: jest.fn(() => ({
+jest.mock("../../../../app/messaging/fcp-messaging-service", () => ({
+  getEventPublisher: () => ({
     publishEvent: mockPublishEvent,
-  })),
+  }),
 }));
 
 const event = {
@@ -39,6 +39,10 @@ const publishedEvent = {
 
 describe("Send event on session set", () => {
   describe("sendSessionEvent", () => {
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+
     test("should call publishEvent when a valid event is received", async () => {
       await sendSessionEvent(event);
 
@@ -54,7 +58,8 @@ describe("Send event on session set", () => {
           type: `claim-urnResult`,
           message: `Session set for claim and urnResult.`,
           data: {
-            ...publishedEvent.data,
+            claimReference: publishedEvent.data.claimReference,
+            applicationReference: publishedEvent.data.applicationReference,
             urnResult: "URN34567ddd",
           },
         });
@@ -68,7 +73,8 @@ describe("Send event on session set", () => {
           type: `claim-vetName`,
           message: `Session set for claim and vetName.`,
           data: {
-            ...publishedEvent.data,
+            claimReference: publishedEvent.data.claimReference,
+            applicationReference: publishedEvent.data.applicationReference,
             vetName: "John Doe",
           },
         });
@@ -82,7 +88,8 @@ describe("Send event on session set", () => {
           type: `claim-vetRcvs`,
           message: `Session set for claim and vetRcvs.`,
           data: {
-            ...publishedEvent.data,
+            claimReference: publishedEvent.data.claimReference,
+            applicationReference: publishedEvent.data.applicationReference,
             vetRcvs: "1111111",
           },
         });
@@ -100,7 +107,8 @@ describe("Send event on session set", () => {
           type: `claim-visitDate`,
           message: `Session set for claim and visitDate.`,
           data: {
-            ...publishedEvent.data,
+            claimReference: publishedEvent.data.claimReference,
+            applicationReference: publishedEvent.data.applicationReference,
             visitDate: new Date("2025-08-15T00:00:00.000Z").toISOString(),
           },
         });
@@ -114,7 +122,8 @@ describe("Send event on session set", () => {
           type: `claim-animalsTested`,
           message: `Session set for claim and animalsTested.`,
           data: {
-            ...publishedEvent.data,
+            claimReference: publishedEvent.data.claimReference,
+            applicationReference: publishedEvent.data.applicationReference,
             animalsTested: "10",
           },
         });
