@@ -128,7 +128,12 @@ export const declarationRouteHandlers = [
             sessionKeys.farmerApplyData.reference,
             applicationReference,
           );
-
+          await setSessionData(
+            request,
+            sessionEntryKeys.tempReference,
+            sessionKeys.tempReference,
+            tempApplicationReference,
+          );
           clearApplyRedirect(request);
         }
 

@@ -70,7 +70,7 @@ const postHandler = {
         latestEndemicsApplication,
       } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-      if (typeOfLivestock !== prevTypeOfLivestock) {
+      if (prevTypeOfLivestock && typeOfLivestock !== prevTypeOfLivestock) {
         await resetEndemicsClaimSession(request, latestEndemicsApplication.reference, reference);
       }
 
