@@ -3,35 +3,15 @@ import { getEventPublisher } from "./fcp-messaging-service.js";
 
 const SEND_SESSION_EVENT = "send-session-event";
 
-// This has been done to keep consistent with old journey.
-// Should look at refactoring this for best name options.
-const renameSessionKeysForEventReporting = (key) => {
-  switch (key) {
-    case "laboratoryURN": {
-      key = "urnResult";
-      break;
-    }
-    case "vetsName": {
-      key = "vetName";
-      break;
-    }
-    case "vetRCVSNumber": {
-      key = "vetRcvs";
-      break;
-    }
-    case "dateOfVisit": {
-      key = "visitDate";
-      break;
-    }
-    case "numberAnimalsTested": {
-      key = "animalsTested";
-      break;
-    }
-    default:
-      break;
-  }
-  return key;
+const EVENT_KEY_BY_SESSION_KEY = {
+  laboratoryURN: "urnResult",
+  vetsName: "vetName",
+  vetRCVSNumber: "vetRcvs",
+  dateOfVisit: "visitDate",
+  numberAnimalsTested: "animalsTested",
 };
+
+const renameSessionKeysForEventReporting = (key) => EVENT_KEY_BY_SESSION_KEY[key] ?? key;
 
 export const sendSessionEvent = async ({
   id,
