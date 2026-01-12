@@ -91,7 +91,6 @@ export const declarationRouteHandlers = [
           sessionKeys.farmerApplyData.confirmCheckDetails,
           "yes",
         );
-
         const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
         const { reference: tempApplicationReference } = farmerApplyData;
@@ -140,14 +139,12 @@ export const declarationRouteHandlers = [
 
           // TODO - find an alternative to setBindings
           request.logger.setBindings({ newTempApplicationId: tempApplicationId });
-
           await setSessionData(
             request,
             sessionEntryKeys.farmerApplyData,
             sessionKeys.farmerApplyData.reference,
             tempApplicationId,
           );
-
           return h.view(applyViews.offerRejected, {
             offerRejected: true,
           });

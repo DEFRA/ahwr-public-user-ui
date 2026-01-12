@@ -1,4 +1,7 @@
-import { sendSessionEvent } from "../../../../app/messaging/session-event-emission.js";
+import {
+  sendHerdEvent,
+  sendSessionEvent,
+} from "../../../../app/messaging/session-event-emission.js";
 
 const mockPublishEvent = jest.fn();
 
@@ -8,37 +11,37 @@ jest.mock("../../../../app/messaging/fcp-messaging-service", () => ({
   }),
 }));
 
-const event = {
-  id: "9e016c50-046b-4597-b79a-ebe4f0bf8505",
-  sbi: "123456789",
-  email: "email@email.com",
-  journey: "claim",
-  sessionKey: "agreeMultipleSpecies",
-  value: "yes",
-  claimReference: "FUBC-JTTU-SDQ7",
-  applicationReference: "IAHW-G3CL-V59P",
-};
-
-const publishedEvent = {
-  name: "send-session-event",
-  id: "9e016c50-046b-4597-b79a-ebe4f0bf8505",
-  sbi: "123456789",
-  cph: "n/a",
-  checkpoint: "Get funding to improve animal health and welfare",
-  status: "success",
-  type: "claim-agreeMultipleSpecies",
-  message: "Session set for claim and agreeMultipleSpecies.",
-  data: {
-    claimReference: "FUBC-JTTU-SDQ7",
-    applicationReference: "IAHW-G3CL-V59P",
-    agreeMultipleSpecies: "yes",
-  },
-  raisedBy: "email@email.com",
-  raisedOn: expect.any(String),
-};
-
 describe("Send event on session set", () => {
   describe("sendSessionEvent", () => {
+    const event = {
+      id: "9e016c50-046b-4597-b79a-ebe4f0bf8505",
+      sbi: "123456789",
+      email: "email@email.com",
+      journey: "claim",
+      sessionKey: "agreeMultipleSpecies",
+      value: "yes",
+      claimReference: "FUBC-JTTU-SDQ7",
+      applicationReference: "IAHW-G3CL-V59P",
+    };
+
+    const publishedEvent = {
+      name: "send-session-event",
+      id: "9e016c50-046b-4597-b79a-ebe4f0bf8505",
+      sbi: "123456789",
+      cph: "n/a",
+      checkpoint: "Get funding to improve animal health and welfare",
+      status: "success",
+      type: "claim-agreeMultipleSpecies",
+      message: "Session set for claim and agreeMultipleSpecies.",
+      data: {
+        claimReference: "FUBC-JTTU-SDQ7",
+        applicationReference: "IAHW-G3CL-V59P",
+        agreeMultipleSpecies: "yes",
+      },
+      raisedBy: "email@email.com",
+      raisedOn: expect.any(String),
+    };
+
     afterEach(() => {
       jest.resetAllMocks();
     });
@@ -127,6 +130,45 @@ describe("Send event on session set", () => {
             animalsTested: "10",
           },
         });
+      });
+    });
+  });
+
+  describe("sendHerdEvent", () => {
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+
+    test("should call publishEvent when a valid event is received", async () => {
+      await sendHerdEvent({
+        sessionId: "9e016c50-046b-4597-b79a-ebe4f0bf8505",
+        sbi: "123456789",
+        email: "email@email.com",
+        type: "herd-name",
+        message: "Herd name collected from user",
+        data: {
+          herdId: "1",
+          herdVersion: 1,
+          herdName: "John Doe",
+        },
+      });
+
+      expect(mockPublishEvent).toHaveBeenCalledWith({
+        name: "send-session-event",
+        id: "9e016c50-046b-4597-b79a-ebe4f0bf8505",
+        sbi: "123456789",
+        cph: "n/a",
+        checkpoint: "Get funding to improve animal health and welfare",
+        status: "success",
+        type: "herd-name",
+        message: "Herd name collected from user",
+        data: {
+          herdId: "1",
+          herdVersion: 1,
+          herdName: "John Doe",
+        },
+        raisedBy: "email@email.com",
+        raisedOn: expect.any(String),
       });
     });
   });
