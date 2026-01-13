@@ -62,12 +62,14 @@ describe("ineligibility-event-emission", () => {
     it("pulls data from the session and combines it with the arguments to create an event to publish", async () => {
       const mockSession = {
         reference: "ABC123",
-        organisation: { sbi: 13131313, email: "fred@email.com" },
         latestEndemicsApplication: { reference: "ZXY987" },
       };
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockReturnValue(mockSession);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ sbi: "13131313", email: "fred@email.com" });
 
       const mockCrn = 34321442;
       when(getSessionData)
@@ -83,14 +85,15 @@ describe("ineligibility-event-emission", () => {
 
       expect(mockPublishEvent).toHaveBeenCalledWith({
         id: inputs.request.yar.id,
-        sbi: mockSession.organisation.sbi,
+        sbi: "13131313",
+        checkpoint: "Get funding to improve animal health and welfare",
         cph: "n/a",
-        email: mockSession.organisation.email,
+        email: "fred@email.com",
         name: "send-invalid-data-event",
         type: `claim-${inputs.sessionKey}-invalid`,
         message: `${inputs.sessionKey}: ${inputs.exception}`,
         data: {
-          sbi: mockSession.organisation.sbi,
+          sbi: "13131313",
           crn: mockCrn,
           sessionKey: inputs.sessionKey,
           exception: inputs.exception,
@@ -100,6 +103,8 @@ describe("ineligibility-event-emission", () => {
           applicationReference: mockSession.latestEndemicsApplication.reference,
         },
         status: "alert",
+        raisedBy: "fred@email.com",
+        raisedOn: expect.any(String),
       });
     });
   });

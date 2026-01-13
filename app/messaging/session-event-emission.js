@@ -11,6 +11,15 @@ const EVENT_KEY_BY_SESSION_KEY = {
   numberAnimalsTested: "animalsTested",
 };
 
+const REVIEW_TYPE_MAP = {
+  REVIEW: "R",
+  ENDEMICS: "E",
+};
+
+const NORMALIZE_VALUE_BY_SESSION_KEY = {
+  typeOfReview: (value) => REVIEW_TYPE_MAP[value] ?? value,
+};
+
 export const sendSessionEvent = async ({
   id,
   sbi,
@@ -23,6 +32,7 @@ export const sendSessionEvent = async ({
 }) => {
   const { publishEvent } = getEventPublisher();
   const eventKey = EVENT_KEY_BY_SESSION_KEY[sessionKey] ?? sessionKey;
+  const eventValue = NORMALIZE_VALUE_BY_SESSION_KEY[sessionKey]?.(value) ?? value;
 
   const payload = {
     name: SEND_SESSION_EVENT,
@@ -33,7 +43,7 @@ export const sendSessionEvent = async ({
     status: "success",
     type: `${journey}-${eventKey}`, // e.g. claim-vetsName or farmerApplyData-agreeMultipleSpecies
     message: `Session set for ${journey} and ${eventKey}.`,
-    data: { reference, applicationReference, [eventKey]: value },
+    data: { reference, applicationReference, [eventKey]: eventValue },
     raisedBy: email,
     raisedOn: new Date().toISOString(),
   };

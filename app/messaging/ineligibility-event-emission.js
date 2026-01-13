@@ -32,16 +32,18 @@ export const sendIneligibilityEvent = async ({ sessionId, sbi, email, crn, excep
 
 export const sendInvalidDataEvent = async ({ request, sessionKey, exception }) => {
   const { publishEvent } = getEventPublisher();
-  const { reference, organisation, latestEndemicsApplication } = getSessionData(
+  const { reference, latestEndemicsApplication } = getSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
   );
+  const organisation = getSessionData(request, sessionEntryKeys.organisation);
   const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
 
   const payload = {
     id: request.yar.id,
     sbi: organisation?.sbi,
     cph: "n/a",
+    checkpoint: config.serviceName,
     email: organisation?.email,
     name: "send-invalid-data-event",
     type: `claim-${sessionKey}-invalid`,
@@ -57,6 +59,8 @@ export const sendInvalidDataEvent = async ({ request, sessionKey, exception }) =
       applicationReference: latestEndemicsApplication.reference,
     },
     status: "alert",
+    raisedBy: organisation.email,
+    raisedOn: new Date().toISOString(),
   };
 
   await publishEvent(payload);
