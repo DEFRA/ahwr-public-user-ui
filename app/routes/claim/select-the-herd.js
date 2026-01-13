@@ -80,30 +80,35 @@ const addHerdToSession = async (request, existingHerd, herds) => {
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.herdVersion,
       existingHerd.version + 1,
+      { shouldEmitEvent: false },
     );
     await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.herdName,
       existingHerd.name,
+      { shouldEmitEvent: false },
     );
     await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.herdCph,
       existingHerd.cph,
+      { shouldEmitEvent: false },
     );
     await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.herdReasons,
       existingHerd.reasons,
+      { shouldEmitEvent: false },
     );
     await setSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.isOnlyHerdOnSbi,
       existingHerd.reasons?.[0] === ONLY_HERD ? ONLY_HERD_ON_SBI.YES : ONLY_HERD_ON_SBI.NO,
+      { shouldEmitEvent: false },
     );
   } else {
     if (herds.length) {
@@ -112,6 +117,7 @@ const addHerdToSession = async (request, existingHerd, herds) => {
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.isOnlyHerdOnSbi,
         ONLY_HERD_ON_SBI.NO,
+        { shouldEmitEvent: false },
       );
     }
     await setSessionData(
@@ -119,6 +125,7 @@ const addHerdToSession = async (request, existingHerd, herds) => {
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.herdVersion,
       1,
+      { shouldEmitEvent: false },
     );
   }
 };
@@ -194,6 +201,7 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdSelected,
         herdSelected,
+        { shouldEmitEvent: false },
       );
 
       if ([radioValueUnnamedHerd, radioValueNewHerd].includes(herdSelected)) {
@@ -202,6 +210,7 @@ const postHandler = {
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdId,
           tempHerdId,
+          { shouldEmitEvent: false },
         );
       } else {
         await setSessionData(
@@ -209,6 +218,7 @@ const postHandler = {
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdId,
           herdSelected,
+          { shouldEmitEvent: false },
         );
       }
 
@@ -264,6 +274,7 @@ const postHandler = {
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdSame,
           "yes",
+          { shouldEmitEvent: false },
         );
       }
 

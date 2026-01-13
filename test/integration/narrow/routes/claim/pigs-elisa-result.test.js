@@ -120,6 +120,7 @@ describe("pigs elisa result test", () => {
         "endemicsClaim",
         "pigsGeneticSequencing",
         undefined,
+        { shouldEmitEvent: false },
       );
     });
 
@@ -142,6 +143,7 @@ describe("pigs elisa result test", () => {
         "endemicsClaim",
         "pigsGeneticSequencing",
         undefined,
+        { shouldEmitEvent: false },
       );
     });
   });

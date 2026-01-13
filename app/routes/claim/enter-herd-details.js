@@ -107,6 +107,7 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdReasons,
         [].concat(herdReasons).flat(),
+        { shouldEmitEvent: false },
       );
 
       await emitHerdEvent({

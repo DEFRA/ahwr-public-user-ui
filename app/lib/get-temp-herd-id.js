@@ -12,6 +12,7 @@ export const getTempHerdId = async (request, tempHerdIdFromSession) => {
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.tempHerdId,
     tempHerdId,
+    { shouldEmitEvent: false },
   );
   return tempHerdId;
 };

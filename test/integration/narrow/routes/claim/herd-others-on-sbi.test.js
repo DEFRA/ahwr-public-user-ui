@@ -171,12 +171,14 @@ describe("/herd-others-on-sbi tests", () => {
         "endemicsClaim",
         "isOnlyHerdOnSbi",
         "yes",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdReasons",
         ["onlyHerd"],
+        { shouldEmitEvent: false },
       );
       expect(emitHerdEvent).toHaveBeenCalled();
     });
@@ -204,6 +206,7 @@ describe("/herd-others-on-sbi tests", () => {
         "endemicsClaim",
         "isOnlyHerdOnSbi",
         "no",
+        { shouldEmitEvent: false },
       );
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });

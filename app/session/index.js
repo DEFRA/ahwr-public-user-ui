@@ -279,7 +279,7 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
       journey: "farmerApplyData",
       sessionKey: key,
       value,
-      claimReference: claimData?.reference,
+      applicationReference: claimData?.reference,
       reference: farmerApplyData?.reference,
     });
 
@@ -295,8 +295,8 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
       journey: "claim",
       sessionKey: key,
       value,
-      claimReference: claimData?.reference,
-      applicationReference: farmerApplyData?.reference,
+      reference: claimData?.reference,
+      applicationReference: claimData?.latestEndemicsApplication?.reference,
     });
 
     return;
@@ -310,7 +310,7 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
     journey: entryKey,
     sessionKey: key ?? entryKey,
     value,
-    claimReference: claimData?.reference,
+    reference: claimData?.reference,
     applicationReference: farmerApplyData?.reference,
   });
 };

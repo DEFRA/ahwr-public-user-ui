@@ -18,9 +18,8 @@ export const sendSessionEvent = async ({
   journey,
   sessionKey,
   value,
-  claimReference,
-  applicationReference = undefined,
-  reference = undefined, // apply applicationReference
+  applicationReference,
+  reference,
 }) => {
   const { publishEvent } = getEventPublisher();
   const eventKey = EVENT_KEY_BY_SESSION_KEY[sessionKey] ?? sessionKey;
@@ -34,7 +33,7 @@ export const sendSessionEvent = async ({
     status: "success",
     type: `${journey}-${eventKey}`, // e.g. claim-vetsName or farmerApplyData-agreeMultipleSpecies
     message: `Session set for ${journey} and ${eventKey}.`,
-    data: { claimReference, applicationReference, reference, [eventKey]: value },
+    data: { reference, applicationReference, [eventKey]: value },
     raisedBy: email,
     raisedOn: new Date().toISOString(),
   };

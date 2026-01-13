@@ -114,6 +114,7 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdName,
         herdName.trim(),
+        { shouldEmitEvent: false },
       );
 
       await emitHerdEvent({

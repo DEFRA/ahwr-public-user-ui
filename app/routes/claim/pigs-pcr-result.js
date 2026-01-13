@@ -71,6 +71,7 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.pigsGeneticSequencing,
         undefined,
+        { shouldEmitEvent: false },
       );
 
       return h.redirect(claimRoutes.biosecurity);
