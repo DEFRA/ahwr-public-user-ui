@@ -435,18 +435,21 @@ describe("select-the-herd tests", () => {
         "endemicsClaim",
         "herdSelected",
         "NEW_HERD",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdId",
         fakeTemporaryHerdId,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdVersion",
         1,
+        { shouldEmitEvent: false },
       );
       expect(canMakeClaim).toHaveBeenCalledWith({
         dateOfVisit: "2025-04-14T00:00:00.000Z",
@@ -529,24 +532,28 @@ describe("select-the-herd tests", () => {
         "endemicsClaim",
         "herdSelected",
         "NEW_HERD",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdId",
         fakeTemporaryHerdId,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdVersion",
         1,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "isOnlyHerdOnSbi",
         "no",
+        { shouldEmitEvent: false },
       );
       expect(canMakeClaim).toHaveBeenCalledWith({
         dateOfVisit: "2025-04-14T00:00:00.000Z",
@@ -629,30 +636,35 @@ describe("select-the-herd tests", () => {
         "endemicsClaim",
         "herdSelected",
         "UNNAMED_HERD",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdId",
         fakeTemporaryHerdId,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdVersion",
         1,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "isOnlyHerdOnSbi",
         "no",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdSame",
         "yes",
+        { shouldEmitEvent: false },
       );
       expect(canMakeClaim).toHaveBeenCalledWith({
         dateOfVisit: "2025-04-14T00:00:00.000Z",
@@ -735,42 +747,49 @@ describe("select-the-herd tests", () => {
         "endemicsClaim",
         "herdSelected",
         fakeHerdId,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdId",
         fakeHerdId,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdVersion",
         2,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdName",
         "Barn animals",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdCph",
         "22/333/4444",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdReasons",
         ["onlyHerd"],
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "isOnlyHerdOnSbi",
         "yes",
+        { shouldEmitEvent: false },
       );
     });
 
@@ -845,42 +864,49 @@ describe("select-the-herd tests", () => {
         "endemicsClaim",
         "herdSelected",
         fakeHerdId,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdId",
         fakeHerdId,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdVersion",
         2,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdName",
         "Barn animals",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdCph",
         "22/333/4444",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdReasons",
         ["reasonOne"],
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "isOnlyHerdOnSbi",
         "no",
+        { shouldEmitEvent: false },
       );
       expect(canMakeClaim).toHaveBeenCalledWith({
         dateOfVisit: "2025-04-14T00:00:00.000Z",
@@ -1130,12 +1156,14 @@ describe("select-the-herd tests", () => {
         "endemicsClaim",
         "herdSelected",
         fakeHerdId,
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "herdId",
         fakeHerdId,
+        { shouldEmitEvent: false },
       );
     });
 

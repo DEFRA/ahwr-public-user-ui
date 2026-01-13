@@ -78,6 +78,7 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdCph,
         herdCph,
+        { shouldEmitEvent: false },
       );
 
       await emitHerdEvent({

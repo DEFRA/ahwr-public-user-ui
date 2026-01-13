@@ -74,6 +74,7 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.isOnlyHerdOnSbi,
         isOnlyHerdOnSbi,
+        { shouldEmitEvent: false },
       );
 
       if (isOnlyHerdOnSbi === ONLY_HERD_ON_SBI.YES) {
@@ -82,6 +83,7 @@ const postHandler = {
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdReasons,
           [ONLY_HERD],
+          { shouldEmitEvent: false },
         );
 
         const { herdId, herdVersion } = getSessionData(request, sessionEntryKeys.endemicsClaim);

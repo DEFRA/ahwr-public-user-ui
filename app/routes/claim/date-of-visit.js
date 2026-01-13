@@ -292,6 +292,7 @@ const postHandler = {
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.tempHerdId,
           tempHerdId,
+          { shouldEmitEvent: false },
         );
         const { herds } = await getHerds(
           newWorldApplication.reference,
@@ -303,6 +304,7 @@ const postHandler = {
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herds,
           herds,
+          { shouldEmitEvent: false },
         );
 
         if (herds.length) {
@@ -314,6 +316,7 @@ const postHandler = {
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdId,
           tempHerdId,
+          { shouldEmitEvent: false },
         );
 
         await setSessionData(
@@ -321,6 +324,7 @@ const postHandler = {
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.herdVersion,
           1,
+          { shouldEmitEvent: false },
         );
 
         return h.redirect(claimRoutes.enterHerdName);

@@ -108,6 +108,7 @@ const postHandler = {
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.pigsFollowUpTest,
           pcr,
+          { shouldEmitEvent: false },
         );
         return h.redirect(claimRoutes.pigsPcrResult);
       }
@@ -117,6 +118,7 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.pigsFollowUpTest,
         elisa,
+        { shouldEmitEvent: false },
       );
 
       return h.redirect(claimRoutes.pigsElisaResult);

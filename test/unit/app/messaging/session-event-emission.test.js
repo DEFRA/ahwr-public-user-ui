@@ -20,7 +20,7 @@ describe("Send event on session set", () => {
       journey: "claim",
       sessionKey: "agreeMultipleSpecies",
       value: "yes",
-      claimReference: "FUBC-JTTU-SDQ7",
+      reference: "FUBC-JTTU-SDQ7",
       applicationReference: "IAHW-G3CL-V59P",
     };
 
@@ -34,7 +34,7 @@ describe("Send event on session set", () => {
       type: "claim-agreeMultipleSpecies",
       message: "Session set for claim and agreeMultipleSpecies.",
       data: {
-        claimReference: "FUBC-JTTU-SDQ7",
+        reference: "FUBC-JTTU-SDQ7",
         applicationReference: "IAHW-G3CL-V59P",
         agreeMultipleSpecies: "yes",
       },
@@ -78,7 +78,7 @@ describe("Send event on session set", () => {
           type: `claim-urnResult`,
           message: `Session set for claim and urnResult.`,
           data: {
-            claimReference: publishedEvent.data.claimReference,
+            reference: publishedEvent.data.reference,
             applicationReference: publishedEvent.data.applicationReference,
             urnResult: "URN34567ddd",
           },
@@ -93,7 +93,7 @@ describe("Send event on session set", () => {
           type: `claim-vetName`,
           message: `Session set for claim and vetName.`,
           data: {
-            claimReference: publishedEvent.data.claimReference,
+            reference: publishedEvent.data.reference,
             applicationReference: publishedEvent.data.applicationReference,
             vetName: "John Doe",
           },
@@ -108,7 +108,7 @@ describe("Send event on session set", () => {
           type: `claim-vetRcvs`,
           message: `Session set for claim and vetRcvs.`,
           data: {
-            claimReference: publishedEvent.data.claimReference,
+            reference: publishedEvent.data.reference,
             applicationReference: publishedEvent.data.applicationReference,
             vetRcvs: "1111111",
           },
@@ -127,7 +127,7 @@ describe("Send event on session set", () => {
           type: `claim-visitDate`,
           message: `Session set for claim and visitDate.`,
           data: {
-            claimReference: publishedEvent.data.claimReference,
+            reference: publishedEvent.data.reference,
             applicationReference: publishedEvent.data.applicationReference,
             visitDate: new Date("2025-08-15T00:00:00.000Z").toISOString(),
           },
@@ -142,7 +142,7 @@ describe("Send event on session set", () => {
           type: `claim-animalsTested`,
           message: `Session set for claim and animalsTested.`,
           data: {
-            claimReference: publishedEvent.data.claimReference,
+            reference: publishedEvent.data.reference,
             applicationReference: publishedEvent.data.applicationReference,
             animalsTested: "10",
           },

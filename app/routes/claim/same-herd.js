@@ -91,6 +91,7 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.herdSame,
         herdSame,
+        { shouldEmitEvent: false },
       );
 
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview);

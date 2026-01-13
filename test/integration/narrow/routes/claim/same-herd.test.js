@@ -167,6 +167,7 @@ describe("select-the-herd tests", () => {
         "endemicsClaim",
         "herdSame",
         "yes",
+        { shouldEmitEvent: false },
       );
     });
 
@@ -229,6 +230,7 @@ describe("select-the-herd tests", () => {
         "endemicsClaim",
         "herdSame",
         "yes",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
@@ -287,6 +289,7 @@ describe("select-the-herd tests", () => {
         "endemicsClaim",
         "herdSame",
         "no",
+        { shouldEmitEvent: false },
       );
     });
 
