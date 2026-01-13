@@ -52,19 +52,32 @@ describe("Send event on session set", () => {
       expect(mockPublishEvent).toHaveBeenCalledWith(publishedEvent);
     });
 
-    test("should call publishEvent with apply applicationReference when valid event", async () => {
-      await sendSessionEvent({
-        ...event,
-        applicationReference: undefined,
-        reference: "IAHW-G3CL-V59P",
-      });
+    test("should call publishEvent with normalized type of review when REVIEW", async () => {
+      await sendSessionEvent({ ...event, sessionKey: "typeOfReview", value: "REVIEW" });
 
       expect(mockPublishEvent).toHaveBeenCalledWith({
         ...publishedEvent,
+        type: "claim-typeOfReview",
+        message: "Session set for claim and typeOfReview.",
         data: {
-          ...publishedEvent.data,
-          reference: publishedEvent.data.applicationReference,
-          applicationReference: undefined,
+          reference: "FUBC-JTTU-SDQ7",
+          applicationReference: "IAHW-G3CL-V59P",
+          typeOfReview: "R",
+        },
+      });
+    });
+
+    test("should call publishEvent with normalized type of review when ENDEMICS", async () => {
+      await sendSessionEvent({ ...event, sessionKey: "typeOfReview", value: "ENDEMICS" });
+
+      expect(mockPublishEvent).toHaveBeenCalledWith({
+        ...publishedEvent,
+        type: "claim-typeOfReview",
+        message: "Session set for claim and typeOfReview.",
+        data: {
+          reference: "FUBC-JTTU-SDQ7",
+          applicationReference: "IAHW-G3CL-V59P",
+          typeOfReview: "E",
         },
       });
     });
