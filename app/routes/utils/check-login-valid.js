@@ -140,7 +140,7 @@ const returnErrorRouting = async ({ h, error, organisation, request, crn }) => {
   await sendIneligibilityEvent({
     sessionId: request.yar.id,
     sbi: organisation.sbi,
-    email: organisation.sbi,
+    email: organisation.email,
     crn,
     exception: error,
   });
