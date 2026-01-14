@@ -10,7 +10,7 @@ export const sendIneligibilityEvent = async ({ sessionId, sbi, email, crn, excep
   const payload = {
     name: INELIGIBILITY_EVENT,
     id: sessionId,
-    sbi,
+    sbi: `${sbi}`,
     cph: "n/a",
     checkpoint: config.serviceName,
     status: "alert",

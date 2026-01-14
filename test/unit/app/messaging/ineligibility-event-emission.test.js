@@ -51,7 +51,7 @@ describe("ineligibility-event-emission", () => {
         name: "send-ineligibility-event",
         raisedBy: inputs.email,
         raisedOn: expect.any(String),
-        sbi: inputs.sbi,
+        sbi: "456",
         status: "alert",
         type: "ineligibility-event",
       });
