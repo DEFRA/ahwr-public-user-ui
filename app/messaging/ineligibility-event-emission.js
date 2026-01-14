@@ -59,7 +59,7 @@ export const sendInvalidDataEvent = async ({ request, sessionKey, exception }) =
       applicationReference: latestEndemicsApplication.reference,
     },
     status: "alert",
-    raisedBy: organisation.email,
+    raisedBy: organisation?.email,
     raisedOn: new Date().toISOString(),
   };
 
