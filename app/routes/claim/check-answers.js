@@ -149,6 +149,12 @@ const postHandler = {
         sessionKeys.endemicsClaim.amount,
         claim.data.amount,
       );
+      await setSessionData(
+        request,
+        sessionEntryKeys.tempClaimReference,
+        sessionKeys.tempClaimReference,
+        endemicsClaimSession.reference,
+      );
 
       trackEvent(
         request.logger,

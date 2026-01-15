@@ -25,7 +25,7 @@ import {
   sheepReviewClaim,
   sheepTestResults,
 } from "../../../../utils/check-answers.js";
-import { getSessionData, sessionEntryKeys } from "../../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, setSessionData } from "../../../../../app/session/index.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { isMultipleHerdsUserJourney } from "../../../../../app/lib/context-helper.js";
@@ -711,7 +711,7 @@ describe("Check answers test", () => {
             latestEndemicsApplication: {
               reference: "TEMP-6GSE-PIR8",
             },
-            reference: "tempClaimReference",
+            reference: "TEMP-CLAIM-6GSE-PIR8",
           };
         });
         submitNewClaim.mockImplementation(() => ({
@@ -752,14 +752,17 @@ describe("Check answers test", () => {
               vetVisitsReviewTestResults: undefined,
               vetsName: "VetName",
             },
-            reference: "tempClaimReference",
+            reference: "TEMP-CLAIM-6GSE-PIR8",
             type: "REVIEW",
           },
           expect.any(Object),
         );
+        expect(setSessionData).toHaveBeenCalledWith(
+          expect.any(Object), "tempClaimReference", "tempClaimReference", "TEMP-CLAIM-6GSE-PIR8"
+        )
 
         expectAppInsightsEventRaised(
-          "tempClaimReference",
+          "TEMP-CLAIM-6GSE-PIR8",
           "REPI-6GSE-PIR8",
           "TEMP-6GSE-PIR8",
           "ON_HOLD",
