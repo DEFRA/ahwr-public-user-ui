@@ -2,6 +2,7 @@ import { sendHerdEvent, sendSessionEvent } from "../messaging/session-event-emis
 
 export const sessionKeys = {
   tempReference: "tempReference",
+  tempClaimReference: "tempClaimReference",
   farmerApplyData: {
     eligibleSpecies: "eligibleSpecies",
     declaration: "declaration",
@@ -91,6 +92,7 @@ export const sessionKeys = {
 // need an object defining above.
 export const sessionEntryKeys = {
   tempReference: "tempReference",
+  tempClaimReference: "tempClaimReference",
   farmerApplyData: "farmerApplyData",
   endemicsClaim: "endemicsClaim",
   pkcecodes: "pkcecodes",
