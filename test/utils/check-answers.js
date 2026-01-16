@@ -208,6 +208,57 @@ export const expectedReviewPigs = {
   ],
 };
 
+export const expectedReviewPigsPostPigsAndPaymentsGolive = {
+  rowKeys: [
+    ...commonReviewRowKeys,
+    "51 or more pigs",
+    "Number of samples taken",
+    ...commonVetRowKeys,
+    "URN",
+    "Type of samples taken",
+    "Number of blood samples taken",
+    "Test results",
+  ],
+  rowContents: [
+    "Business name",
+    "Pigs",
+    "Animal health and welfare review",
+    "22 January 2026",
+    "22 January 2026",
+    "Yes",
+    "42",
+    "George",
+    "1234567",
+    "laboratoryURN",
+    "Blood samples",
+    "30",
+    "Positive",
+  ],
+  rowActionTexts: [
+    "Change date of review",
+    "Change date of sampling",
+    "Change number of species",
+    "Change number of samples taken",
+    ...commonVetRowActionTexts,
+    "Change URN",
+    "Change type of samples taken",
+    "Change number of blood samples taken",
+    "Change test results",
+  ],
+  rowLinks: [
+    "/date-of-visit",
+    "/date-of-testing",
+    "/species-numbers",
+    "/number-of-species-tested",
+    "/vet-name",
+    "/vet-rcvs",
+    "/test-urn",
+    "/type-of-samples-taken",
+    "/number-of-blood-samples",
+    "/test-results",
+  ],
+};
+
 export const expectedReviewSheep = {
   rowKeys: [
     ...commonReviewRowKeys,

@@ -3,7 +3,10 @@ import { createServer } from "../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { isURNUnique } from "../../../../../app/api-requests/claim-api.js";
-import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../app/lib/context-helper.js";
+import {
+  isVisitDateAfterPIHuntAndDairyGoLive,
+  isPigsAndPaymentsUserJourney,
+} from "../../../../../app/lib/context-helper.js";
 import {
   getSessionData,
   sessionEntryKeys,
@@ -27,6 +30,9 @@ describe("Test URN GET", () => {
     server = await createServer();
     await server.initialize();
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
+      return false;
+    });
+    isPigsAndPaymentsUserJourney.mockImplementation(() => {
       return false;
     });
   });
@@ -263,6 +269,7 @@ describe("Test URN GET", () => {
             typeOfLivestock,
             typeOfReview,
             laboratoryURN: "12345",
+            dateOfVisit: "2026-01-21",
           });
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.organisation)
@@ -283,6 +290,39 @@ describe("Test URN GET", () => {
         expect(setSessionData).toHaveBeenCalled();
       },
     );
+
+    it("should redirect to endemicsTypeOfSamplesTaken page when pigs review post Pigs&Payments golive", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValueOnce({
+          typeOfLivestock: "pigs",
+          typeOfReview: "REVIEW",
+          laboratoryURN: "12345",
+          dateOfVisit: "2026-01-22",
+        });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValueOnce({ sbi: "12345678" });
+      isURNUnique.mockResolvedValueOnce({ isURNUnique: true });
+      isPigsAndPaymentsUserJourney.mockImplementation(() => {
+        return true;
+      });
+
+      const options = {
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb, laboratoryURN: "123" },
+        headers: { cookie: `crumb=${crumb}` },
+      };
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location.toString()).toEqual(
+        expect.stringContaining("/type-of-samples-taken"),
+      );
+      expect(setSessionData).toHaveBeenCalled();
+    });
 
     test.each([
       {

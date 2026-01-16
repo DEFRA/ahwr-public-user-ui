@@ -21,7 +21,10 @@ import {
   removeMultipleHerdsSessionData,
 } from "../../session/index.js";
 import { canMakeClaim } from "../../lib/can-make-claim.js";
-import { isMultipleHerdsUserJourney } from "../../lib/context-helper.js";
+import {
+  isMultipleHerdsUserJourney,
+  isPigsAndPaymentsUserJourney,
+} from "../../lib/context-helper.js";
 import { getHerds } from "../../api-requests/application-api.js";
 import { getTempHerdId } from "../../lib/get-temp-herd-id.js";
 import { getNextMultipleHerdsPage } from "../../lib/get-next-multiple-herds-page.js";
@@ -213,7 +216,7 @@ const postHandler = {
         tempHerdId: tempHerdIdFromSession,
       } = endemicsClaimSession;
 
-      const { isDairy } = getLivestockTypes(typeOfLivestock);
+      const { isDairy, isPigs } = getLivestockTypes(typeOfLivestock);
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim);
       const reviewOrFollowUpText = isReview ? "review" : "follow-up";
 
@@ -283,6 +286,15 @@ const postHandler = {
           reason: timingException,
         });
         return timingExceptionRedirect;
+      }
+
+      if (isPigs && !isPigsAndPaymentsUserJourney(dateOfVisit)) {
+        setSessionData(request, sessionKeys.endemicsClaim.typeOfSamplesTakenKey, undefined, {
+          shouldEmitEvent: false,
+        });
+        setSessionData(request, sessionKeys.endemicsClaim.numberOfBloodSamplesKey, undefined, {
+          shouldEmitEvent: false,
+        });
       }
 
       if (isMultipleHerdsUserJourney(dateOfVisit, newWorldApplication.flags)) {
