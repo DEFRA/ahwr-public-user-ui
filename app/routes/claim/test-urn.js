@@ -5,7 +5,10 @@ import {
   sessionKeys,
   setSessionData,
 } from "../../session/index.js";
-import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../lib/context-helper.js";
+import {
+  isVisitDateAfterPIHuntAndDairyGoLive,
+  isPigsAndPaymentsUserJourney,
+} from "../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
 import { getEndemicsClaimDetails, getTestResult } from "../../lib/utils.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
@@ -46,13 +49,16 @@ const previousPageUrl = ({ typeOfLivestock, typeOfReview, reviewTestResults, dat
   return claimRoutes.vetRcvs;
 };
 
-const nextPageUrl = ({ typeOfLivestock, typeOfReview }) => {
+const nextPageUrl = ({ typeOfLivestock, typeOfReview, dateOfVisit }) => {
   const { isBeef, isDairy, isPigs, isReview, isEndemicsFollowUp } = getEndemicsClaimDetails(
     typeOfLivestock,
     typeOfReview,
   );
 
   if (isPigs && isReview) {
+    if (isPigsAndPaymentsUserJourney(dateOfVisit)) {
+      return claimRoutes.typeOfSamplesTaken;
+    }
     return claimRoutes.numberOfFluidOralSamples;
   }
   if (isPigs && isEndemicsFollowUp) {
@@ -137,7 +143,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { laboratoryURN } = request.payload;
       const organisation = getSessionData(request, sessionEntryKeys.organisation);
-      const { typeOfLivestock, typeOfReview } = getSessionData(
+      const { typeOfLivestock, typeOfReview, dateOfVisit } = getSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
       );
@@ -167,7 +173,7 @@ const postHandler = {
           .takeover();
       }
 
-      return h.redirect(nextPageUrl({ typeOfLivestock, typeOfReview }));
+      return h.redirect(nextPageUrl({ typeOfLivestock, typeOfReview, dateOfVisit }));
     },
   },
 };

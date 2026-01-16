@@ -173,11 +173,30 @@ export const buildRows = ({
     "URN",
   );
 
+  let typeOfSamplesDisplayValue;
+  if (endemicsClaimSession.typeOfSamplesTaken) {
+    typeOfSamplesDisplayValue =
+      endemicsClaimSession.typeOfSamplesTaken === "blood" ? "Blood samples" : "Oral fluid samples";
+  }
+  const typeOfSamplesTakenRow = createdHerdRowObject(
+    "Type of samples taken",
+    typeOfSamplesDisplayValue,
+    claimRoutes.typeOfSamplesTaken,
+    "type of samples taken",
+  );
+
   const oralFluidSamplesRow = createdHerdRowObject(
     "Number of oral fluid samples taken",
     endemicsClaimSession.numberOfOralFluidSamples,
     claimRoutes.numberOfFluidOralSamples,
     "number of oral fluid samples taken",
+  );
+
+  const bloodSamplesRow = createdHerdRowObject(
+    "Number of blood samples taken",
+    endemicsClaimSession.numberOfBloodSamples,
+    claimRoutes.numberOfBloodSamples,
+    "number of blood samples taken",
   );
 
   const samplesTestedRow = createdHerdRowObject(
@@ -213,7 +232,9 @@ export const buildRows = ({
     speciesNumbersRow,
     numberOfAnimalsTestedRow,
     laboratoryUrnRow,
+    typeOfSamplesTakenRow,
     oralFluidSamplesRow,
+    bloodSamplesRow,
     samplesTestedRow,
     herdVaccinationStatusRow,
     biosecurityAssessmentRow,
@@ -281,7 +302,9 @@ export const collateRows = (rows) => {
     testResultsRow,
     biosecurityAssessmentRow,
     herdVaccinationStatusRow,
+    typeOfSamplesTakenRow,
     oralFluidSamplesRow,
+    bloodSamplesRow,
     samplesTestedRow,
     endemicsClaimSession,
     sheepPackageRow,
@@ -319,7 +342,9 @@ export const collateRows = (rows) => {
     vetVisitsReviewTestResultsRow,
     herdVaccinationStatusRow,
     laboratoryUrnRow,
+    typeOfSamplesTakenRow, // review claim
     oralFluidSamplesRow, // review claim
+    bloodSamplesRow, // review claim
     testResultsRow,
     samplesTestedRow, // endemics claim
     ...generatePigStatusAnswerRows(endemicsClaimSession),

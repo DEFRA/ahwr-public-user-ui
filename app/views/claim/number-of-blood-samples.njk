@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorMessage %}Error: {% endif %}How many oral fluid samples were tested? - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}How many blood samples were tested? - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -27,7 +27,7 @@
 
         {{ govukInput({
             label: {
-              text: "How many oral fluid samples were tested?",
+              text: "How many blood samples were tested?",
               classes: "govuk-label--l",
               isPageHeading: true
             },
@@ -35,9 +35,9 @@
               text: "You can find this on the summary the vet gave you."
             },
             classes: "govuk-input--width-10",
-            id: "numberOfOralFluidSamples",
-            name: "numberOfOralFluidSamples",
-            value: numberOfOralFluidSamples,
+            id: "numberOfBloodSamples",
+            name: "numberOfBloodSamples",
+            value: numberOfBloodSamples,
             errorMessage: errorMessage
         }) }}
 

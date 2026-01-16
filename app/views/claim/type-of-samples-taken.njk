@@ -1,0 +1,64 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}What type of samples were taken? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {{ 
+          govukRadios({
+            id: "typeOfSamplesTaken",
+            name: "typeOfSamplesTaken",
+            fieldset:{
+              legend:{
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--l",
+                text: "What type of samples were taken?"
+              }
+            }, 
+            hint: {
+              text: "You can find this on the summary the vet gave you."
+            }, 
+            errorMessage: errorMessage,
+            items: [
+              {
+                value:"blood",
+                text: "Blood samples",
+                checked: previousAnswer == "blood"
+              },
+              {
+                value: "oral-fluid",
+                text: "Oral fluid samples",
+                checked: previousAnswer == "oral-fluid"
+              }
+            ]
+          })
+        }}
+        {{ govukButton({
+          text: "Continue",
+          attributes: { id: "btnContinue" },
+          preventDoubleClick: true
+        }) 
+      }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
