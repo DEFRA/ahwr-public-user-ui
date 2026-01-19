@@ -33,6 +33,7 @@ export const { BEEF, DAIRY, PIGS, SHEEP } = TYPE_OF_LIVESTOCK;
 
 export const thresholds = {
   minimumNumberFluidOralSamples: 5,
+  requiredNumberBloodSamples: 30,
   positiveReviewNumberOfSamplesTested: "6",
   negativeReviewNumberOfSamplesTested: "30",
   numberOfSpeciesTested: {
@@ -65,6 +66,7 @@ export const ONLY_HERD_ON_SBI = {
 export const MULTIPLE_SPECIES_RELEASE_DATE = new Date("2025-02-26T00:00:00");
 export const MULTIPLE_HERDS_RELEASE_DATE = new Date(config.multiHerds.releaseDate);
 export const PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE = new Date("2025-01-21T00:00:00");
+export const PIGS_AND_PAYMENTS_RELEASE_DATE = new Date("2026-01-22T00:00:00");
 
 export const LAST_HOUR_OF_DAY = 23;
 export const LAST_MINUTE_OF_HOUR = 59;
@@ -90,6 +92,11 @@ const EWE_NUTRITION_STATUS = "Ewe nutrition status";
 const TICK_BORNE_FEVER = "Tick-borne fever";
 const BORDER_DISEASE = "Border disease (BD)";
 const TICK_PYAEMIA = "Tick pyaemia";
+
+export const PIGS_SAMPLE_TYPES = {
+  oralFluid: "oral-fluid",
+  blood: "blood",
+};
 
 export const sheepPackages = {
   improvedEwePerformance: "Ewe condition",

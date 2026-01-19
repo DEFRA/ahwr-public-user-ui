@@ -84,6 +84,25 @@ describe("Test Results test", () => {
       },
     );
 
+    it("should have backLink to endemicsNumberOfBloodSamples when typeOfSamplesTaken is blood", async () => {
+      getSessionData.mockImplementation(() => {
+        return {
+          typeOfLivestock: "pigs",
+          typeOfReview: "R",
+          reference: "TEMP-6GSE-PIR8",
+          typeOfSamplesTaken: "blood",
+        };
+      });
+
+      const options = { method: "GET", url, auth };
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-back-link").attr("href")).toContain("/number-of-blood-samples");
+      expectPhaseBanner.ok($);
+    });
+
     test("when not logged in redirects to /sign-in", async () => {
       const options = {
         method: "GET",

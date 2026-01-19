@@ -21,7 +21,10 @@ import {
   removeMultipleHerdsSessionData,
 } from "../../session/index.js";
 import { canMakeClaim } from "../../lib/can-make-claim.js";
-import { isMultipleHerdsUserJourney } from "../../lib/context-helper.js";
+import {
+  isMultipleHerdsUserJourney,
+  isPigsAndPaymentsUserJourney,
+} from "../../lib/context-helper.js";
 import { getHerds } from "../../api-requests/application-api.js";
 import { getTempHerdId } from "../../lib/get-temp-herd-id.js";
 import { getNextMultipleHerdsPage } from "../../lib/get-next-multiple-herds-page.js";
@@ -30,6 +33,19 @@ import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 import { trackEvent } from "../../logging/logger.js";
+
+const { endemicsClaim: endemicsClaimEntry, organisation: organisationEntry } = sessionEntryKeys;
+const {
+  endemicsClaim: {
+    dateOfVisit: dateOfVisitKey,
+    herds: herdsKey,
+    herdId: herdIdKey,
+    tempHerdId: tempHerdIdKey,
+    herdVersion: herdVersionKey,
+    typeOfSamplesTaken: typeOfSamplesTakenKey,
+    numberOfBloodSamples: numberOfBloodSamplesKey,
+  },
+} = sessionKeys;
 
 const INVALID_DATE_OF_VISIT_EVENT = "claim-invalid-date-of-visit";
 const labelPrefix = "visit-date-";
@@ -173,7 +189,7 @@ const getHandler = {
         latestVetVisitApplication: oldWorldApplication,
         previousClaims,
         typeOfLivestock,
-      } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      } = getSessionData(request, endemicsClaimEntry);
 
       const { isReview } = getReviewType(typeOfReview);
       const reviewOrFollowUpText = isReview ? "review" : "follow-up";
@@ -201,8 +217,8 @@ const postHandler = {
   path: "/date-of-visit",
   options: {
     handler: async (request, h) => {
-      const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
-      const organisation = getSessionData(request, sessionEntryKeys.organisation);
+      const endemicsClaimSession = getSessionData(request, endemicsClaimEntry);
+      const organisation = getSessionData(request, organisationEntry);
       const {
         typeOfReview: typeOfClaim,
         previousClaims,
@@ -213,7 +229,7 @@ const postHandler = {
         tempHerdId: tempHerdIdFromSession,
       } = endemicsClaimSession;
 
-      const { isDairy } = getLivestockTypes(typeOfLivestock);
+      const { isDairy, isPigs } = getLivestockTypes(typeOfLivestock);
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim);
       const reviewOrFollowUpText = isReview ? "review" : "follow-up";
 
@@ -258,12 +274,7 @@ const postHandler = {
         request.payload[visitDateHtml.labels.day],
       );
 
-      await setSessionData(
-        request,
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.dateOfVisit,
-        dateOfVisit,
-      );
+      await setSessionData(request, endemicsClaimEntry, dateOfVisitKey, dateOfVisit);
 
       const { timingExceptionRedirect, timingException } = await checkForTimingException(
         h,
@@ -285,47 +296,40 @@ const postHandler = {
         return timingExceptionRedirect;
       }
 
+      if (isPigs && !isPigsAndPaymentsUserJourney(dateOfVisit)) {
+        await setSessionData(request, endemicsClaimEntry, typeOfSamplesTakenKey, undefined, {
+          shouldEmitEvent: false,
+        });
+        await setSessionData(request, endemicsClaimEntry, numberOfBloodSamplesKey, undefined, {
+          shouldEmitEvent: false,
+        });
+      }
+
       if (isMultipleHerdsUserJourney(dateOfVisit, newWorldApplication.flags)) {
         const tempHerdId = await getTempHerdId(request, tempHerdIdFromSession);
-        await setSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.tempHerdId,
-          tempHerdId,
-          { shouldEmitEvent: false },
-        );
+        await setSessionData(request, endemicsClaimEntry, tempHerdIdKey, tempHerdId, {
+          shouldEmitEvent: false,
+        });
         const { herds } = await getHerds(
           newWorldApplication.reference,
           typeOfLivestock,
           request.logger,
         );
-        await setSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.herds,
-          herds,
-          { shouldEmitEvent: false },
-        );
+        await setSessionData(request, endemicsClaimEntry, herdsKey, herds, {
+          shouldEmitEvent: false,
+        });
 
         if (herds.length) {
           return h.redirect(claimRoutes.selectTheHerd);
         }
 
-        await setSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.herdId,
-          tempHerdId,
-          { shouldEmitEvent: false },
-        );
+        await setSessionData(request, endemicsClaimEntry, herdIdKey, tempHerdId, {
+          shouldEmitEvent: false,
+        });
 
-        await setSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.herdVersion,
-          1,
-          { shouldEmitEvent: false },
-        );
+        await setSessionData(request, endemicsClaimEntry, herdVersionKey, 1, {
+          shouldEmitEvent: false,
+        });
 
         return h.redirect(claimRoutes.enterHerdName);
       }
@@ -370,7 +374,7 @@ const checkForTimingException = async (
   if (exception) {
     await sendInvalidDataEvent({
       request,
-      sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+      sessionKey: dateOfVisitKey,
       exception,
     });
 
@@ -419,7 +423,7 @@ const nonMhRouting = async (
 
     await sendInvalidDataEvent({
       request,
-      sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+      sessionKey: dateOfVisitKey,
       exception: "Cannot claim for endemics without a previous review.",
     });
 
@@ -450,7 +454,7 @@ const nonMhRouting = async (
 
     await sendInvalidDataEvent({
       request,
-      sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+      sessionKey: dateOfVisitKey,
       exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
     });
 

@@ -9,21 +9,24 @@ import { thresholds } from "../../constants/claim-constants.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
+import { isPigsAndPaymentsUserJourney } from "../../lib/context-helper.js";
 
 const getHandler = {
   method: "GET",
   path: "/number-of-fluid-oral-samples",
   options: {
     handler: async (request, h) => {
-      const numberOfOralFluidSamples = getSessionData(
+      const { numberOfOralFluidSamples, dateOfVisit } = getSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.numberOfOralFluidSamples,
       );
+      const backLink = isPigsAndPaymentsUserJourney(dateOfVisit)
+        ? claimRoutes.typeOfSamplesTaken
+        : claimRoutes.testUrn;
 
       return h.view(claimViews.numberOfFluidOralSamples, {
         numberOfOralFluidSamples,
-        backLink: claimRoutes.testUrn,
+        backLink,
       });
     },
   },

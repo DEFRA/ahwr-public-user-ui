@@ -13,6 +13,7 @@ import {
   MULTIPLE_HERDS_RELEASE_DATE,
   ONLY_HERD,
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
+  PIGS_AND_PAYMENTS_RELEASE_DATE,
 } from "../constants/claim-constants.js";
 import { claimRoutes } from "../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
@@ -107,6 +108,10 @@ export const isMultipleHerdsUserJourney = (dateOfVisit, agreementFlags) => {
 
   // check for rejected T&Cs flag, if absent then is multiple herds journey
   return !agreementFlags?.some((f) => f.appliesToMh);
+};
+
+export const isPigsAndPaymentsUserJourney = (dateOfVisit) => {
+  return new Date(dateOfVisit) >= PIGS_AND_PAYMENTS_RELEASE_DATE;
 };
 
 export const skipSameHerdPage = (previousClaims, typeOfLivestock) => {

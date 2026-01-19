@@ -9,9 +9,13 @@ import { radios } from "../models/form-component/radios.js";
 import HttpStatus from "http-status-codes";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { getEndemicsClaimDetails, getReviewType } from "../../lib/utils.js";
+import { PIGS_SAMPLE_TYPES } from "../../constants/claim-constants.js";
 
 const previousPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+  const { typeOfLivestock, typeOfReview, typeOfSamplesTaken } = getSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+  );
   const { isBeef, isDairy, isSheep, isPigs, isEndemicsFollowUp } = getEndemicsClaimDetails(
     typeOfLivestock,
     typeOfReview,
@@ -27,6 +31,9 @@ const previousPageUrl = (request) => {
   }
 
   if (isPigs) {
+    if (typeOfSamplesTaken === PIGS_SAMPLE_TYPES.blood) {
+      return claimRoutes.numberOfBloodSamples;
+    }
     return claimRoutes.numberOfFluidOralSamples;
   }
   if (isBeef || isDairy) {

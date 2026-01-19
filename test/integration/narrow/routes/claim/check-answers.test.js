@@ -14,6 +14,7 @@ import {
   expectedReviewBeef,
   expectedReviewDairy,
   expectedReviewPigs,
+  expectedReviewPigsPostPigsAndPaymentsGolive,
   expectedReviewSheep,
   getRowActionTexts,
   getRowContents,
@@ -25,7 +26,11 @@ import {
   sheepReviewClaim,
   sheepTestResults,
 } from "../../../../utils/check-answers.js";
-import { getSessionData, sessionEntryKeys, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { isMultipleHerdsUserJourney } from "../../../../../app/lib/context-helper.js";
@@ -138,7 +143,7 @@ describe("Check answers test", () => {
       expectPhaseBanner.ok($);
     });
 
-    test("shows fields for a review claim in the correct order for each species for pigs", async () => {
+    test("shows fields for a review claim in the correct order for each species for pigs, pre Pigs&Payments golive", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockReturnValue(pigsReviewClaim);
@@ -165,6 +170,42 @@ describe("Check answers test", () => {
       expect(rowContents).toEqual(expectedReviewPigs.rowContents);
       expect(rowActionTexts).toEqual(expectedReviewPigs.rowActionTexts);
       expect(rowLinks).toEqual(expectedReviewPigs.rowLinks);
+
+      expectPhaseBanner.ok($);
+    });
+
+    test("shows fields for a review claim in the correct order for each species for pigs, post Pigs&Payments golive", async () => {
+      const pigsReviewClaimPostGolive = {
+        ...pigsReviewClaim,
+        dateOfVisit: "2026-01-22T10:00:00.000Z",
+        dateOfTesting: "2026-01-22T10:00:00.000Z",
+        typeOfSamplesTaken: "blood",
+        numberOfBloodSamples: 30,
+      };
+      delete pigsReviewClaimPostGolive.numberOfOralFluidSamples;
+
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(pigsReviewClaimPostGolive);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
+
+      const options = { method: "GET", url, auth };
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+
+      const rowKeys = getRowKeys($);
+      const rowContents = getRowContents($);
+      const rowActionTexts = getRowActionTexts($);
+      const rowLinks = getRowLinks($);
+
+      expect(rowKeys).toEqual(expectedReviewPigsPostPigsAndPaymentsGolive.rowKeys);
+      expect(rowContents).toEqual(expectedReviewPigsPostPigsAndPaymentsGolive.rowContents);
+      expect(rowActionTexts).toEqual(expectedReviewPigsPostPigsAndPaymentsGolive.rowActionTexts);
+      expect(rowLinks).toEqual(expectedReviewPigsPostPigsAndPaymentsGolive.rowLinks);
 
       expectPhaseBanner.ok($);
     });
@@ -758,8 +799,11 @@ describe("Check answers test", () => {
           expect.any(Object),
         );
         expect(setSessionData).toHaveBeenCalledWith(
-          expect.any(Object), "tempClaimReference", "tempClaimReference", "TEMP-CLAIM-6GSE-PIR8"
-        )
+          expect.any(Object),
+          "tempClaimReference",
+          "tempClaimReference",
+          "TEMP-CLAIM-6GSE-PIR8",
+        );
 
         expectAppInsightsEventRaised(
           "TEMP-CLAIM-6GSE-PIR8",

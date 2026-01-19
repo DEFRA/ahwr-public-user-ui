@@ -10,6 +10,7 @@ import {
   sheepPackages,
   sheepTestResultsType,
   sheepTestTypes,
+  PIGS_SAMPLE_TYPES,
 } from "../constants/claim-constants.js";
 import { generatePigStatusAnswerRows } from "./generate-answer-rows.js";
 import { getLivestockTypes, getReviewType } from "./utils.js";
@@ -173,11 +174,32 @@ export const buildRows = ({
     "URN",
   );
 
+  let typeOfSamplesDisplayValue;
+  if (endemicsClaimSession.typeOfSamplesTaken) {
+    typeOfSamplesDisplayValue =
+      endemicsClaimSession.typeOfSamplesTaken === PIGS_SAMPLE_TYPES.blood
+        ? "Blood samples"
+        : "Oral fluid samples";
+  }
+  const typeOfSamplesTakenRow = createdHerdRowObject(
+    "Type of samples taken",
+    typeOfSamplesDisplayValue,
+    claimRoutes.typeOfSamplesTaken,
+    "type of samples taken",
+  );
+
   const oralFluidSamplesRow = createdHerdRowObject(
     "Number of oral fluid samples taken",
     endemicsClaimSession.numberOfOralFluidSamples,
     claimRoutes.numberOfFluidOralSamples,
     "number of oral fluid samples taken",
+  );
+
+  const bloodSamplesRow = createdHerdRowObject(
+    "Number of blood samples taken",
+    endemicsClaimSession.numberOfBloodSamples,
+    claimRoutes.numberOfBloodSamples,
+    "number of blood samples taken",
   );
 
   const samplesTestedRow = createdHerdRowObject(
@@ -213,7 +235,9 @@ export const buildRows = ({
     speciesNumbersRow,
     numberOfAnimalsTestedRow,
     laboratoryUrnRow,
+    typeOfSamplesTakenRow,
     oralFluidSamplesRow,
+    bloodSamplesRow,
     samplesTestedRow,
     herdVaccinationStatusRow,
     biosecurityAssessmentRow,
@@ -281,7 +305,9 @@ export const collateRows = (rows) => {
     testResultsRow,
     biosecurityAssessmentRow,
     herdVaccinationStatusRow,
+    typeOfSamplesTakenRow,
     oralFluidSamplesRow,
+    bloodSamplesRow,
     samplesTestedRow,
     endemicsClaimSession,
     sheepPackageRow,
@@ -319,7 +345,9 @@ export const collateRows = (rows) => {
     vetVisitsReviewTestResultsRow,
     herdVaccinationStatusRow,
     laboratoryUrnRow,
+    typeOfSamplesTakenRow, // review claim
     oralFluidSamplesRow, // review claim
+    bloodSamplesRow, // review claim
     testResultsRow,
     samplesTestedRow, // endemics claim
     ...generatePigStatusAnswerRows(endemicsClaimSession),
@@ -336,10 +364,7 @@ export const collateRows = (rows) => {
     testResultsRow,
     sheepPackageRow,
     sheepDiseasesTestedRow,
-    ...buildSheepTestResultRows({
-      endemicsClaimSession,
-      isEndemicsFollowUp,
-    }),
+    ...buildSheepTestResultRows({ endemicsClaimSession, isEndemicsFollowUp }),
   ];
 
   return { beefRows, dairyRows, pigRows, sheepRows };
@@ -425,7 +450,9 @@ export const buildClaimPayload = (endemicsClaimSession) => {
       piHunt: endemicsClaimSession.piHunt,
       piHuntRecommended: endemicsClaimSession.piHuntRecommended,
       piHuntAllAnimals: endemicsClaimSession.piHuntAllAnimals,
+      typeOfSamplesTaken: endemicsClaimSession.typeOfSamplesTaken,
       numberOfOralFluidSamples: endemicsClaimSession.numberOfOralFluidSamples,
+      numberOfBloodSamples: endemicsClaimSession.numberOfBloodSamples,
       numberAnimalsTested: endemicsClaimSession.numberAnimalsTested,
       testResults: endemicsClaimSession.testResults,
       vetVisitsReviewTestResults: endemicsClaimSession.vetVisitsReviewTestResults,
