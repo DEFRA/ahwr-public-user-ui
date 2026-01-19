@@ -29,7 +29,7 @@ import { enterCphNumberHandlers } from "../routes/claim/enter-cph-number.js";
 import { enterHerdDetailsHandlers } from "../routes/claim/enter-herd-details.js";
 import { enterHerdNameHandlers } from "../routes/claim/enter-herd-name.js";
 import { herdOthersOnSbiHandlers } from "../routes/claim/herd-others-on-sbi.js";
-import { typeOfSamplesTakenHandlers } from "../routes/claim/type-of-samples-taken";
+import { typeOfSamplesTakenHandlers } from "../routes/claim/type-of-samples-taken.js";
 import { numberOfOralFluidSamplesHandlers } from "../routes/claim/number-of-fluid-oral-samples.js";
 import { numberOfBloodSamplesHandlers } from "../routes/claim/number-of-blood-samples.js";
 import { numberOfSamplesTestedHandlers } from "../routes/claim/number-of-samples-tested.js";
