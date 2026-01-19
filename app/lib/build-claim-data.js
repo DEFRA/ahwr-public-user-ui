@@ -10,7 +10,7 @@ import {
   sheepPackages,
   sheepTestResultsType,
   sheepTestTypes,
-  PIGS_SAMPLE_TYPES
+  PIGS_SAMPLE_TYPES,
 } from "../constants/claim-constants.js";
 import { generatePigStatusAnswerRows } from "./generate-answer-rows.js";
 import { getLivestockTypes, getReviewType } from "./utils.js";
@@ -177,7 +177,9 @@ export const buildRows = ({
   let typeOfSamplesDisplayValue;
   if (endemicsClaimSession.typeOfSamplesTaken) {
     typeOfSamplesDisplayValue =
-      endemicsClaimSession.typeOfSamplesTaken === PIGS_SAMPLE_TYPES.blood ? "Blood samples" : "Oral fluid samples";
+      endemicsClaimSession.typeOfSamplesTaken === PIGS_SAMPLE_TYPES.blood
+        ? "Blood samples"
+        : "Oral fluid samples";
   }
   const typeOfSamplesTakenRow = createdHerdRowObject(
     "Type of samples taken",
