@@ -361,10 +361,7 @@ export const collateRows = (rows) => {
     testResultsRow,
     sheepPackageRow,
     sheepDiseasesTestedRow,
-    ...buildSheepTestResultRows({
-      endemicsClaimSession,
-      isEndemicsFollowUp,
-    }),
+    ...buildSheepTestResultRows({ endemicsClaimSession, isEndemicsFollowUp }),
   ];
 
   return { beefRows, dairyRows, pigRows, sheepRows };

@@ -51,10 +51,14 @@ describe("context-helper", () => {
 
     expect(skipSameHerdPage(previousClaims, "sheep")).toBe(true);
   });
-  test.skip("skipSameHerdPage, skip when claims for species but one had herd", () => {
+  test("skipSameHerdPage, skip when claims for species but one had herd", () => {
     const previousClaims = [
       { createdAt: "2025-05-01T00:00:00.000Z", data: { typeOfLivestock: "sheep" } },
-      { createdAt: "2025-05-02T00:00:00.000Z", data: { typeOfLivestock: "sheep", herdId: "1" } },
+      {
+        createdAt: "2025-05-02T00:00:00.000Z",
+        data: { typeOfLivestock: "sheep" },
+        herd: { id: "1" },
+      },
     ];
 
     expect(skipSameHerdPage(previousClaims, "sheep")).toBe(true);
@@ -94,9 +98,9 @@ describe("context-helper", () => {
 
     expect(skipOtherHerdsOnSbiPage(existingHerds, existingHerdId)).toBe(true);
   });
-  test.skip(`skipOtherHerdsOnSbiPage, do not skip when existing herd and reason is ${ONLY_HERD}`, () => {
+  test(`skipOtherHerdsOnSbiPage, do not skip when existing herd and reason is ${ONLY_HERD}`, () => {
     const existingHerdId = "8c726c7f-ceac-4253-8155-0fa5c868fbde";
-    const existingHerds = [{ herdId: existingHerdId, herdReasons: [ONLY_HERD] }];
+    const existingHerds = [{ id: existingHerdId, reasons: [ONLY_HERD] }];
 
     expect(skipOtherHerdsOnSbiPage(existingHerds, existingHerdId)).toBe(false);
   });
