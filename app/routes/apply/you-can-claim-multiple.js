@@ -10,6 +10,7 @@ import { createTempReference } from "../../lib/create-temp-ref.js";
 import { getUserTypeByApplication } from "../../lib/get-user-type-by-application.js";
 import { getApplicationsBySbi } from "../../api-requests/application-api.js";
 import { preApplyHandler } from "../../lib/pre-apply-handler.js";
+import { JOURNEY } from "../../constants/constants.js";
 
 export const claimMultipleRouteHandlers = [
   {
@@ -37,10 +38,15 @@ export const claimMultipleRouteHandlers = [
 
         const userType = getUserTypeByApplication(latestApplications);
 
-        await setSessionEntry(request, sessionEntryKeys.organisation, {
-          ...organisation,
-          userType,
-        });
+        await setSessionEntry(
+          request,
+          sessionEntryKeys.organisation,
+          {
+            ...organisation,
+            userType,
+          },
+          { journey: JOURNEY.APPLY },
+        );
 
         return h.view(applyViews.youCanClaimMultiple, {
           backLink: dashboardRoutes.checkDetails,

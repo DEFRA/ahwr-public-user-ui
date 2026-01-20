@@ -91,6 +91,7 @@ describe("preApplyHandler", () => {
       getRequest,
       sessionEntryKeys.application,
       closedNewWorldApplications[0],
+      { journey: "apply" },
     );
   });
 

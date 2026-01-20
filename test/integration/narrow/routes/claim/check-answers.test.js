@@ -803,6 +803,7 @@ describe("Check answers test", () => {
           "tempClaimReference",
           "tempClaimReference",
           "TEMP-CLAIM-6GSE-PIR8",
+          { journey: "claim" },
         );
 
         expectAppInsightsEventRaised(
