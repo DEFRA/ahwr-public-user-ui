@@ -124,22 +124,9 @@ describe("session", () => {
   });
 
   describe("setSessionEntry", () => {
-    beforeEach(() => {
-      jest.resetAllMocks();
-      yarMock.get.mockImplementation((entryKey) => {
-        if (entryKey === sessionEntryKeys.endemicsClaim) {
-          return endemicsClaim;
-        }
-        if (entryKey === sessionEntryKeys.organisation) {
-          return organisation;
-        }
-        return undefined;
-      });
-    });
-
     const endemicsClaim = {
       latestVetVisitApplication: { a: 1 },
-      latestEndemicsApplication: { b: 2 },
+      latestEndemicsApplication: { b: 2, reference: "IAHW-G3CL-V59P" },
       previousClaims: [{ id: 1 }, { id: 2 }],
       reference: "IAHW-G3CL-V59P",
       typeOfLivestock: "beef",
@@ -161,6 +148,25 @@ describe("session", () => {
       address: "1 fake street,fake town,United Kingdom",
       orgEmail: "fake.org.email@example.com.test",
     };
+    const farmerApplyData = {
+      reference: "IAHW-G3CL-V59P",
+    };
+
+    beforeEach(() => {
+      jest.resetAllMocks();
+      yarMock.get.mockImplementation((entryKey) => {
+        if (entryKey === sessionEntryKeys.endemicsClaim) {
+          return endemicsClaim;
+        }
+        if (entryKey === sessionEntryKeys.organisation) {
+          return organisation;
+        }
+        if (entryKey === sessionEntryKeys.farmerApplyData) {
+          return farmerApplyData;
+        }
+        return undefined;
+      });
+    });
 
     test("emits event by default", async () => {
       const request = { yar: yarMock };
@@ -181,6 +187,63 @@ describe("session", () => {
       await setSessionEntry(request, sessionEntryKeys.customer, {}, { shouldEmitEvent: false });
 
       expect(sendSessionEvent).not.toHaveBeenCalled();
+    });
+
+    test("emits event and sets journey to application when entryKey is application and journey is APPLY", async () => {
+      const request = { yar: yarMock };
+      await setSessionEntry(
+        request,
+        sessionEntryKeys.application,
+        { reference: "IAHW-G3CL-V59P" },
+        { journey: "apply" },
+      );
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        applicationReference: "IAHW-G3CL-V59P",
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "application",
+        reference: "IAHW-G3CL-V59P",
+        sbi: "123456789",
+        sessionKey: "application",
+        value: { reference: "IAHW-G3CL-V59P" },
+      });
+    });
+
+    test("emits event and sets journey to tempReference when entryKey is tempReference and journey is APPLY", async () => {
+      const request = { yar: yarMock };
+      await setSessionEntry(request, sessionEntryKeys.tempReference, "TEMP-G3CL-V59P", {
+        journey: "apply",
+      });
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        applicationReference: "IAHW-G3CL-V59P",
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "tempReference",
+        reference: "IAHW-G3CL-V59P",
+        sbi: "123456789",
+        sessionKey: "tempReference",
+        value: "TEMP-G3CL-V59P",
+      });
+    });
+
+    test("emits event and sets journey to tempClaimReference when entryKey is tempClaimReference and journey is CLAIM", async () => {
+      const request = { yar: yarMock };
+      await setSessionEntry(request, sessionEntryKeys.tempClaimReference, "TEMP-CLAIM-86M1-SHM3", {
+        journey: "claim",
+      });
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        applicationReference: "IAHW-G3CL-V59P",
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "tempClaimReference",
+        reference: "IAHW-G3CL-V59P",
+        sbi: "123456789",
+        sessionKey: "tempClaimReference",
+        value: "TEMP-CLAIM-86M1-SHM3",
+      });
     });
   });
 
