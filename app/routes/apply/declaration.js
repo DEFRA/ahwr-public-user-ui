@@ -6,7 +6,7 @@ import {
   clearApplyRedirect,
   setSessionData,
 } from "../../session/index.js";
-import { userType } from "../../constants/constants.js";
+import { userType, JOURNEY } from "../../constants/constants.js";
 import { config } from "../../config/index.js";
 import { applyRoutes, applyViews } from "../../constants/routes.js";
 import { StatusCodes } from "http-status-codes";
@@ -151,6 +151,7 @@ export const declarationRouteHandlers = [
             sessionEntryKeys.tempReference,
             sessionKeys.tempReference,
             tempApplicationReference,
+            { journey: JOURNEY.APPLY },
           );
           clearApplyRedirect(request);
         }

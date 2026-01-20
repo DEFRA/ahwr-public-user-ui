@@ -14,3 +14,8 @@ export const userType = {
   EXISTING_USER: "existingUser",
   NEW_USER: "newUser",
 };
+
+export const JOURNEY = {
+  CLAIM: "claim",
+  APPLY: "apply",
+};

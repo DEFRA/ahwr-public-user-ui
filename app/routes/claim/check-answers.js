@@ -16,6 +16,7 @@ import {
   collateRows,
 } from "../../lib/build-claim-data.js";
 import { trackEvent } from "../../logging/logger.js";
+import { JOURNEY } from "../../constants/constants.js";
 
 const getBackLink = (isReview, isSheep) => {
   if (isReview) {
@@ -154,6 +155,7 @@ const postHandler = {
         sessionEntryKeys.tempClaimReference,
         sessionKeys.tempClaimReference,
         endemicsClaimSession.reference,
+        { journey: JOURNEY.CLAIM },
       );
 
       trackEvent(

@@ -1,5 +1,5 @@
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
-import { applicationType } from "../constants/constants.js";
+import { applicationType, JOURNEY } from "../constants/constants.js";
 import { dashboardRoutes } from "../constants/routes.js";
 import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
 import { trackError } from "../logging/logger.js";
@@ -20,7 +20,9 @@ export const preApplyHandler = async (request, h) => {
         (newWorldApp) => newWorldApp.type === applicationType.ENDEMICS,
       );
       application = newWorldApplications.length ? newWorldApplications[0] : null;
-      await setSessionEntry(request, sessionEntryKeys.application, application);
+      await setSessionEntry(request, sessionEntryKeys.application, application, {
+        journey: JOURNEY.APPLY,
+      });
     }
 
     // TODO - find an alternative to setBindings

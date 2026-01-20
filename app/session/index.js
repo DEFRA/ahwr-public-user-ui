@@ -1,4 +1,5 @@
 import { sendHerdEvent, sendSessionEvent } from "../messaging/session-event-emission.js";
+import { JOURNEY } from "../constants/constants.js";
 
 export const sessionKeys = {
   tempReference: "tempReference",
@@ -111,7 +112,7 @@ export const setSessionEntry = async (
   request,
   entryKey,
   value,
-  { shouldEmitEvent = true } = {},
+  { shouldEmitEvent = true, journey = undefined } = {},
 ) => {
   if (!sessionEntryKeys[entryKey]) {
     throw new Error(
@@ -122,7 +123,7 @@ export const setSessionEntry = async (
   request.yar.set(entryKey, typeof value === "string" ? value.trim() : value);
 
   if (shouldEmitEvent) {
-    await emitSessionEvent({ request, entryKey, key: entryKey, value });
+    await emitSessionEvent({ request, entryKey, key: entryKey, value, journey });
   }
 };
 
@@ -132,7 +133,7 @@ export const setSessionData = async (
   entryKey,
   key,
   value,
-  { shouldEmitEvent = true } = {},
+  { shouldEmitEvent = true, journey = undefined } = {},
 ) => {
   if (!sessionEntryKeys[entryKey]) {
     throw new Error(
@@ -151,7 +152,7 @@ export const setSessionData = async (
   request.yar.set(entryKey, entryValue);
 
   if (shouldEmitEvent) {
-    await emitSessionEvent({ request, entryKey, key, value });
+    await emitSessionEvent({ request, entryKey, key, value, journey });
   }
 };
 
@@ -264,7 +265,7 @@ export function removeSessionDataForSameHerdChange(request) {
   request.yar.set(sessionEntryKeys.endemicsClaim, furtherRemadeSession);
 }
 
-export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
+export const emitSessionEvent = async ({ request, entryKey, key, value, journey }) => {
   const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
   const claimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const organisation = getSessionData(request, sessionEntryKeys.organisation);
@@ -274,13 +275,15 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
     return;
   }
 
-  if (entryKey === sessionEntryKeys.farmerApplyData) {
-    // user is in apply journey
+  if (entryKey === sessionEntryKeys.farmerApplyData || journey === JOURNEY.APPLY) {
+    const journeyValue =
+      entryKey === "application" || entryKey === "tempReference" ? entryKey : "farmerApplyData";
+
     await sendSessionEvent({
       id: sessionId,
       sbi: organisation.sbi,
       email: organisation.email,
-      journey: "farmerApplyData",
+      journey: journeyValue,
       sessionKey: key,
       value,
       applicationReference: claimData?.reference,
@@ -290,13 +293,14 @@ export const emitSessionEvent = async ({ request, entryKey, key, value }) => {
     return;
   }
 
-  if (entryKey === sessionEntryKeys.endemicsClaim) {
-    // user is in claim journey
+  if (entryKey === sessionEntryKeys.endemicsClaim || journey === JOURNEY.CLAIM) {
+    const journeyValue = entryKey === "tempClaimReference" ? entryKey : "claim";
+
     await sendSessionEvent({
       id: sessionId,
       sbi: organisation.sbi,
       email: organisation.email,
-      journey: "claim",
+      journey: journeyValue,
       sessionKey: key,
       value,
       reference: claimData?.reference,
