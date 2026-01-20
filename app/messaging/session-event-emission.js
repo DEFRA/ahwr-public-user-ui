@@ -47,7 +47,7 @@ export const sendSessionEvent = async ({
     raisedBy: email,
     raisedOn: new Date().toISOString(),
   };
-  console.log({ payload });
+
   await publishEvent(payload);
 };
 
