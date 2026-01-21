@@ -13,7 +13,7 @@ const EVENT_KEY_BY_SESSION_KEY = {
 
 const REVIEW_TYPE_MAP = {
   REVIEW: "R",
-  ENDEMICS: "E",
+  FOLLOW_UP: "E",
 };
 
 const NORMALIZE_VALUE_BY_SESSION_KEY = {

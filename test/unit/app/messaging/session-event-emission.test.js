@@ -67,8 +67,8 @@ describe("Send event on session set", () => {
       });
     });
 
-    test("should call publishEvent with normalized type of review when ENDEMICS", async () => {
-      await sendSessionEvent({ ...event, sessionKey: "typeOfReview", value: "ENDEMICS" });
+    test("should call publishEvent with normalized type of review when FOLLOW_UP", async () => {
+      await sendSessionEvent({ ...event, sessionKey: "typeOfReview", value: "FOLLOW_UP" });
 
       expect(mockPublishEvent).toHaveBeenCalledWith({
         ...publishedEvent,
