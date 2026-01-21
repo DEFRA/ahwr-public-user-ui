@@ -135,6 +135,7 @@ const postHandler = {
   options: {
     handler: async (request, h) => {
       const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const tempClaimReference = endemicsClaimSession.reference;
       const claimPayload = buildClaimPayload(endemicsClaimSession);
       const claim = await submitNewClaim(claimPayload, request.logger);
 
@@ -154,7 +155,7 @@ const postHandler = {
         request,
         sessionEntryKeys.tempClaimReference,
         sessionKeys.tempClaimReference,
-        endemicsClaimSession.reference,
+        tempClaimReference,
         { journey: JOURNEY.CLAIM },
       );
 

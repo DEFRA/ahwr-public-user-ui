@@ -315,7 +315,7 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
     id: sessionId,
     sbi: organisation.sbi,
     email: organisation.email,
-    journey: entryKey,
+    journey: entryKey === "organisation" ? "claim" : entryKey,
     sessionKey: key ?? entryKey,
     value,
     reference: claimData?.reference,

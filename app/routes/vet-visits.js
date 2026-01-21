@@ -207,8 +207,6 @@ export const vetVisitsHandlers = [
 
         const { sheepHeaders, nonSheepHeaders } = buildTableHeaders();
 
-        const authCodeUrl = await requestAuthorizationCodeUrl(request);
-
         return h.view("vet-visits", {
           beefClaimsRows,
           dairyClaimsRows,
@@ -227,7 +225,7 @@ export const vetVisitsHandlers = [
           }),
           ...(latestEndemicsApplication?.reference && { downloadedDocument }),
           ...(attachedToMultipleBusinesses && {
-            hostname: authCodeUrl,
+            hostname: await requestAuthorizationCodeUrl(request),
           }),
           latestTermsAndConditionsUri,
         });
