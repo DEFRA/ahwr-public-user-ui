@@ -245,6 +245,22 @@ describe("session", () => {
         value: "TEMP-CLAIM-86M1-SHM3",
       });
     });
+
+    test("emits event and sets journey to claim when entryKey is organisation", async () => {
+      const request = { yar: yarMock };
+      await setSessionEntry(request, sessionEntryKeys.organisation, { name: "Farm business" });
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        applicationReference: "IAHW-G3CL-V59P",
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "claim",
+        reference: "IAHW-G3CL-V59P",
+        sbi: "123456789",
+        sessionKey: "organisation",
+        value: { name: "Farm business" },
+      });
+    });
   });
 
   describe("setSessionData", () => {
