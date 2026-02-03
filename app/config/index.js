@@ -16,6 +16,7 @@ const configSchema = joi.object({
   namespace: joi.string().optional(),
   cache: {
     expiresIn: joi.number().required(),
+    name: joi.string().required(),
     options: {
       host: joi.string(),
       keyPrefix: joi.string(),
@@ -99,9 +100,10 @@ export const getConfig = () => {
     namespace: process.env.NAMESPACE,
     cache: {
       expiresIn: threeDaysInMs,
+      name: "session",
       options: {
         host: process.env.REDIS_HOST || "redis-hostname.default",
-        keyPrefix: process.env.REDIS_KEY_PREFIX || "ahwr-public-user-ui",
+        keyPrefix: process.env.REDIS_KEY_PREFIX || "ahwr-public-user-ui:",
         username: process.env.REDIS_USERNAME,
         password: process.env.REDIS_PASSWORD,
         useSingleInstanceCache: process.env.NODE_ENV !== "production",
