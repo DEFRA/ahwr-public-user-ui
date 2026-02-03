@@ -34,8 +34,9 @@ export function buildRedisClient() {
       ...credentials,
       ...tls,
     });
+    getLogger().info("using single instance Redis cache");
   } else {
-    const statupNodes = [{ host, port }];
+    const startupNodes = [{ host, port }];
     const clusterOptions = {
       keyPrefix,
       slotsRefreshTimeout: 10000,
@@ -47,7 +48,8 @@ export function buildRedisClient() {
       },
     };
 
-    redisClient = new Cluster(statupNodes, clusterOptions);
+    redisClient = new Cluster(startupNodes, clusterOptions);
+    getLogger().info("using clustered Redis cache");
   }
 
   redisClient.on("connect", () => {
