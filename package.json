@@ -27,8 +27,8 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@2toad/profanity": "3.2.0",
-    "@aws-sdk/client-s3": "3.940.0",
-    "@aws-sdk/s3-request-presigner": "3.940.0",
+    "@aws-sdk/client-s3": "3.982.0",
+    "@aws-sdk/s3-request-presigner": "3.982.0",
     "@defra/hapi-tracing": "1.30.0",
     "@elastic/ecs-pino-format": "1.5.0",
     "@hapi/boom": "9.1.4",
@@ -43,7 +43,7 @@
     "@hapi/yar": "10.1.1",
     "@ministryofjustice/frontend": "5.2.1",
     "aws-embedded-metrics": "4.2.0",
-    "ffc-ahwr-common-library": "3.3.5",
+    "ffc-ahwr-common-library": "3.5.4",
     "form-data": "4.0.4",
     "global-agent": "3.0.0",
     "govuk-frontend": "5.12.0",
@@ -58,7 +58,7 @@
     "nunjucks": "3.2.4",
     "pg-promise": "11.15.0",
     "pino": "10.1.0",
-    "undici": "7.10.0"
+    "undici": "7.20.0"
   },
   "overrides": {
     "semver": "7.5.2",
@@ -79,7 +79,7 @@
     "clean-webpack-plugin": "4.0.0",
     "css-loader": "7.1.2",
     "dotenv": "16.6.1",
-    "eslint": "9.22.0",
+    "eslint": "9.39.2",
     "eslint-config-prettier": "10.1.1",
     "global-jsdom": "26.0.0",
     "html-webpack-plugin": "5.6.4",
