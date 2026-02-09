@@ -16,7 +16,7 @@ export const defraIdSignInHandlers = [
       },
       handler: async (request, h) => {
         const { ssoOrgId } = request.query;
-        await clearAllOfSession(request)
+        await clearAllOfSession(request);
         const defraIdSignInUri = await requestAuthorizationCodeUrl(request, ssoOrgId);
         await metricsCounter("sign_in");
         return h.redirect(defraIdSignInUri);

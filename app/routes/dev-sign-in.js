@@ -5,7 +5,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
-  setSessionEntry, clearAllOfSession
+  setSessionEntry,
 } from "../session/index.js";
 import { setAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { farmerApply } from "../constants/constants.js";
@@ -62,7 +62,8 @@ export const devLoginHandlers = [
     options: {
       auth: false,
       handler: async (request, h) => {
-        await clearAllOfSession(request);
+        // Removing this for now, some issues were seen in perf tests, but real user generating real MI report events won't go via here anyway
+        // await clearAllOfSession(request);
         return h.view("dev-landing-page");
       },
     },

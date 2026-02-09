@@ -30,7 +30,7 @@ export async function refreshApplications(sbi, request) {
     // endemics application must have been created within 10 months of vet-visit application visit date
     return (
       application.type === "VV" &&
-      areDatesWithin10Months(application.data?.visitDate, latestEndemicsApplication.createdAt)
+      areDatesWithin10Months(application.data?.visitDate, latestEndemicsApplication?.createdAt ?? 0)
     );
   });
 
