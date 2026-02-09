@@ -80,7 +80,7 @@ export const declarationRouteHandlers = [
 
           return h
             .view(applyViews.declaration, {
-              backLink: `/${applyRoutes.timings}`,
+              backLink: applyRoutes.timings,
               latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${applyRoutes.declaration}`,
               errorMessage: {
                 text: "Select yes if you have read and agree to the terms and conditions",
