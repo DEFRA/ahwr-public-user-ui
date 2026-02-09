@@ -5,7 +5,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
-  setSessionEntry,
+  setSessionEntry, clearAllOfSession
 } from "../session/index.js";
 import { setAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { farmerApply } from "../constants/constants.js";
@@ -61,7 +61,8 @@ export const devLoginHandlers = [
     path: devLandingPageUrl,
     options: {
       auth: false,
-      handler: async (_request, h) => {
+      handler: async (request, h) => {
+        await clearAllOfSession(request);
         return h.view("dev-landing-page");
       },
     },
