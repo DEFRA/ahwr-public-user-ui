@@ -3,6 +3,7 @@ import {
   isMultipleHerdsUserJourney,
   isPigsAndPaymentsUserJourney,
   isVisitDateAfterPIHuntAndDairyGoLive,
+  refreshApplications,
   skipOtherHerdsOnSbiPage,
   skipSameHerdPage,
 } from "../../../../app/lib/context-helper.js";
@@ -10,6 +11,11 @@ import {
   ONLY_HERD,
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
 } from "../../../../app/constants/claim-constants.js";
+import { getApplicationsBySbi } from "../../../../app/api-requests/application-api.js";
+import { setSessionData } from "../../../../app/session/index.js";
+
+jest.mock("../../../../app/api-requests/application-api.js");
+jest.mock("../../../../app/session/index.js");
 
 describe("context-helper", () => {
   test("isVisitDateAfterPIHuntAndDairyGoLive throws error when no visit date provided", () => {
@@ -154,6 +160,137 @@ describe("context-helper", () => {
         tempHerdId: "temp456",
       });
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe("refreshApplications", () => {
+    const mockRequest = {};
+    it("returns new world application and relevant old world application", async () => {
+      const newWorld = {
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        createdAt: "2025-05-01T00:00:00.000Z",
+      };
+      const oldWorld = {
+        type: "VV",
+        reference: "AHWR-1111-2222",
+        data: {
+          visitDate: "2025-04-15T00:00:00.000Z",
+        },
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([newWorld, oldWorld]);
+      const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(
+        "123456789",
+        mockRequest,
+      );
+
+      expect(latestEndemicsApplication.reference).toBe("IAHW-1111-2222");
+      expect(latestVetVisitApplication.reference).toBe("AHWR-1111-2222");
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestEndemicsApplication",
+        newWorld,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestVetVisitApplication",
+        oldWorld,
+      );
+    });
+
+    it("returns new world application and ignores not relevant old world application", async () => {
+      const newWorld = {
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        createdAt: "2025-05-01T00:00:00.000Z",
+      };
+      const oldWorld = {
+        type: "VV",
+        reference: "AHWR-1111-2222",
+        data: {
+          visitDate: "2023-04-15T00:00:00.000Z",
+        },
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([newWorld, oldWorld]);
+      const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(
+        "123456789",
+        mockRequest,
+      );
+
+      expect(latestEndemicsApplication.reference).toBe("IAHW-1111-2222");
+      expect(latestVetVisitApplication).toBeUndefined();
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestEndemicsApplication",
+        newWorld,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestVetVisitApplication",
+        undefined,
+      );
+    });
+
+    it("returns new world application when no old world application", async () => {
+      const newWorld = {
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        createdAt: "2025-05-01T00:00:00.000Z",
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([newWorld]);
+      const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(
+        "123456789",
+        mockRequest,
+      );
+
+      expect(latestEndemicsApplication.reference).toBe("IAHW-1111-2222");
+      expect(latestVetVisitApplication).toBeUndefined();
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestEndemicsApplication",
+        newWorld,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestVetVisitApplication",
+        undefined,
+      );
+    });
+
+    it("returns nothing when old world application only", async () => {
+      const oldWorld = {
+        type: "VV",
+        reference: "AHWR-1111-2222",
+        data: {
+          visitDate: "2023-04-15T00:00:00.000Z",
+        },
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([oldWorld]);
+      const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(
+        "123456789",
+        mockRequest,
+      );
+
+      expect(latestVetVisitApplication).toBeUndefined();
+      expect(latestEndemicsApplication).toBeUndefined();
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestEndemicsApplication",
+        undefined,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestVetVisitApplication",
+        undefined,
+      );
     });
   });
 });

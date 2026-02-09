@@ -27,6 +27,6 @@ export const getCacheEngine = () => {
       constructor: catboxMemory,
       options: {},
     },
-    name: "session"
+    name: "session",
   };
 };
