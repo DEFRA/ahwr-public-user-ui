@@ -24,7 +24,7 @@ const getHandler = {
         claimDashboard: dashboardRoutes.manageYourClaims,
         reference,
         amount,
-        claimSurveyUri: customerSurvey.uri,
+        claimSurveyUri: customerSurvey.claimUri,
       });
     },
   },
