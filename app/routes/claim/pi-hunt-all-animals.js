@@ -131,7 +131,7 @@ const postHandler = {
             claimPaymentNoPiHunt,
             livestockText: typeOfLivestock,
             continueClaimLink: claimRoutes.biosecurity,
-            backLink: claimRoutes.piHuntAllAnimalsException,
+            backLink: claimRoutes.piHuntAllAnimals,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
