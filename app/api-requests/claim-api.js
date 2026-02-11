@@ -5,7 +5,10 @@ import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 export async function getClaimsByApplicationReference(applicationReference, logger) {
   const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/claims`;
   try {
-    const { payload } = await Wreck.get(endpoint, { json: true });
+    const { payload } = await Wreck.get(endpoint, {
+      json: true,
+      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+    });
 
     return payload;
   } catch (error) {
@@ -29,6 +32,7 @@ export async function submitNewClaim(data, logger) {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,
       json: true,
+      headers: { "x-api-key": process.env.BACKEND_API_KEY },
     });
 
     return payload;
@@ -46,6 +50,7 @@ export async function isURNUnique(data, logger) {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,
       json: true,
+      headers: { "x-api-key": process.env.BACKEND_API_KEY },
     });
 
     return payload;

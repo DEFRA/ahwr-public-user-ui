@@ -17,11 +17,15 @@ export async function testWreckApiFunction({
   expect(result).toBe(returnPayload);
 
   if (method === "get") {
-    expect(Wreck.get).toHaveBeenCalledWith(endpoint, { json: true });
+    expect(Wreck.get).toHaveBeenCalledWith(endpoint, {
+      json: true,
+      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+    });
   } else {
     expect(Wreck[method]).toHaveBeenCalledWith(endpoint, {
       payload: outboundPayload,
       json: true,
+      headers: { "x-api-key": process.env.BACKEND_API_KEY },
     });
   }
 
@@ -35,11 +39,15 @@ export async function testWreckApiFunction({
   await expect(fn(...args, logger)).rejects.toThrow("Whoops");
 
   if (method === "get") {
-    expect(Wreck.get).toHaveBeenCalledWith(endpoint, { json: true });
+    expect(Wreck.get).toHaveBeenCalledWith(endpoint, {
+      json: true,
+      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+    });
   } else {
     expect(Wreck[method]).toHaveBeenCalledWith(endpoint, {
       payload: outboundPayload,
       json: true,
+      headers: { "x-api-key": process.env.BACKEND_API_KEY },
     });
   }
 

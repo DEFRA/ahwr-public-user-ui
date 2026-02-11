@@ -6,7 +6,10 @@ import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 export async function getApplicationsBySbi(sbi, logger) {
   const endpoint = `${config.applicationApi.uri}/applications?sbi=${sbi}`;
   try {
-    const { payload } = await Wreck.get(endpoint, { json: true });
+    const { payload } = await Wreck.get(endpoint, {
+      json: true,
+      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+    });
 
     return payload;
   } catch (error) {
@@ -23,6 +26,7 @@ export const createApplication = async (application, logger) => {
     const { payload } = await Wreck.post(endpoint, {
       payload: application,
       json: true,
+      headers: { "x-api-key": process.env.BACKEND_API_KEY },
     });
 
     return payload;
@@ -38,7 +42,10 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
   const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/herds?species=${typeOfLivestock}`;
 
   try {
-    const { payload } = await Wreck.get(endpoint, { json: true });
+    const { payload } = await Wreck.get(endpoint, {
+      json: true,
+      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+    });
     return payload;
   } catch (error) {
     const statusCode = error?.output?.statusCode;
