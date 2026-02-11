@@ -1,6 +1,30 @@
 # AHWR Public User UI
 
+## Service purpose
+
 AHWR Public User UI service, which contains the user dashboard as well as both the apply and claim user journeys.
+This UI represents the public facing part of the AHWR service, and is responsible for handling user interactions,
+displaying information, and facilitating the application and claim processes for farmers.
+
+## Service features
+
+- User dashboard: Provides an overview of the user's application and claims, allowing them to track their progress and access relevant information.
+- Apply user journey: Application process for AHWR, collecting necessary information to submit their application.
+- Claim user journey: Submitting claims for AHWR, ensuring users provide the required details.
+- Responsive design: The UI is designed to be responsive, ensuring a seamless experience across various devices and screen sizes.
+- Integration with backend services: The UI interacts with backend services to retrieve and submit data.
+- Accessibility: The UI is designed with accessibility in mind, ensuring that it can be used by a wide range of users, including those with disabilities.
+
+# User Authentication
+
+The AHWR Public User UI service does not handle user authentication directly.
+Instead, it relies on DefraID to manage user authentication and authorization. The user will be sent to DefraID to sign in,
+and on return the authorisation is swapped out for a token that is used to retrieve the users own details.
+
+In development environments, a dev login access point is provided that allows the use of a fixed set of details
+to simulate the authentication process without needing to interact with DefraID, meaning the UI can be developed
+and tested without relying on an external service
+.
 
 ## Prerequisites
 
