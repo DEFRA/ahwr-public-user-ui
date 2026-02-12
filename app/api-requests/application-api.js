@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 
 export async function getApplicationsBySbi(sbi, logger) {
-  const endpoint = `${config.applicationApi.uri}/applications?sbi=${sbi}`;
+  const endpoint = `${config.applicationApiUri}/applications?sbi=${sbi}`;
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,
@@ -21,7 +21,7 @@ export async function getApplicationsBySbi(sbi, logger) {
 }
 
 export const createApplication = async (application, logger) => {
-  const endpoint = `${config.applicationApi.uri}/applications`;
+  const endpoint = `${config.applicationApiUri}/applications`;
   try {
     const { payload } = await Wreck.post(endpoint, {
       payload: application,
