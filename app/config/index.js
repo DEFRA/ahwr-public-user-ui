@@ -28,7 +28,7 @@ const configSchema = joi.object({
     },
   },
   apiKeys: {
-    applicationBackendApiKey: joi.string().required(),
+    publicUiBackendApiKey: joi.string().required(),
   },
   cookie: {
     cookieNameCookiePolicy: joi.string(),
@@ -115,7 +115,7 @@ export const getConfig = () => {
       },
     },
     apiKeys: {
-      applicationBackendApiKey: process.env.APPLICATION_BACKEND_API_KEY || defaultApiKey,
+      publicUiBackendApiKey: process.env.PUBLIC_UI_API_KEY || defaultApiKey,
     },
     cookie: {
       cookieNameCookiePolicy: "ahwr_cookie_policy",

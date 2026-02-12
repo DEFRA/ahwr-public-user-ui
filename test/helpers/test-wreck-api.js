@@ -20,13 +20,13 @@ export async function testWreckApiFunction({
   if (method === "get") {
     expect(Wreck.get).toHaveBeenCalledWith(endpoint, {
       json: true,
-      headers: { "x-api-key": config.get("apiKeys.applicationBackendApiKey") },
+      headers: { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") },
     });
   } else {
     expect(Wreck[method]).toHaveBeenCalledWith(endpoint, {
       payload: outboundPayload,
       json: true,
-      headers: { "x-api-key": config.get("apiKeys.applicationBackendApiKey") },
+      headers: { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") },
     });
   }
 
@@ -42,13 +42,13 @@ export async function testWreckApiFunction({
   if (method === "get") {
     expect(Wreck.get).toHaveBeenCalledWith(endpoint, {
       json: true,
-      headers: { "x-api-key": config.get("apiKeys.applicationBackendApiKey") },
+      headers: { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") },
     });
   } else {
     expect(Wreck[method]).toHaveBeenCalledWith(endpoint, {
       payload: outboundPayload,
       json: true,
-      headers: { "x-api-key": config.get("apiKeys.applicationBackendApiKey") },
+      headers: { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") },
     });
   }
 

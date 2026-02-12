@@ -26,7 +26,7 @@ export const updateContactHistory = async (
     const { payload } = await Wreck.put(endpoint, {
       payload: contactHistory,
       json: true,
-      headers: { "x-api-key": config.get("apiKeys.applicationBackendApiKey") },
+      headers: { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") },
     });
 
     return payload;
