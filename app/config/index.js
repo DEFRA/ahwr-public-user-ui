@@ -115,7 +115,7 @@ export const getConfig = () => {
       },
     },
     apiKeys: {
-      applicationBackendApiKey: process.env.APPLICATION_BACKEND_API_KEY,
+      applicationBackendApiKey: process.env.APPLICATION_BACKEND_API_KEY || defaultApiKey,
     },
     cookie: {
       cookieNameCookiePolicy: "ahwr_cookie_policy",
