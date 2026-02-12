@@ -11,6 +11,7 @@ const MS_IN_SECOND = 1000;
 const THREE = 3;
 const threeDaysInMs = MS_IN_SECOND * SECONDS_IN_HOUR * HOURS_IN_DAY * THREE;
 const oneYearInMs = MS_IN_SECOND * SECONDS_IN_HOUR * HOURS_IN_DAY * DAYS_IN_YEAR;
+const defaultApiKey = "c19fcb0d-a6d2-4d9e-9325-16d44ddc0724";
 
 const configSchema = joi.object({
   namespace: joi.string().optional(),
@@ -24,6 +25,15 @@ const configSchema = joi.object({
       password: joi.string().allow(""),
       useSingleInstanceCache: joi.boolean(),
       useTLS: joi.boolean(),
+    },
+  },
+  apiKeys: {
+    applicationBackendApiKey: {
+      doc: "Api key for the application backend",
+      format: String,
+      default: defaultApiKey,
+      sensitive: true,
+      env: "APPLICATION_BACKEND_API_KEY",
     },
   },
   cookie: {

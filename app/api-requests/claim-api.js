@@ -7,7 +7,7 @@ export async function getClaimsByApplicationReference(applicationReference, logg
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,
-      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+      headers: { "x-api-key": config.get("apiKeys.applicationBackendApiKey") },
     });
 
     return payload;
@@ -50,7 +50,7 @@ export async function isURNUnique(data, logger) {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,
       json: true,
-      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+      headers: { "x-api-key": config.get("apiKeys.applicationBackendApiKey") },
     });
 
     return payload;

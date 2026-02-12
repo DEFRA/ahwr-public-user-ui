@@ -8,7 +8,7 @@ export async function getApplicationsBySbi(sbi, logger) {
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,
-      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+      headers: { "x-api-key": config.get("apiKeys.applicationBackendApiKey") },
     });
 
     return payload;
@@ -26,7 +26,7 @@ export const createApplication = async (application, logger) => {
     const { payload } = await Wreck.post(endpoint, {
       payload: application,
       json: true,
-      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+      headers: { "x-api-key": config.get("apiKeys.applicationBackendApiKey") },
     });
 
     return payload;
@@ -44,7 +44,7 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,
-      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+      headers: { "x-api-key": config.get("apiKeys.applicationBackendApiKey") },
     });
     return payload;
   } catch (error) {

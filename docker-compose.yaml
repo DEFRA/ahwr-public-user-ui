@@ -43,4 +43,4 @@ services:
       LFS_UPDATE_URI: ${LFS_UPDATE_URI:-https://fcp-sfd-frontend.dev.cdp-int.defra.cloud/home?ssoOrgId=}
       DOCUMENT_BUCKET_NAME: ${DOCUMENT_BUCKET_NAME:-local-ahwr-documents}
       AWS_REGION: eu-west-2
-      BACKEND_API_KEY: ${BACKEND_API_KEY:-dbd47daf-2711-4cb6-b733-0bd60fdb3ce6}
+      APPLICATION_BACKEND_API_KEY: ${BACKEND_API_KEY:-dbd47daf-2711-4cb6-b733-0bd60fdb3ce6}
