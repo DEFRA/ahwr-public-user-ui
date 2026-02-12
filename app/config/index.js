@@ -28,13 +28,7 @@ const configSchema = joi.object({
     },
   },
   apiKeys: {
-    applicationBackendApiKey: {
-      doc: "Api key for the application backend",
-      format: String,
-      default: defaultApiKey,
-      sensitive: true,
-      env: "APPLICATION_BACKEND_API_KEY",
-    },
+    applicationBackendApiKey: joi.string().required,
   },
   cookie: {
     cookieNameCookiePolicy: joi.string(),
@@ -118,6 +112,15 @@ export const getConfig = () => {
         password: process.env.REDIS_PASSWORD,
         useSingleInstanceCache: process.env.NODE_ENV !== "production",
         useTLS: process.env.NODE_ENV === "production",
+      },
+    },
+    apiKeys: {
+      applicationBackendApiKey: {
+        doc: "Api key for the application backend",
+        format: String,
+        default: defaultApiKey,
+        sensitive: true,
+        env: "APPLICATION_BACKEND_API_KEY",
       },
     },
     cookie: {
