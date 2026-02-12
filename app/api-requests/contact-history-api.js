@@ -2,6 +2,8 @@ import Wreck from "@hapi/wreck";
 import { config } from "../config/index.js";
 import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 
+const { apiKeys } = config;
+
 export const updateContactHistory = async (
   personSummary,
   organisation,
