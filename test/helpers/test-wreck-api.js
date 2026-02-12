@@ -2,6 +2,8 @@ import Wreck from "@hapi/wreck";
 import { trackError } from "../../app/logging/logger.js";
 import { config } from "../../app/config/index.js";
 
+const { apiKeys } = config;
+
 export async function testWreckApiFunction({
   fn,
   method,
@@ -20,13 +22,13 @@ export async function testWreckApiFunction({
   if (method === "get") {
     expect(Wreck.get).toHaveBeenCalledWith(endpoint, {
       json: true,
-      headers: { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") },
+      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
     });
   } else {
     expect(Wreck[method]).toHaveBeenCalledWith(endpoint, {
       payload: outboundPayload,
       json: true,
-      headers: { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") },
+      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
     });
   }
 
@@ -42,13 +44,13 @@ export async function testWreckApiFunction({
   if (method === "get") {
     expect(Wreck.get).toHaveBeenCalledWith(endpoint, {
       json: true,
-      headers: { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") },
+      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
     });
   } else {
     expect(Wreck[method]).toHaveBeenCalledWith(endpoint, {
       payload: outboundPayload,
       json: true,
-      headers: { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") },
+      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
     });
   }
 
