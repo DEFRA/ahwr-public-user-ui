@@ -33,7 +33,7 @@ export async function submitNewClaim(data, logger) {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,
       json: true,
-      headers: { "x-api-key": process.env.BACKEND_API_KEY },
+      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
     });
 
     return payload;
