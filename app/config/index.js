@@ -115,13 +115,7 @@ export const getConfig = () => {
       },
     },
     apiKeys: {
-      applicationBackendApiKey: {
-        doc: "Api key for the application backend",
-        format: String,
-        default: defaultApiKey,
-        sensitive: true,
-        env: "APPLICATION_BACKEND_API_KEY",
-      },
+      applicationBackendApiKey: process.env.APPLICATION_BACKEND_API_KEY,
     },
     cookie: {
       cookieNameCookiePolicy: "ahwr_cookie_policy",
