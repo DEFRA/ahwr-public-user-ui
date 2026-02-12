@@ -2,6 +2,8 @@ import Wreck from "@hapi/wreck";
 import { config } from "../config/index.js";
 import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 
+const { apiKeys } = config;
+
 export const updateContactHistory = async (
   personSummary,
   organisation,
@@ -26,6 +28,7 @@ export const updateContactHistory = async (
     const { payload } = await Wreck.put(endpoint, {
       payload: contactHistory,
       json: true,
+      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
     });
 
     return payload;

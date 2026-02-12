@@ -3,10 +3,15 @@ import { config } from "../config/index.js";
 import { StatusCodes } from "http-status-codes";
 import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 
+const { apiKeys } = config;
+
 export async function getApplicationsBySbi(sbi, logger) {
-  const endpoint = `${config.applicationApi.uri}/applications?sbi=${sbi}`;
+  const endpoint = `${config.applicationApiUri}/applications?sbi=${sbi}`;
   try {
-    const { payload } = await Wreck.get(endpoint, { json: true });
+    const { payload } = await Wreck.get(endpoint, {
+      json: true,
+      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
+    });
 
     return payload;
   } catch (error) {
@@ -18,11 +23,12 @@ export async function getApplicationsBySbi(sbi, logger) {
 }
 
 export const createApplication = async (application, logger) => {
-  const endpoint = `${config.applicationApi.uri}/applications`;
+  const endpoint = `${config.applicationApiUri}/applications`;
   try {
     const { payload } = await Wreck.post(endpoint, {
       payload: application,
       json: true,
+      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
     });
 
     return payload;
@@ -38,7 +44,10 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
   const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/herds?species=${typeOfLivestock}`;
 
   try {
-    const { payload } = await Wreck.get(endpoint, { json: true });
+    const { payload } = await Wreck.get(endpoint, {
+      json: true,
+      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
+    });
     return payload;
   } catch (error) {
     const statusCode = error?.output?.statusCode;
