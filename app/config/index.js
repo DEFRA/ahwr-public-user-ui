@@ -28,7 +28,7 @@ const configSchema = joi.object({
     },
   },
   apiKeys: {
-    applicationBackendApiKey: joi.string().required,
+    applicationBackendApiKey: joi.string().required(),
   },
   cookie: {
     cookieNameCookiePolicy: joi.string(),
