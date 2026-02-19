@@ -1,5 +1,4 @@
 import { customerHasAtLeastOneValidCph } from "../../api-requests/rpa-api/cph-check.js";
-import { requestAuthorizationCodeUrl } from "../../auth/auth-code-grant/request-authorization-code-url.js";
 import {
   getSessionData,
   setSessionData,
@@ -15,7 +14,6 @@ export const setSessionForErrorPage = async ({
   request,
   error,
   hasMultipleBusinesses,
-  backLink,
   organisation,
 }) => {
   await setSessionData(
@@ -29,12 +27,6 @@ export const setSessionForErrorPage = async ({
     sessionEntryKeys.cannotSignInDetails,
     sessionKeys.cannotSignInDetails.hasMultipleBusinesses,
     hasMultipleBusinesses,
-  );
-  await setSessionData(
-    request,
-    sessionEntryKeys.cannotSignInDetails,
-    sessionKeys.cannotSignInDetails.backLink,
-    backLink,
   );
   await setSessionData(
     request,
@@ -157,7 +149,6 @@ const returnErrorRouting = async ({ h, error, organisation, request, crn }) => {
     request,
     error,
     hasMultipleBusinesses,
-    backLink: await requestAuthorizationCodeUrl(request),
     organisation,
   });
 

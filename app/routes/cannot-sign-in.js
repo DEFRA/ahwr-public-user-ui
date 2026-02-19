@@ -4,10 +4,12 @@ import {
   clearAllOfSession,
   getSessionData,
   sessionEntryKeys,
-  sessionKeys,
+  sessionKeys, setSessionData
 } from "../session/index.js";
 import { clearAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { config } from "../config/index.js";
+import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
+import { setSessionForErrorPage } from "./utils/check-login-valid.js";
 
 export const cannotSignInExceptionHandlers = [
   {
@@ -21,11 +23,11 @@ export const cannotSignInExceptionHandlers = [
       handler: async (request, h) => {
         const cannotSignInDetails = getSessionData(request, sessionEntryKeys.cannotSignInDetails);
 
-        const { error, backLink, hasMultipleBusinesses, organisation } = cannotSignInDetails || {};
+        const { error, hasMultipleBusinesses, organisation } = cannotSignInDetails || {};
 
         if (
           !cannotSignInDetails ||
-          [error, hasMultipleBusinesses, backLink, organisation].includes(undefined)
+          [error, hasMultipleBusinesses, organisation].includes(undefined)
         ) {
           throw new Error("Cannot render cannot sign in page as props are missing");
         }
@@ -40,6 +42,17 @@ export const cannotSignInExceptionHandlers = [
         // log them out on our end, not defra id
         await clearAllOfSession(request);
         clearAuthCookie(request);
+
+        // we need the backlink now, if hasMultipleBusinesses is true
+        const backLink = hasMultipleBusinesses ? await requestAuthorizationCodeUrl(request) : null;
+        // we need to re-set these values into session, in case user refreshes the page
+        await setSessionForErrorPage({
+          request,
+          error,
+          hasMultipleBusinesses,
+          organisation
+        })
+        await setSessionData(request, sessionEntryKeys.tokens, sessionKeys.tokens.accessToken, token);
 
         return h.view("cannot-sign-in-exception", {
           error,

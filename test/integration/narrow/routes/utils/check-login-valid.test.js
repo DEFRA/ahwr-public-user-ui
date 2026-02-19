@@ -7,7 +7,6 @@ import {
   setSessionEntry,
 } from "../../../../../app/session";
 import { customerHasAtLeastOneValidCph } from "../../../../../app/api-requests/rpa-api/cph-check";
-import { requestAuthorizationCodeUrl } from "../../../../../app/auth/auth-code-grant/request-authorization-code-url";
 import { when } from "jest-when";
 import { refreshApplications } from "../../../../../app/lib/context-helper.js";
 import { sendIneligibilityEvent } from "../../../../../app/messaging/ineligibility-event-emission";
@@ -42,10 +41,6 @@ jest.mock("../../../../../app/lib/context-helper.js", () => ({
     },
     latestVetVisitApplication: undefined,
   }),
-}));
-
-jest.mock("../../../../../app/auth/auth-code-grant/request-authorization-code-url", () => ({
-  requestAuthorizationCodeUrl: jest.fn().mockReturnValueOnce("back link"),
 }));
 
 jest.mock("../../../../../app/logging/logger.js", () => ({
@@ -165,7 +160,6 @@ describe("checkLoginValid", () => {
         reference: "sbi 999000, crn 124",
       },
     );
-    expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
     expect(sendIneligibilityEvent).toHaveBeenCalled();
   });
 
@@ -228,7 +222,6 @@ describe("checkLoginValid", () => {
         reference: "sbi 999000, crn 124",
       },
     );
-    expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
     expect(sendIneligibilityEvent).toHaveBeenCalled();
   });
 
@@ -292,7 +285,6 @@ describe("checkLoginValid", () => {
         reference: "sbi 999000, crn 124",
       },
     );
-    expect(requestAuthorizationCodeUrl).toHaveBeenCalledWith(request);
     expect(sendIneligibilityEvent).toHaveBeenCalled();
   });
 
@@ -344,7 +336,6 @@ describe("checkLoginValid", () => {
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(trackError).not.toHaveBeenCalled();
-    expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect path to dashboard entry if there are no problems and the user has an agreed new world application", async () => {
@@ -403,7 +394,6 @@ describe("checkLoginValid", () => {
     );
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(trackError).not.toHaveBeenCalled();
-    expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user an non-agreed new world application", async () => {
@@ -459,7 +449,6 @@ describe("checkLoginValid", () => {
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(trackError).not.toHaveBeenCalled();
-    expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application", async () => {
@@ -515,7 +504,6 @@ describe("checkLoginValid", () => {
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(trackError).not.toHaveBeenCalled();
-    expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect path to apply journey if there are no problems and the user has a closed status old world application specifically in the PAID status", async () => {
@@ -571,7 +559,6 @@ describe("checkLoginValid", () => {
     expect(setSessionEntry).toHaveBeenCalledWith(request, sessionEntryKeys.signInRedirect, true);
     expect(customerHasAtLeastOneValidCph).toHaveBeenCalledWith(cphNumbers);
     expect(trackError).not.toHaveBeenCalled();
-    expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
   });
 
   test("it returns a redirect callback if there are no problems but the user has a non-closed status old world application", async () => {
@@ -640,6 +627,5 @@ describe("checkLoginValid", () => {
         reference: "sbi 999000, crn 124",
       },
     );
-    expect(requestAuthorizationCodeUrl).toHaveBeenCalled();
   });
 });
