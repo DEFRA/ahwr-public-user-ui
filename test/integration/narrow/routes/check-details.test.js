@@ -66,6 +66,89 @@ describe("/check-details", () => {
     expect(res.statusCode).toBe(StatusCodes.OK);
   });
 
+  describe("Check for manage your claims link", () => {
+    test("GET /check-details with organisation in the session, and agreement", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(mockOrg);
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue({ status: "AGREED" });
+
+      const res = await server.inject({
+        url: "/check-details",
+        method: "GET",
+        auth: {
+          credentials: {},
+          strategy: "cookie",
+        },
+      });
+
+      expect(res.statusCode).toBe(StatusCodes.OK);
+
+      expect(res.payload).toContain("Manage your claims");
+    });
+
+    test("GET /check-details with organisation in the session, and no agreement", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(mockOrg);
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue({ status: "NOT AGREED" });
+
+      const res = await server.inject({
+        url: "/check-details",
+        method: "GET",
+        auth: {
+          credentials: {},
+          strategy: "cookie",
+        },
+      });
+
+      expect(res.statusCode).toBe(StatusCodes.OK);
+
+      expect(res.payload).not.toContain("Manage your claims");
+    });
+
+    test("GET /check-details with organisation in the session, and no endemics", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(mockOrg);
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue(undefined);
+
+      const res = await server.inject({
+        url: "/check-details",
+        method: "GET",
+        auth: {
+          credentials: {},
+          strategy: "cookie",
+        },
+      });
+
+      expect(res.statusCode).toBe(StatusCodes.OK);
+
+      expect(res.payload).not.toContain("Manage your claims");
+    });
+  });
+
   test("POST /check-details with no payload returns a 400", async () => {
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.organisation)
