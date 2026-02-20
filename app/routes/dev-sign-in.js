@@ -11,7 +11,6 @@ import { setAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { farmerApply } from "../constants/constants.js";
 import { getRedirectPath } from "./utils/get-redirect-path.js";
 import HttpStatus from "http-status-codes";
-import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 import { setSessionForErrorPage } from "./utils/check-login-valid.js";
 import { refreshApplications } from "../lib/context-helper.js";
@@ -140,12 +139,10 @@ export const devLoginHandlers = [
 
           if (errorNames.includes(error.name)) {
             const hasMultipleBusinesses = sbi.charAt(0) === "1";
-            const backLink = await requestAuthorizationCodeUrl(request);
             await setSessionForErrorPage({
               request,
               error: error.name,
               hasMultipleBusinesses,
-              backLink,
               organisation,
             });
 
