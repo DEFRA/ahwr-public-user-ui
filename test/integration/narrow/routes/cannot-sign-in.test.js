@@ -67,7 +67,12 @@ describe("GET /cannot-sign-in handler", () => {
     expect(clearAuthCookie).toHaveBeenCalled();
     expect(clearAllOfSession).toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).not.toHaveBeenCalled();
-    expect(setSessionForErrorPage).toHaveBeenCalledWith({request: expect.anything(), error, hasMultipleBusinesses, organisation});
+    expect(setSessionForErrorPage).toHaveBeenCalledWith({
+      request: expect.anything(),
+      error,
+      hasMultipleBusinesses,
+      organisation,
+    });
   });
 
   test("it returns a 200 and generates a backLink if multipleBusinesses is applicable", async () => {
@@ -97,6 +102,11 @@ describe("GET /cannot-sign-in handler", () => {
     expect(clearAuthCookie).toHaveBeenCalled();
     expect(clearAllOfSession).toHaveBeenCalled();
     expect(requestAuthorizationCodeUrl).toHaveBeenCalled();
-    expect(setSessionForErrorPage).toHaveBeenCalledWith({request: expect.anything(), error, hasMultipleBusinesses, organisation});
+    expect(setSessionForErrorPage).toHaveBeenCalledWith({
+      request: expect.anything(),
+      error,
+      hasMultipleBusinesses,
+      organisation,
+    });
   });
 });

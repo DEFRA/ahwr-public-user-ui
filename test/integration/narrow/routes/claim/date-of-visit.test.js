@@ -1782,8 +1782,8 @@ describe("POST /date-of-visit handler", () => {
       url,
       payload: {
         crumb,
-        "visit-date-day": "13",
-        "visit-date-month": "05",
+        "visit-date-day": "26",
+        "visit-date-month": "06",
         "visit-date-year": "2025",
       },
       auth,
@@ -1830,8 +1830,8 @@ describe("POST /date-of-visit handler", () => {
       url,
       payload: {
         crumb,
-        "visit-date-day": "13",
-        "visit-date-month": "05",
+        "visit-date-day": "26",
+        "visit-date-month": "06",
         "visit-date-year": "2025",
       },
       auth,
@@ -1926,7 +1926,7 @@ describe("POST /date-of-visit handler", () => {
             createdAt: "2025-05-01T10:25:11.318Z",
             data: {
               typeOfLivestock: "dairy",
-              dateOfVisit: "2025-05-01",
+              dateOfVisit: "2025-06-26",
             },
             herd: {
               id: "fake-herd-id",

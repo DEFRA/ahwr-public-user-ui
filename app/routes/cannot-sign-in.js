@@ -4,7 +4,8 @@ import {
   clearAllOfSession,
   getSessionData,
   sessionEntryKeys,
-  sessionKeys, setSessionData
+  sessionKeys,
+  setSessionData,
 } from "../session/index.js";
 import { clearAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { config } from "../config/index.js";
@@ -50,9 +51,14 @@ export const cannotSignInExceptionHandlers = [
           request,
           error,
           hasMultipleBusinesses,
-          organisation
-        })
-        await setSessionData(request, sessionEntryKeys.tokens, sessionKeys.tokens.accessToken, token);
+          organisation,
+        });
+        await setSessionData(
+          request,
+          sessionEntryKeys.tokens,
+          sessionKeys.tokens.accessToken,
+          token,
+        );
 
         return h.view("cannot-sign-in-exception", {
           error,
