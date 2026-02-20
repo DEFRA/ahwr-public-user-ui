@@ -11,6 +11,7 @@ module.exports = {
     "<rootDir>/jest.config.cjs",
     "<rootDir>/webpack.config.js",
   ],
+  watchPathIgnorePatterns: ["\\.#"],
   modulePathIgnorePatterns: ["node_modules"],
   reporters: [
     "default",
