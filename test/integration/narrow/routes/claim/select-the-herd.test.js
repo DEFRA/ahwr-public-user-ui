@@ -1086,7 +1086,7 @@ describe("select-the-herd tests", () => {
             },
           ],
           herds: [],
-          dateOfVisit: "2025-05-01",
+          dateOfVisit: "2025-06-26",
         });
       canMakeClaim.mockReturnValue("Invalid claim message");
 

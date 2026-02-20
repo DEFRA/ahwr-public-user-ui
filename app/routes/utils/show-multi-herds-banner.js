@@ -1,7 +1,7 @@
-import { config } from "../../config/index.js";
+import { MULTIPLE_HERDS_RELEASE_DATE } from "../../constants/claim-constants";
 
 export const showMultiHerdsBanner = (application, claims) => {
-  const releaseDate = new Date(config.multiHerds.releaseDate).getTime();
+  const releaseDate = MULTIPLE_HERDS_RELEASE_DATE.getTime();
 
   const appliedBeforeMultipleHerds = Boolean(
     new Date(application.createdAt).getTime() < releaseDate,
