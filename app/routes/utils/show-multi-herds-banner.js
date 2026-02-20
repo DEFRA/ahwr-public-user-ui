@@ -1,4 +1,4 @@
-import { MULTIPLE_HERDS_RELEASE_DATE } from "../../constants/claim-constants";
+import { MULTIPLE_HERDS_RELEASE_DATE } from "../../constants/claim-constants.js";
 
 export const showMultiHerdsBanner = (application, claims) => {
   const releaseDate = MULTIPLE_HERDS_RELEASE_DATE.getTime();
