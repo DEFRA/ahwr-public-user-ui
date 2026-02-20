@@ -76,9 +76,6 @@ const configSchema = joi.object({
   },
   latestTermsAndConditionsUri: joi.string().required(),
   reapplyTimeLimitMonths: joi.number(),
-  multiHerds: joi.object({
-    releaseDate: joi.string().required(),
-  }),
   privacyPolicyUri: joi.string().uri(),
   lfsUpdate: {
     enabled: joi.boolean(),
@@ -165,9 +162,6 @@ export const getConfig = () => {
     },
     latestTermsAndConditionsUri: process.env.TERMS_AND_CONDITIONS_URL,
     reapplyTimeLimitMonths: 10,
-    multiHerds: {
-      releaseDate: process.env.MULTI_HERDS_RELEASE_DATE || "2025-05-01",
-    },
     privacyPolicyUri: process.env.PRIVACY_POLICY_URI,
     lfsUpdate: {
       enabled: process.env.LFS_UPDATE_ENABLED === "true",

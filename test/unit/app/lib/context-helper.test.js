@@ -116,17 +116,17 @@ describe("context-helper", () => {
   });
   test("isMultipleHerdsUserJourney, returns false when reject T&Cs flag", () => {
     expect(
-      isMultipleHerdsUserJourney("2025-05-01T00:00:00.000Z", [
+      isMultipleHerdsUserJourney("2025-06-26T00:00:00.000Z", [
         { appliesToMh: false },
         { appliesToMh: true },
       ]),
     ).toBe(false);
   });
   test("isMultipleHerdsUserJourney, returns true when visit date on/after golive and no flags", () => {
-    expect(isMultipleHerdsUserJourney("2025-05-01T00:00:00.000Z", [])).toBe(true);
+    expect(isMultipleHerdsUserJourney("2025-06-26T00:00:00.000Z", [])).toBe(true);
   });
   test("isMultipleHerdsUserJourney, returns true when visit date on/after golive and no reject T&Cs flag", () => {
-    expect(isMultipleHerdsUserJourney("2025-05-01T00:00:00.000Z", [{ appliesToMh: false }])).toBe(
+    expect(isMultipleHerdsUserJourney("2025-26-06T00:00:00.000Z", [{ appliesToMh: false }])).toBe(
       true,
     );
   });
