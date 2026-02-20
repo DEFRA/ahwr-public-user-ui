@@ -60,5 +60,5 @@ const getUserHasAgreement = (request) => {
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.latestEndemicsApplication,
   );
-  return Boolean(latestEndemicsApplication);
+  return latestEndemicsApplication?.status === "AGREED";
 };
