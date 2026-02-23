@@ -7,6 +7,7 @@ export const applyRoutes = {
   declaration: "/declaration",
   offerRejected: "/offer-rejected",
   confirmation: "/confirmation",
+  checkDetails: "/check-details",
 };
 
 export const applyViews = {

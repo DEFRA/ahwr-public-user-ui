@@ -1,6 +1,11 @@
 import { StatusCodes } from "http-status-codes";
 import { createServer } from "../../../../app/server";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session";
+import {
+  setSessionEntry,
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../../../../app/session";
 import { getCrumbs } from "../../../utils/get-crumbs";
 import { when, resetAllWhenMocks } from "jest-when";
 
@@ -205,6 +210,11 @@ describe("/check-details", () => {
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location).toEqual("/you-can-claim-multiple");
+    expect(setSessionEntry).toHaveBeenCalledWith(
+      expect.anything(),
+      sessionEntryKeys.confirmedDetails,
+      true,
+    );
   });
 
   test("POST /check-details with valid confirmCheckDetails = yes in payload, and redirects to dashboard", async () => {
@@ -225,6 +235,11 @@ describe("/check-details", () => {
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location).toEqual("/vet-visits");
+    expect(setSessionEntry).toHaveBeenCalledWith(
+      expect.anything(),
+      sessionEntryKeys.confirmedDetails,
+      true,
+    );
   });
 
   test("POST /check-details with valid confirmCheckDetails = no in payload, and renders update details page", async () => {

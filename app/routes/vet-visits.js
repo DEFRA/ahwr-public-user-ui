@@ -11,7 +11,7 @@ import {
   UNNAMED_HERD,
 } from "ffc-ahwr-common-library";
 import { isWithin10MonthsFromNow } from "../lib/utils.js";
-import { claimRoutes } from "../constants/routes.js";
+import { applyRoutes, claimRoutes } from "../constants/routes.js";
 import { SHEEP } from "../constants/claim-constants.js";
 import { refreshApplications } from "../lib/context-helper.js";
 
@@ -169,10 +169,19 @@ export const vetVisitsHandlers = [
         const { latestEndemicsApplication, latestVetVisitApplication } =
           await getOrRefreshApplications(request, organisation.sbi);
 
-        if (!latestEndemicsApplication) {
-          throw new Error(
-            "User should not be attempting to access this page without an agreement.",
+        if (latestEndemicsApplication?.status !== "AGREED") {
+          const confirmedDetails = getSessionData(
+            request,
+            sessionEntryKeys.confirmedDetails,
+            sessionKeys.confirmedDetails,
           );
+
+          console.log({ confirmedDetails });
+          if (confirmedDetails) {
+            return h.redirect(applyRoutes.youCanClaimMultiple);
+          } else {
+            return h.redirect(applyRoutes.checkDetails);
+          }
         }
 
         if (latestEndemicsApplication.redacted) {

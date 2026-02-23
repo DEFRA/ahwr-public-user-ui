@@ -103,6 +103,7 @@ export const sessionEntryKeys = {
   customer: "customer",
   cannotSignInDetails: "cannotSignInDetails",
   signInRedirect: "signInRedirect",
+  confirmedDetails: "confirmedDetails",
   application: "application",
   organisation: "organisation",
 };

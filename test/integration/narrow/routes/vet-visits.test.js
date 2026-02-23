@@ -5,6 +5,7 @@ import { getTableCells } from "../../../helpers/get-table-cells.js";
 import globalJsdom from "global-jsdom";
 import { getByRole, queryByRole } from "@testing-library/dom";
 import { getClaimsByApplicationReference } from "../../../../app/api-requests/claim-api.js";
+import { refreshApplications } from "../../../../app/lib/context-helper.js";
 
 const nunJucksInternalTimerMethods = ["nextTick"];
 let cleanUpFunction;
@@ -15,7 +16,11 @@ jest.mock("../../../../app/auth/auth-code-grant/request-authorization-code-url.j
 }));
 jest.mock("../../../../app/lib/context-helper.js");
 
-test("get /vet-visits: no agreement throws an error", async () => {
+jest
+  .mocked(refreshApplications)
+  .mockResolvedValue({ latestEndemicsApplication: {}, latestVetVisitApplication: {} });
+
+test.only("get /vet-visits: no agreement redirects to get one", async () => {
   const server = await createServer();
 
   const sbi = "106354662";
@@ -65,6 +70,7 @@ test("get /vet-visits: new world, multiple businesses", async () => {
         type: "EE",
         reference: applicationReference,
         redacted: false,
+        status: "AGREED",
       },
       latestVetVisitApplication: undefined,
     },
@@ -140,6 +146,7 @@ test("get /vet-visits: new world, multiple businesses, for sheep (flock not herd
         type: "EE",
         reference: applicationReference,
         redacted: false,
+        status: "AGREED",
       },
       latestVetVisitApplication: undefined,
     },
@@ -197,6 +204,7 @@ test("get /vet-visits: new world, claim has a herd", async () => {
         type: "EE",
         reference: applicationReference,
         redacted: false,
+        status: "AGREED",
       },
       latestVetVisitApplication: undefined,
     },
@@ -278,6 +286,7 @@ test("get /vet-visits: new world, no claims made, show banner", async () => {
         reference: "IAHW-TEST-NEW2",
         createdAt: beforeMultiSpeciesReleaseDate,
         redacted: false,
+        status: "AGREED",
       },
       latestVetVisitApplication: undefined,
     },
@@ -380,6 +389,7 @@ test("get /vet-visits: shows agreement redacted", async () => {
         reference: "IAHW-TEST-NEW2",
         createdAt: beforeMultiSpeciesReleaseDate,
         redacted: true,
+        status: "AGREED",
       },
       latestVetVisitApplication: undefined,
     },

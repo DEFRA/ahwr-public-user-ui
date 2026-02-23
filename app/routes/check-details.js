@@ -1,7 +1,12 @@
 import { getOrganisationModel } from "./models/organisation.js";
 import joi from "joi";
 import { StatusCodes } from "http-status-codes";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionEntry,
+} from "../session/index.js";
 import { config } from "../config/index.js";
 import { applyRoutes } from "../constants/routes.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
@@ -55,6 +60,8 @@ export const checkDetailsHandlers = [
         const { confirmCheckDetails } = request.payload;
 
         if (confirmCheckDetails === "yes") {
+          await setSessionEntry(request, sessionEntryKeys.confirmedDetails, true);
+
           const redirectToApply = getSessionData(
             request,
             sessionEntryKeys.signInRedirect,
