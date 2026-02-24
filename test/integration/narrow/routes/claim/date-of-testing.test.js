@@ -8,8 +8,9 @@ import {
   skipSameHerdPage,
 } from "../../../../../app/lib/context-helper.js";
 import HttpStatus from "http-status-codes";
-import { getSessionData } from "../../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session");
@@ -47,6 +48,24 @@ describe("Date of testing", () => {
     });
   });
 
+  beforeEach(() => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -60,13 +79,15 @@ describe("Date of testing", () => {
     test.each([{ typeOfLivestock: "beef" }, { typeOfLivestock: "dairy" }])(
       "returns 200",
       async ({ typeOfLivestock }) => {
-        getSessionData.mockReturnValue({
-          typeOfReview: "FOLLOW_UP",
-          typeOfLivestock,
-          latestEndemicsApplication,
-          reference: "TEMP-6GSE-PIR8",
-          dateOfVisit: "2022-01-01",
-        });
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
+            typeOfReview: "FOLLOW_UP",
+            typeOfLivestock,
+            latestEndemicsApplication,
+            reference: "TEMP-6GSE-PIR8",
+            dateOfVisit: "2022-01-01",
+          });
 
         const options = {
           method: "GET",
@@ -343,21 +364,38 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
     isMultipleHerdsUserJourney.mockImplementation(() => {
       return true;
     });
-  });
 
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+  });
   afterAll(async () => {
     await server.stop();
     jest.resetAllMocks();
   });
 
   test("returns 200 and correct backlink when skipSameHerdPage=true", async () => {
-    getSessionData.mockReturnValue({
-      typeOfReview: "FOLLOW_UP",
-      typeOfLivestock: "beef",
-      latestEndemicsApplication: { createdAt: new Date("2022-01-01") },
-      reference: "TEMP-6GSE-PIR8",
-      previousClaims: [],
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        typeOfReview: "FOLLOW_UP",
+        typeOfLivestock: "beef",
+        latestEndemicsApplication: { createdAt: new Date("2022-01-01") },
+        reference: "TEMP-6GSE-PIR8",
+        previousClaims: [],
+      });
 
     const res = await server.inject({ method: "GET", url, auth });
 
@@ -367,13 +405,15 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
   });
 
   test("returns 200 and correct backlink when skipSameHerdPage=false", async () => {
-    getSessionData.mockReturnValue({
-      typeOfReview: "FOLLOW_UP",
-      typeOfLivestock: "beef",
-      latestEndemicsApplication: { createdAt: new Date("2022-01-01") },
-      reference: "TEMP-6GSE-PIR8",
-      previousClaims: [{ data: { typeOfLivestock: "beef" } }],
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        typeOfReview: "FOLLOW_UP",
+        typeOfLivestock: "beef",
+        latestEndemicsApplication: { createdAt: new Date("2022-01-01") },
+        reference: "TEMP-6GSE-PIR8",
+        previousClaims: [{ data: { typeOfLivestock: "beef" } }],
+      });
 
     const res = await server.inject({ method: "GET", url, auth });
 
@@ -383,12 +423,14 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
   });
 
   test("returns 200 and correct backlink when beef follow-up post PIHuntAndDairy golive", async () => {
-    getSessionData.mockReturnValue({
-      typeOfReview: "FOLLOW_UP",
-      typeOfLivestock: "beef",
-      latestEndemicsApplication: { createdAt: new Date("2025-06-06") },
-      reference: "TEMP-6GSE-PIR8",
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        typeOfReview: "FOLLOW_UP",
+        typeOfLivestock: "beef",
+        latestEndemicsApplication: { createdAt: new Date("2025-06-06") },
+        reference: "TEMP-6GSE-PIR8",
+      });
     skipSameHerdPage.mockImplementation(() => {
       return true;
     });

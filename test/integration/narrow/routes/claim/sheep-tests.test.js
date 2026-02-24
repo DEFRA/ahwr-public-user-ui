@@ -2,7 +2,13 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -29,9 +35,28 @@ describe("Test Results test", () => {
 
   describe(`GET ${url} route`, () => {
     test("returns 200", async () => {
-      getSessionData.mockImplementation(() => {
-        return { sheepEndemicsPackage: "reducedExternalParasites", reference: "TEMP-6GSE-PIR8" };
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          sheepEndemicsPackage: "reducedExternalParasites",
+          reference: "TEMP-6GSE-PIR8",
+        });
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue({ status: "AGREED" });
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.confirmedDetails,
+          sessionKeys.confirmedDetails,
+        )
+        .mockReturnValue(true);
 
       const options = {
         method: "GET",

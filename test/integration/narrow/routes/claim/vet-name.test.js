@@ -2,7 +2,13 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 const errorMessages = {
   enterName: "Enter the vet's name",
@@ -19,9 +25,25 @@ describe("Vet name test", () => {
   let server;
 
   beforeAll(async () => {
-    getSessionData.mockImplementation(() => {
-      return { typeOfLivestock: "pigs" };
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({ typeOfLivestock: "pigs" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
     setSessionData.mockImplementation(() => {});
 
     server = await createServer();
@@ -40,14 +62,14 @@ describe("Vet name test", () => {
     test.each([{ reviewTestResults: "negative" }, { reviewTestResults: "positive" }])(
       "returns 200",
       async ({ reviewTestResults }) => {
-        getSessionData.mockImplementation(() => {
-          return {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
             typeOfLivestock: "beef",
             typeOfReview: "FOLLOW_UP",
             reviewTestResults,
             reference: "TEMP-6GSE-PIR8",
-          };
-        });
+          });
         const options = {
           method: "GET",
           url,

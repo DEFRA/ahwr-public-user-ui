@@ -16,9 +16,11 @@ import { devRedirectPlugin } from "./plugins/dev-redirect.js";
 import { getCacheEngine } from "./cache/get-cache-engine.js";
 import { redirectAgreementRedactedPlugin } from "./plugins/redirect-agreement-redacted.js";
 import { setupProxy } from "./lib/setup-proxy.js";
+import { redirectAgreementNotAcceptedPlugin } from "./plugins/redirect-agreement-not-accepted.js";
 
-export async function createServer() {
+export async function createServer(options = {}) {
   setupProxy();
+  const { skipRedirection } = options;
   const server = Hapi.server({
     cache: [getCacheEngine()],
     port: config.port,
@@ -47,6 +49,10 @@ export async function createServer() {
   await server.register(viewContextPlugin);
   await server.register(viewsPlugin);
   await server.register(headerPlugin);
+  if (!skipRedirection) {
+    await server.register(redirectAgreementNotAcceptedPlugin);
+  }
+
   await server.register(redirectAgreementRedactedPlugin);
 
   if (config.devLogin.enabled) {

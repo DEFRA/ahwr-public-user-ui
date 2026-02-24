@@ -1,7 +1,8 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData } from "../../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -22,7 +23,24 @@ describe("Disease status test", () => {
   beforeAll(async () => {
     server = await createServer();
     await server.initialize();
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
+
   afterAll(async () => {
     await server.stop();
     jest.resetAllMocks();
@@ -47,7 +65,9 @@ describe("Disease status test", () => {
         url,
         auth,
       };
-      getSessionData.mockReturnValue({ reference: "TEMP-6GSE-PIR8" });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({ reference: "TEMP-6GSE-PIR8" });
 
       const response = await server.inject(options);
 
@@ -60,7 +80,9 @@ describe("Disease status test", () => {
         url,
         auth,
       };
-      getSessionData.mockReturnValue({ reference: "TEMP-6GSE-PIR8" });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({ reference: "TEMP-6GSE-PIR8" });
 
       const response = await server.inject(options);
 
@@ -75,7 +97,9 @@ describe("Disease status test", () => {
         url,
       };
 
-      getSessionData.mockReturnValue({ diseaseStatus: "1", reference: "TEMP-6GSE-PIR8" });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({ diseaseStatus: "1", reference: "TEMP-6GSE-PIR8" });
 
       const response = await server.inject(options);
       const $ = cheerio.load(response.payload);

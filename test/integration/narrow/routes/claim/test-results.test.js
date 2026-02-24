@@ -2,7 +2,13 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -12,9 +18,25 @@ describe("Test Results test", () => {
   let server;
 
   beforeAll(async () => {
-    getSessionData.mockImplementation(() => {
-      return { typeOfLivestock: "beef", reference: "TEMP-6GSE-PIR8" };
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({ typeOfLivestock: "beef", reference: "TEMP-6GSE-PIR8" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
     setSessionData.mockImplementation(() => {});
 
     server = await createServer();
@@ -31,9 +53,11 @@ describe("Test Results test", () => {
       { typeOfReview: "FOLLOW_UP", question: "What was the follow-up test result?" },
       { typeOfReview: "REVIEW", question: "What was the test result?" },
     ])("returns 200", async ({ typeOfReview, question }) => {
-      getSessionData.mockImplementation(() => {
-        return { typeOfReview, reference: "TEMP-6GSE-PIR8" };
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockImplementation(() => {
+          return { typeOfReview, reference: "TEMP-6GSE-PIR8" };
+        });
 
       const options = {
         method: "GET",
@@ -67,9 +91,11 @@ describe("Test Results test", () => {
     ])(
       "backLink when species $typeOfLivestock and type of review is $typeOfReview",
       async ({ typeOfLivestock, typeOfReview, backLink }) => {
-        getSessionData.mockImplementation(() => {
-          return { typeOfLivestock, typeOfReview, reference: "TEMP-6GSE-PIR8" };
-        });
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockImplementation(() => {
+            return { typeOfLivestock, typeOfReview, reference: "TEMP-6GSE-PIR8" };
+          });
         const options = {
           method: "GET",
           url,
@@ -85,14 +111,16 @@ describe("Test Results test", () => {
     );
 
     it("should have backLink to endemicsNumberOfBloodSamples when typeOfSamplesTaken is blood", async () => {
-      getSessionData.mockImplementation(() => {
-        return {
-          typeOfLivestock: "pigs",
-          typeOfReview: "R",
-          reference: "TEMP-6GSE-PIR8",
-          typeOfSamplesTaken: "blood",
-        };
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockImplementation(() => {
+          return {
+            typeOfLivestock: "pigs",
+            typeOfReview: "R",
+            reference: "TEMP-6GSE-PIR8",
+            typeOfSamplesTaken: "blood",
+          };
+        });
 
       const options = { method: "GET", url, auth };
       const res = await server.inject(options);

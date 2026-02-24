@@ -21,7 +21,7 @@ describe("Missing routes", () => {
   let cleanupJsdom;
 
   beforeAll(async () => {
-    server = await createServer();
+    server = await createServer({ skipRedirection: true });
     await server.initialize();
   });
 

@@ -1,7 +1,8 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getReviewType } from "../../../../../app/lib/utils.js";
-import { getSessionData } from "../../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session");
 
@@ -21,8 +22,12 @@ describe("Claim confirmation", () => {
   const auth = { credentials: {}, strategy: "cookie" };
   const url = `/confirmation`;
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   test.each([{ typeOfReview: "FOLLOW_UP" }, { typeOfReview: "REVIEW" }])(
-    "GET endemicsConfirmation route",
+    "GET endemicsConfirmation route %s",
     async ({ typeOfReview }) => {
       const { isReview } = getReviewType(typeOfReview);
       const options = {
@@ -31,13 +36,30 @@ describe("Claim confirmation", () => {
         auth,
       };
 
-      getSessionData.mockImplementation(() => {
-        return {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
           reference,
           amount: 55,
           typeOfReview,
-        };
-      });
+        });
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue({ status: "AGREED" });
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.confirmedDetails,
+          sessionKeys.confirmedDetails,
+        )
+        .mockReturnValue(true);
+
       const res = await server.inject(options);
 
       const $ = cheerio.load(res.payload);
