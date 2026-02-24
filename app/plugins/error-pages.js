@@ -11,7 +11,7 @@ export const errorPagesPlugin = {
           const { statusCode, message } = response.output.payload;
 
           const originalError = response instanceof Error ? response : response.data?.error;
-          const firstLineOfError = originalError?.stack.split("\n")[0] ?? message;
+          const firstLineOfError = originalError?.stack?.split("\n")[0] ?? message;
 
           request.logger.error(
             {

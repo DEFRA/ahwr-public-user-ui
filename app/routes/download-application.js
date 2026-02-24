@@ -30,8 +30,9 @@ export const downloadApplicationHandlers = {
             Key: key,
           }),
         );
-      } catch (err) {
-        throw new Error("Application not found, could not be downloaded.");
+      } catch (error) {
+        request.logger.error("Application not found, could not be downloaded");
+        throw error;
       }
 
       const command = new GetObjectCommand({
