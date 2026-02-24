@@ -5,11 +5,14 @@ import expectPhaseBanner from "assert";
 import {
   getSessionData,
   removeSessionDataForSameHerdChange,
+  sessionEntryKeys,
+  sessionKeys,
   setSessionData,
 } from "../../../../../app/session/index.js";
 import { canMakeClaim } from "../../../../../app/lib/can-make-claim.js";
 import { getReviewWithinLast10Months } from "../../../../../app/lib/claim-helper.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/api-requests/claim-api");
@@ -36,43 +39,63 @@ describe("select-the-herd tests", () => {
     await server.stop();
   });
 
+  beforeEach(() => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   describe("GET", () => {
     test("returns 200 with flock labels when species sheep and display type value from previousClaims", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { typeOfLivestock: "beef" },
-          },
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { typeOfLivestock: "sheep" },
-          },
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { typeOfLivestock: "beef" },
             },
-          },
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-30T00:00:00.000Z",
-            data: { typeOfLivestock: "beef" },
-          },
-        ],
-        herds: [],
-      });
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { typeOfLivestock: "sheep" },
+            },
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+            },
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-30T00:00:00.000Z",
+              data: { typeOfLivestock: "beef" },
+            },
+          ],
+          herds: [],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -94,14 +117,16 @@ describe("select-the-herd tests", () => {
     });
 
     test("returns 200 with herd labels when species beef, also selects correct herd", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        herds: [],
-        herdSame: "yes",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          previousClaims: [],
+          herds: [],
+          herdSame: "yes",
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 

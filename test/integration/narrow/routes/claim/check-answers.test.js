@@ -29,6 +29,7 @@ import {
 import {
   getSessionData,
   sessionEntryKeys,
+  sessionKeys,
   setSessionData,
 } from "../../../../../app/session/index.js";
 import expectPhaseBanner from "assert";
@@ -57,6 +58,22 @@ describe("Check answers test", () => {
   beforeAll(async () => {
     server = await createServer();
     await server.initialize();
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
 
   afterAll(async () => {
@@ -443,9 +460,12 @@ describe("Check answers test", () => {
     });
 
     test("shows fields for an endemics claim in the correct order for each species for unknown species", async () => {
-      getSessionData.mockImplementation(() => {
-        return { ...sheepEndemicsFollowUpClaim, typeOfLivestock: "unknown" };
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          ...sheepEndemicsFollowUpClaim,
+          typeOfLivestock: "unknown",
+        });
       const options = {
         method: "GET",
         url,
@@ -604,8 +624,9 @@ describe("Check answers test", () => {
     );
 
     test("check row doesn't appear if no value", async () => {
-      getSessionData.mockImplementation(() => {
-        return {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
           organisation: { name: "business name" },
           typeOfLivestock: "sheep",
           typeOfReview: "typeOfReview",
@@ -620,8 +641,7 @@ describe("Check answers test", () => {
           testResults: undefined,
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication: { flags: [] },
-        };
-      });
+        });
       const options = {
         method: "GET",
         url,
@@ -654,8 +674,9 @@ describe("Check answers test", () => {
     ])(
       "check vetVisitsReviewTestResults is included when provided for typeOfLivestock: $typeOfLivestock",
       async ({ typeOfLivestock }) => {
-        getSessionData.mockImplementation(() => {
-          return {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
             organisation: { name: "business name" },
             typeOfReview: "FOLLOW_UP",
             typeOfLivestock,
@@ -668,8 +689,7 @@ describe("Check answers test", () => {
             vetVisitsReviewTestResults: "vetVisitsReviewTestResults",
             reference: "TEMP-6GSE-PIR8",
             latestEndemicsApplication: { flags: [] },
-          };
-        });
+          });
         const options = {
           method: "GET",
           url,

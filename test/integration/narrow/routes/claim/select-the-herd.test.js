@@ -6,6 +6,7 @@ import {
   getSessionData,
   removeSessionDataForSelectHerdChange,
   sessionEntryKeys,
+  sessionKeys,
   setSessionData,
 } from "../../../../../app/session/index.js";
 import { canMakeClaim } from "../../../../../app/lib/can-make-claim.js";
@@ -39,40 +40,60 @@ describe("select-the-herd tests", () => {
     await server.stop();
   });
 
+  beforeEach(() => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   describe("GET", () => {
     test("returns 200 with flock labels when species sheep", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-          {
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
-          },
-          {
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
             },
-          },
-          {
-            createdAt: "2025-04-30T00:00:00.000Z",
-            data: { claimType: "REVIEW", typeOfLivestock: "beef" },
-          },
-        ],
-        herds: [],
-      });
+            {
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "sheep" },
+            },
+            {
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+            },
+            {
+              createdAt: "2025-04-30T00:00:00.000Z",
+              data: { claimType: "REVIEW", typeOfLivestock: "beef" },
+            },
+          ],
+          herds: [],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -86,16 +107,18 @@ describe("select-the-herd tests", () => {
     });
 
     test("returns 200 with herd labels when species beef, also selects correct herd", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        herdSelected: "NEW_HERD",
-        herdId: fakeTemporaryHerdId,
-        herds: [{ id: "100bb722-3de1-443e-8304-0bba8f922050", name: "Barn animals" }],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          previousClaims: [],
+          herdSelected: "NEW_HERD",
+          herdId: fakeTemporaryHerdId,
+          herds: [{ id: "100bb722-3de1-443e-8304-0bba8f922050", name: "Barn animals" }],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -110,29 +133,31 @@ describe("select-the-herd tests", () => {
     });
 
     test("returns 200 and displays multiple herds as radios when multiple herds exist", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        herdSelected: "NEW_HERD",
-        herdId: fakeTemporaryHerdId,
-        herds: [
-          {
-            id: "100bb722-3de1-443e-8304-0bba8f922050",
-            name: "Barn animals",
-          },
-          {
-            id: "200bb722-3de1-443e-8304-0bba8f922050",
-            name: "Hilltop",
-          },
-          {
-            id: "300bb722-3de1-443e-8304-0bba8f922050",
-            name: "Field animals",
-          },
-        ],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          previousClaims: [],
+          herdSelected: "NEW_HERD",
+          herdId: fakeTemporaryHerdId,
+          herds: [
+            {
+              id: "100bb722-3de1-443e-8304-0bba8f922050",
+              name: "Barn animals",
+            },
+            {
+              id: "200bb722-3de1-443e-8304-0bba8f922050",
+              name: "Hilltop",
+            },
+            {
+              id: "300bb722-3de1-443e-8304-0bba8f922050",
+              name: "Field animals",
+            },
+          ],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -162,24 +187,26 @@ describe("select-the-herd tests", () => {
     });
 
     test("returns 200 and displays type value from previousClaims when only one herd and no pre-MH claims", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-28T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2025-04-14T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-28T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2025-04-14T00:00:00.000Z",
+              },
+              herd: { id: "100bb722-3de1-443e-8304-0bba8f922050" },
             },
-            herd: { id: "100bb722-3de1-443e-8304-0bba8f922050" },
-          },
-        ],
-        herds: [{ id: "100bb722-3de1-443e-8304-0bba8f922050", name: "Barn animals" }],
-      });
+          ],
+          herds: [{ id: "100bb722-3de1-443e-8304-0bba8f922050", name: "Barn animals" }],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -201,58 +228,60 @@ describe("select-the-herd tests", () => {
     });
 
     test("displays unnamed herd with most recent claim date without herd when multiple previous claims with and without herd exists", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        previousClaims: [
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "beef",
-              dateOfVisit: "2025-04-05T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          previousClaims: [
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "beef",
+                dateOfVisit: "2025-04-05T00:00:00.000Z",
+              },
+              herd: { id: "1" },
             },
-            herd: { id: "1" },
-          },
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "beef",
-              dateOfVisit: "2025-04-01T00:00:00.000Z",
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "beef",
+                dateOfVisit: "2025-04-01T00:00:00.000Z",
+              },
             },
-          },
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-04-01T00:00:00.000Z",
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-04-01T00:00:00.000Z",
+              },
             },
-          },
-        ],
-        herdSelected: "NEW_HERD",
-        herdId: fakeTemporaryHerdId,
-        herds: [
-          {
-            id: "100bb722-3de1-443e-8304-0bba8f922050",
-            name: "Barn animals",
-          },
-          {
-            id: "200bb722-3de1-443e-8304-0bba8f922050",
-            name: "Hilltop",
-          },
-          {
-            id: "300bb722-3de1-443e-8304-0bba8f922050",
-            name: "Field animals",
-          },
-        ],
-      });
+          ],
+          herdSelected: "NEW_HERD",
+          herdId: fakeTemporaryHerdId,
+          herds: [
+            {
+              id: "100bb722-3de1-443e-8304-0bba8f922050",
+              name: "Barn animals",
+            },
+            {
+              id: "200bb722-3de1-443e-8304-0bba8f922050",
+              name: "Hilltop",
+            },
+            {
+              id: "300bb722-3de1-443e-8304-0bba8f922050",
+              name: "Field animals",
+            },
+          ],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -287,58 +316,60 @@ describe("select-the-herd tests", () => {
     });
 
     test("displays unnamed herd with most recent follow-up claim date without herd when multiple previous claims with and without herd exists", async () => {
-      getSessionData.mockReturnValue({
-        tempHerdId: fakeTemporaryHerdId,
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        previousClaims: [
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "beef",
-              dateOfVisit: "2025-04-05T00:00:00.000Z",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          tempHerdId: fakeTemporaryHerdId,
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          previousClaims: [
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "beef",
+                dateOfVisit: "2025-04-05T00:00:00.000Z",
+              },
+              herd: { id: "1" },
             },
-            herd: { id: "1" },
-          },
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "beef",
-              dateOfVisit: "2025-04-01T00:00:00.000Z",
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "beef",
+                dateOfVisit: "2025-04-01T00:00:00.000Z",
+              },
             },
-          },
-          {
-            type: "REVIEW",
-            createdAt: "2025-04-01T00:00:00.000Z",
-            data: {
-              claimType: "REVIEW",
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-04-01T00:00:00.000Z",
+            {
+              type: "REVIEW",
+              createdAt: "2025-04-01T00:00:00.000Z",
+              data: {
+                claimType: "REVIEW",
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-04-01T00:00:00.000Z",
+              },
             },
-          },
-        ],
-        herdSelected: "NEW_HERD",
-        herdId: fakeTemporaryHerdId,
-        herds: [
-          {
-            id: "100bb722-3de1-443e-8304-0bba8f922050",
-            name: "Barn animals",
-          },
-          {
-            id: "200bb722-3de1-443e-8304-0bba8f922050",
-            name: "Hilltop",
-          },
-          {
-            id: "300bb722-3de1-443e-8304-0bba8f922050",
-            name: "Field animals",
-          },
-        ],
-      });
+          ],
+          herdSelected: "NEW_HERD",
+          herdId: fakeTemporaryHerdId,
+          herds: [
+            {
+              id: "100bb722-3de1-443e-8304-0bba8f922050",
+              name: "Barn animals",
+            },
+            {
+              id: "200bb722-3de1-443e-8304-0bba8f922050",
+              name: "Hilltop",
+            },
+            {
+              id: "300bb722-3de1-443e-8304-0bba8f922050",
+              name: "Field animals",
+            },
+          ],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
