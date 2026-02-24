@@ -176,7 +176,6 @@ export const vetVisitsHandlers = [
             sessionKeys.confirmedDetails,
           );
 
-          console.log({ confirmedDetails });
           if (confirmedDetails) {
             return h.redirect(applyRoutes.youCanClaimMultiple);
           } else {
