@@ -342,7 +342,7 @@ test("get /vet-visits: new world, no claims made, show banner", async () => {
   );
 });
 
-test("get /vet-visits: old world application only - results in error page", async () => {
+test("get /vet-visits: old world application only - redirects to create agreement", async () => {
   cleanUpFunction();
   const server = await createServer();
   const timeOfTest = new Date("2025-01-02");
@@ -353,6 +353,7 @@ test("get /vet-visits: old world application only - results in error page", asyn
   const almostTenMonthsBefore = new Date("2024-03-03");
 
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: false,
     },
@@ -379,7 +380,7 @@ test("get /vet-visits: old world application only - results in error page", asyn
 
   await setServerState(server, state);
 
-  const { payload } = await server.inject({
+  const { headers, payload } = await server.inject({
     url: "/vet-visits",
     auth: {
       credentials: {},
@@ -389,12 +390,7 @@ test("get /vet-visits: old world application only - results in error page", asyn
   jest.useRealTimers();
   globalJsdom(payload);
 
-  expect(
-    getByRole(document.body, "heading", {
-      level: 1,
-      name: "Sorry, there is a problem with the service",
-    }),
-  ).toBeDefined();
+  expect(headers.location).toBe("/you-can-claim-multiple");
 });
 
 test("get /vet-visits: shows agreement redacted", async () => {
