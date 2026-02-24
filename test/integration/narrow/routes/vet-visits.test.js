@@ -20,7 +20,7 @@ jest
   .mocked(refreshApplications)
   .mockResolvedValue({ latestEndemicsApplication: {}, latestVetVisitApplication: {} });
 
-test.only("get /vet-visits: no agreement redirects to get one", async () => {
+test("get /vet-visits: details not checked redirects to get them checked", async () => {
   const server = await createServer();
 
   const sbi = "106354662";
@@ -38,7 +38,7 @@ test.only("get /vet-visits: no agreement redirects to get one", async () => {
 
   await setServerState(server, state);
 
-  const { payload } = await server.inject({
+  const { headers, payload } = await server.inject({
     url: "/vet-visits",
     auth: {
       credentials: {},
@@ -47,12 +47,38 @@ test.only("get /vet-visits: no agreement redirects to get one", async () => {
   });
   cleanUpFunction = globalJsdom(payload);
 
-  expect(
-    getByRole(document.body, "heading", {
-      level: 1,
-      name: "Sorry, there is a problem with the service",
-    }),
-  ).toBeDefined();
+  expect(headers.location).toBe("/check-details");
+});
+
+test("get /vet-visits: no agreement redirects to get them checked", async () => {
+  const server = await createServer();
+
+  const sbi = "106354662";
+  const state = {
+    confirmedDetails: true,
+    customer: {
+      attachedToMultipleBusinesses: false,
+    },
+    endemicsClaim: {},
+    organisation: {
+      sbi,
+      name: "PARTRIDGES",
+      farmerName: "Janice Harrison",
+    },
+  };
+
+  await setServerState(server, state);
+
+  const { headers, payload } = await server.inject({
+    url: "/vet-visits",
+    auth: {
+      credentials: {},
+      strategy: "cookie",
+    },
+  });
+  cleanUpFunction = globalJsdom(payload);
+
+  expect(headers.location).toBe("/you-can-claim-multiple");
 });
 
 test("get /vet-visits: new world, multiple businesses", async () => {

@@ -59,9 +59,15 @@ export const checkDetailsHandlers = [
       handler: async (request, h) => {
         const { confirmCheckDetails } = request.payload;
 
-        if (confirmCheckDetails === "yes") {
-          await setSessionEntry(request, sessionEntryKeys.confirmedDetails, true);
+        // We want to record whether they confirm the details or not
+        // for future checks in different parts of the app
+        await setSessionEntry(
+          request,
+          sessionEntryKeys.confirmedDetails,
+          confirmCheckDetails === "yes",
+        );
 
+        if (confirmCheckDetails === "yes") {
           const redirectToApply = getSessionData(
             request,
             sessionEntryKeys.signInRedirect,
