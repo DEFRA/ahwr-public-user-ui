@@ -11,29 +11,29 @@ export const redirectAgreementNotAcceptedPlugin = {
   plugin: {
     name: "redirect-agreement-not-accepted",
     register: (server, _) => {
+      const excludedPaths = [
+        signRoutes.signIn,
+        signRoutes.devLandingPage,
+        signRoutes.signOut,
+        signRoutes.signInOidc,
+        signRoutes.cannotSignIn,
+        supportRoutes.health,
+        supportRoutes.accessibility,
+        supportRoutes.missingRoutes,
+        supportRoutes.assets,
+        supportRoutes.updateDetails,
+        supportRoutes.cookies,
+        applyRoutes.checkDetails,
+        applyRoutes.declaration,
+        applyRoutes.numbers,
+        applyRoutes.timings,
+        applyRoutes.youCanClaimMultiple,
+        claimRoutes.devSignIn,
+        dashboardRoutes.manageYourClaims,
+      ];
       server.ext("onPreHandler", (request, h) => {
-        if (
-          request.method === "get" &&
-          !request.path.includes(signRoutes.signIn) &&
-          !request.path.includes(signRoutes.devLandingPage) &&
-          !request.path.includes(signRoutes.signOut) &&
-          !request.path.includes(signRoutes.signInOidc) &&
-          !request.path.includes(signRoutes.cannotSignIn) &&
-          !request.path.includes(supportRoutes.health) &&
-          !request.path.includes(supportRoutes.accessibility) &&
-          !request.path.includes(supportRoutes.missingRoutes) &&
-          !request.path.includes(supportRoutes.health) &&
-          !request.path.includes(supportRoutes.assets) &&
-          !request.path.includes(supportRoutes.updateDetails) &&
-          !request.path.includes(supportRoutes.cookies) &&
-          !request.path.includes(applyRoutes.checkDetails) &&
-          !request.path.includes(applyRoutes.declaration) &&
-          !request.path.includes(applyRoutes.numbers) &&
-          !request.path.includes(applyRoutes.timings) &&
-          !request.path.includes(applyRoutes.youCanClaimMultiple) &&
-          !request.path.includes(claimRoutes.devSignIn) &&
-          !request.path.includes(dashboardRoutes.manageYourClaims)
-        ) {
+        const excludedPath = excludedPaths.some((term) => request.path.includes(term));
+        if (request.method === "get" && !excludedPath) {
           const latestEndemicsApplication = getSessionData(
             request,
             sessionEntryKeys.endemicsClaim,

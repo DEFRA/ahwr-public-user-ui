@@ -11,25 +11,25 @@ export const redirectNoCheckDetailsPlugin = {
   plugin: {
     name: "redirect-no-check-details",
     register: (server, _) => {
+      const excludedPaths = [
+        signRoutes.signIn,
+        signRoutes.devLandingPage,
+        signRoutes.signOut,
+        signRoutes.signInOidc,
+        signRoutes.cannotSignIn,
+        supportRoutes.health,
+        supportRoutes.accessibility,
+        supportRoutes.missingRoutes,
+        supportRoutes.assets,
+        supportRoutes.updateDetails,
+        supportRoutes.cookies,
+        applyRoutes.checkDetails,
+        claimRoutes.devSignIn,
+        dashboardRoutes.manageYourClaims,
+      ];
       server.ext("onPreHandler", (request, h) => {
-        if (
-          request.method === "get" &&
-          !request.path.includes(signRoutes.signIn) &&
-          !request.path.includes(signRoutes.devLandingPage) &&
-          !request.path.includes(signRoutes.signOut) &&
-          !request.path.includes(signRoutes.signInOidc) &&
-          !request.path.includes(signRoutes.cannotSignIn) &&
-          !request.path.includes(supportRoutes.health) &&
-          !request.path.includes(supportRoutes.accessibility) &&
-          !request.path.includes(supportRoutes.missingRoutes) &&
-          !request.path.includes(supportRoutes.health) &&
-          !request.path.includes(supportRoutes.assets) &&
-          !request.path.includes(supportRoutes.updateDetails) &&
-          !request.path.includes(supportRoutes.cookies) &&
-          !request.path.includes(applyRoutes.checkDetails) &&
-          !request.path.includes(claimRoutes.devSignIn) &&
-          !request.path.includes(dashboardRoutes.manageYourClaims)
-        ) {
+        const excludedPath = excludedPaths.some((term) => request.path.includes(term));
+        if (request.method === "get" && !excludedPath) {
           const confirmedDetails = getSessionData(
             request,
             sessionEntryKeys.confirmedDetails,

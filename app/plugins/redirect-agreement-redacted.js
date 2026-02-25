@@ -1,23 +1,30 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { dashboardRoutes } from "../constants/routes.js";
+import {
+  applyRoutes,
+  claimRoutes,
+  dashboardRoutes,
+  signRoutes,
+  supportRoutes,
+} from "../constants/routes.js";
 
 export const redirectAgreementRedactedPlugin = {
   plugin: {
     name: "redirect-agreement-redacted",
     register: (server, _) => {
+      const excludedPaths = [
+        signRoutes.cannotSignIn,
+        supportRoutes.health,
+        supportRoutes.assets,
+        applyRoutes.declaration,
+        applyRoutes.numbers,
+        applyRoutes.timings,
+        applyRoutes.youCanClaimMultiple,
+        claimRoutes.devSignIn,
+        dashboardRoutes.manageYourClaims,
+      ];
       server.ext("onPreHandler", (request, h) => {
-        if (
-          request.method === "get" &&
-          !request.path.includes("vet-visits") &&
-          !request.path.includes("dev-sign-in") &&
-          !request.path.includes("assets") &&
-          !request.path.includes("declaration") &&
-          !request.path.includes("numbers") &&
-          !request.path.includes("timings") &&
-          !request.path.includes("you-can-claim-multiple") &&
-          !request.path.includes("health") &&
-          !request.path.includes("cannot-sign-in")
-        ) {
+        const excludedPath = excludedPaths.some((term) => request.path.includes(term));
+        if (request.method === "get" && !excludedPath) {
           const latestEndemicsApplication = getSessionData(
             request,
             sessionEntryKeys.endemicsClaim,
