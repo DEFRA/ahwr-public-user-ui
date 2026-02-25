@@ -17,6 +17,7 @@ import { getCacheEngine } from "./cache/get-cache-engine.js";
 import { redirectAgreementRedactedPlugin } from "./plugins/redirect-agreement-redacted.js";
 import { setupProxy } from "./lib/setup-proxy.js";
 import { redirectAgreementNotAcceptedPlugin } from "./plugins/redirect-agreement-not-accepted.js";
+import { redirectNoCheckDetailsPlugin } from "./plugins/redirect-no-check-details.js";
 
 export async function createServer(options = {}) {
   setupProxy();
@@ -51,6 +52,7 @@ export async function createServer(options = {}) {
   await server.register(headerPlugin);
   if (!skipRedirection) {
     await server.register(redirectAgreementNotAcceptedPlugin);
+    await server.register(redirectNoCheckDetailsPlugin);
   }
 
   await server.register(redirectAgreementRedactedPlugin);
