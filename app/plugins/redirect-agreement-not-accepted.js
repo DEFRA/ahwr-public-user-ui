@@ -1,11 +1,5 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import {
-  applyRoutes,
-  claimRoutes,
-  dashboardRoutes,
-  signRoutes,
-  supportRoutes,
-} from "../constants/routes.js";
+import { applyRoutes, claimRoutes, signRoutes, supportRoutes } from "../constants/routes.js";
 
 export const redirectAgreementNotAcceptedPlugin = {
   plugin: {
@@ -29,7 +23,6 @@ export const redirectAgreementNotAcceptedPlugin = {
         applyRoutes.timings,
         applyRoutes.youCanClaimMultiple,
         claimRoutes.devSignIn,
-        dashboardRoutes.manageYourClaims,
       ];
       server.ext("onPreHandler", (request, h) => {
         const excludedPath = excludedPaths.some((term) => request.path.includes(term));
@@ -41,7 +34,7 @@ export const redirectAgreementNotAcceptedPlugin = {
           );
 
           if (latestEndemicsApplication?.status !== "AGREED") {
-            return h.redirect(dashboardRoutes.manageYourClaims).takeover();
+            return h.redirect(applyRoutes.youCanClaimMultiple).takeover();
           }
         }
         return h.continue;

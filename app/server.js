@@ -51,8 +51,8 @@ export async function createServer(options = {}) {
   await server.register(viewsPlugin);
   await server.register(headerPlugin);
   if (!skipRedirection) {
-    await server.register(redirectAgreementNotAcceptedPlugin);
     await server.register(redirectNoCheckDetailsPlugin);
+    await server.register(redirectAgreementNotAcceptedPlugin);
   }
 
   await server.register(redirectAgreementRedactedPlugin);

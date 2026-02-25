@@ -50,7 +50,7 @@ test("get /vet-visits: details not checked redirects to get them checked", async
   expect(headers.location).toBe("/check-details");
 });
 
-test("get /vet-visits: no agreement redirects to get them checked", async () => {
+test("get /vet-visits: no agreement redirects to new one", async () => {
   const server = await createServer();
 
   const sbi = "106354662";
@@ -87,6 +87,7 @@ test("get /vet-visits: new world, multiple businesses", async () => {
   const applicationReference = "IAHW-TEST-NEW1";
   const sbi = "106354662";
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: true,
     },
@@ -163,6 +164,7 @@ test("get /vet-visits: new world, multiple businesses, for sheep (flock not herd
   const applicationReference = "IAHW-TEST-NEW1";
   const sbi = "106354662";
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: true,
     },
@@ -221,6 +223,7 @@ test("get /vet-visits: new world, claim has a herd", async () => {
   const applicationReference = "IAHW-TEST-NEW1";
   const sbi = "106354662";
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: true,
     },
@@ -302,6 +305,7 @@ test("get /vet-visits: new world, no claims made, show banner", async () => {
   const beforeMultiSpeciesReleaseDate = "2024-12-03";
   const sbi = "123123123";
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: true,
     },
@@ -401,6 +405,7 @@ test("get /vet-visits: shows agreement redacted", async () => {
   const beforeMultiSpeciesReleaseDate = "2024-12-03";
   const sbi = "123123123";
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: true,
     },

@@ -25,7 +25,6 @@ export const redirectNoCheckDetailsPlugin = {
         supportRoutes.cookies,
         applyRoutes.checkDetails,
         claimRoutes.devSignIn,
-        dashboardRoutes.manageYourClaims,
       ];
       server.ext("onPreHandler", (request, h) => {
         const excludedPath = excludedPaths.some((term) => request.path.includes(term));
