@@ -1,5 +1,22 @@
 export const dashboardRoutes = { manageYourClaims: "/vet-visits", checkDetails: "/check-details" };
 
+export const supportRoutes = {
+  health: "/health",
+  cookies: "/cookies",
+  accessibility: "/accessibility",
+  missingRoutes: "/missing-routes",
+  assets: "/assets",
+  updateDetails: "/update-details",
+};
+
+export const signRoutes = {
+  signIn: "/sign-in",
+  signInOidc: "/signin-oidc",
+  signOut: "/sign-out",
+  cannotSignIn: "/cannot-sign-in",
+  devLandingPage: "/dev-landing-page",
+};
+
 export const applyRoutes = {
   youCanClaimMultiple: "/you-can-claim-multiple",
   timings: "/timings",

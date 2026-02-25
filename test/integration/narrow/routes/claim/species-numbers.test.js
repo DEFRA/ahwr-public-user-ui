@@ -8,8 +8,14 @@ import {
   isVisitDateAfterPIHuntAndDairyGoLive,
 } from "../../../../../app/lib/context-helper.js";
 import { StatusCodes } from "http-status-codes";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
@@ -29,9 +35,11 @@ describe("Species numbers page", () => {
 
   beforeAll(async () => {
     setSessionData.mockImplementation(() => {});
-    getSessionData.mockImplementation(() => {
-      return { typeOfLivestock: "beef" };
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        typeOfLivestock: "beef",
+      });
     server = await createServer();
     await server.initialize();
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
@@ -40,6 +48,24 @@ describe("Species numbers page", () => {
   });
 
   beforeEach(async () => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+  });
+
+  afterEach(async () => {
     jest.resetAllMocks();
   });
 
@@ -65,15 +91,16 @@ describe("Species numbers page", () => {
     ])(
       "returns 200 for non MH claim for $typeOfLivestock",
       async ({ typeOfLivestock, typeOfReview, reviewTestResults, backLink }) => {
-        getSessionData.mockImplementation(() => {
-          return {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
             typeOfLivestock,
             typeOfReview,
             reviewTestResults,
             reference: "TEMP-6GSE-PIR8",
             latestEndemicsApplication: { flags: [] },
-          };
-        });
+          });
+
         const options = {
           method: "GET",
           auth,
@@ -106,14 +133,16 @@ describe("Species numbers page", () => {
       "returns 200 for multi herds claim for $typeOfLivestock - $typeOfReview",
       async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
         isMultipleHerdsUserJourney.mockReturnValue(true);
-        getSessionData.mockImplementation(() => ({
-          typeOfLivestock,
-          typeOfReview,
-          reviewTestResults,
-          reference: "TEMP-6GSE-PIR8",
-          latestEndemicsApplication: { flags: [] },
-          previousClaims: [{ data: { typeOfLivestock } }],
-        }));
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
+            typeOfLivestock,
+            typeOfReview,
+            reviewTestResults,
+            reference: "TEMP-6GSE-PIR8",
+            latestEndemicsApplication: { flags: [] },
+            previousClaims: [{ data: { typeOfLivestock } }],
+          });
         const options = {
           method: "GET",
           auth,
@@ -141,14 +170,16 @@ describe("Species numbers page", () => {
 
     test("returns 200 for multi herds claim for sheep", async () => {
       isMultipleHerdsUserJourney.mockReturnValue(true);
-      getSessionData.mockImplementation(() => ({
-        typeOfLivestock: "sheep",
-        typeOfReview: "REVIEW",
-        reviewTestResults: "negative",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication: { flags: [] },
-        previousClaims: [{ data: { typeOfLivestock: "sheep" } }],
-      }));
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "sheep",
+          typeOfReview: "REVIEW",
+          reviewTestResults: "negative",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication: { flags: [] },
+          previousClaims: [{ data: { typeOfLivestock: "sheep" } }],
+        });
       const options = {
         method: "GET",
         auth,
@@ -173,9 +204,12 @@ describe("Species numbers page", () => {
     });
 
     test("returns 500 when there is no claim", async () => {
-      getSessionData.mockReturnValueOnce({});
-      getSessionData.mockReturnValueOnce({ reference: "TEMP-6GSE-PIR8" });
-      getSessionData.mockReturnValue(undefined);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValueOnce({})
+        .mockReturnValueOnce({ reference: "TEMP-6GSE-PIR8" })
+        .mockReturnValue(undefined);
+
       const options = {
         auth,
         method: "GET",

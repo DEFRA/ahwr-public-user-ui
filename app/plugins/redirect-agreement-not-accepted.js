@@ -1,5 +1,11 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { dashboardRoutes } from "../constants/routes.js";
+import {
+  applyRoutes,
+  claimRoutes,
+  dashboardRoutes,
+  signRoutes,
+  supportRoutes,
+} from "../constants/routes.js";
 
 export const redirectAgreementNotAcceptedPlugin = {
   plugin: {
@@ -8,24 +14,25 @@ export const redirectAgreementNotAcceptedPlugin = {
       server.ext("onPreHandler", (request, h) => {
         if (
           request.method === "get" &&
-          !request.path.includes("sign-in") &&
-          !request.path.includes("dev-landing-page") &&
-          !request.path.includes("sign-out") &&
-          !request.path.includes("cookies") &&
-          !request.path.includes("signin-oidc") &&
-          !request.path.includes("accessibility") &&
-          !request.path.includes("missing-routes") &&
-          !request.path.includes("vet-visits") &&
-          !request.path.includes("check-details") &&
-          !request.path.includes("update-details") &&
-          !request.path.includes("dev-sign-in") &&
-          !request.path.includes("assets") &&
-          !request.path.includes("declaration") &&
-          !request.path.includes("numbers") &&
-          !request.path.includes("timings") &&
-          !request.path.includes("you-can-claim-multiple") &&
-          !request.path.includes("health") &&
-          !request.path.includes("cannot-sign-in")
+          !request.path.includes(signRoutes.signIn) &&
+          !request.path.includes(signRoutes.devLandingPage) &&
+          !request.path.includes(signRoutes.signOut) &&
+          !request.path.includes(signRoutes.signInOidc) &&
+          !request.path.includes(signRoutes.cannotSignIn) &&
+          !request.path.includes(supportRoutes.health) &&
+          !request.path.includes(supportRoutes.accessibility) &&
+          !request.path.includes(supportRoutes.missingRoutes) &&
+          !request.path.includes(supportRoutes.health) &&
+          !request.path.includes(supportRoutes.assets) &&
+          !request.path.includes(supportRoutes.updateDetails) &&
+          !request.path.includes(supportRoutes.cookies) &&
+          !request.path.includes(applyRoutes.checkDetails) &&
+          !request.path.includes(applyRoutes.declaration) &&
+          !request.path.includes(applyRoutes.numbers) &&
+          !request.path.includes(applyRoutes.timings) &&
+          !request.path.includes(applyRoutes.youCanClaimMultiple) &&
+          !request.path.includes(claimRoutes.devSignIn) &&
+          !request.path.includes(dashboardRoutes.manageYourClaims)
         ) {
           const latestEndemicsApplication = getSessionData(
             request,
