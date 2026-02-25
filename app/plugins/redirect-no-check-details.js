@@ -1,9 +1,9 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { dashboardRoutes } from "../constants/routes.js";
 
-export const redirectAgreementNotAcceptedPlugin = {
+export const redirectNoCheckDetailsPlugin = {
   plugin: {
-    name: "redirect-agreement-not-accepted",
+    name: "redirect-no-check-details",
     register: (server, _) => {
       server.ext("onPreHandler", (request, h) => {
         if (
@@ -20,21 +20,17 @@ export const redirectAgreementNotAcceptedPlugin = {
           !request.path.includes("update-details") &&
           !request.path.includes("dev-sign-in") &&
           !request.path.includes("assets") &&
-          !request.path.includes("declaration") &&
-          !request.path.includes("numbers") &&
-          !request.path.includes("timings") &&
-          !request.path.includes("you-can-claim-multiple") &&
           !request.path.includes("health") &&
           !request.path.includes("cannot-sign-in")
         ) {
-          const latestEndemicsApplication = getSessionData(
+          const confirmedDetails = getSessionData(
             request,
-            sessionEntryKeys.endemicsClaim,
-            sessionKeys.endemicsClaim.latestEndemicsApplication,
+            sessionEntryKeys.confirmedDetails,
+            sessionKeys.confirmedDetails,
           );
 
-          if (latestEndemicsApplication?.status !== "AGREED") {
-            return h.redirect(dashboardRoutes.manageYourClaims).takeover();
+          if (!confirmedDetails) {
+            return h.redirect(dashboardRoutes.checkDetails).takeover();
           }
         }
         return h.continue;
