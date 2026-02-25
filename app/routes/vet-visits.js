@@ -169,20 +169,6 @@ export const vetVisitsHandlers = [
         const { latestEndemicsApplication, latestVetVisitApplication } =
           await getOrRefreshApplications(request, organisation.sbi);
 
-        // if (latestEndemicsApplication?.status !== "AGREED") {
-        //   const confirmedDetails = getSessionData(
-        //     request,
-        //     sessionEntryKeys.confirmedDetails,
-        //     sessionKeys.confirmedDetails,
-        //   );
-
-        //   if (confirmedDetails) {
-        //     return h.redirect(applyRoutes.youCanClaimMultiple);
-        //   } else {
-        //     return h.redirect(applyRoutes.checkDetails);
-        //   }
-        // }
-
         if (latestEndemicsApplication.redacted) {
           return h.view("agreement-redacted", {
             ruralPaymentsAgency: RPA_CONTACT_DETAILS,
