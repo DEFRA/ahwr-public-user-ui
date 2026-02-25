@@ -1,11 +1,17 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../app/lib/context-helper.js";
 import { clearPiHuntSessionOnChange } from "../../../../../app/lib/clear-pi-hunt-session-on-change.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
@@ -21,9 +27,27 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
   beforeAll(async () => {
     server = await createServer();
     await server.initialize();
-    getSessionData.mockImplementation(() => {
-      return { typeOfLivestock: "beef", reference: "TEMP-6GSE-PIR8" };
-    });
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({ typeOfLivestock: "beef", reference: "TEMP-6GSE-PIR8" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+
     setSessionData.mockImplementation(() => {});
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
       return false;

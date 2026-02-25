@@ -3,7 +3,13 @@ import { createServer } from "../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../app/lib/context-helper.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/lib/context-helper.js");
@@ -19,9 +25,26 @@ describe("Vet rcvs test when Optional PI Hunt is OFF", () => {
   let server;
 
   beforeAll(async () => {
-    getSessionData.mockImplementation(() => {
-      return { typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" };
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({ typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+
     setSessionData.mockImplementation(() => {});
     server = await createServer();
     await server.initialize();

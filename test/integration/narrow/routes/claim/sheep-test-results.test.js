@@ -1,7 +1,13 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -20,6 +26,22 @@ describe("Sheep test result tests", () => {
   beforeAll(async () => {
     server = await createServer();
     await server.initialize();
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
 
   afterAll(async () => {
@@ -34,15 +56,18 @@ describe("Sheep test result tests", () => {
         auth,
       };
 
-      getSessionData.mockImplementation(() => ({
-        typeOfLivestock: "sheep",
-        sheepEndemicsPackage: "reducedExternalParasites",
-        sheepTestResults: [
-          ...sheepTestResultsMockData,
-          { diseaseType: "sheepScab", result: "", isCurrentPage: true },
-        ],
-        reference: "TEMP-6GSE-PIR8",
-      }));
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "sheep",
+          sheepEndemicsPackage: "reducedExternalParasites",
+          sheepTestResults: [
+            ...sheepTestResultsMockData,
+            { diseaseType: "sheepScab", result: "", isCurrentPage: true },
+          ],
+          reference: "TEMP-6GSE-PIR8",
+        });
+
       const res = await server.inject(options);
       const $ = cheerio.load(res.payload);
 

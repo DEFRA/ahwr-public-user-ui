@@ -1,9 +1,15 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../app/lib/context-helper.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session/index.js");
@@ -30,7 +36,24 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
       return false;
     });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
+
   afterAll(async () => {
     jest.resetAllMocks();
     await server.stop();
@@ -43,7 +66,9 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
         url,
       };
 
-      getSessionData.mockReturnValue({ typeOfLivestock: "pigs" });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({ typeOfLivestock: "pigs" });
 
       const response = await server.inject(options);
 
@@ -57,7 +82,9 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
         auth,
       };
 
-      getSessionData.mockReturnValue({ typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({ typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" });
 
       const response = await server.inject(options);
 
@@ -70,11 +97,13 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
         auth,
       };
 
-      getSessionData.mockReturnValue({
-        typeOfLivestock: "beef",
-        reviewTestResults: "negative",
-        reference: "TEMP-6GSE-PIR8",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "beef",
+          reviewTestResults: "negative",
+          reference: "TEMP-6GSE-PIR8",
+        });
 
       const response = await server.inject(options);
 
@@ -102,11 +131,13 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
         url,
       };
 
-      getSessionData.mockReturnValue({
-        typeOfLivestock: "pigs",
-        biosecurity: "yes",
-        reference: "TEMP-6GSE-PIR8",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "pigs",
+          biosecurity: "yes",
+          reference: "TEMP-6GSE-PIR8",
+        });
 
       const response = await server.inject(options);
       const $ = cheerio.load(response.payload);
@@ -123,12 +154,14 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
         url,
       };
 
-      getSessionData.mockReturnValue({
-        typeOfLivestock: "pigs",
-        biosecurity: "yes",
-        reference: "TEMP-6GSE-PIR8",
-        pigsGeneticSequencing: "mlv",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "pigs",
+          biosecurity: "yes",
+          reference: "TEMP-6GSE-PIR8",
+          pigsGeneticSequencing: "mlv",
+        });
 
       const response = await server.inject(options);
       const $ = cheerio.load(response.payload);
@@ -143,12 +176,14 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
         url,
       };
 
-      getSessionData.mockReturnValue({
-        typeOfLivestock: "pigs",
-        biosecurity: "yes",
-        reference: "TEMP-6GSE-PIR8",
-        pigsFollowUpTest: "pcr",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "pigs",
+          biosecurity: "yes",
+          reference: "TEMP-6GSE-PIR8",
+          pigsFollowUpTest: "pcr",
+        });
 
       const response = await server.inject(options);
       const $ = cheerio.load(response.payload);
@@ -331,6 +366,22 @@ describe("Biosecurity test when Optional PI Hunt is ON", () => {
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
       return true;
     });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
 
   afterAll(async () => {
@@ -394,14 +445,16 @@ describe("Biosecurity test when Optional PI Hunt is ON", () => {
         reviewTestResults,
         backLink,
       }) => {
-        getSessionData.mockReturnValue({
-          typeOfLivestock,
-          piHunt,
-          piHuntRecommended,
-          reviewTestResults,
-          piHuntAllAnimals,
-          reference: "TEMP-6GSE-PIR8",
-        });
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
+            typeOfLivestock,
+            piHunt,
+            piHuntRecommended,
+            reviewTestResults,
+            piHuntAllAnimals,
+            reference: "TEMP-6GSE-PIR8",
+          });
         const options = {
           method: "GET",
           url,
