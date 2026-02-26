@@ -76,9 +76,6 @@ const configSchema = joi.object({
   },
   latestTermsAndConditionsUri: joi.string().required(),
   reapplyTimeLimitMonths: joi.number(),
-  multiHerds: joi.object({
-    releaseDate: joi.string().required(),
-  }),
   privacyPolicyUri: joi.string().uri(),
   lfsUpdate: {
     enabled: joi.boolean(),
@@ -97,6 +94,9 @@ const configSchema = joi.object({
   }),
   documentBucketName: joi.string().required(),
   awsRegion: joi.string().required(),
+  tracing: joi.object({
+    header: joi.string().optional(),
+  }),
 });
 
 export const getConfig = () => {
@@ -165,9 +165,6 @@ export const getConfig = () => {
     },
     latestTermsAndConditionsUri: process.env.TERMS_AND_CONDITIONS_URL,
     reapplyTimeLimitMonths: 10,
-    multiHerds: {
-      releaseDate: process.env.MULTI_HERDS_RELEASE_DATE || "2025-05-01",
-    },
     privacyPolicyUri: process.env.PRIVACY_POLICY_URI,
     lfsUpdate: {
       enabled: process.env.LFS_UPDATE_ENABLED === "true",
@@ -188,6 +185,9 @@ export const getConfig = () => {
     },
     documentBucketName: process.env.DOCUMENT_BUCKET_NAME,
     awsRegion: process.env.AWS_REGION,
+    tracing: {
+      header: process.env.TRACING_HEADER || "x-cdp-request-id",
+    },
   };
 
   const { error } = configSchema.validate(builtConfig, {

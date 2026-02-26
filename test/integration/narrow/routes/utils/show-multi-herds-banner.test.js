@@ -1,10 +1,5 @@
 import { showMultiHerdsBanner } from "../../../../../app/routes/utils/show-multi-herds-banner";
-import { config } from "../../../../../app/config/index.js";
 
-const { multiHerds } = config;
-
-jest.mock("../../../../../app/config/index");
-multiHerds.enabled = true;
 beforeEach(() => {
   jest.resetAllMocks();
 });
@@ -19,9 +14,7 @@ test("user has no applications, so we shouldn't show the banner", () => {
 });
 
 test("user applied before MH was released, and has no claims, so we should show the banner", () => {
-  jest.replaceProperty(multiHerds, "releaseDate", "2024-12-04");
-
-  const application = { createdAt: "2024-12-03" };
+  const application = { createdAt: "2025-06-25" };
   const claims = [];
 
   const result = showMultiHerdsBanner(application, claims);
@@ -30,10 +23,8 @@ test("user applied before MH was released, and has no claims, so we should show 
 });
 
 test("user applied before MH was released and their last claim was before MH was released, so we should show the banner", () => {
-  jest.replaceProperty(multiHerds, "releaseDate", "2024-12-04");
-
-  const application = { createdAt: "2024-12-03" };
-  const claims = [{ createdAt: "2024-12-03" }];
+  const application = { createdAt: "2025-06-25" };
+  const claims = [{ createdAt: "2025-06-25" }];
 
   const result = showMultiHerdsBanner(application, claims);
 
@@ -41,10 +32,8 @@ test("user applied before MH was released and their last claim was before MH was
 });
 
 test("user applied before MH was released and their most recent claim was after MH was released, so we shouldn't show the banner", () => {
-  jest.replaceProperty(multiHerds, "releaseDate", "2024-12-04");
-
-  const application = { createdAt: "2024-12-03" };
-  const claims = [{ createdAt: "2024-12-05" }];
+  const application = { createdAt: "2025-06-25" };
+  const claims = [{ createdAt: "2025-06-27" }];
 
   const result = showMultiHerdsBanner(application, claims);
 
@@ -52,9 +41,7 @@ test("user applied before MH was released and their most recent claim was after 
 });
 
 test("user applied after MH was released, and has no claims yet, so we shouldn't show the banner", () => {
-  jest.replaceProperty(multiHerds, "releaseDate", "2024-12-04");
-
-  const application = { createdAt: "2024-12-05" };
+  const application = { createdAt: "2025-06-26" };
   const claims = [];
 
   const result = showMultiHerdsBanner(application, claims);

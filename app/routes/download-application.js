@@ -1,7 +1,7 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { config } from "../config/index.js";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { GetObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
 import { getS3Client } from "../s3/index.js";
 
 export const downloadApplicationHandlers = {
@@ -21,10 +21,23 @@ export const downloadApplicationHandlers = {
 
     if (latestEndemicsApplication.reference === reference && organisation.sbi === sbi) {
       const s3Client = getS3Client();
+      const key = `${sbi}/${reference}.pdf`;
+
+      try {
+        await s3Client.send(
+          new HeadObjectCommand({
+            Bucket: config.documentBucketName,
+            Key: key,
+          }),
+        );
+      } catch (error) {
+        request.logger.error("Application not found, could not be downloaded");
+        throw error;
+      }
 
       const command = new GetObjectCommand({
         Bucket: config.documentBucketName,
-        Key: `${sbi}/${reference}.pdf`,
+        Key: key,
         ResponseContentDisposition: `attachment; filename="${latestEndemicsApplication.reference}.pdf"`,
       });
 

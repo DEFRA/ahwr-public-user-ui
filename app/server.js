@@ -18,6 +18,8 @@ import { redirectAgreementRedactedPlugin } from "./plugins/redirect-agreement-re
 import { setupProxy } from "./lib/setup-proxy.js";
 import { redirectAgreementNotAcceptedPlugin } from "./plugins/redirect-agreement-not-accepted.js";
 import { redirectNoCheckDetailsPlugin } from "./plugins/redirect-no-check-details.js";
+import { requestTracing } from "./lib/request-tracing.js";
+
 
 export async function createServer(options = {}) {
   setupProxy();
@@ -56,6 +58,7 @@ export async function createServer(options = {}) {
   }
 
   await server.register(redirectAgreementRedactedPlugin);
+  await server.register(requestTracing);
 
   if (config.devLogin.enabled) {
     await server.register(devRedirectPlugin);

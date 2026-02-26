@@ -2,15 +2,16 @@ import Wreck from "@hapi/wreck";
 import { config } from "../config/index.js";
 import { StatusCodes } from "http-status-codes";
 import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
+import { withTraceId } from "@defra/hapi-tracing";
 
-const { apiKeys } = config;
+const { apiKeys, tracing } = config;
 
 export async function getApplicationsBySbi(sbi, logger) {
   const endpoint = `${config.applicationApiUri}/applications?sbi=${sbi}`;
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,
-      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
+      headers: withTraceId(tracing.header, { "x-api-key": apiKeys.publicUiBackendApiKey }),
     });
 
     return payload;
@@ -28,7 +29,7 @@ export const createApplication = async (application, logger) => {
     const { payload } = await Wreck.post(endpoint, {
       payload: application,
       json: true,
-      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
+      headers: withTraceId(tracing.header, { "x-api-key": apiKeys.publicUiBackendApiKey }),
     });
 
     return payload;
@@ -46,7 +47,7 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,
-      headers: { "x-api-key": apiKeys.publicUiBackendApiKey },
+      headers: withTraceId(tracing.header, { "x-api-key": apiKeys.publicUiBackendApiKey }),
     });
     return payload;
   } catch (error) {
