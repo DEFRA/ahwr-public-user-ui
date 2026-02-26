@@ -94,6 +94,9 @@ const configSchema = joi.object({
   }),
   documentBucketName: joi.string().required(),
   awsRegion: joi.string().required(),
+  tracing: joi.object({
+    header: joi.string().optional(),
+  }),
 });
 
 export const getConfig = () => {
@@ -182,6 +185,9 @@ export const getConfig = () => {
     },
     documentBucketName: process.env.DOCUMENT_BUCKET_NAME,
     awsRegion: process.env.AWS_REGION,
+    tracing: {
+      header: process.env.TRACING_HEADER || "x-cdp-request-id",
+    },
   };
 
   const { error } = configSchema.validate(builtConfig, {
