@@ -15,6 +15,7 @@ export const signRoutes = {
   signOut: "/sign-out",
   cannotSignIn: "/cannot-sign-in",
   devLandingPage: "/dev-landing-page",
+  devSignIn: "/dev-sign-in",
 };
 
 export const applyRoutes = {
@@ -47,7 +48,6 @@ export const claimRoutes = {
   dateOfTesting: "/date-of-testing",
   dateOfVisitException: "/date-of-visit-exception",
   dateOfVisit: "/date-of-visit",
-  devSignIn: "/dev-sign-in",
   diseaseStatus: "/disease-status",
   enterCphNumber: "/enter-cph-number",
   enterHerdDetails: "/enter-herd-details",

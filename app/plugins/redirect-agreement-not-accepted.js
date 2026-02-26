@@ -1,5 +1,5 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { applyRoutes, claimRoutes, signRoutes, supportRoutes } from "../constants/routes.js";
+import { applyRoutes, signRoutes, supportRoutes } from "../constants/routes.js";
 
 export const redirectAgreementNotAcceptedPlugin = {
   plugin: {
@@ -8,6 +8,7 @@ export const redirectAgreementNotAcceptedPlugin = {
       const excludedPaths = [
         signRoutes.signIn,
         signRoutes.devLandingPage,
+        signRoutes.devSignIn,
         signRoutes.signOut,
         signRoutes.signInOidc,
         signRoutes.cannotSignIn,
@@ -22,7 +23,6 @@ export const redirectAgreementNotAcceptedPlugin = {
         applyRoutes.numbers,
         applyRoutes.timings,
         applyRoutes.youCanClaimMultiple,
-        claimRoutes.devSignIn,
       ];
       server.ext("onPreHandler", (request, h) => {
         const excludedPath = excludedPaths.some((term) => request.path.includes(term));

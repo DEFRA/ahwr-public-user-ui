@@ -1,11 +1,5 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import {
-  applyRoutes,
-  claimRoutes,
-  dashboardRoutes,
-  signRoutes,
-  supportRoutes,
-} from "../constants/routes.js";
+import { applyRoutes, dashboardRoutes, signRoutes, supportRoutes } from "../constants/routes.js";
 
 export const redirectNoCheckDetailsPlugin = {
   plugin: {
@@ -14,6 +8,7 @@ export const redirectNoCheckDetailsPlugin = {
       const excludedPaths = [
         signRoutes.signIn,
         signRoutes.devLandingPage,
+        signRoutes.devSignIn,
         signRoutes.signOut,
         signRoutes.signInOidc,
         signRoutes.cannotSignIn,
@@ -24,7 +19,6 @@ export const redirectNoCheckDetailsPlugin = {
         supportRoutes.updateDetails,
         supportRoutes.cookies,
         applyRoutes.checkDetails,
-        claimRoutes.devSignIn,
       ];
       server.ext("onPreHandler", (request, h) => {
         const excludedPath = excludedPaths.some((term) => request.path.includes(term));
