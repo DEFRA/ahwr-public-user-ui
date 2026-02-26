@@ -20,10 +20,8 @@ import { redirectAgreementNotAcceptedPlugin } from "./plugins/redirect-agreement
 import { redirectNoCheckDetailsPlugin } from "./plugins/redirect-no-check-details.js";
 import { requestTracing } from "./lib/request-tracing.js";
 
-
-export async function createServer(options = {}) {
+export async function createServer() {
   setupProxy();
-  const { skipRedirection } = options;
   const server = Hapi.server({
     cache: [getCacheEngine()],
     port: config.port,
@@ -52,10 +50,8 @@ export async function createServer(options = {}) {
   await server.register(viewContextPlugin);
   await server.register(viewsPlugin);
   await server.register(headerPlugin);
-  if (!skipRedirection) {
-    await server.register(redirectNoCheckDetailsPlugin);
-    await server.register(redirectAgreementNotAcceptedPlugin);
-  }
+  await server.register(redirectNoCheckDetailsPlugin);
+  await server.register(redirectAgreementNotAcceptedPlugin);
 
   await server.register(redirectAgreementRedactedPlugin);
   await server.register(requestTracing);
