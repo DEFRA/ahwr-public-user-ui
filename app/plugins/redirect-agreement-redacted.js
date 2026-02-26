@@ -1,13 +1,13 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { applyRoutes, dashboardRoutes, signRoutes, supportRoutes } from "../constants/routes.js";
+import { applyRoutes, dashboardRoutes, loginRoutes, supportRoutes } from "../constants/routes.js";
 
 export const redirectAgreementRedactedPlugin = {
   plugin: {
     name: "redirect-agreement-redacted",
     register: (server, _) => {
       const excludedPaths = [
-        signRoutes.cannotSignIn,
-        signRoutes.devSignIn,
+        loginRoutes.cannotSignIn,
+        loginRoutes.devSignIn,
         supportRoutes.health,
         supportRoutes.assets,
         applyRoutes.declaration,

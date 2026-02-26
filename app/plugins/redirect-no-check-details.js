@@ -1,17 +1,17 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { applyRoutes, dashboardRoutes, signRoutes, supportRoutes } from "../constants/routes.js";
+import { applyRoutes, dashboardRoutes, loginRoutes, supportRoutes } from "../constants/routes.js";
 
 export const redirectNoCheckDetailsPlugin = {
   plugin: {
     name: "redirect-no-check-details",
     register: (server, _) => {
       const excludedPaths = [
-        signRoutes.signIn,
-        signRoutes.devLandingPage,
-        signRoutes.devSignIn,
-        signRoutes.signOut,
-        signRoutes.signInOidc,
-        signRoutes.cannotSignIn,
+        loginRoutes.signIn,
+        loginRoutes.devLandingPage,
+        loginRoutes.devSignIn,
+        loginRoutes.signOut,
+        loginRoutes.signInOidc,
+        loginRoutes.cannotSignIn,
         supportRoutes.health,
         supportRoutes.accessibility,
         supportRoutes.missingRoutes,

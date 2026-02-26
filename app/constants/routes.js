@@ -9,7 +9,7 @@ export const supportRoutes = {
   updateDetails: "/update-details",
 };
 
-export const signRoutes = {
+export const loginRoutes = {
   signIn: "/sign-in",
   signInOidc: "/signin-oidc",
   signOut: "/sign-out",
