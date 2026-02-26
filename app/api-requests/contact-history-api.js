@@ -3,7 +3,7 @@ import { config } from "../config/index.js";
 import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 import { withTraceId } from "@defra/hapi-tracing";
 
-const { apiKeys } = config;
+const { apiKeys, tracing } = config;
 
 export const updateContactHistory = async (
   personSummary,
@@ -29,7 +29,7 @@ export const updateContactHistory = async (
     const { payload } = await Wreck.put(endpoint, {
       payload: contactHistory,
       json: true,
-      headers: withTraceId('x-cdp-request-id', { "x-api-key": apiKeys.publicUiBackendApiKey }),
+      headers: withTraceId(tracing.header, { "x-api-key": apiKeys.publicUiBackendApiKey }),
     });
 
     return payload;

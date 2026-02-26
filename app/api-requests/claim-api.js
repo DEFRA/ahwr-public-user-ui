@@ -3,13 +3,14 @@ import { config } from "../config/index.js";
 import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 import { withTraceId } from "@defra/hapi-tracing";
 
-const { apiKeys } = config;
+const { apiKeys, tracing } = config;
+
 export async function getClaimsByApplicationReference(applicationReference, logger) {
   const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/claims`;
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,
-      headers: withTraceId('x-cdp-request-id', { "x-api-key": apiKeys.publicUiBackendApiKey }),
+      headers: withTraceId(tracing.header, { "x-api-key": apiKeys.publicUiBackendApiKey }),
     });
 
     return payload;
@@ -34,7 +35,7 @@ export async function submitNewClaim(data, logger) {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,
       json: true,
-      headers: withTraceId('x-cdp-request-id', { "x-api-key": apiKeys.publicUiBackendApiKey }),
+      headers: withTraceId(tracing.header, { "x-api-key": apiKeys.publicUiBackendApiKey }),
     });
 
     return payload;
@@ -52,7 +53,7 @@ export async function isURNUnique(data, logger) {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,
       json: true,
-      headers: withTraceId('x-cdp-request-id', { "x-api-key": apiKeys.publicUiBackendApiKey }),
+      headers: withTraceId(tracing.header, { "x-api-key": apiKeys.publicUiBackendApiKey }),
     });
 
     return payload;
