@@ -60,5 +60,15 @@ export async function createServer() {
     await server.register(devRedirectPlugin);
   }
 
+  server.ext('onRequest', (request, h) => {
+    const traceId = request.headers[config.tracing.header]
+    if (traceId) {
+      request.logger.setBindings({
+        trace: { id: traceId }
+      });
+    }
+    return h.continue;
+  });
+
   return server;
 }
