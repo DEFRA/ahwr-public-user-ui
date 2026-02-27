@@ -14,6 +14,7 @@ import { preApplyHandler } from "../../lib/pre-apply-handler.js";
 import { createApplication } from "../../api-requests/application-api.js";
 import { createTempReference } from "../../lib/create-temp-ref.js";
 import { trackEvent } from "../../logging/logger.js";
+import { refreshApplications } from "../../lib/context-helper.js";
 
 const resetFarmerApplyDataBeforeApplication = (application) => {
   delete application.agreeSpeciesNumbers;
@@ -163,6 +164,9 @@ export const declarationRouteHandlers = [
         if (!applicationReference) {
           throw new Error("Apply declaration returned a null application reference.");
         }
+
+        // refresh application
+        await refreshApplications(organisation.sbi, request);
 
         return h.view(applyViews.confirmation, {
           reference: applicationReference,

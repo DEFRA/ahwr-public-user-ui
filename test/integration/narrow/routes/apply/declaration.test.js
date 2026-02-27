@@ -17,7 +17,9 @@ import {
 } from "../../../../../app/api-requests/application-api";
 import { when } from "jest-when";
 import { trackEvent } from "../../../../../app/logging/logger.js";
+import { refreshApplications } from "../../../../../app/lib/context-helper";
 
+jest.mock("../../../../../app/lib/context-helper");
 jest.mock("../../../../../app/session/index");
 jest.mock("../../../../../app/api-requests/application-api");
 jest.mock("../../../../../app/logging/logger.js", () => ({
@@ -136,6 +138,7 @@ describe("Declaration test", () => {
       );
       ok($);
       expect(clearApplyRedirect).toHaveBeenCalled();
+      expect(refreshApplications).toHaveBeenCalledWith(organisation.sbi, expect.anything());
       expect(createApplication).toHaveBeenCalledWith(
         { organisation, ...farmerApplyData },
         expect.anything(),
@@ -180,6 +183,7 @@ describe("Declaration test", () => {
         { organisation, ...farmerApplyData },
         expect.anything(),
       );
+      expect(refreshApplications).not.toHaveBeenCalled();
       expect(trackEvent).toHaveBeenCalledWith(
         expect.anything(),
         "submit-application",
@@ -219,6 +223,7 @@ describe("Declaration test", () => {
         "Select yes if you have read and agree to the terms and conditions",
       );
       expect(createApplication).not.toHaveBeenCalled();
+      expect(refreshApplications).not.toHaveBeenCalled();
       expect(trackEvent).not.toHaveBeenCalled();
     });
 
