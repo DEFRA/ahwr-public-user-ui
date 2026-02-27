@@ -128,9 +128,6 @@ export const declarationRouteHandlers = [
           request.logger,
         );
 
-        // refresh application
-        await refreshApplications(organisation.sbi, request);
-
         // TODO - find an alternative to setBindings
         request.logger.setBindings({ applicationReference });
 
@@ -167,6 +164,9 @@ export const declarationRouteHandlers = [
         if (!applicationReference) {
           throw new Error("Apply declaration returned a null application reference.");
         }
+
+        // refresh application
+        await refreshApplications(organisation.sbi, request);
 
         return h.view(applyViews.confirmation, {
           reference: applicationReference,

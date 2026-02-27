@@ -183,6 +183,7 @@ describe("Declaration test", () => {
         { organisation, ...farmerApplyData },
         expect.anything(),
       );
+      expect(refreshApplications).not.toHaveBeenCalled();
       expect(trackEvent).toHaveBeenCalledWith(
         expect.anything(),
         "submit-application",
@@ -222,6 +223,7 @@ describe("Declaration test", () => {
         "Select yes if you have read and agree to the terms and conditions",
       );
       expect(createApplication).not.toHaveBeenCalled();
+      expect(refreshApplications).not.toHaveBeenCalled();
       expect(trackEvent).not.toHaveBeenCalled();
     });
 
