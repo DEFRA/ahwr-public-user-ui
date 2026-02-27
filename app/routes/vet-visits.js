@@ -169,12 +169,6 @@ export const vetVisitsHandlers = [
         const { latestEndemicsApplication, latestVetVisitApplication } =
           await getOrRefreshApplications(request, organisation.sbi);
 
-        if (!latestEndemicsApplication) {
-          throw new Error(
-            "User should not be attempting to access this page without an agreement.",
-          );
-        }
-
         if (latestEndemicsApplication.redacted) {
           return h.view("agreement-redacted", {
             ruralPaymentsAgency: RPA_CONTACT_DETAILS,

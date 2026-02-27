@@ -37,9 +37,14 @@ getApplicationsBySbi.mockReturnValue(applications);
 when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.application)
   .mockReturnValue({ reference: "IAHW-1234-ABCD" });
+
 when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.organisation)
   .mockReturnValue(organisation);
+
+when(getSessionData)
+  .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
+  .mockReturnValue(true);
 
 describe("you-can-claim-multiple page", () => {
   const optionsBase = {

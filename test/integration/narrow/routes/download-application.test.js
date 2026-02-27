@@ -20,7 +20,11 @@ when(getSessionData)
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.latestEndemicsApplication,
   )
-  .mockReturnValue({ reference: "IAHW-A89F-7776" });
+  .mockReturnValue({ reference: "IAHW-A89F-7776", status: "AGREED" });
+
+when(getSessionData)
+  .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
+  .mockReturnValue(true);
 
 describe("/download-application", () => {
   test("returns a URL to the application from s3 when sbi and agreement reference match request", async () => {

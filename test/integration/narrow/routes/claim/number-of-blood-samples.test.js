@@ -1,10 +1,16 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { thresholds } from "../../../../../app/constants/claim-constants.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session/index.js");
@@ -20,9 +26,25 @@ describe("Number of blood samples test", () => {
   beforeAll(async () => {
     sendInvalidDataEvent.mockImplementation(() => {});
     setSessionData.mockImplementation(() => {});
-    getSessionData.mockImplementation(() => {
-      return { typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" };
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({ typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
 
     server = await createServer();
     await server.initialize();

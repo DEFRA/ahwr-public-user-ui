@@ -2,8 +2,14 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
 import { getNextMultipleHerdsPage } from "../../../../../app/lib/get-next-multiple-herds-page.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/lib/get-next-multiple-herds-page.js");
@@ -38,19 +44,39 @@ describe("/check-herd-details tests", () => {
     jest.resetAllMocks();
   });
 
+  beforeEach(() => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+  });
+
   describe("GET", () => {
     test("returns 200 with herd labels when species beef, also change links are correct", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdId: "909bb722-3de1-443e-8304-0bba8fx§922050",
-        herdVersion: 1,
-        herdName: "Commercial Herd",
-        herdCph: "22/333/4444",
-        isOnlyHerdOnSbi: "no",
-        herdReasons: ["differentBreed"],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdId: "909bb722-3de1-443e-8304-0bba8fx§922050",
+          herdVersion: 1,
+          herdName: "Commercial Herd",
+          herdCph: "22/333/4444",
+          isOnlyHerdOnSbi: "no",
+          herdReasons: ["differentBreed"],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -68,17 +94,19 @@ describe("/check-herd-details tests", () => {
     });
 
     test("returns 200 and displays flock labels when species is sheep", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        herdId: "909bb722-3de1-443e-8304-0bba8f922050",
-        herdVersion: 1,
-        herdName: "Commercial Herd",
-        herdCph: "22/333/4444",
-        isOnlyHerdOnSbi: "no",
-        herdReasons: ["differentBreed"],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          herdId: "909bb722-3de1-443e-8304-0bba8f922050",
+          herdVersion: 1,
+          herdName: "Commercial Herd",
+          herdCph: "22/333/4444",
+          isOnlyHerdOnSbi: "no",
+          herdReasons: ["differentBreed"],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -96,17 +124,19 @@ describe("/check-herd-details tests", () => {
     });
 
     test("returns 200 and backLink to isOnlyHerdOnSbi when isOnlyHerdOnSbi is yes", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdId: "909bb722-3de1-443e-8304-0bba8f922050",
-        herdVersion: 1,
-        herdName: "Commercial Herd",
-        herdCph: "22/333/4444",
-        isOnlyHerdOnSbi: "yes",
-        herdReasons: ["onlyHerd"],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdId: "909bb722-3de1-443e-8304-0bba8f922050",
+          herdVersion: 1,
+          herdName: "Commercial Herd",
+          herdCph: "22/333/4444",
+          isOnlyHerdOnSbi: "yes",
+          herdReasons: ["onlyHerd"],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -123,17 +153,19 @@ describe("/check-herd-details tests", () => {
     });
 
     test("returns 200 and backLink to enterHerdDetails when isOnlyHerdOnSbi is no", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdId: "909bb722-3de1-443e-8304-0bba8f922050",
-        herdVersion: 1,
-        herdName: "Commercial Herd",
-        herdCph: "22/333/4444",
-        isOnlyHerdOnSbi: "no",
-        herdReasons: ["differentBreed"],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdId: "909bb722-3de1-443e-8304-0bba8f922050",
+          herdVersion: 1,
+          herdName: "Commercial Herd",
+          herdCph: "22/333/4444",
+          isOnlyHerdOnSbi: "no",
+          herdReasons: ["differentBreed"],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -150,23 +182,25 @@ describe("/check-herd-details tests", () => {
     });
 
     test("should display others on sbi when existing herd and it was the only herd", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdId: "909bb722-3de1-443e-8304-0bba8fx5922050",
-        herdVersion: 1,
-        herdName: "Commercial Herd",
-        herdCph: "22/333/4444",
-        isOnlyHerdOnSbi: "no",
-        herdReasons: ["differentBreed"],
-        herds: [
-          {
-            id: "909bb722-3de1-443e-8304-0bba8fx5922050",
-            reasons: ["onlyHerd"],
-          },
-        ],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdId: "909bb722-3de1-443e-8304-0bba8fx5922050",
+          herdVersion: 1,
+          herdName: "Commercial Herd",
+          herdCph: "22/333/4444",
+          isOnlyHerdOnSbi: "no",
+          herdReasons: ["differentBreed"],
+          herds: [
+            {
+              id: "909bb722-3de1-443e-8304-0bba8fx5922050",
+              reasons: ["onlyHerd"],
+            },
+          ],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -184,18 +218,20 @@ describe("/check-herd-details tests", () => {
     });
 
     test("should display others on sbi when no existing herds", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdId: "909bb722-3de1-443e-8304-0bba8fx5922050",
-        herdVersion: 1,
-        herdName: "Commercial Herd",
-        herdCph: "22/333/4444",
-        isOnlyHerdOnSbi: "no",
-        herdReasons: ["differentBreed"],
-        herds: [],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdId: "909bb722-3de1-443e-8304-0bba8fx5922050",
+          herdVersion: 1,
+          herdName: "Commercial Herd",
+          herdCph: "22/333/4444",
+          isOnlyHerdOnSbi: "no",
+          herdReasons: ["differentBreed"],
+          herds: [],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -213,22 +249,24 @@ describe("/check-herd-details tests", () => {
     });
 
     test("should not display others on sbi when existing herd and it was not the only herd", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdId: "909bb722-3de1-443e-8304-0bba8fx5922050",
-        herdVersion: 1,
-        herdName: "Commercial Herd",
-        herdCph: "22/333/4444",
-        isOnlyHerdOnSbi: "no",
-        herdReasons: ["differentBreed"],
-        herds: [
-          {
-            id: "909bb722-3de1-443e-8304-0bba8fx5922050",
-          },
-        ],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdId: "909bb722-3de1-443e-8304-0bba8fx5922050",
+          herdVersion: 1,
+          herdName: "Commercial Herd",
+          herdCph: "22/333/4444",
+          isOnlyHerdOnSbi: "no",
+          herdReasons: ["differentBreed"],
+          herds: [
+            {
+              id: "909bb722-3de1-443e-8304-0bba8fx5922050",
+            },
+          ],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 

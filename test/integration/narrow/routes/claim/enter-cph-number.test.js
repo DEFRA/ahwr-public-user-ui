@@ -2,7 +2,14 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
-import { getSessionData, setSessionData, emitHerdEvent } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  setSessionData,
+  emitHerdEvent,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -23,6 +30,24 @@ describe("/enter-cph-number tests", () => {
 
   afterAll(async () => {
     await server.stop();
+  });
+
+  beforeEach(() => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -51,11 +76,13 @@ describe("/enter-cph-number tests", () => {
 
   describe("GET", () => {
     test("returns 200 with herd labels when species beef", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -67,12 +94,14 @@ describe("/enter-cph-number tests", () => {
     });
 
     test("returns 200 with herd labels when species beef, also correct cph number", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdCph: "22/333/4444",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdCph: "22/333/4444",
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -85,11 +114,13 @@ describe("/enter-cph-number tests", () => {
     });
 
     test("returns 200 with flock labels when species sheep", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -101,13 +132,15 @@ describe("/enter-cph-number tests", () => {
     });
 
     test("returns 200 with back link to select herd when updating an existing herd", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        herdVersion: 2,
-        herdCph: "22/333/4444",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          herdVersion: 2,
+          herdCph: "22/333/4444",
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 

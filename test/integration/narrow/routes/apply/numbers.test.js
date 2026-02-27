@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import { ok } from "../../../../utils/phase-banner-expect";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData, sessionEntryKeys } from "../../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
 import { createServer } from "../../../../../app/server";
 import { getApplicationsBySbi } from "../../../../../app/api-requests/application-api";
 import { applyRoutes } from "../../../../../app/constants/routes";
@@ -34,6 +34,10 @@ describe("Check review numbers page test", () => {
   when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.organisation)
     .mockReturnValue(organisation);
+
+  when(getSessionData)
+    .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
+    .mockReturnValue(true);
 
   const options = {
     auth,

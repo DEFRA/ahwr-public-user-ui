@@ -5,6 +5,7 @@ import { getTableCells } from "../../../helpers/get-table-cells.js";
 import globalJsdom from "global-jsdom";
 import { getByRole, queryByRole } from "@testing-library/dom";
 import { getClaimsByApplicationReference } from "../../../../app/api-requests/claim-api.js";
+import { refreshApplications } from "../../../../app/lib/context-helper.js";
 
 const nunJucksInternalTimerMethods = ["nextTick"];
 let cleanUpFunction;
@@ -15,7 +16,11 @@ jest.mock("../../../../app/auth/auth-code-grant/request-authorization-code-url.j
 }));
 jest.mock("../../../../app/lib/context-helper.js");
 
-test("get /vet-visits: no agreement throws an error", async () => {
+jest
+  .mocked(refreshApplications)
+  .mockResolvedValue({ latestEndemicsApplication: {}, latestVetVisitApplication: {} });
+
+test("get /vet-visits: details not checked redirects to get them checked", async () => {
   const server = await createServer();
 
   const sbi = "106354662";
@@ -33,7 +38,7 @@ test("get /vet-visits: no agreement throws an error", async () => {
 
   await setServerState(server, state);
 
-  const { payload } = await server.inject({
+  const { headers, payload } = await server.inject({
     url: "/vet-visits",
     auth: {
       credentials: {},
@@ -42,12 +47,38 @@ test("get /vet-visits: no agreement throws an error", async () => {
   });
   cleanUpFunction = globalJsdom(payload);
 
-  expect(
-    getByRole(document.body, "heading", {
-      level: 1,
-      name: "Sorry, there is a problem with the service",
-    }),
-  ).toBeDefined();
+  expect(headers.location).toBe("/check-details");
+});
+
+test("get /vet-visits: no agreement redirects to new one", async () => {
+  const server = await createServer();
+
+  const sbi = "106354662";
+  const state = {
+    confirmedDetails: true,
+    customer: {
+      attachedToMultipleBusinesses: false,
+    },
+    endemicsClaim: {},
+    organisation: {
+      sbi,
+      name: "PARTRIDGES",
+      farmerName: "Janice Harrison",
+    },
+  };
+
+  await setServerState(server, state);
+
+  const { headers, payload } = await server.inject({
+    url: "/vet-visits",
+    auth: {
+      credentials: {},
+      strategy: "cookie",
+    },
+  });
+  cleanUpFunction = globalJsdom(payload);
+
+  expect(headers.location).toBe("/you-can-claim-multiple");
 });
 
 test("get /vet-visits: new world, multiple businesses", async () => {
@@ -56,6 +87,7 @@ test("get /vet-visits: new world, multiple businesses", async () => {
   const applicationReference = "IAHW-TEST-NEW1";
   const sbi = "106354662";
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: true,
     },
@@ -65,6 +97,7 @@ test("get /vet-visits: new world, multiple businesses", async () => {
         type: "EE",
         reference: applicationReference,
         redacted: false,
+        status: "AGREED",
       },
       latestVetVisitApplication: undefined,
     },
@@ -131,6 +164,7 @@ test("get /vet-visits: new world, multiple businesses, for sheep (flock not herd
   const applicationReference = "IAHW-TEST-NEW1";
   const sbi = "106354662";
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: true,
     },
@@ -140,6 +174,7 @@ test("get /vet-visits: new world, multiple businesses, for sheep (flock not herd
         type: "EE",
         reference: applicationReference,
         redacted: false,
+        status: "AGREED",
       },
       latestVetVisitApplication: undefined,
     },
@@ -188,6 +223,7 @@ test("get /vet-visits: new world, claim has a herd", async () => {
   const applicationReference = "IAHW-TEST-NEW1";
   const sbi = "106354662";
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: true,
     },
@@ -197,6 +233,7 @@ test("get /vet-visits: new world, claim has a herd", async () => {
         type: "EE",
         reference: applicationReference,
         redacted: false,
+        status: "AGREED",
       },
       latestVetVisitApplication: undefined,
     },
@@ -268,6 +305,7 @@ test("get /vet-visits: new world, no claims made, show banner", async () => {
   const beforeMultiSpeciesReleaseDate = "2024-12-03";
   const sbi = "123123123";
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: true,
     },
@@ -278,6 +316,7 @@ test("get /vet-visits: new world, no claims made, show banner", async () => {
         reference: "IAHW-TEST-NEW2",
         createdAt: beforeMultiSpeciesReleaseDate,
         redacted: false,
+        status: "AGREED",
       },
       latestVetVisitApplication: undefined,
     },
@@ -307,7 +346,7 @@ test("get /vet-visits: new world, no claims made, show banner", async () => {
   );
 });
 
-test("get /vet-visits: old world application only - results in error page", async () => {
+test("get /vet-visits: old world application only - redirects to create agreement", async () => {
   cleanUpFunction();
   const server = await createServer();
   const timeOfTest = new Date("2025-01-02");
@@ -318,6 +357,7 @@ test("get /vet-visits: old world application only - results in error page", asyn
   const almostTenMonthsBefore = new Date("2024-03-03");
 
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: false,
     },
@@ -344,7 +384,7 @@ test("get /vet-visits: old world application only - results in error page", asyn
 
   await setServerState(server, state);
 
-  const { payload } = await server.inject({
+  const { headers, payload } = await server.inject({
     url: "/vet-visits",
     auth: {
       credentials: {},
@@ -354,12 +394,7 @@ test("get /vet-visits: old world application only - results in error page", asyn
   jest.useRealTimers();
   globalJsdom(payload);
 
-  expect(
-    getByRole(document.body, "heading", {
-      level: 1,
-      name: "Sorry, there is a problem with the service",
-    }),
-  ).toBeDefined();
+  expect(headers.location).toBe("/you-can-claim-multiple");
 });
 
 test("get /vet-visits: shows agreement redacted", async () => {
@@ -370,6 +405,7 @@ test("get /vet-visits: shows agreement redacted", async () => {
   const beforeMultiSpeciesReleaseDate = "2024-12-03";
   const sbi = "123123123";
   const state = {
+    confirmedDetails: true,
     customer: {
       attachedToMultipleBusinesses: true,
     },
@@ -380,6 +416,7 @@ test("get /vet-visits: shows agreement redacted", async () => {
         reference: "IAHW-TEST-NEW2",
         createdAt: beforeMultiSpeciesReleaseDate,
         redacted: true,
+        status: "AGREED",
       },
       latestVetVisitApplication: undefined,
     },

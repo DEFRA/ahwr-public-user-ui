@@ -10,6 +10,7 @@ import {
 import {
   getSessionData,
   sessionEntryKeys,
+  sessionKeys,
   setSessionData,
 } from "../../../../../app/session/index.js";
 import { when } from "jest-when";
@@ -35,6 +36,22 @@ describe("Test URN GET", () => {
     isPigsAndPaymentsUserJourney.mockImplementation(() => {
       return false;
     });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
 
   afterAll(async () => {

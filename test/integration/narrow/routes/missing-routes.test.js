@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { createServer } from "../../../../app/server.js";
-import { getSessionData, sessionEntryKeys } from "../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
 import globalJsdom from "global-jsdom";
 import { getByRole } from "@testing-library/dom";
 import { config } from "../../../../app/config/index.js";
@@ -22,7 +22,23 @@ describe("Missing routes", () => {
 
   beforeAll(async () => {
     server = await createServer();
+
     await server.initialize();
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
 
   afterAll(async () => {

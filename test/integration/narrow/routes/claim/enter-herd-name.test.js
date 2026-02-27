@@ -2,7 +2,14 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
-import { getSessionData, setSessionData, emitHerdEvent } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  setSessionData,
+  emitHerdEvent,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -23,6 +30,24 @@ describe("/enter-herd-name tests", () => {
 
   afterAll(async () => {
     await server.stop();
+  });
+
+  beforeEach(() => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -56,16 +81,18 @@ describe("/enter-herd-name tests", () => {
 
   describe("GET", () => {
     test("returns 200 with herd labels when species beef", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herds: [
-          {
-            id: "1",
-          },
-        ],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herds: [
+            {
+              id: "1",
+            },
+          ],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -77,17 +104,19 @@ describe("/enter-herd-name tests", () => {
     });
 
     test("returns 200 with herd labels when species beef, also correct herd name", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdName: "Commercial Herd",
-        herds: [
-          {
-            id: "1",
-          },
-        ],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdName: "Commercial Herd",
+          herds: [
+            {
+              id: "1",
+            },
+          ],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -100,16 +129,18 @@ describe("/enter-herd-name tests", () => {
     });
 
     test("returns 200 with flock labels when species sheep", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        herds: [
-          {
-            id: "1",
-          },
-        ],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          herds: [
+            {
+              id: "1",
+            },
+          ],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -121,12 +152,14 @@ describe("/enter-herd-name tests", () => {
     });
 
     test("returns 200 with back link to date of visit when no previous herds", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-        herds: [],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          herds: [],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 

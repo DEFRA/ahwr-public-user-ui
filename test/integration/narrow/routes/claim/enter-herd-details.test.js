@@ -2,8 +2,15 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
-import { getSessionData, setSessionData, emitHerdEvent } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  setSessionData,
+  emitHerdEvent,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../../../../../app/session/index.js";
 import { ONLY_HERD } from "../../../../../app/constants/claim-constants.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -26,17 +33,37 @@ describe("/enter-herd-details tests", () => {
     await server.stop();
   });
 
+  beforeEach(() => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   describe("GET", () => {
     test("returns 200 with herd labels when species beef", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -68,12 +95,14 @@ describe("/enter-herd-details tests", () => {
     });
 
     test("returns 200 with herd labels when species beef, also selects differentBreed and other", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdReasons: ["differentBreed", "keptSeparate"],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdReasons: ["differentBreed", "keptSeparate"],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -89,11 +118,13 @@ describe("/enter-herd-details tests", () => {
     });
 
     test("returns 200 with flock labels when species sheep", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "sheep",
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -113,13 +144,15 @@ describe("/enter-herd-details tests", () => {
     });
 
     test(`returns 200 with back link to enter cph number when previous herds but herd reason not ${ONLY_HERD}`, async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdId: "herd-one",
-        herds: [{ id: "herd-one", reasons: ["foo"] }],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdId: "herd-one",
+          herds: [{ id: "herd-one", reasons: ["foo"] }],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 
@@ -139,13 +172,15 @@ describe("/enter-herd-details tests", () => {
     });
 
     test(`returns 200 with back link to herd-others-on-sbi when previous herds and herd reason is ${ONLY_HERD}`, async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        herdId: "herd-one",
-        herds: [{ id: "herd-one", reasons: [ONLY_HERD] }],
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+          herdId: "herd-one",
+          herds: [{ id: "herd-one", reasons: [ONLY_HERD] }],
+        });
 
       const res = await server.inject({ method: "GET", url, auth });
 

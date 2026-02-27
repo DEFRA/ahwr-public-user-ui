@@ -1,20 +1,28 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { applyRoutes, dashboardRoutes, loginRoutes, supportRoutes } from "../constants/routes.js";
+import { applyRoutes, loginRoutes, supportRoutes } from "../constants/routes.js";
 
-export const redirectAgreementRedactedPlugin = {
+export const redirectAgreementNotAcceptedPlugin = {
   plugin: {
-    name: "redirect-agreement-redacted",
+    name: "redirect-agreement-not-accepted",
     register: (server, _) => {
       const excludedPaths = [
-        loginRoutes.cannotSignIn,
+        loginRoutes.signIn,
+        loginRoutes.devLandingPage,
         loginRoutes.devSignIn,
+        loginRoutes.signOut,
+        loginRoutes.signInOidc,
+        loginRoutes.cannotSignIn,
         supportRoutes.health,
+        supportRoutes.accessibility,
+        supportRoutes.missingRoutes,
         supportRoutes.assets,
+        supportRoutes.updateDetails,
+        supportRoutes.cookies,
+        applyRoutes.checkDetails,
         applyRoutes.declaration,
         applyRoutes.numbers,
         applyRoutes.timings,
         applyRoutes.youCanClaimMultiple,
-        dashboardRoutes.manageYourClaims,
       ];
       server.ext("onPreHandler", (request, h) => {
         const excludedPath = excludedPaths.some((term) => request.path.includes(term));
@@ -25,8 +33,8 @@ export const redirectAgreementRedactedPlugin = {
             sessionKeys.endemicsClaim.latestEndemicsApplication,
           );
 
-          if (latestEndemicsApplication?.redacted) {
-            return h.redirect(dashboardRoutes.manageYourClaims).takeover();
+          if (latestEndemicsApplication?.status !== "AGREED") {
+            return h.redirect(applyRoutes.youCanClaimMultiple).takeover();
           }
         }
         return h.continue;

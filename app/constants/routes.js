@@ -1,5 +1,23 @@
 export const dashboardRoutes = { manageYourClaims: "/vet-visits", checkDetails: "/check-details" };
 
+export const supportRoutes = {
+  health: "/health",
+  cookies: "/cookies",
+  accessibility: "/accessibility",
+  missingRoutes: "/missing-routes",
+  assets: "/assets",
+  updateDetails: "/update-details",
+};
+
+export const loginRoutes = {
+  signIn: "/sign-in",
+  signInOidc: "/signin-oidc",
+  signOut: "/sign-out",
+  cannotSignIn: "/cannot-sign-in",
+  devLandingPage: "/dev-landing-page",
+  devSignIn: "/dev-sign-in",
+};
+
 export const applyRoutes = {
   youCanClaimMultiple: "/you-can-claim-multiple",
   timings: "/timings",
@@ -7,6 +25,7 @@ export const applyRoutes = {
   declaration: "/declaration",
   offerRejected: "/offer-rejected",
   confirmation: "/confirmation",
+  checkDetails: "/check-details",
 };
 
 export const applyViews = {
@@ -29,7 +48,6 @@ export const claimRoutes = {
   dateOfTesting: "/date-of-testing",
   dateOfVisitException: "/date-of-visit-exception",
   dateOfVisit: "/date-of-visit",
-  devSignIn: "/dev-sign-in",
   diseaseStatus: "/disease-status",
   enterCphNumber: "/enter-cph-number",
   enterHerdDetails: "/enter-herd-details",

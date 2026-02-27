@@ -3,6 +3,7 @@ import { createServer } from "../../../../../app/server.js";
 import {
   getSessionData,
   sessionEntryKeys,
+  sessionKeys,
   setSessionData,
 } from "../../../../../app/session/index.js";
 import expectPhaseBanner from "assert";
@@ -24,6 +25,22 @@ describe("PI Hunt recommended tests", () => {
   beforeAll(async () => {
     server = await createServer();
     await server.initialize();
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
 
   afterAll(async () => {
@@ -102,6 +119,7 @@ describe("PI Hunt recommended tests", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location.toString()).toEqual(`/sign-in`);
     });
+
     test("Continue to eligible page if user select yes", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)

@@ -2,7 +2,13 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -13,12 +19,31 @@ describe("Test Results test", () => {
 
   beforeAll(async () => {
     setSessionData.mockImplementation(() => {});
-    getSessionData.mockImplementation(() => {
-      return { typeOfLivestock: "beef", reference: "TEMP-6GSE-PIR8" };
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        typeOfLivestock: "beef",
+        reference: "TEMP-6GSE-PIR8",
+      });
 
     server = await createServer();
     await server.initialize();
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
 
   afterAll(async () => {
@@ -48,10 +73,18 @@ describe("Test Results test", () => {
       expectPhaseBanner.ok($);
     });
 
-    test("backLink test", async () => {
-      getSessionData.mockImplementation(() => {
-        return { typeOfLivestocl: "beef", reference: "TEMP-6GSE-PIR8" };
-      });
+    test.each([
+      { typeOfLivestock: "beef", backlink: "/which-type-of-review" },
+      { typeOfLivestock: "dairy", backlink: "/which-type-of-review" },
+      { typeOfLivestock: "sheep", backlink: "/vet-rcvs" },
+      { typeOfLivestock: "pig", backlink: "/vet-rcvs" },
+    ])("backLink test", async ({ typeOfLivestock, backlink }) => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock,
+          reference: "TEMP-6GSE-PIR8",
+        });
       const options = {
         method: "GET",
         url,
@@ -61,7 +94,7 @@ describe("Test Results test", () => {
       const res = await server.inject(options);
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/vet-rcvs");
+      expect($(".govuk-back-link").attr("href")).toContain(backlink);
       expectPhaseBanner.ok($);
     });
 

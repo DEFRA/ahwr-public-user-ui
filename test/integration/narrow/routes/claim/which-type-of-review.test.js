@@ -2,8 +2,14 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session");
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
@@ -29,6 +35,24 @@ describe("Which type of review test", () => {
     await server.stop();
   });
 
+  beforeEach(() => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
     jest.clearAllMocks();
@@ -37,17 +61,21 @@ describe("Which type of review test", () => {
   describe("GET", () => {
     beforeEach(() => {
       // this call is made by the pre-handler for logging context
-      getSessionData
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockReturnValueOnce({ typeOfReview: "REVIEW" })
         .mockReturnValueOnce({ reference: "TEMP-6GSE-PIR8" });
     });
 
     test("returns 200 and renders page", async () => {
-      getSessionData.mockReturnValueOnce({ typeOfReview: "REVIEW" }).mockReturnValueOnce({
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        latestVetVisitApplication,
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValueOnce({ typeOfReview: "REVIEW" })
+        .mockReturnValueOnce({
+          typeOfLivestock: "beef",
+          previousClaims: [],
+          latestVetVisitApplication,
+        });
       const options = {
         method: "GET",
         url,

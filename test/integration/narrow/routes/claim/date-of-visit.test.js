@@ -6,6 +6,7 @@ import { getHerds } from "../../../../../app/api-requests/application-api.js";
 import {
   getSessionData,
   sessionEntryKeys,
+  sessionKeys,
   setSessionData,
 } from "../../../../../app/session/index.js";
 import { previousPageUrl } from "../../../../../app/routes/claim/date-of-visit.js";
@@ -72,6 +73,22 @@ describe("GET /date-of-visit handler", () => {
         latestEndemicsApplication,
       };
     });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
   });
 
   afterAll(async () => {

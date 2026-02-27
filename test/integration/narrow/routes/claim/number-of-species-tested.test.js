@@ -21,12 +21,16 @@ isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
 });
 
 when(getSessionData)
+  .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
+  .mockReturnValue(true);
+
+when(getSessionData)
   .calledWith(
     expect.anything(),
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.latestEndemicsApplication,
   )
-  .mockReturnValue({ reference: "IAHW-1234-ABCD" });
+  .mockReturnValue({ reference: "IAHW-1234-ABCD", status: "AGREED" });
 
 describe("Number of species tested test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
@@ -48,9 +52,13 @@ describe("Number of species tested test", () => {
 
   describe(`GET ${url} route`, () => {
     test("returns 200", async () => {
-      getSessionData.mockImplementation(() => {
-        return { typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" };
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "pigs",
+          reference: "TEMP-6GSE-PIR8",
+        });
+
       const options = {
         method: "GET",
         url,

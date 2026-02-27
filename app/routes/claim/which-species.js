@@ -19,6 +19,7 @@ const getHandler = {
     handler: async (request, h) => {
       // get type of livestock here, before we reset the session
       const { typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+
       const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
       // TODO - find an alternative to setBindings

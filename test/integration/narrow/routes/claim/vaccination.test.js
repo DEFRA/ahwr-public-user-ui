@@ -2,7 +2,13 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -12,9 +18,25 @@ describe("Vaccination test", () => {
   let server;
 
   beforeAll(async () => {
-    getSessionData.mockImplementation(() => {
-      return { typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" };
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({ typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
     setSessionData.mockImplementation(() => {});
 
     server = await createServer();
@@ -65,9 +87,28 @@ describe("Vaccination test", () => {
     ])(
       "backLink when species is pigs and application from old world is $vetVisitsReviewTestResults",
       async ({ typeOfLivestock, vetVisitsReviewTestResults, backLink }) => {
-        getSessionData.mockImplementation(() => {
-          return { typeOfLivestock, vetVisitsReviewTestResults, reference: "TEMP-6GSE-PIR8" };
-        });
+        when(getSessionData)
+          .calledWith(
+            expect.anything(),
+            sessionEntryKeys.endemicsClaim,
+            sessionKeys.endemicsClaim.latestEndemicsApplication,
+          )
+          .mockReturnValue({
+            typeOfLivestock,
+            vetVisitsReviewTestResults,
+            reference: "TEMP-6GSE-PIR8",
+            status: "AGREED",
+          });
+
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
+            typeOfLivestock,
+            vetVisitsReviewTestResults,
+            reference: "TEMP-6GSE-PIR8",
+            status: "AGREED",
+          });
+
         const options = {
           method: "GET",
           url,

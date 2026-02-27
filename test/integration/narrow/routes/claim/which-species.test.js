@@ -5,7 +5,13 @@ import {
   resetEndemicsClaimSession,
   refreshApplications,
 } from "../../../../../app/lib/context-helper.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/session");
 jest.mock("../../../../../app/lib/context-helper", () => ({
@@ -36,6 +42,29 @@ describe("Endemics which species test", () => {
 
   beforeEach(async () => {
     crumb = await getCrumbs(server);
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({});
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue({ sbi: 123456789 });
   });
 
   describe("GET /which-species", () => {
@@ -45,10 +74,6 @@ describe("Endemics which species test", () => {
         auth,
         url,
       };
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        organisation: { sbi: 123456789 },
-      });
 
       const res = await server.inject(options);
       const $ = cheerio.load(res.payload);
@@ -64,35 +89,39 @@ describe("Endemics which species test", () => {
       expect(resetEndemicsClaimSession).toHaveBeenCalled();
       expect(refreshApplications).toHaveBeenCalled();
     });
+
+    test.each([
+      { typeOfLivestock: "beef", radio: "Beef cattle" },
+      { typeOfLivestock: "dairy", radio: "Dairy cattle" },
+      { typeOfLivestock: "pigs", radio: "Pigs" },
+      { typeOfLivestock: "sheep", radio: "Sheep" },
+    ])(
+      "should select $radio when previous session livestock is $typeOfLivestock",
+      async ({ typeOfLivestock, radio }) => {
+        const options = {
+          method: "GET",
+          auth,
+          url,
+        };
+
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
+            typeOfLivestock,
+            reference: "TEMP-6GSE-PIR8",
+            organisation: { id: 42 },
+          });
+
+        const res = await server.inject(options);
+
+        const $ = cheerio.load(res.payload);
+        expect($('input[name="typeOfLivestock"]:checked').next("label").text().trim()).toEqual(
+          radio,
+        );
+        expect($(".govuk-back-link").text()).toMatch("Back");
+      },
+    );
   });
-
-  test.each([
-    { typeOfLivestock: "beef", radio: "Beef cattle" },
-    { typeOfLivestock: "dairy", radio: "Dairy cattle" },
-    { typeOfLivestock: "pigs", radio: "Pigs" },
-    { typeOfLivestock: "sheep", radio: "Sheep" },
-  ])(
-    "should select $radio when previous session livestock is $typeOfLivestock",
-    async ({ typeOfLivestock, radio }) => {
-      const options = {
-        method: "GET",
-        auth,
-        url,
-      };
-
-      getSessionData.mockReturnValue({
-        typeOfLivestock,
-        reference: "TEMP-6GSE-PIR8",
-        organisation: { id: 42 },
-      });
-
-      const res = await server.inject(options);
-
-      const $ = cheerio.load(res.payload);
-      expect($('input[name="typeOfLivestock"]:checked').next("label").text().trim()).toEqual(radio);
-      expect($(".govuk-back-link").text()).toMatch("Back");
-    },
-  );
 
   describe("POST claim/endemics/which-species", () => {
     beforeEach(() => {
@@ -107,7 +136,10 @@ describe("Endemics which species test", () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, typeOfLivestock: "" },
       };
-      getSessionData.mockReturnValue({});
+
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({});
 
       const res = await server.inject(options);
 
@@ -126,9 +158,11 @@ describe("Endemics which species test", () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, typeOfLivestock: "sheep" },
       };
-      getSessionData.mockReturnValue({
-        latestEndemicsApplication: { reference: "TEMP-6GSE-PIR8" },
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          latestEndemicsApplication: { reference: "TEMP-6GSE-PIR8" },
+        });
 
       const res = await server.inject(options);
 
@@ -146,11 +180,13 @@ describe("Endemics which species test", () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, typeOfLivestock: "sheep" },
       };
-      getSessionData.mockReturnValue({
-        typeOfLivestock: "beef",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication: { reference: "AHWR-2470-6BA9" },
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "beef",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication: { reference: "AHWR-2470-6BA9" },
+        });
 
       const res = await server.inject(options);
 

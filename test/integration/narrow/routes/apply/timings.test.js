@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
-import { getSessionData, sessionEntryKeys } from "../../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
 import { getApplicationsBySbi } from "../../../../../app/api-requests/application-api";
 import { applyRoutes } from "../../../../../app/constants/routes.js";
 import { userType } from "../../../../../app/constants/constants.js";
@@ -29,6 +29,10 @@ when(getSessionData)
 when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.organisation)
   .mockReturnValue(organisation);
+
+when(getSessionData)
+  .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
+  .mockReturnValue(true);
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/api-requests/application-api");

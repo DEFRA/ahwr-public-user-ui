@@ -16,6 +16,8 @@ import { devRedirectPlugin } from "./plugins/dev-redirect.js";
 import { getCacheEngine } from "./cache/get-cache-engine.js";
 import { redirectAgreementRedactedPlugin } from "./plugins/redirect-agreement-redacted.js";
 import { setupProxy } from "./lib/setup-proxy.js";
+import { redirectAgreementNotAcceptedPlugin } from "./plugins/redirect-agreement-not-accepted.js";
+import { redirectNoCheckDetailsPlugin } from "./plugins/redirect-no-check-details.js";
 import { requestTracing } from "./lib/request-tracing.js";
 
 export async function createServer() {
@@ -48,6 +50,9 @@ export async function createServer() {
   await server.register(viewContextPlugin);
   await server.register(viewsPlugin);
   await server.register(headerPlugin);
+  await server.register(redirectNoCheckDetailsPlugin);
+  await server.register(redirectAgreementNotAcceptedPlugin);
+
   await server.register(redirectAgreementRedactedPlugin);
   await server.register(requestTracing);
 

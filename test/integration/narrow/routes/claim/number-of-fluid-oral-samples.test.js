@@ -1,9 +1,15 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
-import { getSessionData, setSessionData } from "../../../../../app/session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../../../app/session/index.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
+import { when } from "jest-when";
 
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session/index.js");
@@ -16,9 +22,29 @@ describe("Number of fluid oral samples test", () => {
 
   beforeAll(async () => {
     setSessionData.mockImplementation(() => {});
-    getSessionData.mockImplementation(() => {
-      return { typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8", dateOfVisit: "2026-01-21" };
-    });
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        typeOfLivestock: "pigs",
+        reference: "TEMP-6GSE-PIR8",
+        dateOfVisit: "2026-01-21",
+      });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
 
     server = await createServer();
     await server.initialize();
@@ -45,9 +71,13 @@ describe("Number of fluid oral samples test", () => {
     });
 
     it("should return 200 and have back link to endemicsTypeOfSamplesTaken when visit on/after Pigs&Payments golive", async () => {
-      getSessionData.mockImplementation(() => {
-        return { typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8", dateOfVisit: "2026-01-22" };
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "pigs",
+          reference: "TEMP-6GSE-PIR8",
+          dateOfVisit: "2026-01-22",
+        });
 
       const options = { method: "GET", url, auth };
       const res = await server.inject(options);
