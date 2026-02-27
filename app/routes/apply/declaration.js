@@ -14,6 +14,7 @@ import { preApplyHandler } from "../../lib/pre-apply-handler.js";
 import { createApplication } from "../../api-requests/application-api.js";
 import { createTempReference } from "../../lib/create-temp-ref.js";
 import { trackEvent } from "../../logging/logger.js";
+import { refreshApplications } from "../../lib/context-helper.js";
 
 const resetFarmerApplyDataBeforeApplication = (application) => {
   delete application.agreeSpeciesNumbers;
@@ -126,6 +127,9 @@ export const declarationRouteHandlers = [
           { ...farmerApplyData, organisation },
           request.logger,
         );
+
+        // refresh application
+        await refreshApplications(organisation.sbi, request);
 
         // TODO - find an alternative to setBindings
         request.logger.setBindings({ applicationReference });
