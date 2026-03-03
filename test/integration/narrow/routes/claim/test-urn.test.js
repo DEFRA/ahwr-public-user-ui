@@ -282,7 +282,7 @@ describe("Test URN GET", () => {
       async ({ nextPageUrl, typeOfLivestock, typeOfReview }) => {
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-          .mockReturnValueOnce({
+          .mockReturnValue({
             typeOfLivestock,
             typeOfReview,
             laboratoryURN: "12345",
@@ -290,8 +290,8 @@ describe("Test URN GET", () => {
           });
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.organisation)
-          .mockReturnValueOnce({ sbi: "12345678" });
-        isURNUnique.mockResolvedValueOnce({ isURNUnique: true });
+          .mockReturnValue({ sbi: "12345678" });
+        isURNUnique.mockResolvedValue({ isURNUnique: true });
         const options = {
           method: "POST",
           url,
@@ -311,7 +311,7 @@ describe("Test URN GET", () => {
     it("should redirect to endemicsTypeOfSamplesTaken page when pigs review post Pigs&Payments golive", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValueOnce({
+        .mockReturnValue({
           typeOfLivestock: "pigs",
           typeOfReview: "REVIEW",
           laboratoryURN: "12345",
@@ -319,8 +319,8 @@ describe("Test URN GET", () => {
         });
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.organisation)
-        .mockReturnValueOnce({ sbi: "12345678" });
-      isURNUnique.mockResolvedValueOnce({ isURNUnique: true });
+        .mockReturnValue({ sbi: "12345678" });
+      isURNUnique.mockResolvedValue({ isURNUnique: true });
       isPigsAndPaymentsUserJourney.mockImplementation(() => {
         return true;
       });
@@ -358,15 +358,15 @@ describe("Test URN GET", () => {
       async ({ typeOfLivestock, typeOfReview, message }) => {
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-          .mockReturnValueOnce({
+          .mockReturnValue({
             typeOfLivestock,
             typeOfReview,
             laboratoryURN: "12345",
           });
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.organisation)
-          .mockReturnValueOnce({ sbi: "12345678" });
-        isURNUnique.mockResolvedValueOnce({ isURNUnique: false });
+          .mockReturnValue({ sbi: "12345678" });
+        isURNUnique.mockResolvedValue({ isURNUnique: false });
         const options = {
           method: "POST",
           url,
@@ -387,7 +387,7 @@ describe("Test URN GET", () => {
     test("shows error when payload is invalid", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValueOnce({
+        .mockReturnValue({
           typeOfLivestock: "beef",
           typeOfReview: "REVIEW",
         });

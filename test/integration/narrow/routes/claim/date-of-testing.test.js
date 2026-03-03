@@ -114,24 +114,22 @@ describe("Date of testing", () => {
     });
 
     test("should redirect with an error if the user doesnt enter anything", async () => {
-      getSessionData
-        .mockImplementationOnce(() => ({}))
-        .mockImplementationOnce(() => ({
-          dateOfVisit: "2024-01-01",
-          typeOfReview: "FOLLOW_UP",
-          typeOfLivestock: "sheep",
-          previousClaims: [
-            {
-              type: "REVIEW",
-              data: {
-                typeOfLivestock: "beef",
-                dateOfVisit: "2024-01-01",
-                testResults: "negative",
-              },
+      getSessionData.mockImplementation(() => ({
+        dateOfVisit: "2024-01-01",
+        typeOfReview: "FOLLOW_UP",
+        typeOfLivestock: "sheep",
+        previousClaims: [
+          {
+            type: "REVIEW",
+            data: {
+              typeOfLivestock: "beef",
+              dateOfVisit: "2024-01-01",
+              testResults: "negative",
             },
-          ],
-          latestEndemicsApplication,
-        }));
+          },
+        ],
+        latestEndemicsApplication,
+      }));
       const options = {
         method: "POST",
         url,
@@ -153,24 +151,22 @@ describe("Date of testing", () => {
     });
 
     test("should redirect with an error if the user selects it was a different date, but doesnt enter a date", async () => {
-      getSessionData
-        .mockImplementationOnce(() => ({}))
-        .mockImplementationOnce(() => ({
-          dateOfVisit: "2024-01-01",
-          typeOfReview: "FOLLOW_UP",
-          typeOfLivestock: "sheep",
-          previousClaims: [
-            {
-              type: "REVIEW",
-              data: {
-                typeOfLivestock: "beef",
-                dateOfVisit: "2024-01-01",
-                testResults: "negative",
-              },
+      getSessionData.mockImplementation(() => ({
+        dateOfVisit: "2024-01-01",
+        typeOfReview: "FOLLOW_UP",
+        typeOfLivestock: "sheep",
+        previousClaims: [
+          {
+            type: "REVIEW",
+            data: {
+              typeOfLivestock: "beef",
+              dateOfVisit: "2024-01-01",
+              testResults: "negative",
             },
-          ],
-          latestEndemicsApplication,
-        }));
+          },
+        ],
+        latestEndemicsApplication,
+      }));
       const options = {
         method: "POST",
         url,
@@ -203,13 +199,9 @@ describe("Date of testing", () => {
     ])(
       "returns 302 to next page when acceptable answer given - When vet visited the farm",
       async ({ typeOfLivestock }) => {
-        getSessionData
-          .mockImplementationOnce(() => {
-            return { dateOfVisit: today, typeOfReview: "FOLLOW_UP", typeOfLivestock };
-          })
-          .mockImplementationOnce(() => {
-            return { dateOfVisit: today, typeOfReview: "FOLLOW_UP", typeOfLivestock };
-          });
+        getSessionData.mockImplementation(() => {
+          return { dateOfVisit: today, typeOfReview: "FOLLOW_UP", typeOfLivestock };
+        });
 
         const options = {
           method: "POST",
@@ -232,7 +224,7 @@ describe("Date of testing", () => {
 
     test("should redirect to species numbers when endemics claim and previous review claim of different species with date of testing less than date of visit", async () => {
       getSessionData.mockRestore();
-      getSessionData.mockImplementationOnce(() => ({
+      getSessionData.mockImplementation(() => ({
         dateOfVisit: "2024-01-01",
         typeOfReview: "FOLLOW_UP",
         typeOfLivestock: "sheep",
@@ -271,7 +263,7 @@ describe("Date of testing", () => {
     });
 
     test("should emit an invalid event when the date of visit is over 4 months away from the date of testing", async () => {
-      getSessionData.mockImplementationOnce(() => ({
+      getSessionData.mockImplementation(() => ({
         dateOfVisit: "2024-01-01",
         typeOfReview: "FOLLOW_UP",
         typeOfLivestock: "sheep",
@@ -311,7 +303,7 @@ describe("Date of testing", () => {
 
     test("should redirect to date of testing exception when endemics claim and previous review claim of same species with date of testing less than date of visit", async () => {
       getSessionData.mockRestore();
-      getSessionData.mockImplementationOnce(() => ({
+      getSessionData.mockImplementation(() => ({
         dateOfVisit: "2024-01-01",
         typeOfReview: "FOLLOW_UP",
         typeOfLivestock: "sheep",

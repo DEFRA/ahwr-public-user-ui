@@ -28,7 +28,7 @@ describe("GET /cannot-sign-in handler", () => {
   });
 
   test("it throws an error if the details needed are not in the session", async () => {
-    getSessionData.mockReturnValueOnce(undefined);
+    getSessionData.mockReturnValue(undefined);
     const res = await server.inject({
       url: "/cannot-sign-in",
       auth: {
@@ -51,7 +51,7 @@ describe("GET /cannot-sign-in handler", () => {
     const error = "ExpiredOldWorldApplication";
     const hasMultipleBusinesses = false;
 
-    getSessionData.mockReturnValueOnce({ error, hasMultipleBusinesses, organisation });
+    getSessionData.mockReturnValue({ error, hasMultipleBusinesses, organisation });
 
     const res = await server.inject({
       url: "/cannot-sign-in",
@@ -86,7 +86,7 @@ describe("GET /cannot-sign-in handler", () => {
     const error = "ExpiredOldWorldApplication";
     const hasMultipleBusinesses = true;
 
-    getSessionData.mockReturnValueOnce({ error, hasMultipleBusinesses, organisation });
+    getSessionData.mockReturnValue({ error, hasMultipleBusinesses, organisation });
 
     const res = await server.inject({
       url: "/cannot-sign-in",

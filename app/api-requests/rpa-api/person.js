@@ -21,8 +21,7 @@ export const getPersonSummary = async ({ apimAccessToken, crn, logger, defraIdAc
 
   const personSummary = response._data;
 
-  // TODO - find an alternative to setBindings
-  logger.setBindings({ personSummaryId: personSummary.id });
+  logger.info(`Retrieved person summary: ${personSummary.id}`);
 
   return { ...personSummary, name: formatPersonName(personSummary) };
 };

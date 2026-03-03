@@ -10,8 +10,6 @@ const formatAddressForDisplay = (organisation) => {
 
 export const getOrganisationModel = async (request, organisation, errorText) => {
   const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
-  // TODO - find an alternative to setBindings
-  request.logger.setBindings({ crn });
 
   const rows = [
     { key: { text: "Farmer name" }, value: { text: organisation.farmerName } },

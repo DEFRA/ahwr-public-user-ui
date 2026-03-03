@@ -17,8 +17,8 @@ export const headerPlugin = {
       server.ext("onPreResponse", (request, h) => {
         const response = request.response;
         options?.keys?.forEach((x) => {
-          if(response.header) {
-            response.header(x.key, x.value)
+          if (response.header) {
+            response.header(x.key, x.value);
           }
         });
         return h.continue;

@@ -63,15 +63,14 @@ describe("Which type of review test", () => {
       // this call is made by the pre-handler for logging context
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValueOnce({ typeOfReview: "REVIEW" })
-        .mockReturnValueOnce({ reference: "TEMP-6GSE-PIR8" });
+        .mockReturnValue({ typeOfReview: "REVIEW", reference: "TEMP-6GSE-PIR8" });
     });
 
     test("returns 200 and renders page", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValueOnce({ typeOfReview: "REVIEW" })
-        .mockReturnValueOnce({
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
           typeOfLivestock: "beef",
           previousClaims: [],
           latestVetVisitApplication,
@@ -103,7 +102,7 @@ describe("Which type of review test", () => {
     });
 
     test("Returns 400 and shows error message when payload is invalid", async () => {
-      getSessionData.mockReturnValueOnce({ typeOfLivestock: "beef" });
+      getSessionData.mockReturnValue({ typeOfLivestock: "beef" });
       const options = {
         method: "POST",
         url,
@@ -131,7 +130,7 @@ describe("Which type of review test", () => {
         latestVetVisitApplication,
         previousClaims,
       };
-      getSessionData.mockReturnValueOnce(endemicsMockValue);
+      getSessionData.mockReturnValue(endemicsMockValue);
       // isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
 
       const options = {
@@ -153,7 +152,7 @@ describe("Which type of review test", () => {
     });
 
     test("user can select review and be redirected", async () => {
-      getSessionData.mockReturnValueOnce({ typeOfLivestock: "beef", previousClaims: [] });
+      getSessionData.mockReturnValue({ typeOfLivestock: "beef", previousClaims: [] });
       const options = {
         method: "POST",
         url,
@@ -178,7 +177,7 @@ describe("Which type of review test", () => {
     });
 
     test("user can select endemics and be redirected IF they have a review for that species", async () => {
-      getSessionData.mockReturnValueOnce({
+      getSessionData.mockReturnValue({
         typeOfLivestock: "beef",
         previousClaims: [
           {
@@ -219,7 +218,7 @@ describe("Which type of review test", () => {
 
     test(`user can select endemics and be redirected IF they have dont have a new world review for the species,
     but they have an old world application which contains a review for that species`, async () => {
-      getSessionData.mockReturnValueOnce({
+      getSessionData.mockReturnValue({
         typeOfLivestock: "beef",
         previousClaims: [],
         latestVetVisitApplication: {
@@ -257,7 +256,7 @@ describe("Which type of review test", () => {
     });
 
     test("user is redirected to exception page when they select endemics and they dont have a review for that species", async () => {
-      getSessionData.mockReturnValueOnce({
+      getSessionData.mockReturnValue({
         typeOfLivestock: "beef",
         previousClaims: [
           {
@@ -301,7 +300,7 @@ describe("Which type of review test", () => {
     });
 
     test("user is redirected to exception page when they select endemics and they dont have a review for that species (they have an old world application but different species)", async () => {
-      getSessionData.mockReturnValueOnce({
+      getSessionData.mockReturnValue({
         typeOfLivestock: "beef",
         previousClaims: [
           {
@@ -355,7 +354,7 @@ describe("Which type of review test", () => {
     });
 
     test("Returns 400 and redirects to error page for dairy follow-up when optionalPiHunt flag is false", async () => {
-      getSessionData.mockReturnValueOnce({ typeOfLivestock: "dairy", previousClaims: [] });
+      getSessionData.mockReturnValue({ typeOfLivestock: "dairy", previousClaims: [] });
       const options = {
         method: "POST",
         url,
@@ -377,7 +376,7 @@ describe("Which type of review test", () => {
 
     test("Returns 302 and redirects to next page for dairy follow-up when optionalPiHunt flag is TRUE", async () => {
       getSessionData
-        .mockReturnValueOnce({
+        .mockReturnValue({
           typeOfLivestock: "dairy",
           previousClaims: [
             {
