@@ -369,7 +369,10 @@ const postHandler = {
           request,
           sessionKey: sessionKeys.endemicsClaim.dateOfTesting,
           exception: `${dateOfTesting} is outside of the recommended 4 month period from the date of visit ${dateOfVisit}`,
+          raisedDate: new Date(Date.now() - 1).toISOString(), // remove 1ms because chance of duplicate event issue given we don't show error page
         });
+        // No error page returned, business requested that we don't block the claim
+        // but instead report that samples older than 4 months
       }
 
       const previousReviewClaim = getReviewWithinLast10Months(

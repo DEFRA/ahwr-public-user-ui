@@ -30,7 +30,12 @@ export const sendIneligibilityEvent = async ({ sessionId, sbi, email, crn, excep
   await publishEvent(payload);
 };
 
-export const sendInvalidDataEvent = async ({ request, sessionKey, exception }) => {
+export const sendInvalidDataEvent = async ({
+  request,
+  sessionKey,
+  exception,
+  raisedDate = new Date().toISOString(),
+}) => {
   const { publishEvent } = getEventPublisher();
   const { reference, latestEndemicsApplication } = getSessionData(
     request,
@@ -53,14 +58,14 @@ export const sendInvalidDataEvent = async ({ request, sessionKey, exception }) =
       crn,
       sessionKey,
       exception,
-      raisedAt: new Date().toISOString(),
+      raisedAt: raisedDate,
       journey: "claim",
       reference,
       applicationReference: latestEndemicsApplication.reference,
     },
     status: "alert",
     raisedBy: organisation?.email,
-    raisedOn: new Date().toISOString(),
+    raisedOn: raisedDate,
   };
 
   await publishEvent(payload);
