@@ -214,6 +214,7 @@ describe("/check-details", () => {
       expect.anything(),
       sessionEntryKeys.confirmedDetails,
       true,
+      { shouldEmitEvent: false },
     );
   });
 
@@ -239,6 +240,7 @@ describe("/check-details", () => {
       expect.anything(),
       sessionEntryKeys.confirmedDetails,
       true,
+      { shouldEmitEvent: false },
     );
   });
 
