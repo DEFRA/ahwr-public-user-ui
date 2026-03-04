@@ -14,7 +14,7 @@ export const loggingContextPlugin = {
   plugin: {
     name: "logging-context",
     register: (server, _) => {
-      server.ext("onPreHandler", (request, h) => {
+      server.ext("onPostAuth", (request, h) => {
         if (!request.path.includes("assets") && !request.path.includes("health")) {
           addBindings(request);
         }
