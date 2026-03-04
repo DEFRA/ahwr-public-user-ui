@@ -65,7 +65,7 @@ export const checkDetailsHandlers = [
           request,
           sessionEntryKeys.confirmedDetails,
           confirmCheckDetails === "yes",
-          { shouldEmitEvent: false }
+          { shouldEmitEvent: false },
         );
 
         if (confirmCheckDetails === "yes") {
