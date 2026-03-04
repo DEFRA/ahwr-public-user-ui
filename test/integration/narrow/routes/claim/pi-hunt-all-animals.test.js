@@ -41,6 +41,10 @@ describe("PI Hunt recommended tests", () => {
         sessionKeys.confirmedDetails,
       )
       .mockReturnValue(true);
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue({ sbi: "1029493049" });
   });
 
   afterAll(async () => {
@@ -141,9 +145,9 @@ describe("PI Hunt recommended tests", () => {
     });
 
     test("Continue to ineligible page if user select no and show correct content with negative review test result", async () => {
-      getSessionData.mockImplementationOnce(() => {
-        return { typeOfLivestock: "beef", reviewTestResults: "negative" };
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({ typeOfLivestock: "beef", reviewTestResults: "negative" });
 
       const options = {
         method: "POST",
@@ -163,9 +167,9 @@ describe("PI Hunt recommended tests", () => {
     });
 
     test("Continue to ineligible page if user selects no and show correct content with positive review test result", async () => {
-      getSessionData.mockImplementationOnce(() => {
-        return { typeOfLivestock: "beef", reviewTestResults: "positive" };
-      });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({ typeOfLivestock: "beef", reviewTestResults: "positive" });
 
       const options = {
         method: "POST",

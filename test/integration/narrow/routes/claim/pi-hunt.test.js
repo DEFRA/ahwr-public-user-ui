@@ -124,7 +124,7 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
         headers: { cookie: `crumb=${crumb}` },
       };
 
-      getSessionData.mockImplementationOnce(() => {
+      getSessionData.mockImplementation(() => {
         return { typeOfLivestock: "beef" };
       });
 
@@ -142,7 +142,7 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
         url,
         headers: { cookie: `crumb=${crumb}` },
       };
-      getSessionData.mockImplementationOnce(() => {
+      getSessionData.mockImplementation(() => {
         return { typeOfLivestock: "beef", relevantReviewForEndemics: { type: "REVIEW" } };
       });
 
@@ -163,7 +163,7 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
         url,
         headers: { cookie: `crumb=${crumb}` },
       };
-      getSessionData.mockImplementationOnce(() => {
+      getSessionData.mockImplementation(() => {
         return { typeOfLivestock: "beef", relevantReviewForEndemics: { type: "VV" } };
       });
 
@@ -241,7 +241,7 @@ describe("PI Hunt tests when Optional PI Hunt is ON", () => {
           headers: { cookie: `crumb=${crumb}` },
         };
 
-        getSessionData.mockImplementationOnce(() => {
+        getSessionData.mockImplementation(() => {
           return { reviewTestResults };
         });
 
@@ -260,7 +260,7 @@ describe("PI Hunt tests when Optional PI Hunt is ON", () => {
         url,
         headers: { cookie: `crumb=${crumb}` },
       };
-      getSessionData.mockImplementationOnce(() => {
+      getSessionData.mockImplementation(() => {
         return { reviewTestResults: "negative", relevantReviewForEndemics: { type: "FOLLOW_UP" } };
       });
 

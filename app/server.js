@@ -19,6 +19,7 @@ import { setupProxy } from "./lib/setup-proxy.js";
 import { redirectAgreementNotAcceptedPlugin } from "./plugins/redirect-agreement-not-accepted.js";
 import { redirectNoCheckDetailsPlugin } from "./plugins/redirect-no-check-details.js";
 import { requestTracing } from "./lib/request-tracing.js";
+import { loggingContextPlugin } from "./plugins/logging-context.js";
 
 export async function createServer() {
   setupProxy();
@@ -52,19 +53,19 @@ export async function createServer() {
   await server.register(headerPlugin);
   await server.register(redirectNoCheckDetailsPlugin);
   await server.register(redirectAgreementNotAcceptedPlugin);
-
   await server.register(redirectAgreementRedactedPlugin);
   await server.register(requestTracing);
+  await server.register(loggingContextPlugin);
 
   if (config.devLogin.enabled) {
     await server.register(devRedirectPlugin);
   }
 
-  server.ext('onRequest', (request, h) => {
-    const traceId = request.headers[config.tracing.header]
+  server.ext("onRequest", (request, h) => {
+    const traceId = request.headers[config.tracing.header];
     if (traceId) {
-      request.logger.setBindings({
-        trace: { id: traceId }
+      request.logger = request.logger.child({
+        trace: { id: traceId },
       });
     }
     return h.continue;

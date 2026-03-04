@@ -46,12 +46,12 @@ const postHandler = {
           .required()
           .messages({ "any.required": "Select what type of samples where taken" }),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         return h
           .view(claimViews.typeOfSamplesTaken, {
             ...request.payload,
-            errorMessage: { text: err.details[0].message, href: `#${typeOfSamplesTakenKey}` },
+            errorMessage: { text: error.details[0].message, href: `#${typeOfSamplesTakenKey}` },
             backLink: claimRoutes.testUrn,
           })
           .code(HttpStatus.BAD_REQUEST)

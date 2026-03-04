@@ -22,9 +22,6 @@ const getHandler = {
 
       const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
-      // TODO - find an alternative to setBindings
-      request.logger.setBindings({ sbi: organisation.sbi });
-
       // fetch latest new world (always) and latest old world (if relevant) application
       const { latestEndemicsApplication } = await refreshApplications(organisation.sbi, request);
 

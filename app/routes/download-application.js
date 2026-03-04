@@ -9,8 +9,7 @@ export const downloadApplicationHandlers = {
   path: "/download-application/{sbi}/{reference}",
   handler: async (request, h) => {
     const { sbi, reference } = request.params;
-    // TODO - find an alternative to setBindings
-    request.logger.setBindings({ sbi, reference });
+    request.logger.info(`Downloading application: ${reference}`);
 
     const organisation = getSessionData(request, sessionEntryKeys.organisation);
     const latestEndemicsApplication = getSessionData(

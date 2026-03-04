@@ -32,6 +32,7 @@ const createDevDetails = (sbi) => {
   };
 
   const personSummary = {
+    id: "69a56c72-2b58-832d-a739-0b709a237c27",
     email: "farmer@farm.com",
     customerReferenceNumber: "2054561445",
     name: "John Smith",
@@ -77,9 +78,6 @@ export const devLoginHandlers = [
       },
       handler: async (request, h) => {
         const { sbi } = request.payload;
-
-        // TODO - find an alternative to setBindings
-        request.logger.setBindings({ sbi });
 
         const { personSummary, organisationSummary } = createDevDetails(sbi);
         const { organisation: org } = organisationSummary;

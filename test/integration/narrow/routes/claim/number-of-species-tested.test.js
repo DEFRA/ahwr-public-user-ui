@@ -84,7 +84,7 @@ describe("Number of species tested test", () => {
       async ({ typeOfLivestock, typeOfReview }) => {
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-          .mockReturnValueOnce({ typeOfLivestock, typeOfReview });
+          .mockReturnValue({ typeOfLivestock, typeOfReview });
 
         const options = {
           method: "GET",
@@ -217,7 +217,7 @@ describe("Number of species tested test", () => {
     ])(
       "shows error page when number of $typeOfLivestock to be tested is not eligible",
       async ({ typeOfLivestock, typeOfReview, numberAnimalsTested }) => {
-        getSessionData.mockImplementationOnce(() => {
+        getSessionData.mockImplementation(() => {
           return { typeOfLivestock, typeOfReview };
         });
         const options = {

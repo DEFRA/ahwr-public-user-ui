@@ -49,12 +49,12 @@ const postHandler = {
           "number.base": "The amount of blood samples must only include numbers",
         }),
       }),
-      failAction: async (request, h, err) => {
-        request.logger.setBindings({ err });
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
         return h
           .view(claimViews.numberOfBloodSamples, {
             ...request.payload,
-            errorMessage: { text: err.details[0].message, href: `#${numberOfBloodSamplesKey}` },
+            errorMessage: { text: error.details[0].message, href: `#${numberOfBloodSamplesKey}` },
             backLink: claimRoutes.typeOfSamplesTaken,
           })
           .code(HttpStatus.BAD_REQUEST)

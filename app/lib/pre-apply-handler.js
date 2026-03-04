@@ -25,9 +25,6 @@ export const preApplyHandler = async (request, h) => {
       });
     }
 
-    // TODO - find an alternative to setBindings
-    request.logger.setBindings({ sbi: organisation.sbi });
-
     if (application?.status === "AGREED" && !application.redacted) {
       trackError(
         request.logger,

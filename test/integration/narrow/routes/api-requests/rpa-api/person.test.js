@@ -8,7 +8,7 @@ describe("getPersonSummary", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    logger = { setBindings: jest.fn() };
+    logger = { info: jest.fn() };
   });
 
   it("calls sendRPAGetRequest with correct arguments", async () => {
@@ -41,9 +41,7 @@ describe("getPersonSummary", () => {
       },
     });
 
-    expect(logger.setBindings).toHaveBeenCalledWith({
-      personSummaryId: "123",
-    });
+    expect(logger.info).toHaveBeenCalledWith("Retrieved person summary: 123");
 
     expect(result).toEqual({
       ...fakePerson,

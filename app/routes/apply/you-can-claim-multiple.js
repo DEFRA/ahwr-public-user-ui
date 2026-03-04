@@ -31,9 +31,6 @@ export const claimMultipleRouteHandlers = [
 
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
-        // TODO - find an alternative to setBindings
-        request.logger.setBindings({ sbi: organisation.sbi });
-
         const latestApplications = await getApplicationsBySbi(organisation.sbi);
 
         const userType = getUserTypeByApplication(latestApplications);
