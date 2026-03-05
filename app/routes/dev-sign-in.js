@@ -6,6 +6,7 @@ import {
   sessionEntryKeys,
   sessionKeys,
   setSessionEntry,
+  clearAllOfSession,
 } from "../session/index.js";
 import { setAuthCookie } from "../auth/cookie-auth/cookie-auth.js";
 import { farmerApply } from "../constants/constants.js";
@@ -77,6 +78,7 @@ export const devLoginHandlers = [
         crumb: false,
       },
       handler: async (request, h) => {
+        await clearAllOfSession(request);
         const { sbi } = request.payload;
 
         const { personSummary, organisationSummary } = createDevDetails(sbi);
