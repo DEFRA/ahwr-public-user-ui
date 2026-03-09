@@ -11,6 +11,7 @@ import { getHerdOrFlock } from "../../lib/display-helpers.js";
 import { ONLY_HERD_ON_SBI } from "../../constants/claim-constants.js";
 import { skipOtherHerdsOnSbiPage } from "../../lib/context-helper.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
+import { normalizeCphNumber } from "../../lib/cph-normalization.js";
 
 const getBackLink = (herdVersion) =>
   !herdVersion || herdVersion === 1 ? claimRoutes.enterHerdName : claimRoutes.selectTheHerd;
@@ -42,6 +43,7 @@ const postHandler = {
     validate: {
       payload: Joi.object({
         herdCph: Joi.string()
+          .custom((value, _) => normalizeCphNumber(value))
           .pattern(/^\d{2}\/\d{3}\/\d{4}$/)
           .required(),
       }),
