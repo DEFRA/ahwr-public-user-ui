@@ -3,9 +3,9 @@ export const normalizeCphNumber = (cphNumber) => {
     return cphNumber;
   }
 
-  const trimmed = cphNumber.replace(/\s/g, "");
+  const trimmed = cphNumber.replaceAll(/\s/g, "");
 
-  const regexWithDelimiter = /^(\d{2})([^0-9])(\d{3})\2(\d{4})$/;
+  const regexWithDelimiter = /^(\d{2})(\D)(\d{3})\2(\d{4})$/;
   const match = trimmed.match(regexWithDelimiter);
 
   if (match) {
