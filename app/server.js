@@ -20,7 +20,6 @@ import { redirectAgreementNotAcceptedPlugin } from "./plugins/redirect-agreement
 import { redirectNoCheckDetailsPlugin } from "./plugins/redirect-no-check-details.js";
 import { requestTracing } from "./lib/request-tracing.js";
 import { loggingContextPlugin } from "./plugins/logging-context.js";
-import { normalizeCphNumberPlugin } from "./plugins/normalize-cph-number.js";
 
 export async function createServer() {
   setupProxy();
@@ -57,7 +56,6 @@ export async function createServer() {
   await server.register(redirectAgreementRedactedPlugin);
   await server.register(requestTracing);
   await server.register(loggingContextPlugin);
-  await server.register(normalizeCphNumberPlugin);
 
   if (config.devLogin.enabled) {
     await server.register(devRedirectPlugin);
