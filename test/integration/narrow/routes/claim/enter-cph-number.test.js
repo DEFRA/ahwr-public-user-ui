@@ -224,60 +224,85 @@ describe("/enter-cph-number tests", () => {
       expect(emitHerdEvent).toHaveBeenCalled();
     });
 
-    test("display errors when cph number is missing", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
+    describe("validation cph number", () => {
+      test("display errors when cph number is missing", async () => {
+        getSessionData.mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+        });
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(400);
+        expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
+        expect($('a[href="#herdCph"]').text()).toContain(
+          "Enter the CPH for this herd, format should be nn/nnn/nnnn",
+        );
+        expect($('p[id="herdCph-error"]').text()).toContain(
+          "Enter the CPH for this herd, format should be nn/nnn/nnnn",
+        );
+        expectHerdText($);
+        expect(emitHerdEvent).not.toHaveBeenCalled();
       });
 
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb },
-        headers: { cookie: `crumb=${crumb}` },
+      test("display errors when cph number does not contain digits", async () => {
+        getSessionData.mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "beef",
+        });
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdCph: "aa/222/3333" },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(400);
+        expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
+        expect($('a[href="#herdCph"]').text()).toContain(
+          "Enter the CPH for this herd, format should be nn/nnn/nnnn",
+        );
+        expect($('p[id="herdCph-error"]').text()).toContain(
+          "Enter the CPH for this herd, format should be nn/nnn/nnnn",
+        );
+        expectHerdText($);
+        expect(emitHerdEvent).not.toHaveBeenCalled();
       });
 
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#herdCph"]').text()).toContain(
-        "Enter the CPH for this herd, format should be nn/nnn/nnnn",
-      );
-      expect($('p[id="herdCph-error"]').text()).toContain(
-        "Enter the CPH for this herd, format should be nn/nnn/nnnn",
-      );
-      expectHerdText($);
-      expect(emitHerdEvent).not.toHaveBeenCalled();
-    });
+      test("it normalizes the chp number before validation", async () => {
+        getSessionData.mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          typeOfReview: "REVIEW",
+          typeOfLivestock: "sheep",
+          herds: [{ id: "herd one" }],
+          isOnlyHerdOnSbi: "no",
+        });
 
-    test("display errors when cph number does not contain digits", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdCph: "22-3 3 3-4444 " },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        expect(res.statusCode).toBe(302);
+        expect(res.headers.location).toEqual("/enter-herd-details");
+        expect(setSessionData).toHaveBeenCalled();
+        expect(emitHerdEvent).toHaveBeenCalled();
       });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, herdCph: "aa/222/3333" },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#herdCph"]').text()).toContain(
-        "Enter the CPH for this herd, format should be nn/nnn/nnnn",
-      );
-      expect($('p[id="herdCph-error"]').text()).toContain(
-        "Enter the CPH for this herd, format should be nn/nnn/nnnn",
-      );
-      expectHerdText($);
-      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
     test("display errors with flock label when payload invalid", async () => {
