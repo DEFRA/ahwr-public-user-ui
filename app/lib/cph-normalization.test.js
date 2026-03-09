@@ -42,7 +42,7 @@ describe("Normalization of cph number", () => {
   });
 
   it("strips spaces at the middle", () => {
-    const actual = normalizeCphNumber("12 / 12 3/1 2 3 4");
+    const actual = normalizeCphNumber("12 / 12   3/1 2 3 4");
 
     const expected = "12/123/1234";
 
