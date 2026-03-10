@@ -66,11 +66,6 @@ scripts/test
 scripts/test -w
 ```
 
-## Coding Standard
- * The code needs to adhere to the [Defra JavaScript Standards](https://defra.github.io/software-development-standards/standards/javascript_standards/)
- * Use [neostandard](https://github.com/neostandard/neostandard) to lint your code
- * Do not use front end JavaScript frameworks
-
 ## Licence
 
 THIS INFORMATION IS LICENSED UNDER THE CONDITIONS OF THE OPEN GOVERNMENT LICENCE found at:
