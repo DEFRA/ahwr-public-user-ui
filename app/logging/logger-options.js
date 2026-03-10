@@ -1,5 +1,6 @@
 import { ecsFormat } from "@elastic/ecs-pino-format";
 import { getTraceId } from "@defra/hapi-tracing";
+import stdSerializers from "pino-std-serializers";
 import { config } from "../config/index.js";
 
 const { name, serviceVersion, logLevel, logFormat, logRedact } = config;
@@ -33,6 +34,13 @@ export const loggerOptions = {
   ...formatters[logFormat],
   nesting: true,
   serializers: {
+    req: (req) => {
+      const serialized = stdSerializers.req(req);
+      if (serialized.query && typeof serialized.query === "object") {
+        serialized.query = new URLSearchParams(serialized.query).toString();
+      }
+      return serialized;
+    },
     error: (err) => {
       if (err instanceof Error) {
         return {
