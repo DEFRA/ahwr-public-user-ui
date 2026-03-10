@@ -5,19 +5,17 @@ let fcpMessageClient;
 let eventPublisher;
 
 export const startMessagingService = async (logger) => {
-  const eventsEnabled = config.isAuditEventEnabled
-  if (eventsEnabled) {
+  if (config.isAuditEventEnabled) {
     fcpMessageClient = createServiceBusClient({
       host: config.fcpMessaging.host,
       username: config.fcpMessaging.username,
       password: config.fcpMessaging.password,
       proxyUrl: config.proxy,
     });
+    eventPublisher = createEventPublisher(fcpMessageClient, config.fcpMessaging.address, logger);
+  } else {
+    eventPublisher = { publishEvent: () => {} };
   }
-
-  eventPublisher = eventsEnabled
-    ? createEventPublisher(fcpMessageClient, config.fcpMessaging.address, logger)
-  : { publishEvent: () => {} };
 };
 
 export const stopMessagingService = async () => {
