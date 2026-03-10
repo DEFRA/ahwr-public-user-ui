@@ -53,6 +53,7 @@ const configSchema = joi.object({
   googleTagManagerKey: joi.string().allow(null, ""),
   isDev: joi.boolean(),
   isMetricsEnabled: joi.boolean(),
+  isAuditEventEnabled: joi.boolean(),
   applicationApiUri: joi.string().uri(),
   port: joi.number().required(),
   host: joi.string().required(),
@@ -99,7 +100,7 @@ const configSchema = joi.object({
   }),
   poultry: {
     enabled: joi.bool().required(),
-  }
+  },
 });
 
 export const getConfig = () => {
@@ -142,6 +143,7 @@ export const getConfig = () => {
     googleTagManagerKey: process.env.GOOGLE_TAG_MANAGER_KEY,
     isDev: process.env.NODE_ENV === "development",
     isMetricsEnabled: process.env.NODE_ENV === "production",
+    isAuditEventEnabled: Boolean(process.env.ENABLE_AUDIT_EVENTS ?? "true"),
     applicationApiUri: process.env.APPLICATION_API_URI,
     port: Number.parseInt(process.env.PORT ?? "3000", 10),
     host: "0.0.0.0",
@@ -192,8 +194,8 @@ export const getConfig = () => {
       header: process.env.TRACING_HEADER || "x-cdp-request-id",
     },
     poultry: {
-      enabled: process.env.POULTRY_ENABLED === "true"
-    }
+      enabled: process.env.POULTRY_ENABLED === "true",
+    },
   };
 
   const { error } = configSchema.validate(builtConfig, {

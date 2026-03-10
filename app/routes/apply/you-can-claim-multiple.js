@@ -49,7 +49,7 @@ export const claimMultipleRouteHandlers = [
         return h.view(applyViews.youCanClaimMultiple, {
           backLink: dashboardRoutes.checkDetails,
           organisation,
-          poultryEnabled: config.poultry.enabled
+          poultryEnabled: config.poultry.enabled,
         });
       },
     },
