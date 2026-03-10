@@ -62,12 +62,23 @@ export async function createServer() {
   }
 
   server.ext("onRequest", (request, h) => {
+    const context = {};
+
     const traceId = request.headers[config.tracing.header];
     if (traceId) {
-      request.logger = request.logger.child({
-        trace: { id: traceId },
-      });
+      context.trace = { id: traceId };
     }
+
+    if (request.query && Object.keys(request.query).length) {
+      context.url = {
+        query: new URLSearchParams(request.query).toString(),
+      };
+    }
+
+    if (Object.keys(context).length) {
+      request.logger = request.logger.child(context);
+    }
+
     return h.continue;
   });
 
