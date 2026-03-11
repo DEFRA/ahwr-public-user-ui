@@ -143,7 +143,7 @@ export const getConfig = () => {
     googleTagManagerKey: process.env.GOOGLE_TAG_MANAGER_KEY,
     isDev: process.env.NODE_ENV === "development",
     isMetricsEnabled: process.env.NODE_ENV === "production",
-    isAuditEventEnabled: Boolean(process.env.ENABLE_AUDIT_EVENTS ?? "true"),
+    isAuditEventEnabled: (process.env.ENABLE_AUDIT_EVENTS ?? "true") === "true",
     applicationApiUri: process.env.APPLICATION_API_URI,
     port: Number.parseInt(process.env.PORT ?? "3000", 10),
     host: "0.0.0.0",
