@@ -20,433 +20,440 @@ jest
   .mocked(refreshApplications)
   .mockResolvedValue({ latestEndemicsApplication: {}, latestVetVisitApplication: {} });
 
-test("get /vet-visits: details not checked redirects to get them checked", async () => {
-  const server = await createServer();
+describe("GET /vet-visits", () => {
+  test("details not checked redirects to get them checked", async () => {
+    const server = await createServer();
 
-  const sbi = "106354662";
-  const state = {
-    customer: {
-      attachedToMultipleBusinesses: false,
-    },
-    endemicsClaim: {},
-    organisation: {
-      sbi,
-      name: "PARTRIDGES",
-      farmerName: "Janice Harrison",
-    },
-  };
-
-  await setServerState(server, state);
-
-  const { headers, payload } = await server.inject({
-    url: "/vet-visits",
-    auth: {
-      credentials: {},
-      strategy: "cookie",
-    },
-  });
-  cleanUpFunction = globalJsdom(payload);
-
-  expect(headers.location).toBe("/check-details");
-});
-
-test("get /vet-visits: no agreement redirects to new one", async () => {
-  const server = await createServer();
-
-  const sbi = "106354662";
-  const state = {
-    confirmedDetails: true,
-    customer: {
-      attachedToMultipleBusinesses: false,
-    },
-    endemicsClaim: {},
-    organisation: {
-      sbi,
-      name: "PARTRIDGES",
-      farmerName: "Janice Harrison",
-    },
-  };
-
-  await setServerState(server, state);
-
-  const { headers, payload } = await server.inject({
-    url: "/vet-visits",
-    auth: {
-      credentials: {},
-      strategy: "cookie",
-    },
-  });
-  cleanUpFunction = globalJsdom(payload);
-
-  expect(headers.location).toBe("/you-can-claim-multiple");
-});
-
-test("get /vet-visits: new world, multiple businesses", async () => {
-  cleanUpFunction();
-  const server = await createServer();
-  const applicationReference = "IAHW-TEST-NEW1";
-  const sbi = "106354662";
-  const state = {
-    confirmedDetails: true,
-    customer: {
-      attachedToMultipleBusinesses: true,
-    },
-    endemicsClaim: {
-      latestEndemicsApplication: {
+    const sbi = "106354662";
+    const state = {
+      customer: {
+        attachedToMultipleBusinesses: false,
+      },
+      endemicsClaim: {},
+      organisation: {
         sbi,
-        type: "EE",
-        reference: applicationReference,
-        redacted: false,
-        status: "AGREED",
+        name: "PARTRIDGES",
+        farmerName: "Janice Harrison",
       },
-      latestVetVisitApplication: undefined,
-    },
-    organisation: {
-      sbi,
-      name: "PARTRIDGES",
-      farmerName: "Janice Harrison",
-    },
-  };
+    };
 
-  await setServerState(server, state);
+    await setServerState(server, state);
 
-  const claims = [
-    {
-      applicationReference,
-      reference: "REBC-A89F-7776",
-      data: {
-        dateOfVisit: "2024-12-29",
-        typeOfLivestock: "beef",
-        claimType: "REVIEW",
+    const { headers, payload } = await server.inject({
+      url: "/vet-visits",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
       },
-      status: "WITHDRAWN",
-    },
-  ];
+    });
+    cleanUpFunction = globalJsdom(payload);
 
-  getClaimsByApplicationReference.mockResolvedValueOnce(claims);
-
-  const { payload } = await server.inject({
-    url: "/vet-visits",
-    auth: {
-      credentials: {},
-      strategy: "cookie",
-    },
+    expect(headers.location).toBe("/check-details");
   });
-  cleanUpFunction = globalJsdom(payload);
 
-  expect(queryByRole(document.body, "region", { name: "Important" })).toBe(null);
+  test("no agreement redirects to new one", async () => {
+    const server = await createServer();
 
-  expect(getTableCells(document.body)).toEqual([
-    ["Visit date", "Herd name", "Type and claim number", "Status"],
-    ["29 December 2024", "Unnamed herd", expect.stringContaining("REBC-A89F-7776"), "Withdrawn"],
-  ]);
-
-  expect(getByRole(document.body, "link", { name: "Download agreement summary" })).toHaveProperty(
-    "href",
-    `${document.location.href}download-application/${sbi}/${applicationReference}`,
-  );
-
-  expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
-    "href",
-    expect.stringContaining("/which-species"),
-  );
-
-  expect(
-    getByRole(document.body, "link", {
-      name: "Claim for a different business",
-    }),
-  ).toHaveProperty("href", expect.stringContaining("auth-code-url"));
-});
-
-test("get /vet-visits: new world, multiple businesses, for sheep (flock not herd)", async () => {
-  cleanUpFunction();
-  const server = await createServer();
-  const applicationReference = "IAHW-TEST-NEW1";
-  const sbi = "106354662";
-  const state = {
-    confirmedDetails: true,
-    customer: {
-      attachedToMultipleBusinesses: true,
-    },
-    endemicsClaim: {
-      latestEndemicsApplication: {
+    const sbi = "106354662";
+    const state = {
+      confirmedDetails: true,
+      customer: {
+        attachedToMultipleBusinesses: false,
+      },
+      endemicsClaim: {},
+      organisation: {
         sbi,
-        type: "EE",
-        reference: applicationReference,
-        redacted: false,
-        status: "AGREED",
+        name: "PARTRIDGES",
+        farmerName: "Janice Harrison",
       },
-      latestVetVisitApplication: undefined,
-    },
-    organisation: {
-      sbi,
-      name: "PARTRIDGES",
-      farmerName: "Janice Harrison",
-    },
-  };
+    };
 
-  await setServerState(server, state);
+    await setServerState(server, state);
 
-  const claims = [
-    {
-      applicationReference,
-      reference: "REBC-A89F-7776",
-      data: {
-        dateOfVisit: "2024-12-29",
-        typeOfLivestock: "sheep",
-        claimType: "REVIEW",
+    const { headers, payload } = await server.inject({
+      url: "/vet-visits",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
       },
-      status: "WITHDRAWN",
-    },
-  ];
+    });
+    cleanUpFunction = globalJsdom(payload);
 
-  getClaimsByApplicationReference.mockResolvedValueOnce(claims);
-
-  const { payload } = await server.inject({
-    url: "/vet-visits",
-    auth: {
-      credentials: {},
-      strategy: "cookie",
-    },
+    expect(headers.location).toBe("/you-can-claim-multiple");
   });
-  cleanUpFunction = globalJsdom(payload);
 
-  expect(getTableCells(document.body)).toEqual([
-    ["Visit date", "Flock name", "Type and claim number", "Status"],
-    ["29 December 2024", "Unnamed flock", expect.stringContaining("REBC-A89F-7776"), "Withdrawn"],
-  ]);
-});
-
-test("get /vet-visits: new world, claim has a herd", async () => {
-  cleanUpFunction();
-  const server = await createServer();
-  const applicationReference = "IAHW-TEST-NEW1";
-  const sbi = "106354662";
-  const state = {
-    confirmedDetails: true,
-    customer: {
-      attachedToMultipleBusinesses: true,
-    },
-    endemicsClaim: {
-      latestEndemicsApplication: {
-        sbi,
-        type: "EE",
-        reference: applicationReference,
-        redacted: false,
-        status: "AGREED",
+  test("new world, multiple businesses", async () => {
+    cleanUpFunction();
+    const server = await createServer();
+    const applicationReference = "IAHW-TEST-NEW1";
+    const sbi = "106354662";
+    const state = {
+      confirmedDetails: true,
+      customer: {
+        attachedToMultipleBusinesses: true,
       },
-      latestVetVisitApplication: undefined,
-    },
-    organisation: {
-      sbi,
-      name: "PARTRIDGES",
-      farmerName: "Janice Harrison",
-    },
-  };
-
-  await setServerState(server, state);
-
-  const claims = [
-    {
-      applicationReference,
-      reference: "REBC-A89F-7776",
-      data: {
-        dateOfVisit: "2024-12-29",
-        typeOfLivestock: "beef",
-        claimType: "REVIEW",
-      },
-      herd: {
-        name: "best beef herd",
-      },
-      status: "WITHDRAWN",
-    },
-  ];
-
-  getClaimsByApplicationReference.mockResolvedValueOnce(claims);
-
-  const { payload } = await server.inject({
-    url: "/vet-visits",
-    auth: {
-      credentials: {},
-      strategy: "cookie",
-    },
-  });
-  cleanUpFunction = globalJsdom(payload);
-
-  expect(queryByRole(document.body, "region", { name: "Important" })).toBe(null);
-
-  expect(getTableCells(document.body)).toEqual([
-    ["Visit date", "Herd name", "Type and claim number", "Status"],
-    ["29 December 2024", "best beef herd", expect.stringContaining("REBC-A89F-7776"), "Withdrawn"],
-  ]);
-
-  expect(getByRole(document.body, "link", { name: "Download agreement summary" })).toHaveProperty(
-    "href",
-    `${document.location.href}download-application/${sbi}/${applicationReference}`,
-  );
-
-  expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
-    "href",
-    expect.stringContaining("/which-species"),
-  );
-
-  expect(
-    getByRole(document.body, "link", {
-      name: "Claim for a different business",
-    }),
-  ).toHaveProperty("href", expect.stringContaining("auth-code-url"));
-});
-
-test("get /vet-visits: new world, no claims made, show banner", async () => {
-  cleanUpFunction();
-  const server = await createServer();
-  jest.replaceProperty(config.multiSpecies, "releaseDate", "2024-12-04");
-
-  const beforeMultiSpeciesReleaseDate = "2024-12-03";
-  const sbi = "123123123";
-  const state = {
-    confirmedDetails: true,
-    customer: {
-      attachedToMultipleBusinesses: true,
-    },
-    endemicsClaim: {
-      latestEndemicsApplication: {
-        sbi,
-        type: "EE",
-        reference: "IAHW-TEST-NEW2",
-        createdAt: beforeMultiSpeciesReleaseDate,
-        redacted: false,
-        status: "AGREED",
-      },
-      latestVetVisitApplication: undefined,
-    },
-    organisation: {
-      sbi,
-      name: "TEST FARM",
-      farmerName: "Farmer Joe",
-    },
-  };
-
-  await setServerState(server, state);
-
-  getClaimsByApplicationReference.mockResolvedValueOnce([]);
-
-  const { payload } = await server.inject({
-    url: "/vet-visits",
-    auth: {
-      credentials: {},
-      strategy: "cookie",
-    },
-  });
-  cleanUpFunction = globalJsdom(payload);
-
-  const banner = getByRole(document.body, "region", { name: "Important" });
-  expect(getByRole(banner, "paragraph").textContent.trim()).toBe(
-    "You can now claim for more than one herd or flock of any species.",
-  );
-});
-
-test("get /vet-visits: old world application only - redirects to create agreement", async () => {
-  cleanUpFunction();
-  const server = await createServer();
-  const timeOfTest = new Date("2025-01-02");
-
-  jest.useFakeTimers({ doNotFake: nunJucksInternalTimerMethods }).setSystemTime(timeOfTest);
-
-  const sbi = "106354662";
-  const almostTenMonthsBefore = new Date("2024-03-03");
-
-  const state = {
-    confirmedDetails: true,
-    customer: {
-      attachedToMultipleBusinesses: false,
-    },
-    endemicsClaim: {
-      latestEndemicsApplication: undefined,
-      latestVetVisitApplication: {
-        sbi,
-        type: "VV",
-        reference: "AHWR-TEST-OLD1",
-        data: {
-          visitDate: almostTenMonthsBefore,
-          whichReview: "dairy",
+      endemicsClaim: {
+        latestEndemicsApplication: {
+          sbi,
+          type: "EE",
+          reference: applicationReference,
+          redacted: false,
+          status: "AGREED",
         },
-        status: "IN_CHECK",
-        redacted: false,
+        latestVetVisitApplication: undefined,
       },
-    },
-    organisation: {
-      sbi: "106354662",
-      name: "PARTRIDGES",
-      farmerName: "Janice Harrison",
-    },
-  };
-
-  await setServerState(server, state);
-
-  const { headers, payload } = await server.inject({
-    url: "/vet-visits",
-    auth: {
-      credentials: {},
-      strategy: "cookie",
-    },
-  });
-  jest.useRealTimers();
-  globalJsdom(payload);
-
-  expect(headers.location).toBe("/you-can-claim-multiple");
-});
-
-test("get /vet-visits: shows agreement redacted", async () => {
-  cleanUpFunction();
-  const server = await createServer();
-  jest.replaceProperty(config.multiSpecies, "releaseDate", "2024-12-04");
-
-  const beforeMultiSpeciesReleaseDate = "2024-12-03";
-  const sbi = "123123123";
-  const state = {
-    confirmedDetails: true,
-    customer: {
-      attachedToMultipleBusinesses: true,
-    },
-    endemicsClaim: {
-      latestEndemicsApplication: {
+      organisation: {
         sbi,
-        type: "EE",
-        reference: "IAHW-TEST-NEW2",
-        createdAt: beforeMultiSpeciesReleaseDate,
-        redacted: true,
-        status: "AGREED",
+        name: "PARTRIDGES",
+        farmerName: "Janice Harrison",
       },
-      latestVetVisitApplication: undefined,
-    },
-    organisation: {
-      sbi,
-      name: "TEST FARM",
-      farmerName: "Farmer Joe",
-    },
-  };
+    };
 
-  await setServerState(server, state);
+    await setServerState(server, state);
 
-  getClaimsByApplicationReference.mockResolvedValueOnce([]);
+    const claims = [
+      {
+        applicationReference,
+        reference: "REBC-A89F-7776",
+        data: {
+          dateOfVisit: "2024-12-29",
+          typeOfLivestock: "beef",
+          claimType: "REVIEW",
+        },
+        status: "WITHDRAWN",
+      },
+    ];
 
-  const { payload } = await server.inject({
-    url: "/vet-visits",
-    auth: {
-      credentials: {},
-      strategy: "cookie",
-    },
+    getClaimsByApplicationReference.mockResolvedValueOnce(claims);
+
+    const { payload } = await server.inject({
+      url: "/vet-visits",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+    cleanUpFunction = globalJsdom(payload);
+
+    expect(queryByRole(document.body, "region", { name: "Important" })).toBe(null);
+
+    expect(getTableCells(document.body)).toEqual([
+      ["Visit date", "Herd name", "Type and claim number", "Status"],
+      ["29 December 2024", "Unnamed herd", expect.stringContaining("REBC-A89F-7776"), "Withdrawn"],
+    ]);
+
+    expect(getByRole(document.body, "link", { name: "Download agreement summary" })).toHaveProperty(
+      "href",
+      `${document.location.href}download-application/${sbi}/${applicationReference}`,
+    );
+
+    expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
+      "href",
+      expect.stringContaining("/which-species"),
+    );
+
+    expect(
+      getByRole(document.body, "link", {
+        name: "Claim for a different business",
+      }),
+    ).toHaveProperty("href", expect.stringContaining("auth-code-url"));
   });
-  cleanUpFunction = globalJsdom(payload);
 
-  const heading = getByRole(document.body, "heading", { level: 1 });
-  expect(heading).not.toBeNull();
-  expect(heading.textContent.trim()).toBe(
-    "Your Improve Animal Health and Welfare (IAHW) agreement has been removed",
-  );
+  test("new world, multiple businesses, for sheep (flock not herd)", async () => {
+    cleanUpFunction();
+    const server = await createServer();
+    const applicationReference = "IAHW-TEST-NEW1";
+    const sbi = "106354662";
+    const state = {
+      confirmedDetails: true,
+      customer: {
+        attachedToMultipleBusinesses: true,
+      },
+      endemicsClaim: {
+        latestEndemicsApplication: {
+          sbi,
+          type: "EE",
+          reference: applicationReference,
+          redacted: false,
+          status: "AGREED",
+        },
+        latestVetVisitApplication: undefined,
+      },
+      organisation: {
+        sbi,
+        name: "PARTRIDGES",
+        farmerName: "Janice Harrison",
+      },
+    };
 
-  const applyLink = getByRole(document.body, "link", { name: "Apply for a new agreement" });
-  expect(applyLink).not.toBeNull();
-  expect(applyLink.getAttribute("href")).toBe("/you-can-claim-multiple");
+    await setServerState(server, state);
+
+    const claims = [
+      {
+        applicationReference,
+        reference: "REBC-A89F-7776",
+        data: {
+          dateOfVisit: "2024-12-29",
+          typeOfLivestock: "sheep",
+          claimType: "REVIEW",
+        },
+        status: "WITHDRAWN",
+      },
+    ];
+
+    getClaimsByApplicationReference.mockResolvedValueOnce(claims);
+
+    const { payload } = await server.inject({
+      url: "/vet-visits",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+    cleanUpFunction = globalJsdom(payload);
+
+    expect(getTableCells(document.body)).toEqual([
+      ["Visit date", "Flock name", "Type and claim number", "Status"],
+      ["29 December 2024", "Unnamed flock", expect.stringContaining("REBC-A89F-7776"), "Withdrawn"],
+    ]);
+  });
+
+  test("new world, claim has a herd", async () => {
+    cleanUpFunction();
+    const server = await createServer();
+    const applicationReference = "IAHW-TEST-NEW1";
+    const sbi = "106354662";
+    const state = {
+      confirmedDetails: true,
+      customer: {
+        attachedToMultipleBusinesses: true,
+      },
+      endemicsClaim: {
+        latestEndemicsApplication: {
+          sbi,
+          type: "EE",
+          reference: applicationReference,
+          redacted: false,
+          status: "AGREED",
+        },
+        latestVetVisitApplication: undefined,
+      },
+      organisation: {
+        sbi,
+        name: "PARTRIDGES",
+        farmerName: "Janice Harrison",
+      },
+    };
+
+    await setServerState(server, state);
+
+    const claims = [
+      {
+        applicationReference,
+        reference: "REBC-A89F-7776",
+        data: {
+          dateOfVisit: "2024-12-29",
+          typeOfLivestock: "beef",
+          claimType: "REVIEW",
+        },
+        herd: {
+          name: "best beef herd",
+        },
+        status: "WITHDRAWN",
+      },
+    ];
+
+    getClaimsByApplicationReference.mockResolvedValueOnce(claims);
+
+    const { payload } = await server.inject({
+      url: "/vet-visits",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+    cleanUpFunction = globalJsdom(payload);
+
+    expect(queryByRole(document.body, "region", { name: "Important" })).toBe(null);
+
+    expect(getTableCells(document.body)).toEqual([
+      ["Visit date", "Herd name", "Type and claim number", "Status"],
+      [
+        "29 December 2024",
+        "best beef herd",
+        expect.stringContaining("REBC-A89F-7776"),
+        "Withdrawn",
+      ],
+    ]);
+
+    expect(getByRole(document.body, "link", { name: "Download agreement summary" })).toHaveProperty(
+      "href",
+      `${document.location.href}download-application/${sbi}/${applicationReference}`,
+    );
+
+    expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
+      "href",
+      expect.stringContaining("/which-species"),
+    );
+
+    expect(
+      getByRole(document.body, "link", {
+        name: "Claim for a different business",
+      }),
+    ).toHaveProperty("href", expect.stringContaining("auth-code-url"));
+  });
+
+  test("new world, no claims made, show banner", async () => {
+    cleanUpFunction();
+    const server = await createServer();
+    jest.replaceProperty(config.multiSpecies, "releaseDate", "2024-12-04");
+
+    const beforeMultiSpeciesReleaseDate = "2024-12-03";
+    const sbi = "123123123";
+    const state = {
+      confirmedDetails: true,
+      customer: {
+        attachedToMultipleBusinesses: true,
+      },
+      endemicsClaim: {
+        latestEndemicsApplication: {
+          sbi,
+          type: "EE",
+          reference: "IAHW-TEST-NEW2",
+          createdAt: beforeMultiSpeciesReleaseDate,
+          redacted: false,
+          status: "AGREED",
+        },
+        latestVetVisitApplication: undefined,
+      },
+      organisation: {
+        sbi,
+        name: "TEST FARM",
+        farmerName: "Farmer Joe",
+      },
+    };
+
+    await setServerState(server, state);
+
+    getClaimsByApplicationReference.mockResolvedValueOnce([]);
+
+    const { payload } = await server.inject({
+      url: "/vet-visits",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+    cleanUpFunction = globalJsdom(payload);
+
+    const banner = getByRole(document.body, "region", { name: "Important" });
+    expect(getByRole(banner, "paragraph").textContent.trim()).toBe(
+      "You can now claim for more than one herd or flock of any species.",
+    );
+  });
+
+  test("old world application only - redirects to create agreement", async () => {
+    cleanUpFunction();
+    const server = await createServer();
+    const timeOfTest = new Date("2025-01-02");
+
+    jest.useFakeTimers({ doNotFake: nunJucksInternalTimerMethods }).setSystemTime(timeOfTest);
+
+    const sbi = "106354662";
+    const almostTenMonthsBefore = new Date("2024-03-03");
+
+    const state = {
+      confirmedDetails: true,
+      customer: {
+        attachedToMultipleBusinesses: false,
+      },
+      endemicsClaim: {
+        latestEndemicsApplication: undefined,
+        latestVetVisitApplication: {
+          sbi,
+          type: "VV",
+          reference: "AHWR-TEST-OLD1",
+          data: {
+            visitDate: almostTenMonthsBefore,
+            whichReview: "dairy",
+          },
+          status: "IN_CHECK",
+          redacted: false,
+        },
+      },
+      organisation: {
+        sbi: "106354662",
+        name: "PARTRIDGES",
+        farmerName: "Janice Harrison",
+      },
+    };
+
+    await setServerState(server, state);
+
+    const { headers, payload } = await server.inject({
+      url: "/vet-visits",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+    jest.useRealTimers();
+    globalJsdom(payload);
+
+    expect(headers.location).toBe("/you-can-claim-multiple");
+  });
+
+  test("shows agreement redacted", async () => {
+    cleanUpFunction();
+    const server = await createServer();
+    jest.replaceProperty(config.multiSpecies, "releaseDate", "2024-12-04");
+
+    const beforeMultiSpeciesReleaseDate = "2024-12-03";
+    const sbi = "123123123";
+    const state = {
+      confirmedDetails: true,
+      customer: {
+        attachedToMultipleBusinesses: true,
+      },
+      endemicsClaim: {
+        latestEndemicsApplication: {
+          sbi,
+          type: "EE",
+          reference: "IAHW-TEST-NEW2",
+          createdAt: beforeMultiSpeciesReleaseDate,
+          redacted: true,
+          status: "AGREED",
+        },
+        latestVetVisitApplication: undefined,
+      },
+      organisation: {
+        sbi,
+        name: "TEST FARM",
+        farmerName: "Farmer Joe",
+      },
+    };
+
+    await setServerState(server, state);
+
+    getClaimsByApplicationReference.mockResolvedValueOnce([]);
+
+    const { payload } = await server.inject({
+      url: "/vet-visits",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+    cleanUpFunction = globalJsdom(payload);
+
+    const heading = getByRole(document.body, "heading", { level: 1 });
+    expect(heading).not.toBeNull();
+    expect(heading.textContent.trim()).toBe(
+      "Your Improve Animal Health and Welfare (IAHW) agreement has been removed",
+    );
+
+    const applyLink = getByRole(document.body, "link", { name: "Apply for a new agreement" });
+    expect(applyLink).not.toBeNull();
+    expect(applyLink.getAttribute("href")).toBe("/you-can-claim-multiple");
+  });
 });
