@@ -27,8 +27,8 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@2toad/profanity": "3.2.0",
-    "@aws-sdk/client-s3": "3.982.0",
-    "@aws-sdk/s3-request-presigner": "3.982.0",
+    "@aws-sdk/client-s3": "3.1006.0",
+    "@aws-sdk/s3-request-presigner": "3.1006.0",
     "@defra/hapi-tracing": "1.30.0",
     "@elastic/ecs-pino-format": "1.5.0",
     "@hapi/boom": "9.1.4",
@@ -43,7 +43,7 @@
     "@hapi/yar": "10.1.1",
     "@ministryofjustice/frontend": "5.2.1",
     "aws-embedded-metrics": "4.2.0",
-    "ffc-ahwr-common-library": "3.5.4",
+    "ffc-ahwr-common-library": "3.6.1",
     "form-data": "4.0.4",
     "global-agent": "3.0.0",
     "govuk-frontend": "5.12.0",
@@ -67,6 +67,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.28.4",
+    "@babel/plugin-transform-export-namespace-from": "^7.27.1",
     "@babel/plugin-transform-modules-commonjs": "7.27.1",
     "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "6.9.1",
@@ -99,9 +100,9 @@
     "postinstall-postinstall": "2.1.0",
     "prettier": "3.5.3",
     "resolve-url-loader": "5.0.0",
-    "sass": "1.93.2",
+    "sass": "1.98.0",
     "sass-loader": "16.0.5",
-    "webpack": "5.105.2",
+    "webpack": "5.105.4",
     "webpack-cli": "4.10.0"
   },
   "nodemonConfig": {
