@@ -182,6 +182,7 @@ export const claimViews = {
   vetRcvs: "claim/vet-rcvs",
   vetVisitsReviewTestResults: "claim/vet-visits-review-test-results",
   whichSpecies: "claim/which-species",
+  whichSpeciesPoultry: "claim/which-species-poultry",
   whichTypeOfReviewDairyFollowUpException: "claim/which-type-of-review-dairy-follow-up-exception",
   whichTypeOfReviewException: "claim/which-type-of-review-exception",
   whichTypeOfReview: "claim/which-type-of-review",
