@@ -16,14 +16,14 @@ import { createTempReference } from "../../lib/create-temp-ref.js";
 import { trackEvent } from "../../logging/logger.js";
 import { refreshApplications } from "../../lib/context-helper.js";
 
-const resetFarmerApplyDataBeforeApplication = (application) => {
+export const resetFarmerApplyDataBeforeApplication = (application) => {
   delete application.agreeSpeciesNumbers;
   delete application.agreeSameSpecies;
   delete application.agreeMultipleSpecies;
   delete application.agreeVisitTimings;
 };
 
-const formatOrganisation = (organisation) => ({
+export const formatOrganisation = (organisation) => ({
   ...organisation,
   address: organisation.address.split(",").map((line) => line.trim()),
 });

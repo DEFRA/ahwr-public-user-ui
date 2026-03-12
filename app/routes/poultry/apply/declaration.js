@@ -14,18 +14,10 @@ import { createApplication } from "../../../api-requests/application-api.js";
 import { createTempReference } from "../../../lib/create-temp-ref.js";
 import { trackEvent } from "../../../logging/logger.js";
 import { refreshApplications } from "../../../lib/context-helper.js";
-
-const resetPoultryApplyDataBeforeApplication = (application) => {
-  delete application.agreeSpeciesNumbers;
-  delete application.agreeSameSpecies;
-  delete application.agreeMultipleSpecies;
-  delete application.agreeVisitTimings;
-};
-
-const formatOrganisation = (organisation) => ({
-  ...organisation,
-  address: organisation.address.split(",").map((line) => line.trim()),
-});
+import {
+  resetFarmerApplyDataBeforeApplication,
+  formatOrganisation,
+} from "../../apply/declaration.js";
 
 const processRejectedApplication = async (h, request) => {
   // create new tempApplicationId as the current one has been used to create a rejected application
@@ -50,6 +42,7 @@ export const poultryDeclarationRouteHandlers = [
     method: "get",
     path: "/poultry/declaration",
     options: {
+      // pre: [{ method: (request, h) => preApplyHandler(request, h, { type: applicationType.POULTRY }) }],
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
@@ -114,7 +107,7 @@ export const poultryDeclarationRouteHandlers = [
 
         request.logger.info(`Temp application reference: ${tempApplicationReference}`);
 
-        resetPoultryApplyDataBeforeApplication(poultryApplyData);
+        resetFarmerApplyDataBeforeApplication(poultryApplyData);
 
         const { applicationReference } = await createApplication(
           { ...poultryApplyData, organisation },
