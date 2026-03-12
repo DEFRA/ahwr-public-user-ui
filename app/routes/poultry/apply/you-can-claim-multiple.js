@@ -20,7 +20,6 @@ export const poultryClaimMultipleRouteHandlers = [
     method: "GET",
     path: "/poultry/you-can-claim-multiple",
     options: {
-      // pre: [{ method: (request, h) => preApplyHandler(request, h, { type: applicationType.POULTRY }) }],
       handler: async (request, h) => {
         // on way in we must generate a new reference
         const tempApplicationId = createTempReference({ referenceForClaim: false });

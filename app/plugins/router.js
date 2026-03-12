@@ -131,6 +131,7 @@ const alwaysOnRoutes = [
 let routes;
 const mapRoutes = () => {
   routes = alwaysOnRoutes;
+
   if (config.devLogin.enabled) {
     routes = routes.concat(devLoginHandlers);
   }

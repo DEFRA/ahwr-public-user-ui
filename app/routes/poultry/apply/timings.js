@@ -6,14 +6,12 @@ import {
 } from "../../../session/index.js";
 import { userType } from "../../../constants/constants.js";
 import { poultryApplyRoutes, poultryApplyViews } from "../../../constants/routes.js";
-// import { preApplyHandler } from "../../../lib/pre-apply-handler.js";
 
 export const poultryTimingsRouteHandlers = [
   {
     method: "GET",
     path: "/poultry/timings",
     options: {
-      // pre: [{ method: (request, h) => preApplyHandler(request, h, { type: applicationType.POULTRY }) }],
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
         const hasOldWorldApplication = organisation.userType !== userType.NEW_USER;

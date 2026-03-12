@@ -48,7 +48,7 @@ describe("Declaration test", () => {
     strategy: "cookie",
   };
 
-  const farmerApplyData = { reference: "TEMP-PJ7E-WSI8" };
+  const poultryApplyData = { reference: "TEMP-PJ7E-WSI8" };
 
   let server;
 
@@ -70,8 +70,8 @@ describe("Declaration test", () => {
     .mockReturnValue(organisation);
 
   when(getSessionData)
-    .calledWith(expect.anything(), sessionEntryKeys.farmerApplyData)
-    .mockReturnValue(farmerApplyData);
+    .calledWith(expect.anything(), sessionEntryKeys.poultryApplyData)
+    .mockReturnValue(poultryApplyData);
 
   when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.application)
@@ -87,7 +87,7 @@ describe("Declaration test", () => {
     test("when not logged in redirects to dashboard /sign-in", async () => {
       const options = {
         method: "GET",
-        url: "/declaration",
+        url: "/poultry/declaration",
       };
 
       const res = await server.inject(options);
@@ -99,7 +99,7 @@ describe("Declaration test", () => {
     test("returns 200 when organisation found in session", async () => {
       const options = {
         method: "GET",
-        url: "/declaration",
+        url: "/poultry/declaration",
         auth,
       };
 
@@ -112,7 +112,7 @@ describe("Declaration test", () => {
         "Review your agreement offer - Get funding to improve animal health and welfare",
       );
       ok($);
-      const expectedHerdsText = `If the RPA requests evidence that your reviews or follow-ups took place, or details of the herd or flocks you have, you must provide it. This will be on your vet summary.`;
+      const expectedHerdsText = `If the RPA requests evidence that your biosecurity review took place, or details of the flocks you have, you must provide it. This will be on your vet summary.`;
       const herdsText = $("p")
         .filter((i, el) => {
           return $(el).text().trim().startsWith("If the RPA requests evidence");
@@ -130,7 +130,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/declaration",
+        url: "/poultry/declaration",
         payload: { crumb, terms: "agree", offerStatus: "accepted" },
         auth,
         headers: { cookie: `crumb=${crumb}` },
@@ -148,7 +148,7 @@ describe("Declaration test", () => {
       expect(clearApplyRedirect).toHaveBeenCalled();
       expect(refreshApplications).toHaveBeenCalledWith(organisation.sbi, expect.anything());
       expect(createApplication).toHaveBeenCalledWith(
-        { organisation, ...farmerApplyData },
+        { organisation, ...poultryApplyData },
         expect.anything(),
       );
       expect(trackEvent).toHaveBeenCalledWith(
@@ -166,7 +166,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/declaration",
+        url: "/poultry/declaration",
         payload: { crumb, terms: "agree", offerStatus: "rejected" },
         auth,
         headers: { cookie: `crumb=${crumb}` },
@@ -178,8 +178,8 @@ describe("Declaration test", () => {
       // Asserting a new reference has been set in the session
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
-        sessionEntryKeys.farmerApplyData,
-        sessionKeys.farmerApplyData.reference,
+        sessionEntryKeys.poultryApplyData,
+        sessionKeys.poultryApplyData.reference,
         expect.any(String),
       );
       const $ = cheerio.load(res.payload);
@@ -188,7 +188,7 @@ describe("Declaration test", () => {
       );
       ok($);
       expect(createApplication).toHaveBeenCalledWith(
-        { organisation, ...farmerApplyData },
+        { organisation, ...poultryApplyData },
         expect.anything(),
       );
       expect(refreshApplications).not.toHaveBeenCalled();
@@ -210,7 +210,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/declaration",
+        url: "/poultry/declaration",
         payload: { crumb, offerStatus: "accepted" },
         auth,
         headers: { cookie: `crumb=${crumb}` },
@@ -239,7 +239,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/declaration",
+        url: "/poultry/declaration",
         payload: { crumb },
         headers: { cookie: `crumb=${crumb}` },
       };

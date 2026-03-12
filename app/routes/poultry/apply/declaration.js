@@ -10,7 +10,6 @@ import { userType, JOURNEY } from "../../../constants/constants.js";
 import { config } from "../../../config/index.js";
 import { poultryApplyRoutes, poultryApplyViews } from "../../../constants/routes.js";
 import { StatusCodes } from "http-status-codes";
-// import { preApplyHandler } from "../../../lib/pre-apply-handler.js";
 import { createApplication } from "../../../api-requests/application-api.js";
 import { createTempReference } from "../../../lib/create-temp-ref.js";
 import { trackEvent } from "../../../logging/logger.js";
@@ -51,7 +50,6 @@ export const poultryDeclarationRouteHandlers = [
     method: "get",
     path: "/poultry/declaration",
     options: {
-      // pre: [{ method: (request, h) => preApplyHandler(request, h, { type: applicationType.POULTRY }) }],
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
