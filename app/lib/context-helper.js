@@ -17,12 +17,15 @@ import {
 } from "../constants/claim-constants.js";
 import { claimRoutes } from "../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
+import { applicationType } from "../constants/constants.js";
 
 export async function refreshApplications(sbi, request) {
   const applications = await getApplicationsBySbi(sbi, request.logger);
 
   // get latest new world
-  const latestEndemicsApplication = applications.find((application) => application.type === "EE");
+  const latestEndemicsApplication = applications.find(
+    (application) => application.type === applicationType.ENDEMICS,
+  );
 
   // get latest old world - if there isn't one, or it's not within 10 months of the new world one, then we won't consider it,
   // and thus return undefined

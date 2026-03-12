@@ -4,29 +4,30 @@ import {
   sessionEntryKeys,
   sessionKeys,
   setSessionEntry,
-} from "../../session/index.js";
-import { applyRoutes, applyViews, dashboardRoutes } from "../../constants/routes.js";
-import { createTempReference } from "../../lib/create-temp-ref.js";
-import { getUserTypeByApplication } from "../../lib/get-user-type-by-application.js";
-import { getApplicationsBySbi } from "../../api-requests/application-api.js";
-import { preApplyHandler } from "../../lib/pre-apply-handler.js";
-import { JOURNEY } from "../../constants/constants.js";
-import { config } from "../../config/index.js";
+} from "../../../session/index.js";
+import {
+  dashboardRoutes,
+  poultryApplyRoutes,
+  poultryApplyViews,
+} from "../../../constants/routes.js";
+import { createTempReference } from "../../../lib/create-temp-ref.js";
+import { getUserTypeByApplication } from "../../../lib/get-user-type-by-application.js";
+import { getApplicationsBySbi } from "../../../api-requests/application-api.js";
+import { JOURNEY } from "../../../constants/constants.js";
 
-export const claimMultipleRouteHandlers = [
+export const poultryClaimMultipleRouteHandlers = [
   {
     method: "GET",
-    path: "/you-can-claim-multiple",
+    path: "/poultry/you-can-claim-multiple",
     options: {
-      pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
         // on way in we must generate a new reference
         const tempApplicationId = createTempReference({ referenceForClaim: false });
 
         await setSessionData(
           request,
-          sessionEntryKeys.farmerApplyData,
-          sessionKeys.farmerApplyData.reference,
+          sessionEntryKeys.poultryApplyData,
+          sessionKeys.poultryApplyData.reference,
           tempApplicationId,
         );
 
@@ -46,38 +47,37 @@ export const claimMultipleRouteHandlers = [
           { journey: JOURNEY.APPLY },
         );
 
-        return h.view(applyViews.youCanClaimMultiple, {
-          backLink: dashboardRoutes.checkDetails,
+        return h.view(poultryApplyViews.youCanClaimMultiple, {
+          backLink: dashboardRoutes.selectFunding,
           organisation,
-          poultryEnabled: config.poultry.enabled,
         });
       },
     },
   },
   {
     method: "POST",
-    path: "/you-can-claim-multiple",
+    path: "/poultry/you-can-claim-multiple",
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {
           await setSessionData(
             request,
-            sessionEntryKeys.farmerApplyData,
-            sessionKeys.farmerApplyData.agreeMultipleSpecies,
+            sessionEntryKeys.poultryApplyData,
+            sessionKeys.poultryApplyData.agreeMultipleSpecies,
             "yes",
           );
 
-          return h.redirect(applyRoutes.numbers);
+          return h.redirect(poultryApplyRoutes.numbers);
         }
 
         await setSessionData(
           request,
-          sessionEntryKeys.farmerApplyData,
-          sessionKeys.farmerApplyData.agreeMultipleSpecies,
+          sessionEntryKeys.poultryApplyData,
+          sessionKeys.poultryApplyData.agreeMultipleSpecies,
           "no",
         );
 
-        return h.view(applyViews.offerRejected, {
+        return h.view(poultryApplyViews.offerRejected, {
           termsRejected: true,
         });
       },

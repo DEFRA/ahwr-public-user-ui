@@ -8,7 +8,7 @@ import {
   setSessionEntry,
 } from "../session/index.js";
 import { config } from "../config/index.js";
-import { applyRoutes } from "../constants/routes.js";
+import { applyRoutes, dashboardRoutes } from "../constants/routes.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 
 export const checkDetailsHandlers = [
@@ -76,7 +76,11 @@ export const checkDetailsHandlers = [
           );
 
           if (redirectToApply === true) {
-            return h.redirect(applyRoutes.youCanClaimMultiple);
+            return h.redirect(
+              config.poultry.enabled
+                ? dashboardRoutes.selectFunding
+                : applyRoutes.youCanClaimMultiple,
+            );
           }
 
           return h.redirect("/vet-visits");

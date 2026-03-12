@@ -1,0 +1,33 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}
+{% if termsRejected %}
+  You cannot continue with your application - {{ serviceName }} - GOV.UK
+{% elif offerRejected %}
+  Agreement offer rejected - {{ serviceName }} - GOV.UK
+{% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if termsRejected %}
+        <h1 class="govuk-heading-l">You cannot continue with your application</h1>
+        <p class="govuk-body">Based on your answers you cannot continue with your application.</p>
+        <p class="govuk-body"><a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/funding-for-farmers">Read guidance to find out if you could be eligible for other farming schemes</a>.</p>
+      {% elif offerRejected %}
+        <h1 class="govuk-heading-l">Agreement offer rejected</h1>
+        <p class="govuk-body">You have rejected the agreement offer and your application has been cancelled.</p>
+        <p class="govuk-body">You'll need to start a new application if:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>you rejected the agreement by mistake</li>
+          <li>you change your mind and do want to apply</li>
+        </ul>
+      {% endif %}
+
+      <p>If you have any questions about your application, contact the Rural Payments Agency.</p>
+
+      {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+    </div>
+  </div>
+{% endblock %}

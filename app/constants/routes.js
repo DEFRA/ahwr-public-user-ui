@@ -1,4 +1,12 @@
-export const dashboardRoutes = { manageYourClaims: "/vet-visits", checkDetails: "/check-details" };
+export const dashboardRoutes = {
+  manageYourClaims: "/vet-visits",
+  checkDetails: "/check-details",
+  selectFunding: "/select-funding",
+};
+
+export const dashboardViews = {
+  selectFunding: "select-funding",
+};
 
 export const supportRoutes = {
   health: "/health",
@@ -28,6 +36,16 @@ export const applyRoutes = {
   checkDetails: "/check-details",
 };
 
+export const poultryApplyRoutes = {
+  youCanClaimMultiple: "/poultry/you-can-claim-multiple",
+  timings: "/poultry/timings",
+  numbers: "/poultry/numbers",
+  declaration: "/poultry/declaration",
+  offerRejected: "/poultry/offer-rejected",
+  confirmation: "/poultry/confirmation",
+  checkDetails: "/poultry/check-details",
+};
+
 export const applyViews = {
   youCanClaimMultiple: "apply/you-can-claim-multiple",
   timings: "apply/timings",
@@ -35,6 +53,15 @@ export const applyViews = {
   declaration: "apply/declaration",
   offerRejected: "apply/offer-rejected",
   confirmation: "apply/confirmation",
+};
+
+export const poultryApplyViews = {
+  youCanClaimMultiple: "poultry/apply/you-can-claim-multiple",
+  timings: "poultry/apply/timings",
+  numbers: "poultry/apply/numbers",
+  declaration: "poultry/apply/declaration",
+  offerRejected: "poultry/apply/offer-rejected",
+  confirmation: "poultry/apply/confirmation",
 };
 
 export const claimRoutes = {

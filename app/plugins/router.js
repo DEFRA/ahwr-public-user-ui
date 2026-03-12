@@ -18,6 +18,11 @@ import { declarationRouteHandlers } from "../routes/apply/declaration.js";
 import { numbersRouteHandlers } from "../routes/apply/numbers.js";
 import { timingsRouteHandlers } from "../routes/apply/timings.js";
 import { claimMultipleRouteHandlers } from "../routes/apply/you-can-claim-multiple.js";
+import { poultryDeclarationRouteHandlers } from "../routes/poultry/apply/declaration.js";
+import { poultryNumbersRouteHandlers } from "../routes/poultry/apply/numbers.js";
+import { poultryTimingsRouteHandlers } from "../routes/poultry/apply/timings.js";
+import { poultryClaimMultipleRouteHandlers } from "../routes/poultry/apply/you-can-claim-multiple.js";
+import { selectFundingRouteHandlers } from "../routes/select-funding.js";
 import { biosecurityHandlers } from "../routes/claim/biosecurity.js";
 import { checkAnswersHandlers } from "../routes/claim/check-answers.js";
 import { checkHerdDetailsHandlers } from "../routes/claim/check-herd-details.js";
@@ -112,6 +117,15 @@ const alwaysOnRoutes = [
   vetVisitsReviewTestResultsHandlers,
   whichSpeciesHandlers,
   whichReviewHandlers,
+  ...(config.poultry.enabled
+    ? [
+        poultryDeclarationRouteHandlers,
+        poultryNumbersRouteHandlers,
+        poultryTimingsRouteHandlers,
+        poultryClaimMultipleRouteHandlers,
+        selectFundingRouteHandlers,
+      ]
+    : []),
 ].flat();
 
 let routes;

@@ -1,5 +1,12 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { applyRoutes, loginRoutes, supportRoutes } from "../constants/routes.js";
+import {
+  applyRoutes,
+  dashboardRoutes,
+  loginRoutes,
+  poultryApplyRoutes,
+  supportRoutes,
+} from "../constants/routes.js";
+import { config } from "../config/index.js";
 
 export const redirectAgreementNotAcceptedPlugin = {
   plugin: {
@@ -23,6 +30,12 @@ export const redirectAgreementNotAcceptedPlugin = {
         applyRoutes.numbers,
         applyRoutes.timings,
         applyRoutes.youCanClaimMultiple,
+        poultryApplyRoutes.checkDetails,
+        poultryApplyRoutes.declaration,
+        poultryApplyRoutes.numbers,
+        poultryApplyRoutes.timings,
+        poultryApplyRoutes.youCanClaimMultiple,
+        dashboardRoutes.selectFunding,
       ];
       server.ext("onPreHandler", (request, h) => {
         const excludedPath = excludedPaths.some((term) => request.path.includes(term));
@@ -34,7 +47,13 @@ export const redirectAgreementNotAcceptedPlugin = {
           );
 
           if (latestEndemicsApplication?.status !== "AGREED") {
-            return h.redirect(applyRoutes.youCanClaimMultiple).takeover();
+            return h
+              .redirect(
+                config.poultry.enabled
+                  ? dashboardRoutes.selectFunding
+                  : applyRoutes.youCanClaimMultiple,
+              )
+              .takeover();
           }
         }
         return h.continue;
