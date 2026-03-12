@@ -99,7 +99,7 @@ const configSchema = joi.object({
   }),
   poultry: {
     enabled: joi.bool().required(),
-  }
+  },
 });
 
 export const getConfig = () => {
@@ -192,8 +192,8 @@ export const getConfig = () => {
       header: process.env.TRACING_HEADER || "x-cdp-request-id",
     },
     poultry: {
-      enabled: process.env.POULTRY_ENABLED === "true"
-    }
+      enabled: process.env.POULTRY_ENABLED === "true",
+    },
   };
 
   const { error } = configSchema.validate(builtConfig, {

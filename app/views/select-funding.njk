@@ -1,0 +1,61 @@
+{% extends './layouts/layout.njk' %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% set pageHeadingText='Select funding' %}
+
+{% block pageTitle %}{{ pageHeadingText }} - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+{{ govukBackLink({
+text: "Back",
+href: backLink,
+attributes: {id: "back"}
+}) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds"> 
+    <form method="POST" novalidate="novalidate">
+      <input type="hidden" name="crumb" value="{{crumb}}" />
+
+      {{ govukRadios({
+        name: "type",
+        fieldset: {
+          legend: {
+            text: pageHeadingText,
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--l"
+          }
+        },
+        items: [
+          {
+            value: "IAHW",
+            text: "Cattle, pig, and sheep review and follow-up",
+            hint: {
+              text: "Create or manage claims for this agreement"
+            }
+          },
+          {
+            value: "POUL",
+            text: "Poultry biosecurity review",
+            hint: {
+              text: "Create an agreement for poultry biosecurity assessments"
+            }
+          }
+        ]
+      }) }}
+      
+      {{ govukButton({
+        text: "Continue",
+        attributes: {
+          id: "continue"
+        },
+        preventDoubleClick: true
+      }) }}
+
+    </form>
+
+  </div>
+</div>
+{% endblock %}

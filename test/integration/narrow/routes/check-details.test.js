@@ -8,6 +8,7 @@ import {
 } from "../../../../app/session";
 import { getCrumbs } from "../../../utils/get-crumbs";
 import { when, resetAllWhenMocks } from "jest-when";
+import { config } from "../../../../app/config";
 
 jest.mock("../../../../app/session/index.js");
 jest.mock("../../../../app/auth/cookie-auth/cookie-auth.js");
@@ -24,6 +25,10 @@ describe("/check-details", () => {
   afterAll(async () => {
     await server.stop();
     jest.resetAllMocks();
+  });
+
+  beforeEach(() => {
+    config.poultry.enabled = false;
   });
 
   afterEach(() => {
@@ -210,6 +215,33 @@ describe("/check-details", () => {
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location).toEqual("/you-can-claim-multiple");
+    expect(setSessionEntry).toHaveBeenCalledWith(
+      expect.anything(),
+      sessionEntryKeys.confirmedDetails,
+      true,
+      { shouldEmitEvent: false },
+    );
+  });
+
+  test("POST /check-details with confirmCheckDetails = yes in payload, and redirects to apply", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.signInRedirect, sessionKeys.signInRedirect)
+      .mockReturnValue(true);
+    config.poultry.enabled = true;
+
+    const res = await server.inject({
+      url: "/check-details",
+      method: "POST",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+      payload: { crumb, confirmCheckDetails: "yes" },
+      headers: { cookie: `crumb=${crumb}` },
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
+    expect(res.headers.location).toEqual("/select-funding");
     expect(setSessionEntry).toHaveBeenCalledWith(
       expect.anything(),
       sessionEntryKeys.confirmedDetails,

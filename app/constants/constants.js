@@ -6,6 +6,7 @@ export const apiHeaders = {
 export const applicationType = {
   ENDEMICS: "EE",
   VET_VISITS: "VV",
+  POULTRY: "POUL",
 };
 
 export const farmerApply = "farmerApply";
