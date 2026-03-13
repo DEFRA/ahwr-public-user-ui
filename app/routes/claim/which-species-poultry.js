@@ -8,7 +8,7 @@ import {
   setSessionData,
 } from "../../session/index.js";
 import { claimRoutes, claimViews, dashboardRoutes } from "../../constants/routes.js";
-import { TYPE_OF_POULTRY } from "ffc-ahwr-common-library";
+import { claimType, TYPE_OF_POULTRY } from "ffc-ahwr-common-library";
 
 const errorMessage = { text: "Select which species you are claiming for" };
 
@@ -77,6 +77,13 @@ const postHandler = {
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.typeOfLivestock,
         typeOfLivestock,
+      );
+
+      await setSessionData(
+        request,
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.typeOfReview,
+        claimType["review"],
       );
 
       return h.redirect(claimRoutes.dateOfVisit);
