@@ -10,6 +10,7 @@ import {
 import { getEndemicsClaimDetails, getTestResult } from "../../lib/utils.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
+import { checkIfPoultryAgreement } from "../../lib/agreement-helper.js";
 
 const errorMessages = {
   enterRCVS: "Enter an RCVS number",
@@ -17,14 +18,17 @@ const errorMessages = {
 };
 
 const nextPageURL = (request) => {
-  const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = getSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-  );
+  const { typeOfLivestock, typeOfReview, relevantReviewForEndemics, latestEndemicsApplication } =
+    getSessionData(request, sessionEntryKeys.endemicsClaim);
   const { isBeef, isDairy, isPigs, isSheep, isEndemicsFollowUp } = getEndemicsClaimDetails(
     typeOfLivestock,
     typeOfReview,
   );
+
+  const isPoultryAgreement = checkIfPoultryAgreement(latestEndemicsApplication);
+  if (isPoultryAgreement) {
+    return claimRoutes.biosecurity;
+  }
 
   if (isEndemicsFollowUp) {
     if (relevantReviewForEndemics.type === claimType.vetVisits && isPigs) {
