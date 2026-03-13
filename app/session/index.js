@@ -31,6 +31,7 @@ export const sessionKeys = {
     type: "type",
   },
   endemicsClaim: {
+    assuranceScheme: "assuranceScheme",
     vetsName: "vetsName",
     typeOfReview: "typeOfReview",
     dateOfVisit: "dateOfVisit",

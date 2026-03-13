@@ -65,6 +65,7 @@ export const poultryApplyViews = {
 };
 
 export const claimRoutes = {
+  assuranceScheme: "/assurance-scheme",
   biosecurityException: "/biosecurity-exception",
   biosecurity: "/biosecurity",
   checkAnswers: "/check-answers",
@@ -127,6 +128,7 @@ export const claimRoutes = {
 };
 
 export const claimViews = {
+  assuranceScheme: "claim/assurance-scheme",
   biosecurityException: "claim/biosecurity-exception",
   biosecurity: "claim/biosecurity",
   checkAnswers: "claim/check-answers",
