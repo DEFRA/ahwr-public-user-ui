@@ -57,13 +57,13 @@ const postHandler = {
       },
     },
     handler: async (request, h) => {
-      const { vetsName } = request.payload;
+      const { assurance } = request.payload;
 
       await setSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
         sessionKeys.endemicsClaim.assuranceScheme,
-        vetsName,
+        assurance,
       );
       return h.redirect(claimRoutes.speciesNumbers);
     },
