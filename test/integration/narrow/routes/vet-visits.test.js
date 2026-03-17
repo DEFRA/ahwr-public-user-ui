@@ -81,7 +81,7 @@ describe("GET /vet-visits", () => {
     expect(headers.location).toBe("/you-can-claim-multiple");
   });
 
-  describe.only("Poultry", () => {
+  describe("Poultry", () => {
     beforeAll(() => {
       config.poultry.enabled = true;
     });
