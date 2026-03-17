@@ -14,6 +14,7 @@ import { isWithin10MonthsFromNow } from "../lib/utils.js";
 import { claimRoutes } from "../constants/routes.js";
 import { SHEEP } from "../constants/claim-constants.js";
 import { refreshApplications } from "../lib/context-helper.js";
+import { checkIfPoultryAgreement } from "../lib/agreement-helper.js";
 
 const { latestTermsAndConditionsUri } = config;
 
@@ -155,6 +156,7 @@ export const vetVisitsHandlers = [
     path: "/vet-visits",
     options: {
       handler: async (request, h) => {
+        console.log("1");
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
         const attachedToMultipleBusinesses = getSessionData(
@@ -173,6 +175,7 @@ export const vetVisitsHandlers = [
           });
         }
 
+        console.log("2");
         const claims = latestEndemicsApplication
           ? await getClaimsByApplicationReference(
               latestEndemicsApplication.reference,
@@ -198,6 +201,10 @@ export const vetVisitsHandlers = [
 
         const { sheepHeaders, nonSheepHeaders } = buildTableHeaders();
 
+        console.log("3");
+        const isPoultryAgreement = checkIfPoultryAgreement(latestEndemicsApplication);
+        console.log({ isPoultryAgreement });
+
         return h.view("vet-visits", {
           beefClaimsRows,
           dairyClaimsRows,
@@ -209,7 +216,9 @@ export const vetVisitsHandlers = [
           },
           showNotificationBanner,
           attachedToMultipleBusinesses,
-          claimJourneyStartPointUri: claimRoutes.whichSpecies,
+          claimJourneyStartPointUri: isPoultryAgreement
+            ? claimRoutes.whichSpeciesPoultry
+            : claimRoutes.whichSpecies,
           ...organisation,
           ...(latestEndemicsApplication?.reference && {
             reference: latestEndemicsApplication.reference,

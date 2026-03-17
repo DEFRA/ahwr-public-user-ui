@@ -81,7 +81,62 @@ describe("GET /vet-visits", () => {
     expect(headers.location).toBe("/you-can-claim-multiple");
   });
 
+  describe.only("Poultry", () => {
+    beforeAll(() => {
+      config.poultry.enabled = true;
+    });
+
+    beforeEach(() => {
+      cleanUpFunction();
+    });
+
+    test("poultry agreement, no claims made", async () => {
+      const sbi = "123123123";
+      const state = {
+        confirmedDetails: true,
+        customer: {
+          attachedToMultipleBusinesses: true,
+        },
+        endemicsClaim: {
+          latestEndemicsApplication: {
+            sbi,
+            type: "EE",
+            reference: "POUL-TEST-NEW2",
+            createdAt: "2026-01-03",
+            redacted: false,
+            status: "AGREED",
+          },
+          latestVetVisitApplication: undefined,
+        },
+        organisation: {
+          sbi,
+          name: "TEST FARM",
+          farmerName: "Farmer Joe",
+        },
+      };
+
+      await setServerState(server, state);
+
+      getClaimsByApplicationReference.mockResolvedValueOnce([]);
+
+      const { payload } = await server.inject({
+        url: "/vet-visits",
+        auth: {
+          credentials: {},
+          strategy: "cookie",
+        },
+      });
+      cleanUpFunction = globalJsdom(payload);
+
+      expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
+        "href",
+        expect.stringContaining("/which-species-poultry"),
+      );
+    });
+  });
+
   describe("Cattle/Pig/Sheep", () => {
+    config.poultry.enabled = false;
     beforeEach(() => {
       cleanUpFunction();
     });

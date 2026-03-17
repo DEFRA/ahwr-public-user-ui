@@ -1,5 +1,5 @@
 import { config } from "../config";
-import { checkIfPoultryAgreement } from "./context-helper";
+import { checkIfPoultryAgreement } from "./agreement-helper";
 
 describe("checkIfPoultryAgreement", () => {
   test("latestEndemicsApplication is null", () => {

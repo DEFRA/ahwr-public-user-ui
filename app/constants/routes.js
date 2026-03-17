@@ -119,6 +119,7 @@ export const claimRoutes = {
   vetRcvs: "/vet-rcvs",
   vetVisitsReviewTestResults: "/vet-visits-review-test-results",
   whichSpecies: "/which-species",
+  whichSpeciesPoultry: "/which-species-poultry",
   whichTypeOfReviewDairyFollowUpException: "/which-type-of-review-dairy-follow-up-exception",
   whichTypeOfReviewException: "/which-type-of-review-exception",
   whichTypeOfReview: "/which-type-of-review",
