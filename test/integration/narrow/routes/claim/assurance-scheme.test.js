@@ -99,7 +99,7 @@ describe("Assurance Scheme", () => {
 
       const response = await server.inject(options);
       const $ = cheerio.load(response.payload);
-      const errorMessage = "Select yes if this is the only flock associated with this SBI";
+      const errorMessage = '"assurance" must be one of [yes, no]';
 
       expect($("li > a").text()).toMatch(errorMessage);
     });
