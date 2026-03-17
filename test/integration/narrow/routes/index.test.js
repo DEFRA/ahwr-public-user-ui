@@ -1,3 +1,4 @@
+import { config } from "../../../../app/config";
 import { when } from "jest-when";
 import { createServer } from "../../../../app/server.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
@@ -37,6 +38,7 @@ describe("root / path", () => {
         )
         .mockReturnValue(true);
 
+      config.poultry.enabled = false;
       const res = await server.inject({
         url: "/",
         auth: {
