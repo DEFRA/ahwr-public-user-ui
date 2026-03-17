@@ -18,6 +18,11 @@ import {
 import { claimRoutes } from "../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { applicationType } from "../constants/constants.js";
+import { config } from "../config/index.js";
+
+export const checkIfPoultryAgreement = (latestEndemicsApplication) => {
+  return latestEndemicsApplication?.reference?.startsWith("POUL") && config.poultry.enabled;
+};
 
 export async function refreshApplications(sbi, request) {
   const applications = await getApplicationsBySbi(sbi, request.logger);
