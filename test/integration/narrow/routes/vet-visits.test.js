@@ -456,6 +456,8 @@ describe("GET /vet-visits", () => {
         },
       };
 
+      config.poultry.enabled = false;
+
       await setServerState(server, state);
 
       const { headers, payload } = await server.inject({
