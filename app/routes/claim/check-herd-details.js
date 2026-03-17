@@ -52,7 +52,7 @@ const postHandler = {
 
       const isPoultryAgreement = checkIfPoultryAgreement(latestEndemicsApplication);
       if (isPoultryAgreement) {
-        return h.redirect(claimRoutes.speciesNumbers);
+        return h.redirect(claimRoutes.assuranceScheme);
       }
 
       const nextPageUrl = skipSameHerdPage(previousClaims, typeOfLivestock)
