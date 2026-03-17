@@ -45,6 +45,16 @@ const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
     "biosecurity assessment",
   );
 };
+
+const getAssuranceSchemeRow = (sessionData) => {
+  return createdHerdRowObject(
+    "Assurance scheme",
+    upperFirstLetter(sessionData.assuranceScheme),
+    claimRoutes.assuranceScheme,
+    "assurance scheme",
+  );
+};
+
 const getDateOfVisitRow = (isReview, dateOfVisit) => {
   return createdHerdRowObject(
     isReview ? "Date of review" : "Date of follow-up",
@@ -217,6 +227,9 @@ export const buildRows = ({
   );
 
   const biosecurityAssessmentRow = getBiosecurityAssessmentRow(isPigs, endemicsClaimSession);
+
+  const assuranceSchemeRow = getAssuranceSchemeRow(endemicsClaimSession);
+
   const sheepPackageRow = createdHerdRowObject(
     "Sheep health package",
     sheepPackages[endemicsClaimSession.sheepEndemicsPackage],
@@ -240,6 +253,7 @@ export const buildRows = ({
     bloodSamplesRow,
     samplesTestedRow,
     herdVaccinationStatusRow,
+    assuranceSchemeRow,
     biosecurityAssessmentRow,
     sheepPackageRow,
     sheepDiseasesTestedRow,
@@ -303,6 +317,7 @@ export const collateRows = (rows) => {
     isEndemicsFollowUp,
     laboratoryUrnRow,
     testResultsRow,
+    assuranceSchemeRow,
     biosecurityAssessmentRow,
     herdVaccinationStatusRow,
     typeOfSamplesTakenRow,
@@ -367,7 +382,15 @@ export const collateRows = (rows) => {
     ...buildSheepTestResultRows({ endemicsClaimSession, isEndemicsFollowUp }),
   ];
 
-  return { beefRows, dairyRows, pigRows, sheepRows };
+  const poultryRows = [
+    dateOfVisitRow,
+    speciesNumbersRow,
+    assuranceSchemeRow,
+    ...vetDetailsRows,
+    biosecurityAssessmentRow,
+  ];
+
+  return { beefRows, dairyRows, pigRows, sheepRows, poultryRows };
 };
 
 const getSheepFollowUpTestResults = ({ isEndemicsFollowUp, isSheep, sheepTestResults }) => {
@@ -456,6 +479,7 @@ export const buildClaimPayload = (endemicsClaimSession) => {
       numberAnimalsTested: endemicsClaimSession.numberAnimalsTested,
       testResults: endemicsClaimSession.testResults,
       vetVisitsReviewTestResults: endemicsClaimSession.vetVisitsReviewTestResults,
+      assuranceScheme: endemicsClaimSession.assuranceScheme,
       biosecurity: endemicsClaimSession.biosecurity,
       herdVaccinationStatus: endemicsClaimSession.herdVaccinationStatus,
       diseaseStatus: endemicsClaimSession.diseaseStatus,

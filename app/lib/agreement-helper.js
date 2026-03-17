@@ -1,7 +1,10 @@
+import { APPLICATION_REFERENCE_PREFIX_POULTRY } from "ffc-ahwr-common-library";
+
 import { config } from "../config/index.js";
 
 export const checkIfPoultryAgreement = (latestEndemicsApplication) => {
-  console.log({ agreement: latestEndemicsApplication?.reference?.startsWith("POUL") });
-  console.log({ flag: config.poultry.enabled });
-  return latestEndemicsApplication?.reference?.startsWith("POUL") && config.poultry.enabled;
+  return (
+    latestEndemicsApplication?.reference?.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY) &&
+    config.poultry.enabled
+  );
 };
