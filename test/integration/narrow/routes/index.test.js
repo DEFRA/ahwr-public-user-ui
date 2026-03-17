@@ -29,7 +29,7 @@ describe("root / path", () => {
       expect(res.headers.location).toBe("/check-details");
     });
 
-    test("check no agreement", async () => {
+    test("check no agreement no poultry", async () => {
       when(getSessionData)
         .calledWith(
           expect.anything(),
@@ -49,6 +49,28 @@ describe("root / path", () => {
 
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toBe("/you-can-claim-multiple");
+    });
+
+    test("check no agreement with poultry", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.confirmedDetails,
+          sessionKeys.confirmedDetails,
+        )
+        .mockReturnValue(true);
+
+      config.poultry.enabled = true;
+      const res = await server.inject({
+        url: "/",
+        auth: {
+          credentials: {},
+          strategy: "cookie",
+        },
+      });
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/select-funding");
     });
 
     test("check and agreement", async () => {
