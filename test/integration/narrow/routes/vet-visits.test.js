@@ -130,7 +130,7 @@ describe("GET /vet-visits", () => {
 
       expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
         "href",
-        expect.stringContaining("/which-species-poultry"),
+        expect.stringContaining("/which-species-of-poultry"),
       );
     });
   });

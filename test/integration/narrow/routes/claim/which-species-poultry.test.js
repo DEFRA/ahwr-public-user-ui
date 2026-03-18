@@ -25,7 +25,7 @@ jest.mock("../../../../../app/lib/context-helper", () => ({
 config.poultry.enabled = true;
 describe("Endemics which species test", () => {
   setSessionData.mockImplementation(() => {});
-  const url = `/which-species-poultry`;
+  const url = `/which-species-of-poultry`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -69,7 +69,7 @@ describe("Endemics which species test", () => {
       .mockReturnValue({ sbi: 123456789 });
   });
 
-  describe("GET /which-species-poultry", () => {
+  describe("GET /which-species-of-poultry", () => {
     test("should render page when no previous session exists", async () => {
       const options = {
         method: "GET",
@@ -126,7 +126,7 @@ describe("Endemics which species test", () => {
     );
   });
 
-  describe("POST claim/which-species-poultry", () => {
+  describe("POST claim/which-species-of-poultry", () => {
     beforeEach(() => {
       jest.resetAllMocks();
     });
