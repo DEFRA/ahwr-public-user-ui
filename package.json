@@ -8,7 +8,6 @@
   "scripts": {
     "build": "webpack",
     "build:watch": "webpack --watch",
-    "pretest": "npm run lint",
     "format": "prettier --write \"**/*.{cjs,js,json,md}\"",
     "format:check": "prettier --check \"**/*.{cjs,js,json,md}\"",
     "git:pre-push-hook": "npm run format:check && npm run lint && npm test",
