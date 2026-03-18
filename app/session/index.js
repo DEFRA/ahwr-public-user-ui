@@ -282,6 +282,7 @@ export function removeSessionDataForSameHerdChange(request) {
 
 export const emitSessionEvent = async ({ request, entryKey, key, value, journey }) => {
   const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
+  const poultryApplyData = getSessionData(request, sessionEntryKeys.poultryApplyData);
   const claimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const organisation = getSessionData(request, sessionEntryKeys.organisation);
   const sessionId = request.yar.id;
@@ -290,7 +291,9 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
     return;
   }
 
-  if (entryKey === sessionEntryKeys.farmerApplyData || journey === JOURNEY.APPLY) {
+  const isPoultryApply = entryKey === sessionEntryKeys.poultryApplyData || journey === JOURNEY.POULTRY_APPLY
+
+  if (entryKey === sessionEntryKeys.farmerApplyData || journey === JOURNEY.APPLY || isPoultryApply) {
     const journeyValue =
       entryKey === "application" || entryKey === "tempReference" ? entryKey : "farmerApplyData";
 
@@ -302,7 +305,7 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
       sessionKey: key,
       value,
       applicationReference: claimData?.reference,
-      reference: farmerApplyData?.reference,
+      reference: isPoultryApply ? poultryApplyData?.reference : farmerApplyData?.reference,
     });
 
     return;

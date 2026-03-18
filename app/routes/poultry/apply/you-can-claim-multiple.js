@@ -44,7 +44,7 @@ export const poultryClaimMultipleRouteHandlers = [
             ...organisation,
             userType,
           },
-          { journey: JOURNEY.APPLY },
+          { journey: JOURNEY.POULTRY_APPLY },
         );
 
         return h.view(poultryApplyViews.youCanClaimMultiple, {

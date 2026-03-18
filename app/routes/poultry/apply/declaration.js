@@ -137,7 +137,7 @@ export const poultryDeclarationRouteHandlers = [
             sessionEntryKeys.tempReference,
             sessionKeys.tempReference,
             tempApplicationReference,
-            { journey: JOURNEY.APPLY },
+            { journey: JOURNEY.POULTRY_APPLY },
           );
           clearApplyRedirect(request);
         }
