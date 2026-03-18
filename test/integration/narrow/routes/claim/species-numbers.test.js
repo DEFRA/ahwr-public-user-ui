@@ -261,9 +261,7 @@ describe("Species numbers page", () => {
     test("returns 500 when there is no claim", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValueOnce({})
-        .mockReturnValueOnce({ reference: "TEMP-6GSE-PIR8" })
-        .mockReturnValue(undefined);
+        .mockReturnValueOnce(undefined);
 
       const options = {
         auth,
