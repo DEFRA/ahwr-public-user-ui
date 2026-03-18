@@ -372,7 +372,7 @@ describe("Species numbers page", () => {
       expect(res.headers.location).toEqual("/number-of-species-tested");
     });
 
-    test.only("Continue to eligible page if user selects yes for poultry", async () => {
+    test("Continue to eligible page if user selects yes for poultry", async () => {
       config.poultry.enabled = true;
       const options = {
         method: "POST",
