@@ -302,18 +302,25 @@ const buildSingleResultHtml = ({ diseaseType, result, endemicsClaimSession }) =>
   return `${disease.text} (${resultLabel.text})`;
 };
 
+const commonVisitRows = (rows) => [
+  rows.vetVisitsReviewTestResultsRow,
+  rows.dateOfVisitRow,
+  rows.isReview && rows.dateOfSamplingRow,
+  rows.speciesNumbersRow,
+  rows.numberOfAnimalsTestedRow,
+  ...rows.vetDetailsRows,
+];
+
+const piHuntRows = (rows) => [rows.piHuntRow, rows.piHuntRecommendedRow, rows.piHuntAllAnimalsRow];
+
 export const collateRows = (rows) => {
   const {
     vetVisitsReviewTestResultsRow,
     dateOfVisitRow,
-    isReview,
     dateOfSamplingRow,
     speciesNumbersRow,
     numberOfAnimalsTestedRow,
     vetDetailsRows,
-    piHuntRow,
-    piHuntRecommendedRow,
-    piHuntAllAnimalsRow,
     isEndemicsFollowUp,
     laboratoryUrnRow,
     testResultsRow,
@@ -329,20 +336,9 @@ export const collateRows = (rows) => {
     sheepDiseasesTestedRow,
   } = rows;
 
-  const commonVisitRows = () => [
-    vetVisitsReviewTestResultsRow,
-    dateOfVisitRow,
-    isReview && dateOfSamplingRow,
-    speciesNumbersRow,
-    numberOfAnimalsTestedRow,
-    ...vetDetailsRows,
-  ];
-
-  const piHuntRows = () => [piHuntRow, piHuntRecommendedRow, piHuntAllAnimalsRow];
-
   const beefRows = [
-    ...commonVisitRows(),
-    ...piHuntRows(),
+    ...commonVisitRows(rows),
+    ...piHuntRows(rows),
     isEndemicsFollowUp && dateOfSamplingRow,
     laboratoryUrnRow,
     testResultsRow,
