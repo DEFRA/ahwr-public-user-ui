@@ -19,5 +19,5 @@ export const userType = {
 export const JOURNEY = {
   CLAIM: "claim",
   APPLY: "apply",
-  POULTRY_APPLY: "poultryApply"
+  POULTRY_APPLY: "poultryApply",
 };

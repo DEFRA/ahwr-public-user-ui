@@ -292,9 +292,14 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
     return;
   }
 
-  const isPoultryApply = entryKey === sessionEntryKeys.poultryApplyData || journey === JOURNEY.POULTRY_APPLY
+  const isPoultryApply =
+    entryKey === sessionEntryKeys.poultryApplyData || journey === JOURNEY.POULTRY_APPLY;
 
-  if (entryKey === sessionEntryKeys.farmerApplyData || journey === JOURNEY.APPLY || isPoultryApply) {
+  if (
+    entryKey === sessionEntryKeys.farmerApplyData ||
+    journey === JOURNEY.APPLY ||
+    isPoultryApply
+  ) {
     const journeyValue =
       entryKey === "application" || entryKey === "tempReference" ? entryKey : "farmerApplyData";
 
