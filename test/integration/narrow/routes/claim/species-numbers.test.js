@@ -16,6 +16,7 @@ import {
 } from "../../../../../app/session/index.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import { config } from "../../../../../app/config/index.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
@@ -370,6 +371,30 @@ describe("Species numbers page", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/number-of-species-tested");
     });
+
+    test.only("Continue to eligible page if user selects yes for poultry", async () => {
+      config.poultry.enabled = true;
+      const options = {
+        method: "POST",
+        payload: { crumb, speciesNumbers: "yes" },
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      getSessionData.mockImplementation(() => {
+        return {
+          typeOfLivestock: "ducks",
+          latestEndemicsApplication: { reference: "POUL-G3CL-V59P" },
+        };
+      });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/vet-name");
+    });
+
     test("Continue to ineligible page if user selects no", async () => {
       const options = {
         method: "POST",
