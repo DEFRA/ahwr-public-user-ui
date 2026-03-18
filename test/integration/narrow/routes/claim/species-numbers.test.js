@@ -127,6 +127,61 @@ describe("Species numbers page", () => {
     );
 
     test.each([
+      {
+        typeOfLivestock: "beef",
+        typeOfReview: "FOLLOW_UP",
+        reviewTestResults: "negative",
+        backLink: "/date-of-visit",
+      },
+      {
+        typeOfLivestock: "dairy",
+        typeOfReview: "FOLLOW_UP",
+        reviewTestResults: "positive",
+        backLink: "/date-of-visit",
+      },
+    ])(
+      "returns 200 for non MH claim for $typeOfLivestock after PiHunt ",
+      async ({ typeOfLivestock, typeOfReview, reviewTestResults, backLink }) => {
+        isVisitDateAfterPIHuntAndDairyGoLive.mockImplementationOnce(() => {
+          return true;
+        });
+
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
+            typeOfLivestock,
+            typeOfReview,
+            reviewTestResults,
+            reference: "TEMP-6GSE-PIR8",
+            latestEndemicsApplication: { flags: [] },
+          });
+
+        const options = {
+          method: "GET",
+          auth,
+          url,
+        };
+
+        const res = await server.inject(options);
+        const $ = cheerio.load(res.payload);
+
+        expect(res.statusCode).toBe(200);
+        expect($(".govuk-fieldset__heading").text().trim()).toEqual(
+          `Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === "REVIEW" ? "review" : "follow-up"}?`,
+        );
+        expect($("title").text().trim()).toContain(
+          `Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === "REVIEW" ? "review" : "follow-up"}? - Get funding to improve animal health and welfare`,
+        );
+        expect($(".govuk-hint").text().trim()).toEqual(
+          "You can find this on the summary the vet gave you.",
+        );
+        expect($(".govuk-radios__item").length).toEqual(2);
+        expect($(".govuk-back-link").attr("href")).toEqual(backLink);
+        expectPhaseBanner.ok($);
+      },
+    );
+
+    test.each([
       { typeOfLivestock: "beef", typeOfReview: "FOLLOW_UP", reviewTestResults: "negative" },
       { typeOfLivestock: "dairy", typeOfReview: "REVIEW", reviewTestResults: "positive" },
     ])(
