@@ -151,6 +151,9 @@ describe("session", () => {
     const farmerApplyData = {
       reference: "IAHW-G3CL-V59P",
     };
+    const poultryApplyData = {
+      reference: "POUL-G3CL-V59P",
+    };
 
     beforeEach(() => {
       jest.resetAllMocks();
@@ -163,6 +166,9 @@ describe("session", () => {
         }
         if (entryKey === sessionEntryKeys.farmerApplyData) {
           return farmerApplyData;
+        }
+        if (entryKey === sessionEntryKeys.poultryApplyData) {
+          return poultryApplyData;
         }
         return undefined;
       });
@@ -207,6 +213,40 @@ describe("session", () => {
         sbi: "123456789",
         sessionKey: "application",
         value: { reference: "IAHW-G3CL-V59P" },
+      });
+    });
+
+    test("emits event and sets journey to application when entryKey is application and journey is poultryApply", async () => {
+      const request = { yar: yarMock };
+      yarMock.get.mockImplementation((entryKey) => {
+        if (entryKey === sessionEntryKeys.endemicsClaim) {
+          return { ...endemicsClaim, reference: "POUL-G3CL-V59P" };
+        }
+        if (entryKey === sessionEntryKeys.organisation) {
+          return organisation;
+        }
+        if (entryKey === sessionEntryKeys.poultryApplyData) {
+          return poultryApplyData;
+        }
+        return undefined;
+      });
+
+      await setSessionEntry(
+        request,
+        sessionEntryKeys.application,
+        { reference: "POUL-G3CL-V59P" },
+        { journey: "poultryApply" },
+      );
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        applicationReference: "POUL-G3CL-V59P",
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "application",
+        reference: "POUL-G3CL-V59P",
+        sbi: "123456789",
+        sessionKey: "application",
+        value: { reference: "POUL-G3CL-V59P" },
       });
     });
 
@@ -338,6 +378,42 @@ describe("session", () => {
       );
 
       expect(sendSessionEvent).not.toHaveBeenCalled();
+    });
+
+    test("emits event when entryKey is poultryApplyData", async () => {
+      const request = { yar: yarMock };
+      yarMock.get.mockImplementation((entryKey) => {
+        if (entryKey === sessionEntryKeys.endemicsClaim) {
+          return { ...endemicsClaim, reference: "POUL-G3CL-V59P" };
+        }
+        if (entryKey === sessionEntryKeys.organisation) {
+          return organisation;
+        }
+        if (entryKey === sessionEntryKeys.poultryApplyData) {
+          return {
+            reference: "POUL-G3CL-V59P",
+          };
+        }
+        return undefined;
+      });
+
+      await setSessionData(
+        request,
+        sessionEntryKeys.poultryApplyData,
+        sessionKeys.poultryApplyData.agreeMultipleSpecies,
+        "yes",
+      );
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        applicationReference: "POUL-G3CL-V59P",
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "farmerApplyData",
+        reference: "POUL-G3CL-V59P",
+        sbi: "123456789",
+        sessionKey: "agreeMultipleSpecies",
+        value: "yes",
+      });
     });
   });
 });
