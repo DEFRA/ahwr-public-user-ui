@@ -40,20 +40,17 @@ const postHandler = {
       }),
       failAction: async (request, h, error) => {
         request.logger.error({ error });
-        return (
-          h
-            .view(claimViews.assuranceScheme, {
-              ...request.payload,
-              backLink: claimRoutes.checkHerdDetails,
-              errorMessage: {
-                text: error.details[0].message,
-                href: `#${sessionKeys.endemicsClaim.assuranceScheme}`,
-              },
-            })
-            // @ts-ignore
-            .code(HttpStatus.BAD_REQUEST)
-            .takeover()
-        );
+        return h
+          .view(claimViews.assuranceScheme, {
+            ...request.payload,
+            backLink: claimRoutes.checkHerdDetails,
+            errorMessage: {
+              text: error.details[0].message,
+              href: `#${sessionKeys.endemicsClaim.assuranceScheme}`,
+            },
+          })
+          .code(HttpStatus.BAD_REQUEST)
+          .takeover();
       },
     },
     handler: async (request, h) => {
