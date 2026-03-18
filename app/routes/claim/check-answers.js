@@ -132,8 +132,6 @@ const getHandler = {
         ...speciesRows(),
       ];
 
-      console.log({ rows });
-
       const rowsWithData = rows.filter((row) => row.value?.html !== undefined);
       return h.view(claimViews.checkAnswers, {
         listData: { rows: rowsWithData },
