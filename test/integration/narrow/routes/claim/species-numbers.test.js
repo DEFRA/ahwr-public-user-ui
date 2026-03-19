@@ -16,6 +16,7 @@ import {
 } from "../../../../../app/session/index.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import { config } from "../../../../../app/config/index.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
@@ -91,6 +92,61 @@ describe("Species numbers page", () => {
     ])(
       "returns 200 for non MH claim for $typeOfLivestock",
       async ({ typeOfLivestock, typeOfReview, reviewTestResults, backLink }) => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
+            typeOfLivestock,
+            typeOfReview,
+            reviewTestResults,
+            reference: "TEMP-6GSE-PIR8",
+            latestEndemicsApplication: { flags: [] },
+          });
+
+        const options = {
+          method: "GET",
+          auth,
+          url,
+        };
+
+        const res = await server.inject(options);
+        const $ = cheerio.load(res.payload);
+
+        expect(res.statusCode).toBe(200);
+        expect($(".govuk-fieldset__heading").text().trim()).toEqual(
+          `Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === "REVIEW" ? "review" : "follow-up"}?`,
+        );
+        expect($("title").text().trim()).toContain(
+          `Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === "REVIEW" ? "review" : "follow-up"}? - Get funding to improve animal health and welfare`,
+        );
+        expect($(".govuk-hint").text().trim()).toEqual(
+          "You can find this on the summary the vet gave you.",
+        );
+        expect($(".govuk-radios__item").length).toEqual(2);
+        expect($(".govuk-back-link").attr("href")).toEqual(backLink);
+        expectPhaseBanner.ok($);
+      },
+    );
+
+    test.each([
+      {
+        typeOfLivestock: "beef",
+        typeOfReview: "FOLLOW_UP",
+        reviewTestResults: "negative",
+        backLink: "/date-of-visit",
+      },
+      {
+        typeOfLivestock: "dairy",
+        typeOfReview: "FOLLOW_UP",
+        reviewTestResults: "positive",
+        backLink: "/date-of-visit",
+      },
+    ])(
+      "returns 200 for non MH claim for $typeOfLivestock after PiHunt ",
+      async ({ typeOfLivestock, typeOfReview, reviewTestResults, backLink }) => {
+        isVisitDateAfterPIHuntAndDairyGoLive.mockImplementationOnce(() => {
+          return true;
+        });
+
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
           .mockReturnValue({
@@ -206,9 +262,7 @@ describe("Species numbers page", () => {
     test("returns 500 when there is no claim", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValueOnce({})
-        .mockReturnValueOnce({ reference: "TEMP-6GSE-PIR8" })
-        .mockReturnValue(undefined);
+        .mockReturnValueOnce(undefined);
 
       const options = {
         auth,
@@ -317,6 +371,30 @@ describe("Species numbers page", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/number-of-species-tested");
     });
+
+    test("Continue to eligible page if user selects yes for poultry", async () => {
+      config.poultry.enabled = true;
+      const options = {
+        method: "POST",
+        payload: { crumb, speciesNumbers: "yes" },
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      getSessionData.mockImplementation(() => {
+        return {
+          typeOfLivestock: "ducks",
+          latestEndemicsApplication: { reference: "POUL-G3CL-V59P" },
+        };
+      });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/vet-name");
+    });
+
     test("Continue to ineligible page if user selects no", async () => {
       const options = {
         method: "POST",

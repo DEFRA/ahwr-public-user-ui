@@ -59,6 +59,8 @@ import { vetRCVSHandlers } from "../routes/claim/vet-rcvs.js";
 import { vetVisitsReviewTestResultsHandlers } from "../routes/claim/vet-visits-review-test-results.js";
 import { whichSpeciesHandlers } from "../routes/claim/which-species.js";
 import { whichReviewHandlers } from "../routes/claim/which-type-of-review.js";
+import { whichSpeciesPoultryHandlers } from "../routes/claim/which-species-poultry.js";
+import { assuranceSchemeHandlers } from "../routes/claim/assurance-scheme.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
@@ -81,6 +83,7 @@ const alwaysOnRoutes = [
   timingsRouteHandlers,
   claimMultipleRouteHandlers,
   // Claim routes
+  assuranceSchemeHandlers,
   biosecurityHandlers,
   checkAnswersHandlers,
   checkHerdDetailsHandlers,
@@ -116,6 +119,7 @@ const alwaysOnRoutes = [
   vetRCVSHandlers,
   vetVisitsReviewTestResultsHandlers,
   whichSpeciesHandlers,
+  whichSpeciesPoultryHandlers,
   whichReviewHandlers,
   ...(config.poultry.enabled
     ? [

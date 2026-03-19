@@ -10,6 +10,7 @@ import {
 } from "../../../../../app/session/index.js";
 import { getNextMultipleHerdsPage } from "../../../../../app/lib/get-next-multiple-herds-page.js";
 import { when } from "jest-when";
+import { config } from "../../../../../app/config/index.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/lib/get-next-multiple-herds-page.js");
@@ -320,6 +321,26 @@ describe("/check-herd-details tests", () => {
 
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/same-herd");
+    });
+
+    test("navigates to assurance page when is poultry", async () => {
+      config.poultry.enabled = true;
+      getSessionData.mockReturnValue({
+        ...validPayloadWithPreviousClaimsWithoutHerd,
+        previousClaims: [],
+        latestEndemicsApplication: { reference: "POUL-G3CL-V59P" },
+      });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/assurance-scheme");
     });
 
     test("navigates to date-of-testing page when no previous claims", async () => {

@@ -17,6 +17,7 @@ import {
 } from "../constants/claim-constants.js";
 import { claimRoutes } from "../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
+
 import { applicationType } from "../constants/constants.js";
 
 export async function refreshApplications(sbi, request) {

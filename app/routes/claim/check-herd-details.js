@@ -5,6 +5,7 @@ import { getSessionData, sessionEntryKeys } from "../../session/index.js";
 import { MULTIPLE_HERD_REASONS } from "ffc-ahwr-common-library";
 import { skipOtherHerdsOnSbiPage, skipSameHerdPage } from "../../lib/context-helper.js";
 import { getNextMultipleHerdsPage } from "../../lib/get-next-multiple-herds-page.js";
+import { checkIfPoultryAgreement } from "../../lib/agreement-helper.js";
 
 const getHerdReasonsText = (herdReasons) => {
   return herdReasons?.map((key) => MULTIPLE_HERD_REASONS[key]).join("<br>");
@@ -44,10 +45,16 @@ const postHandler = {
   path: "/check-herd-details",
   options: {
     handler: async (request, h) => {
-      const { previousClaims, typeOfLivestock } = getSessionData(
+      const { previousClaims, typeOfLivestock, latestEndemicsApplication } = getSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
       );
+
+      const isPoultryAgreement = checkIfPoultryAgreement(latestEndemicsApplication);
+      if (isPoultryAgreement) {
+        return h.redirect(claimRoutes.assuranceScheme);
+      }
+
       const nextPageUrl = skipSameHerdPage(previousClaims, typeOfLivestock)
         ? await getNextMultipleHerdsPage(request)
         : claimRoutes.sameHerd;

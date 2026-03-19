@@ -33,7 +33,6 @@ export const applyRoutes = {
   declaration: "/declaration",
   offerRejected: "/offer-rejected",
   confirmation: "/confirmation",
-  checkDetails: "/check-details",
 };
 
 export const poultryApplyRoutes = {
@@ -65,6 +64,7 @@ export const poultryApplyViews = {
 };
 
 export const claimRoutes = {
+  assuranceScheme: "/assurance-scheme",
   biosecurityException: "/biosecurity-exception",
   biosecurity: "/biosecurity",
   checkAnswers: "/check-answers",
@@ -119,6 +119,7 @@ export const claimRoutes = {
   vetRcvs: "/vet-rcvs",
   vetVisitsReviewTestResults: "/vet-visits-review-test-results",
   whichSpecies: "/which-species",
+  whichSpeciesPoultry: "/which-species-of-poultry",
   whichTypeOfReviewDairyFollowUpException: "/which-type-of-review-dairy-follow-up-exception",
   whichTypeOfReviewException: "/which-type-of-review-exception",
   whichTypeOfReview: "/which-type-of-review",
@@ -126,6 +127,7 @@ export const claimRoutes = {
 };
 
 export const claimViews = {
+  assuranceScheme: "claim/assurance-scheme",
   biosecurityException: "claim/biosecurity-exception",
   biosecurity: "claim/biosecurity",
   checkAnswers: "claim/check-answers",
@@ -181,6 +183,7 @@ export const claimViews = {
   vetRcvs: "claim/vet-rcvs",
   vetVisitsReviewTestResults: "claim/vet-visits-review-test-results",
   whichSpecies: "claim/which-species",
+  whichSpeciesPoultry: "claim/which-species-poultry",
   whichTypeOfReviewDairyFollowUpException: "claim/which-type-of-review-dairy-follow-up-exception",
   whichTypeOfReviewException: "claim/which-type-of-review-exception",
   whichTypeOfReview: "claim/which-type-of-review",

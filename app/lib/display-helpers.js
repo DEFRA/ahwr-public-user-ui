@@ -7,6 +7,11 @@ export function getSpeciesEligibleNumberForDisplay(claimData, isEndemicsClaims =
     dairy: isEndemicsClaims ? "11 or more dairy cattle " : "11 or more cattle ",
     pigs: "51 or more pigs ",
     sheep: "21 or more sheep ",
+    broilers: " or more broilers",
+    laying: " or more laying",
+    ducks: " or more ducks",
+    geese: " or more geese",
+    turkeys: " or more turkeys",
   }[getClaimType(claimData, isEndemicsClaims)];
 }
 

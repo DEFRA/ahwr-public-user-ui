@@ -25,7 +25,7 @@ export const redirectAgreementNotAcceptedPlugin = {
         supportRoutes.assets,
         supportRoutes.updateDetails,
         supportRoutes.cookies,
-        applyRoutes.checkDetails,
+        dashboardRoutes.checkDetails,
         applyRoutes.declaration,
         applyRoutes.numbers,
         applyRoutes.timings,

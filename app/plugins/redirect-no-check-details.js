@@ -1,5 +1,5 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { applyRoutes, dashboardRoutes, loginRoutes, supportRoutes } from "../constants/routes.js";
+import { dashboardRoutes, loginRoutes, supportRoutes } from "../constants/routes.js";
 
 export const redirectNoCheckDetailsPlugin = {
   plugin: {
@@ -18,7 +18,7 @@ export const redirectNoCheckDetailsPlugin = {
         supportRoutes.assets,
         supportRoutes.updateDetails,
         supportRoutes.cookies,
-        applyRoutes.checkDetails,
+        dashboardRoutes.checkDetails,
       ];
       server.ext("onPreHandler", (request, h) => {
         const excludedPath = excludedPaths.some((term) => request.path.includes(term));

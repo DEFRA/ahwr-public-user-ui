@@ -17,8 +17,13 @@ import {
 } from "../../lib/build-claim-data.js";
 import { trackEvent } from "../../logging/logger.js";
 import { JOURNEY } from "../../constants/constants.js";
+import { checkIfPoultryAgreement } from "../../lib/agreement-helper.js";
 
-const getBackLink = (isReview, isSheep) => {
+const getBackLink = (isReview, isSheep, isPoultryAgreement) => {
+  if (isPoultryAgreement) {
+    return claimRoutes.biosecurity;
+  }
+
   if (isReview) {
     return isSheep ? claimRoutes.testUrn : claimRoutes.testResults;
   }
@@ -68,12 +73,17 @@ const getHandler = {
     handler: async (request, h) => {
       const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
       const organisation = getSessionData(request, sessionEntryKeys.organisation);
+
+      const isPoultryAgreement = checkIfPoultryAgreement(
+        endemicsClaimSession.latestEndemicsApplication,
+      );
+
       const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(
         endemicsClaimSession.typeOfLivestock,
       );
       const { isReview, isEndemicsFollowUp } = getReviewType(endemicsClaimSession.typeOfReview);
 
-      const backLink = getBackLink(isReview, isSheep);
+      const backLink = getBackLink(isReview, isSheep, isPoultryAgreement);
 
       const builtRows = buildRows({
         isReview,
@@ -86,7 +96,7 @@ const getHandler = {
 
       const testVetAndPiRows = buildVetTestandPiHuntRows({ endemicsClaimSession, isReview });
 
-      const { beefRows, dairyRows, pigRows, sheepRows } = collateRows({
+      const { beefRows, dairyRows, pigRows, sheepRows, poultryRows } = collateRows({
         isReview,
         isEndemicsFollowUp,
         endemicsClaimSession,
@@ -104,6 +114,8 @@ const getHandler = {
             return pigRows;
           case isSheep:
             return sheepRows;
+          case isPoultryAgreement:
+            return poultryRows;
           default:
             return [];
         }
