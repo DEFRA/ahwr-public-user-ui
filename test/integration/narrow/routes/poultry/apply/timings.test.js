@@ -84,7 +84,7 @@ describe("Declaration test", () => {
 
       const expectedItems = [
         "have an poultry biosecurity review agreement in place before you do your first biosecurity review",
-        "have no more than 3 biosecurity assessment on any number of flocks by 31 Match 2029",
+        "have no more than 3 biosecurity assessment on any number of units by 31 Match 2029",
       ];
 
       const actualItems = firstListItems.map((i, el) => $(el).text().trim()).get();
