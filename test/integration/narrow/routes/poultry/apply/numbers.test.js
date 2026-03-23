@@ -74,7 +74,7 @@ describe("Check review numbers page test", () => {
 
       const $ = cheerio.load(res.payload);
       const titleClassName = ".govuk-heading-l";
-      const title = "Minimum number of poultry in the flock";
+      const title = "Minimum number of poultry in the unit";
       const pageTitleByClassName = $(titleClassName).text();
       const pageTitleByName = $("title").text();
       const fullTitle = `${title} - Get funding to improve animal health and welfare`;
