@@ -1,8 +1,14 @@
+/**
+ * @jest-environment <rootDir>/test/environments/jsdom-with-node-globals.cjs
+ */
 import * as cheerio from "cheerio";
+import { axe, toHaveNoViolations } from "jest-axe";
 import { createServer } from "../../../../../app/server.js";
 import { getReviewType } from "../../../../../app/lib/utils.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
 import { when } from "jest-when";
+
+expect.extend(toHaveNoViolations);
 
 jest.mock("../../../../../app/session");
 
@@ -61,6 +67,8 @@ describe("Claim confirmation", () => {
         .mockReturnValue(true);
 
       const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
 
       const $ = cheerio.load(res.payload);
 
