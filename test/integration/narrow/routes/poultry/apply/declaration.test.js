@@ -112,7 +112,7 @@ describe("Declaration test", () => {
         "Review your agreement offer - Get funding to improve animal health and welfare",
       );
       ok($);
-      const expectedHerdsText = `If the RPA requests evidence that your biosecurity review took place, or details of the flocks you have, you must provide it. This will be on your vet summary.`;
+      const expectedHerdsText = `If the RPA requests evidence that your biosecurity review took place, or details of the units you have, you must provide it. This will be on your vet summary.`;
       const herdsText = $("p")
         .filter((i, el) => {
           return $(el).text().trim().startsWith("If the RPA requests evidence");
