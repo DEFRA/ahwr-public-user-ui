@@ -1,6 +1,3 @@
-/**
- * @jest-environment <rootDir>/test/environments/jsdom-with-node-globals.cjs
- */
 import * as cheerio from "cheerio";
 import { axe, toHaveNoViolations } from "jest-axe";
 import { createServer } from "../../../../../app/server.js";
