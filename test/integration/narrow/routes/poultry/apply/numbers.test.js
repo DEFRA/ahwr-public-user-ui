@@ -11,6 +11,7 @@ import { getApplicationsBySbi } from "../../../../../../app/api-requests/applica
 import { poultryApplyRoutes } from "../../../../../../app/constants/routes";
 import { userType } from "../../../../../../app/constants/constants";
 import { when } from "jest-when";
+import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/api-requests/application-api");
 jest.mock("../../../../../../app/session/index.js");
@@ -71,6 +72,7 @@ describe("Check review numbers page test", () => {
       const res = await server.inject({ ...options, method: "GET" });
 
       expect(res.statusCode).toBe(200);
+      expect(await axe(res.payload)).toHaveNoViolations();
 
       const $ = cheerio.load(res.payload);
       const titleClassName = ".govuk-heading-l";
@@ -115,6 +117,7 @@ describe("Check review numbers page test", () => {
       });
 
       expect(res.statusCode).toBe(200);
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.payload).toContain("You cannot continue with your application");
     });
   });

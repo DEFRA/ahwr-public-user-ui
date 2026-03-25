@@ -10,6 +10,7 @@ import {
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../app/lib/context-helper.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session/index.js");
@@ -88,6 +89,7 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
 
       const response = await server.inject(options);
 
+      expect(await axe(response.payload)).toHaveNoViolations();
       expect(response.statusCode).toBe(200);
     });
     test("Returns 200 when the review test result for beef is negative", async () => {
@@ -107,6 +109,7 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
 
       const response = await server.inject(options);
 
+      expect(await axe(response.payload)).toHaveNoViolations();
       expect(response.statusCode).toBe(200);
     });
     test("display question text", async () => {
@@ -118,6 +121,7 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
 
       const response = await server.inject(options);
 
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       expect($("title").text()).toMatch(
         "Did the vet do a biosecurity assessment? - Get funding to improve animal health and welfare",
@@ -140,6 +144,8 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
         });
 
       const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       const biosecurity = "yes";
 
@@ -164,6 +170,8 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
         });
 
       const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
 
       expect($(".govuk-back-link").attr().href).toMatch("/pigs-genetic-sequencing");
@@ -186,6 +194,8 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
         });
 
       const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
 
       expect($(".govuk-back-link").attr().href).toMatch("/pigs-pcr-result");
@@ -204,6 +214,8 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
       getSessionData.mockReturnValue({ typeOfLivestock: "pigs" });
 
       const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       const errorMessage = "Select yes if the vet did a biosecurity assessment";
 
@@ -221,6 +233,8 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
       getSessionData.mockReturnValue({ typeOfLivestock: "pigs" });
 
       const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       const errorMessage = "Enter the assessment percentage";
 
@@ -273,6 +287,8 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
       getSessionData.mockReturnValue({ typeOfLivestock: "pigs" });
 
       const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
 
       expect(response.statusCode).toBe(400);
@@ -291,6 +307,8 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
       getSessionData.mockReturnValue({ typeOfLivestock: "pigs" });
 
       const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
 
       expect(response.statusCode).toBe(400);
@@ -347,6 +365,8 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
         getSessionData.mockReturnValue({ biosecurity: "no" });
 
         const response = await server.inject(options);
+
+        expect(await axe(response.payload)).toHaveNoViolations();
         const $ = cheerio.load(response.payload);
 
         expect(response.statusCode).toBe(400);
@@ -462,6 +482,8 @@ describe("Biosecurity test when Optional PI Hunt is ON", () => {
         };
 
         const response = await server.inject(options);
+
+        expect(await axe(response.payload)).toHaveNoViolations();
         const $ = cheerio.load(response.payload);
 
         expect(response.statusCode).toBe(200);

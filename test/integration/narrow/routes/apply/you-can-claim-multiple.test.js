@@ -11,6 +11,7 @@ import { getApplicationsBySbi } from "../../../../../app/api-requests/applicatio
 import { applyRoutes } from "../../../../../app/constants/routes.js";
 import { when } from "jest-when";
 import { userType } from "../../../../../app/constants/constants.js";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/config/index.js", () => ({
   config: {
@@ -69,6 +70,7 @@ describe("you-can-claim-multiple page", () => {
     test("returns 200 and content is correct", async () => {
       const res = await server.inject({ ...optionsBase, method: "GET" });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(res.payload).toContain("/check-details"); // back-link
       expect(setSessionData).toHaveBeenCalledWith(
@@ -125,6 +127,7 @@ describe("you-can-claim-multiple page", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),

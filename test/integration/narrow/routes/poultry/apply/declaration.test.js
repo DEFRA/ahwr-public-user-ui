@@ -18,6 +18,7 @@ import {
 import { when } from "jest-when";
 import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { refreshApplications } from "../../../../../../app/lib/context-helper";
+import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/lib/context-helper");
 jest.mock("../../../../../../app/session/index");
@@ -106,6 +107,7 @@ describe("Declaration test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Review your agreement offer");
       expect($("title").text()).toMatch(
@@ -139,6 +141,7 @@ describe("Declaration test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Application complete");
       expect($("title").text()).toMatch(
@@ -175,6 +178,7 @@ describe("Declaration test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(await axe(res.payload)).toHaveNoViolations();
       // Asserting a new reference has been set in the session
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
@@ -219,6 +223,7 @@ describe("Declaration test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1.govuk-heading-l").text()).toEqual("Review your agreement offer");
       expect($("title").text()).toMatch(

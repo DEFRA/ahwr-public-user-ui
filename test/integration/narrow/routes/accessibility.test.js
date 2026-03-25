@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import { createServer } from "../../../../app/server";
 import { getByText, queryByText } from "@testing-library/dom";
 import globalJsdom from "global-jsdom";

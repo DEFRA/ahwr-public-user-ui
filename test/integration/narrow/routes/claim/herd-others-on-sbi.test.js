@@ -10,6 +10,7 @@ import {
   setSessionData,
 } from "../../../../../app/session/index.js";
 import { when } from "jest-when";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -66,6 +67,7 @@ describe("/herd-others-on-sbi tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -92,6 +94,7 @@ describe("/herd-others-on-sbi tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -113,6 +116,7 @@ describe("/herd-others-on-sbi tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -138,6 +142,7 @@ describe("/herd-others-on-sbi tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -163,6 +168,7 @@ describe("/herd-others-on-sbi tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -261,6 +267,7 @@ describe("/herd-others-on-sbi tests", () => {
         headers: { cookie: `crumb=${crumb}` },
       });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
@@ -289,6 +296,7 @@ describe("/herd-others-on-sbi tests", () => {
         headers: { cookie: `crumb=${crumb}` },
       });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");

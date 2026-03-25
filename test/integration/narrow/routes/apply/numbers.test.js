@@ -7,6 +7,7 @@ import { getApplicationsBySbi } from "../../../../../app/api-requests/applicatio
 import { applyRoutes } from "../../../../../app/constants/routes";
 import { userType } from "../../../../../app/constants/constants";
 import { when } from "jest-when";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/api-requests/application-api");
 jest.mock("../../../../../app/session/index.js");
@@ -58,6 +59,7 @@ describe("Check review numbers page test", () => {
     test("returns 200 and has correct backLink", async () => {
       const res = await server.inject({ ...options, method: "GET" });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
 
       const $ = cheerio.load(res.payload);
@@ -102,6 +104,7 @@ describe("Check review numbers page test", () => {
         payload: { crumb, agreementStatus: "notAgree" },
       });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       expect(res.payload).toContain("You cannot continue with your application");
     });

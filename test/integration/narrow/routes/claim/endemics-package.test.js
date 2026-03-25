@@ -4,6 +4,7 @@ import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../ap
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { when } from "jest-when";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -53,6 +54,7 @@ describe("Endemics package test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("h1").text().trim()).toMatch("Which sheep health package did you choose?");
@@ -126,6 +128,7 @@ describe("Endemics package test", () => {
 
         const res = await server.inject(options);
 
+        expect(await axe(res.payload)).toHaveNoViolations();
         expect(res.statusCode).toBe(400);
         const $ = cheerio.load(res.payload);
         expect($("h1").text().trim()).toMatch("Which sheep health package did you choose?");

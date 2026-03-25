@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import { axe } from "../../../../helpers/axe-helper.js";
 import { createServer } from "../../../../../app/server.js";
 import { getReviewType } from "../../../../../app/lib/utils.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
@@ -61,6 +62,8 @@ describe("Claim confirmation", () => {
         .mockReturnValue(true);
 
       const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
 
       const $ = cheerio.load(res.payload);
 

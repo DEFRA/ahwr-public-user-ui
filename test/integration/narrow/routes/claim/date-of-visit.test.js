@@ -13,6 +13,7 @@ import { previousPageUrl } from "../../../../../app/routes/claim/date-of-visit.j
 import { when } from "jest-when";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 import { trackEvent } from "../../../../../app/logging/logger.js";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/session");
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
@@ -115,6 +116,7 @@ describe("GET /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
     expectPageContentOk($, "/which-type-of-review");
@@ -146,6 +148,7 @@ describe("GET /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
     expectPageContentOk($, "/which-type-of-review");
@@ -178,6 +181,7 @@ describe("GET /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
     expect($("#visit-date-day")[0].attribs.value).toEqual("1");
@@ -251,6 +255,7 @@ describe("POST /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
     expect(res.statusCode).toBe(400);
     expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
@@ -299,6 +304,7 @@ describe("POST /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
     expect(res.statusCode).toBe(400);
     expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
@@ -347,6 +353,7 @@ describe("POST /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
     expect(res.statusCode).toBe(400);
     expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
@@ -395,6 +402,7 @@ describe("POST /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
     expect(res.statusCode).toBe(400);
     expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
@@ -545,6 +553,7 @@ describe("POST /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
 
     expect(res.statusCode).toBe(400);
@@ -723,6 +732,8 @@ describe("POST /date-of-visit handler", () => {
     };
 
     const res = await server.inject(options);
+
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
 
     expect(res.statusCode).toBe(400);
@@ -875,6 +886,7 @@ describe("POST /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
 
     expect(res.statusCode).toBe(400);
@@ -1102,6 +1114,8 @@ describe("POST /date-of-visit handler", () => {
     };
 
     const res = await server.inject(options);
+
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
 
     expect(res.statusCode).toBe(400);
@@ -1181,6 +1195,7 @@ describe("POST /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
 
     expect(res.statusCode).toBe(400);
@@ -1328,6 +1343,7 @@ describe("POST /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
 
     expect(res.statusCode).toBe(400);
@@ -1396,6 +1412,7 @@ describe("POST /date-of-visit handler", () => {
 
     const res = await server.inject(options);
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     const $ = cheerio.load(res.payload);
 
     expect(res.statusCode).toBe(400);

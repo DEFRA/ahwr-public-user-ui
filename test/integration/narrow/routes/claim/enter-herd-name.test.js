@@ -10,6 +10,7 @@ import {
   sessionKeys,
 } from "../../../../../app/session/index.js";
 import { when } from "jest-when";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -96,6 +97,7 @@ describe("/enter-herd-name tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
@@ -120,6 +122,7 @@ describe("/enter-herd-name tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
 
       const $ = cheerio.load(res.payload);
@@ -144,6 +147,7 @@ describe("/enter-herd-name tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
@@ -163,6 +167,7 @@ describe("/enter-herd-name tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/date-of-visit");
@@ -246,6 +251,7 @@ describe("/enter-herd-name tests", () => {
         headers: { cookie: `crumb=${crumb}` },
       });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
@@ -271,6 +277,7 @@ describe("/enter-herd-name tests", () => {
         headers: { cookie: `crumb=${crumb}` },
       });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
@@ -296,6 +303,7 @@ describe("/enter-herd-name tests", () => {
         headers: { cookie: `crumb=${crumb}` },
       });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
@@ -321,6 +329,7 @@ describe("/enter-herd-name tests", () => {
         headers: { cookie: `crumb=${crumb}` },
       });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
@@ -355,6 +364,7 @@ describe("/enter-herd-name tests", () => {
         headers: { cookie: `crumb=${crumb}` },
       });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
@@ -381,6 +391,7 @@ describe("/enter-herd-name tests", () => {
         headers: { cookie: `crumb=${crumb}` },
       });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");

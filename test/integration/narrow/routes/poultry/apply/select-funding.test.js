@@ -16,6 +16,7 @@ import {
 import { getApplicationsBySbi } from "../../../../../../app/api-requests/application-api.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
+import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/api-requests/application-api");
 jest.mock("../../../../../../app/session/index.js");
@@ -73,6 +74,7 @@ describe("select-funding", () => {
     test("returns 200 and content is correct", async () => {
       const res = await server.inject({ ...optionsBase, method: "GET" });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Select funding");
     });
