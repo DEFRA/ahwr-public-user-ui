@@ -11,6 +11,7 @@ import {
 import { getNextMultipleHerdsPage } from "../../../../../app/lib/get-next-multiple-herds-page.js";
 import { when } from "jest-when";
 import { config } from "../../../../../app/config/index.js";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/lib/get-next-multiple-herds-page.js");
@@ -81,6 +82,7 @@ describe("/check-herd-details tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -111,6 +113,7 @@ describe("/check-herd-details tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -141,6 +144,7 @@ describe("/check-herd-details tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -170,6 +174,7 @@ describe("/check-herd-details tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -205,6 +210,7 @@ describe("/check-herd-details tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -236,6 +242,7 @@ describe("/check-herd-details tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
@@ -271,6 +278,7 @@ describe("/check-herd-details tests", () => {
 
       const res = await server.inject({ method: "GET", url, auth });
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(

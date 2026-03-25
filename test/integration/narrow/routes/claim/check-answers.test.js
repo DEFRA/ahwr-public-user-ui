@@ -39,6 +39,7 @@ import { submitNewClaim } from "../../../../../app/api-requests/claim-api.js";
 import { when } from "jest-when";
 import { trackEvent } from "../../../../../app/logging/logger.js";
 import { config } from "../../../../../app/config/index.js";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/lib/context-helper.js");
@@ -110,6 +111,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -140,6 +142,8 @@ describe("Check answers test", () => {
       };
 
       const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
 
       expect($("h1").text()).toMatch("Check your answers");
@@ -176,6 +180,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -212,6 +217,7 @@ describe("Check answers test", () => {
       const options = { method: "GET", url, auth };
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -243,6 +249,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -278,6 +285,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -316,6 +324,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -348,6 +357,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -379,6 +389,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -411,6 +422,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -444,6 +456,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -475,6 +488,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -503,6 +517,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -611,6 +626,7 @@ describe("Check answers test", () => {
 
         const res = await server.inject(options);
 
+        expect(await axe(res.payload)).toHaveNoViolations();
         expect(res.statusCode).toBe(200);
         const $ = cheerio.load(res.payload);
 
@@ -659,6 +675,7 @@ describe("Check answers test", () => {
 
         const res = await server.inject(options);
 
+        expect(await axe(res.payload)).toHaveNoViolations();
         expect(res.statusCode).toBe(200);
         const $ = cheerio.load(res.payload);
 
@@ -699,6 +716,7 @@ describe("Check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
 
@@ -747,6 +765,7 @@ describe("Check answers test", () => {
 
         const res = await server.inject(options);
 
+        expect(await axe(res.payload)).toHaveNoViolations();
         expect(res.statusCode).toBe(200);
         const $ = cheerio.load(res.payload);
 

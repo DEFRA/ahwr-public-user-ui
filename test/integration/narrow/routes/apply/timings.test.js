@@ -6,6 +6,7 @@ import { getApplicationsBySbi } from "../../../../../app/api-requests/applicatio
 import { applyRoutes } from "../../../../../app/constants/routes.js";
 import { userType } from "../../../../../app/constants/constants.js";
 import { when } from "jest-when";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 const auth = {
   credentials: { reference: "1111", sbi: "111111111" },
@@ -60,6 +61,7 @@ describe("Declaration test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Timing of reviews and follow-ups");
@@ -110,6 +112,7 @@ describe("Declaration test", () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, agreementStatus: "rejected" },
       });
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       expect(res.payload).toContain("You cannot continue with your application");
     });

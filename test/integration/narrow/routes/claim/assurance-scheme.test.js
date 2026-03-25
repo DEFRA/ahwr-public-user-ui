@@ -9,6 +9,7 @@ import {
 } from "../../../../../app/session/index.js";
 
 import { when } from "jest-when";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session/index.js");
@@ -81,6 +82,7 @@ describe("Assurance Scheme", () => {
 
       const response = await server.inject(options);
 
+      expect(await axe(response.payload)).toHaveNoViolations();
       expect(response.statusCode).toBe(200);
     });
   });
@@ -98,6 +100,8 @@ describe("Assurance Scheme", () => {
       getSessionData.mockReturnValue({ typeOfLivestock: "broilers" });
 
       const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       const errorMessage = '"assurance" must be one of [yes, no]';
 

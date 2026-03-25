@@ -3,6 +3,7 @@ import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
 import { when } from "jest-when";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/session/index.js");
 
@@ -71,6 +72,7 @@ describe("Disease status test", () => {
 
       const response = await server.inject(options);
 
+      expect(await axe(response.payload)).toHaveNoViolations();
       expect(response.statusCode).toBe(200);
     });
 
@@ -86,6 +88,7 @@ describe("Disease status test", () => {
 
       const response = await server.inject(options);
 
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       expect($("h1").text()).toMatch("What is the disease status category?");
     });
@@ -102,6 +105,8 @@ describe("Disease status test", () => {
         .mockReturnValue({ diseaseStatus: "1", reference: "TEMP-6GSE-PIR8" });
 
       const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       const diseaseStatus = "1";
 
@@ -123,6 +128,8 @@ describe("Disease status test", () => {
       getSessionData.mockReturnValue({});
 
       const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       const errorMessage = "Enter the disease status category";
 

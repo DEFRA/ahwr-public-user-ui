@@ -11,6 +11,7 @@ import HttpStatus from "http-status-codes";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
 import { sendInvalidDataEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../app/session");
@@ -97,6 +98,7 @@ describe("Date of testing", () => {
 
         const res = await server.inject(options);
 
+        expect(await axe(res.payload)).toHaveNoViolations();
         expect(res.statusCode).toBe(HttpStatus.OK);
         const $ = cheerio.load(res.payload);
         expect($(".govuk-back-link").attr("href")).toMatch("/pi-hunt-all-animals");
@@ -143,6 +145,7 @@ describe("Date of testing", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       const errorMessage = "Enter the date samples were taken";
 
@@ -183,6 +186,7 @@ describe("Date of testing", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
@@ -336,6 +340,8 @@ describe("Date of testing", () => {
       };
 
       const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
@@ -391,6 +397,7 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
 
     const res = await server.inject({ method: "GET", url, auth });
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(HttpStatus.OK);
     const $ = cheerio.load(res.payload);
     expect($(".govuk-back-link").attr("href")).toMatch("/check-herd-details");
@@ -409,6 +416,7 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
 
     const res = await server.inject({ method: "GET", url, auth });
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(HttpStatus.OK);
     const $ = cheerio.load(res.payload);
     expect($(".govuk-back-link").attr("href")).toMatch("/same-herd");
@@ -432,6 +440,7 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
 
     const res = await server.inject({ method: "GET", url, auth });
 
+    expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(HttpStatus.OK);
     const $ = cheerio.load(res.payload);
     expect($(".govuk-back-link").attr("href")).toMatch("/pi-hunt-all-animals");
