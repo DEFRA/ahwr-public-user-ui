@@ -8,4 +8,4 @@
 
 ## Integration Tests
 
-- Validate the HTML is WCAG compliant the using Axe helper
+- Validate the HTML is WCAG compliant the using the assertion `toHaveNoViolations`
