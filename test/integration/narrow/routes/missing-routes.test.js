@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import { StatusCodes } from "http-status-codes";
 import { createServer } from "../../../../app/server.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";

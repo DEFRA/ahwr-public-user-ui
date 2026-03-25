@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import { setServerState } from "../../../helpers/set-server-state.js";
 import { config } from "../../../../app/config/index.js";
 import { createServer } from "../../../../app/server.js";

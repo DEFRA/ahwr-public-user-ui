@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import { captureFormData } from "../../../helpers/capture-form-data.js";
 import { userEvent } from "@testing-library/user-event";
 import { createServer } from "../../../../app/server.js";
