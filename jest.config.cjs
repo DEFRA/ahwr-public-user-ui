@@ -46,6 +46,7 @@ module.exports = {
       displayName: "integration",
       testMatch: ["<rootDir>/test/integration/**/*.test.js"],
       testEnvironment: "<rootDir>/test/environments/jsdom-with-node-globals.cjs",
+      setupFilesAfterEnv: ["<rootDir>/test/setup.js", "<rootDir>/test/integration-setup.js"],
     },
   ],
 };

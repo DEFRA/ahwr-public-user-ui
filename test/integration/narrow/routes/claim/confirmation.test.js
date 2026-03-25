@@ -1,11 +1,9 @@
 import * as cheerio from "cheerio";
-import { axe, toHaveNoViolations } from "jest-axe";
+import { axe } from "../../../../helpers/axe-helper.js";
 import { createServer } from "../../../../../app/server.js";
 import { getReviewType } from "../../../../../app/lib/utils.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
 import { when } from "jest-when";
-
-expect.extend(toHaveNoViolations);
 
 jest.mock("../../../../../app/session");
 
