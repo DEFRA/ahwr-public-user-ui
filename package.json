@@ -90,6 +90,7 @@
     "jest-junit": "16.0.0",
     "jest-when": "3.7.0",
     "jsdom": "26.1.0",
+    "lint-staged": "^16.4.0",
     "mini-css-extract-plugin": "2.9.4",
     "msw": "2.7.0",
     "neostandard": "0.12.2",
@@ -109,6 +110,15 @@
   "nodemonConfig": {
     "ignore": [
       "**/test-output/**"
+    ]
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
     ]
   }
 }
