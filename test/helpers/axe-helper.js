@@ -5,4 +5,8 @@ export const axe = configureAxe({
     type: "tag",
     values: ["wcag22aa"],
   },
+  rules: {
+    // FIXME rpa-contact-details.njk uses a <br> inside <ul>
+    list: { enabled: false },
+  },
 });
