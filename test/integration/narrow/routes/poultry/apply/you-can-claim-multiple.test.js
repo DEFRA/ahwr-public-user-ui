@@ -11,6 +11,7 @@ import { getApplicationsBySbi } from "../../../../../../app/api-requests/applica
 import { poultryApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { when } from "jest-when";
 import { userType } from "../../../../../../app/constants/constants.js";
+import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/config/index.js", () => ({
   config: {
@@ -73,6 +74,7 @@ describe("you-can-claim-multiple page", () => {
       const res = await server.inject({ ...optionsBase, method: "GET" });
 
       expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.payload).toContain("/select-funding"); // back-link
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
@@ -135,6 +137,7 @@ describe("you-can-claim-multiple page", () => {
         sessionKeys.poultryApplyData.agreeMultipleSpecies,
         "no",
       );
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.payload).toContain("You cannot continue with your application");
     });
   });

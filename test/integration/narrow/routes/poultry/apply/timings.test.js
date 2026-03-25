@@ -10,6 +10,7 @@ import { getApplicationsBySbi } from "../../../../../../app/api-requests/applica
 import { poultryApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
+import { axe } from "../../../../../helpers/axe-helper.js";
 
 const auth = {
   credentials: { reference: "1111", sbi: "111111111" },
@@ -73,6 +74,7 @@ describe("Declaration test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(200);
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Timing of poultry biosecurity reviews");
       expect($("title").text()).toMatch(
@@ -122,6 +124,7 @@ describe("Declaration test", () => {
         payload: { crumb, agreementStatus: "rejected" },
       });
       expect(res.statusCode).toBe(200);
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.payload).toContain("You cannot continue with your application");
     });
   });
