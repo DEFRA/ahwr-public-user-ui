@@ -13,12 +13,9 @@ import {
   dashboardRoutes,
   poultryApplyRoutes,
 } from "../../../../../../app/constants/routes.js";
-import { getApplicationsBySbi } from "../../../../../../app/api-requests/application-api.js";
-import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
 
-jest.mock("../../../../../../app/api-requests/application-api");
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/config/index.js", () => ({
   config: {
@@ -29,25 +26,12 @@ jest.mock("../../../../../../app/config/index.js", () => ({
   },
 }));
 
+const poultryAgreement = "POUL-1234-ABCD";
+const livestockAgreement = "IAHW-1234-ABCD";
+
 describe("select-funding", () => {
-  const organisation = {
-    id: "organisation",
-    name: "org-name",
-    address: "1 fake street, fakerton, FA1 2DA",
-    sbi: "0123456789",
-    userType: userType.NEW_USER,
-  };
-  const applications = [{ organisation, reference: "TEMP-PJ7E-WSI8" }];
-  getApplicationsBySbi.mockReturnValue(applications);
-
-  when(getSessionData)
-    .calledWith(expect.anything(), sessionEntryKeys.application)
-    .mockReturnValue({ reference: "IAHW-1234-ABCD" });
-
-  when(getSessionData)
-    .calledWith(expect.anything(), sessionEntryKeys.organisation)
-    .mockReturnValue(organisation);
-
+  // This setup is needed because otherwise the backlink would be
+  // empty and would fail the accessibility test
   when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
     .mockReturnValue(true);
@@ -71,12 +55,83 @@ describe("select-funding", () => {
   });
 
   describe("GET /select-funding", () => {
-    test("returns 200 and content is correct", async () => {
+    test("returns create agreement text for livestock if no agreement", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue(undefined);
+
       const res = await server.inject({ ...optionsBase, method: "GET" });
 
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Select funding");
+      expect($('input[name="type"]').first().next("label").text().trim()).toBe(
+        "Cattle, pig, and sheep review and follow-up",
+      );
+      expect($(".govuk-radios__hint").first().text().trim()).toBe(
+        "Create an agreement for cattle, sheep and pig",
+      );
+    });
+
+    test("returns create agreement text for poultry if no agreement", async () => {
+      const res = await server.inject({ ...optionsBase, method: "GET" });
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text()).toMatch("Select funding");
+      expect($('input[name="type"]').eq(1).next("label").text().trim()).toBe(
+        "Poultry biosecurity review",
+      );
+      expect($(".govuk-radios__hint").eq(1).text().trim()).toBe(
+        "Create an agreement for poultry biosecurity assessments",
+      );
+    });
+
+    test("returns create claim text for livestock if agreement exists", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue({ reference: livestockAgreement });
+      const res = await server.inject({ ...optionsBase, method: "GET" });
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text()).toMatch("Select funding");
+      expect($('input[name="type"]').first().next("label").text().trim()).toBe(
+        "Cattle, pig, and sheep review and follow-up",
+      );
+      expect($(".govuk-radios__hint").first().text().trim()).toBe(
+        `Agreement number: ${livestockAgreement} Create or manage claims for this agreement`,
+      );
+    });
+
+    test("returns create claim text for poultry if  agreement exists", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.latestPoultryApplication,
+        )
+        .mockReturnValue({ reference: poultryAgreement });
+
+      const res = await server.inject({ ...optionsBase, method: "GET" });
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text()).toMatch("Select funding");
+      expect($('input[name="type"]').eq(1).next("label").text().trim()).toBe(
+        "Poultry biosecurity review",
+      );
+      expect($(".govuk-radios__hint").eq(1).text().trim()).toBe(
+        `Agreement number: ${poultryAgreement} Create or manage claims for this agreement`,
+      );
     });
   });
 

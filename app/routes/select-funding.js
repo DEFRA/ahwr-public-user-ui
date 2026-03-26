@@ -1,4 +1,4 @@
-import { setSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import { setSessionData, sessionEntryKeys, sessionKeys, getSessionData } from "../session/index.js";
 import { applyRoutes, dashboardViews, poultryApplyRoutes } from "../constants/routes.js";
 
 export const selectFundingRouteHandlers = [
@@ -6,8 +6,26 @@ export const selectFundingRouteHandlers = [
     method: "GET",
     path: "/select-funding",
     options: {
-      handler: async (_, h) => {
-        return h.view(dashboardViews.selectFunding);
+      handler: async (request, h) => {
+        const latestEndemicsApplication = getSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        );
+        const latestPoultryApplication = getSessionData(
+          request,
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.latestPoultryApplication,
+        );
+        const livestockText = latestEndemicsApplication
+          ? `Agreement number: ${latestEndemicsApplication.reference} Create or manage claims for this agreement`
+          : "Create an agreement for cattle, sheep and pig";
+
+        const poultryText = latestPoultryApplication
+          ? `Agreement number: ${latestPoultryApplication.reference} Create or manage claims for this agreement`
+          : "Create an agreement for poultry biosecurity assessments";
+
+        return h.view(dashboardViews.selectFunding, { livestockText, poultryText });
       },
     },
   },
