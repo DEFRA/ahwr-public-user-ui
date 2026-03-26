@@ -18,11 +18,11 @@ export const selectFundingRouteHandlers = [
           sessionKeys.poultryClaim.latestPoultryApplication,
         );
         const livestockText = latestEndemicsApplication
-          ? `Agreement number: ${latestEndemicsApplication.reference} Create or manage claims for this agreement`
+          ? `<b>Agreement number</b>: ${latestEndemicsApplication.reference}<br/>Create or manage claims for this agreement`
           : "Create an agreement for cattle, sheep and pig";
 
         const poultryText = latestPoultryApplication
-          ? `Agreement number: ${latestPoultryApplication.reference} Create or manage claims for this agreement`
+          ? `<b>Agreement number</b>: ${latestPoultryApplication.reference}<br/>Create or manage claims for this agreement`
           : "Create an agreement for poultry biosecurity assessments";
 
         return h.view(dashboardViews.selectFunding, { livestockText, poultryText });

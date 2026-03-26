@@ -1,25 +1,25 @@
 import * as cheerio from "cheerio";
-import { getCrumbs } from "../../../../../utils/get-crumbs.js";
+import { getCrumbs } from "../../../utils/get-crumbs.js";
 import {
   getSessionData,
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
-} from "../../../../../../app/session/index.js";
-import { createServer } from "../../../../../../app/server.js";
+} from "../../../../app/session/index.js";
+import { createServer } from "../../../../app/server.js";
 import { StatusCodes } from "http-status-codes";
 import {
   applyRoutes,
   dashboardRoutes,
   poultryApplyRoutes,
-} from "../../../../../../app/constants/routes.js";
+} from "../../../../app/constants/routes.js";
 import { when } from "jest-when";
-import { axe } from "../../../../../helpers/axe-helper.js";
+import { axe } from "../../../helpers/axe-helper.js";
 
-jest.mock("../../../../../../app/session/index.js");
-jest.mock("../../../../../../app/config/index.js", () => ({
+jest.mock("../../../../app/session/index.js");
+jest.mock("../../../../app/config/index.js", () => ({
   config: {
-    ...jest.requireActual("../../../../../../app/config/index.js").config,
+    ...jest.requireActual("../../../../app/config/index.js").config,
     poultry: {
       enabled: "true",
     },
@@ -108,7 +108,7 @@ describe("select-funding", () => {
         "Cattle, pig, and sheep review and follow-up",
       );
       expect($(".govuk-radios__hint").first().text().trim()).toBe(
-        `Agreement number: ${livestockAgreement} Create or manage claims for this agreement`,
+        `Agreement number: ${livestockAgreement}Create or manage claims for this agreement`,
       );
     });
 
@@ -130,7 +130,7 @@ describe("select-funding", () => {
         "Poultry biosecurity review",
       );
       expect($(".govuk-radios__hint").eq(1).text().trim()).toBe(
-        `Agreement number: ${poultryAgreement} Create or manage claims for this agreement`,
+        `Agreement number: ${poultryAgreement}Create or manage claims for this agreement`,
       );
     });
   });
