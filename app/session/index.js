@@ -30,6 +30,9 @@ export const sessionKeys = {
     offerStatus: "offerStatus",
     type: "type",
   },
+  poultryClaim: {
+    latestPoultryApplication: "latestPoultryApplication",
+  },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",
     vetsName: "vetsName",
@@ -113,6 +116,7 @@ export const sessionEntryKeys = {
   farmerApplyData: "farmerApplyData",
   poultryApplyData: "poultryApplyData",
   endemicsClaim: "endemicsClaim",
+  poultryClaim: "poultryClaim",
   pkcecodes: "pkcecodes",
   tokens: "tokens",
   customer: "customer",

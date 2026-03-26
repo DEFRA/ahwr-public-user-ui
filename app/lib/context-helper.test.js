@@ -292,5 +292,50 @@ describe("context-helper", () => {
         undefined,
       );
     });
+
+    it("returns poultry application", async () => {
+      const poultry = {
+        type: "POUL",
+        reference: "POUL-1111-2222",
+        createdAt: "2025-05-01T00:00:00.000Z",
+      };
+      const newWorld = {
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        createdAt: "2025-05-01T00:00:00.000Z",
+      };
+      const oldWorld = {
+        type: "VV",
+        reference: "AHWR-1111-2222",
+        data: {
+          visitDate: "2023-04-15T00:00:00.000Z",
+        },
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([newWorld, oldWorld, poultry]);
+      const { latestPoultryApplication, latestEndemicsApplication, latestVetVisitApplication } =
+        await refreshApplications("123456789", mockRequest);
+
+      expect(latestEndemicsApplication.reference).toBe("IAHW-1111-2222");
+      expect(latestPoultryApplication.reference).toBe("POUL-1111-2222");
+      expect(latestVetVisitApplication).toBeUndefined();
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestEndemicsApplication",
+        newWorld,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "poultryClaim",
+        "latestPoultryApplication",
+        poultry,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestVetVisitApplication",
+        undefined,
+      );
+    });
   });
 });
