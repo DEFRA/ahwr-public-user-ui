@@ -1,5 +1,12 @@
 import HttpStatus from "http-status-codes";
-import { setSessionData, sessionEntryKeys, sessionKeys, getSessionData } from "../session/index.js";
+import {
+  setSessionData,
+  setSessionEntry,
+  sessionEntryKeys,
+  sessionKeys,
+  getSessionData,
+  clearFundingSelection,
+} from "../session/index.js";
 import {
   applyRoutes,
   dashboardRoutes,
@@ -37,6 +44,10 @@ export const selectFundingRouteHandlers = [
         }),
         failAction: async (request, h, error) => {
           request.logger.error({ error });
+          clearFundingSelection(request);
+          setSessionData(request, sessionEntryKeys.fundingSelection, {
+            [sessionKeys.fundingSelection.error]: "No funding selected",
+          });
           const { livestockText, poultryText, organisation } = getScreenInformation(request);
           return h
             .view(dashboardViews.selectFunding, {
@@ -53,6 +64,7 @@ export const selectFundingRouteHandlers = [
         },
       },
       handler: async (request, h) => {
+        clearFundingSelection(request);
         const { type } = request.payload;
 
         const latestEndemicsApplication = getSessionData(
@@ -66,26 +78,35 @@ export const selectFundingRouteHandlers = [
           sessionKeys.poultryClaim.latestPoultryApplication,
         );
 
-        await setSessionData(
-          request,
-          sessionEntryKeys.poultryApplyData,
-          sessionKeys.poultryApplyData.type,
-          type,
-        );
-
         if (type === "IAHW" && latestEndemicsApplication) {
+          setSessionEntry(request, sessionEntryKeys.fundingSelection, {
+            [sessionKeys.fundingSelection.selectedFunding]: type,
+            agreement: latestEndemicsApplication.reference,
+          });
           return h.redirect(dashboardRoutes.manageYourClaims);
         }
 
         if (type === "IAHW") {
+          setSessionEntry(request, sessionEntryKeys.fundingSelection, {
+            [sessionKeys.fundingSelection.selectedFunding]: type,
+            agreement: undefined,
+          });
           return h.redirect(applyRoutes.youCanClaimMultiple);
         }
 
         if (type === "POUL" && latestPoultryApplication) {
+          setSessionEntry(request, sessionEntryKeys.fundingSelection, {
+            [sessionKeys.fundingSelection.selectedFunding]: type,
+            agreement: latestPoultryApplication.reference,
+          });
           return h.redirect(dashboardRoutes.manageYourClaims);
         }
 
         if (type === "POUL") {
+          setSessionEntry(request, sessionEntryKeys.fundingSelection, {
+            [sessionKeys.fundingSelection.selectedFunding]: type,
+            agreement: undefined,
+          });
           return h.redirect(poultryApplyRoutes.youCanClaimMultiple);
         }
       },

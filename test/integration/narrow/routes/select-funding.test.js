@@ -1,6 +1,13 @@
 import * as cheerio from "cheerio";
 import { getCrumbs } from "../../../utils/get-crumbs.js";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
+import {
+  getSessionData,
+  setSessionData,
+  setSessionEntry,
+  clearFundingSelection,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../../../../app/session/index.js";
 import { createServer } from "../../../../app/server.js";
 import { StatusCodes } from "http-status-codes";
 import {
@@ -188,6 +195,15 @@ describe("select-funding", () => {
 
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual(applyRoutes.youCanClaimMultiple);
+      expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
+      expect(setSessionEntry).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        {
+          selectedFunding: "IAHW",
+          agreement: undefined,
+        },
+      );
     });
 
     test("redirects to vet-visits when user selects livestock with an agreement", async () => {
@@ -211,6 +227,15 @@ describe("select-funding", () => {
 
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual(dashboardRoutes.manageYourClaims);
+      expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
+      expect(setSessionEntry).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        {
+          selectedFunding: "IAHW",
+          agreement: livestockAgreement,
+        },
+      );
     });
 
     test("redirects to poultry apply when user selects poultry without an agreement", async () => {
@@ -234,6 +259,15 @@ describe("select-funding", () => {
 
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual(poultryApplyRoutes.youCanClaimMultiple);
+      expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
+      expect(setSessionEntry).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        {
+          selectedFunding: "POUL",
+          agreement: undefined,
+        },
+      );
     });
 
     test("redirects to vet-visits when user selects poultry with an agreement", async () => {
@@ -257,6 +291,15 @@ describe("select-funding", () => {
 
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual(dashboardRoutes.manageYourClaims);
+      expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
+      expect(setSessionEntry).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        {
+          selectedFunding: "POUL",
+          agreement: poultryAgreement,
+        },
+      );
     });
 
     test("show inline Error if continue is pressed and no funding selected", async () => {
@@ -272,6 +315,14 @@ describe("select-funding", () => {
 
       expect($(".govuk-error-summary li > a").text()).toMatch(errorMessage);
       expect($(".govuk-error-message").text()).toContain(errorMessage);
+      expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        {
+          error: "No funding selected",
+        },
+      );
     });
   });
 });
