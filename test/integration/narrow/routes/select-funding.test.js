@@ -258,5 +258,20 @@ describe("select-funding", () => {
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual(dashboardRoutes.manageYourClaims);
     });
+
+    test("show inline Error if continue is pressed and no funding selected", async () => {
+      const options = {
+        ...postOptionsBase,
+      };
+
+      const response = await server.inject(options);
+
+      expect(await axe(response.payload)).toHaveNoViolations();
+      const $ = cheerio.load(response.payload);
+      const errorMessage = "Select a funding";
+
+      expect($(".govuk-error-summary li > a").text()).toMatch(errorMessage);
+      expect($(".govuk-error-message").text()).toContain(errorMessage);
+    });
   });
 });

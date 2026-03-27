@@ -17,11 +17,20 @@
 <br />
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds"> 
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+
     <form method="POST" novalidate="novalidate">
       <input type="hidden" name="crumb" value="{{crumb}}" />
 
       {{ govukRadios({
+        id: "selectFunding",
         name: "type",
+        errorMessage: errorMessage,
         fieldset: {
           legend: {
             text: pageHeadingText,
