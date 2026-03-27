@@ -1,11 +1,6 @@
 import * as cheerio from "cheerio";
 import { getCrumbs } from "../../../utils/get-crumbs.js";
-import {
-  getSessionData,
-  setSessionData,
-  sessionEntryKeys,
-  sessionKeys,
-} from "../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
 import { createServer } from "../../../../app/server.js";
 import { StatusCodes } from "http-status-codes";
 import {
@@ -172,7 +167,15 @@ describe("select-funding", () => {
       };
     });
 
-    test("returns 302 and redirects to livestock apply when user selects livestock", async () => {
+    test("redirects to livestock apply when user selects livestock without an agreement", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue(undefined);
+
       const options = {
         ...postOptionsBase,
         payload: {
@@ -184,16 +187,41 @@ describe("select-funding", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-      expect(setSessionData).toHaveBeenCalledWith(
-        expect.anything(),
-        sessionEntryKeys.poultryApplyData,
-        sessionKeys.poultryApplyData.type,
-        "IAHW",
-      );
       expect(res.headers.location).toEqual(applyRoutes.youCanClaimMultiple);
     });
 
-    test("returns 302 and redirects to poultry apply when user selects poultry", async () => {
+    test("redirects to vet-visits when user selects livestock with an agreement", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue({ reference: livestockAgreement });
+
+      const options = {
+        ...postOptionsBase,
+        payload: {
+          ...postOptionsBase.payload,
+          type: "IAHW",
+        },
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
+      expect(res.headers.location).toEqual(dashboardRoutes.manageYourClaims);
+    });
+
+    test("redirects to poultry apply when user selects poultry without an agreement", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.latestPoultryApplication,
+        )
+        .mockReturnValue(undefined);
+
       const options = {
         ...postOptionsBase,
         payload: {
@@ -205,13 +233,30 @@ describe("select-funding", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-      expect(setSessionData).toHaveBeenCalledWith(
-        expect.anything(),
-        sessionEntryKeys.poultryApplyData,
-        sessionKeys.poultryApplyData.type,
-        "POUL",
-      );
       expect(res.headers.location).toEqual(poultryApplyRoutes.youCanClaimMultiple);
+    });
+
+    test("redirects to vet-visits when user selects poultry with an agreement", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.latestPoultryApplication,
+        )
+        .mockReturnValue({ reference: poultryAgreement });
+
+      const options = {
+        ...postOptionsBase,
+        payload: {
+          ...postOptionsBase.payload,
+          type: "POUL",
+        },
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
+      expect(res.headers.location).toEqual(dashboardRoutes.manageYourClaims);
     });
   });
 });

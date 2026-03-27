@@ -1,5 +1,10 @@
 import { setSessionData, sessionEntryKeys, sessionKeys, getSessionData } from "../session/index.js";
-import { applyRoutes, dashboardViews, poultryApplyRoutes } from "../constants/routes.js";
+import {
+  applyRoutes,
+  dashboardRoutes,
+  dashboardViews,
+  poultryApplyRoutes,
+} from "../constants/routes.js";
 
 export const selectFundingRouteHandlers = [
   {
@@ -42,6 +47,17 @@ export const selectFundingRouteHandlers = [
       handler: async (request, h) => {
         const { type } = request.payload;
 
+        const latestEndemicsApplication = getSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        );
+        const latestPoultryApplication = getSessionData(
+          request,
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.latestPoultryApplication,
+        );
+
         await setSessionData(
           request,
           sessionEntryKeys.poultryApplyData,
@@ -49,11 +65,21 @@ export const selectFundingRouteHandlers = [
           type,
         );
 
+        if (type === "IAHW" && latestEndemicsApplication) {
+          return h.redirect(dashboardRoutes.manageYourClaims);
+        }
+
         if (type === "IAHW") {
           return h.redirect(applyRoutes.youCanClaimMultiple);
         }
 
-        return h.redirect(poultryApplyRoutes.youCanClaimMultiple);
+        if (type === "POUL" && latestPoultryApplication) {
+          return h.redirect(dashboardRoutes.manageYourClaims);
+        }
+
+        if (type === "POUL") {
+          return h.redirect(poultryApplyRoutes.youCanClaimMultiple);
+        }
       },
     },
   },
