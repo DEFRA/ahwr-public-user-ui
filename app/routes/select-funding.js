@@ -7,6 +7,8 @@ export const selectFundingRouteHandlers = [
     path: "/select-funding",
     options: {
       handler: async (request, h) => {
+        const organisation = getSessionData(request, sessionEntryKeys.organisation);
+
         const latestEndemicsApplication = getSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
@@ -25,7 +27,11 @@ export const selectFundingRouteHandlers = [
           ? `<b>Agreement number</b>: ${latestPoultryApplication.reference}<br/>Create or manage claims for this agreement`
           : "Create an agreement for poultry biosecurity assessments";
 
-        return h.view(dashboardViews.selectFunding, { livestockText, poultryText });
+        return h.view(dashboardViews.selectFunding, {
+          livestockText,
+          poultryText,
+          ...organisation,
+        });
       },
     },
   },

@@ -15,6 +15,7 @@ import {
 } from "../../../../app/constants/routes.js";
 import { when } from "jest-when";
 import { axe } from "../../../helpers/axe-helper.js";
+import { userType } from "../../../../app/constants/constants.js";
 
 jest.mock("../../../../app/session/index.js");
 jest.mock("../../../../app/config/index.js", () => ({
@@ -30,6 +31,19 @@ const poultryAgreement = "POUL-1234-ABCD";
 const livestockAgreement = "IAHW-1234-ABCD";
 
 describe("select-funding", () => {
+  const organisation = {
+    id: "organisation",
+    name: "org-name",
+    address: "1 fake street, fakerton, FA1 2DA",
+    sbi: "0123456789",
+    farmerName: "Joe Bloggs",
+    userType: userType.NEW_USER,
+  };
+
+  when(getSessionData)
+    .calledWith(expect.anything(), sessionEntryKeys.organisation)
+    .mockReturnValue(organisation);
+
   // This setup is needed because otherwise the backlink would be
   // empty and would fail the accessibility test
   when(getSessionData)
@@ -55,6 +69,16 @@ describe("select-funding", () => {
   });
 
   describe("GET /select-funding", () => {
+    test("shows the organisation details", async () => {
+      const res = await server.inject({ ...optionsBase, method: "GET" });
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-heading-m").eq(1).text().trim()).toBe(organisation.name);
+      expect($("#SBI").text()).toContain(organisation.sbi);
+      expect($("#SBI").text()).toContain(organisation.farmerName);
+    });
+
     test("returns create agreement text for livestock if no agreement", async () => {
       when(getSessionData)
         .calledWith(

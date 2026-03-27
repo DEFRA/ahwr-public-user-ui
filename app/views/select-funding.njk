@@ -5,15 +5,25 @@
 
 {% block pageTitle %}{{ pageHeadingText }} - {{ serviceName }} - GOV.UK{% endblock %}
 
-{% block beforeContent %}
-{{ govukBackLink({
-text: "Back",
-href: backLink,
-attributes: {id: "back"}
-}) }}
-{% endblock %}
-
 {% block content %}
+<div class="govuk-grid-row govuk-width-container">
+  <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+    <h2 class="govuk-heading-m govuk-!-static-margin-bottom-1">{{ name }}</h2>
+    <p class="govuk-body govuk-!-static-margin-bottom-1" id="SBI">
+      <span class="govuk-!-font-weight-bold">Single Business Identifier (SBI):</span> {{ sbi }}</br>
+      <span class="govuk-!-font-weight-bold">Agreement holder:</span> {{farmerName }}
+    </p>
+  </div>
+  <div class="govuk-grid-column-one-third govuk-!-static-padding-0">
+    {% if attachedToMultipleBusinesses %}
+    <p class="govuk-!-text-align-right">
+      <a id="MBILink" href={{ hostname }}>Claim for a different business</a>
+    </p>
+    {% endif %}
+  </div>
+</div>
+<hr />
+<br />
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds"> 
     <form method="POST" novalidate="novalidate">
@@ -31,14 +41,14 @@ attributes: {id: "back"}
         items: [
           {
             value: "IAHW",
-            text: "Cattle, pig, and sheep review and follow-up",
+            html: "<b>Cattle, pig, and sheep review and follow-up</b>",
             hint: {
               html: livestockText
             }
           },
           {
             value: "POUL",
-            text: "Poultry biosecurity review",
+            html: "<b>Poultry biosecurity review</b>",
             hint: {
               html: poultryText
             }
