@@ -1,7 +1,6 @@
 import HttpStatus from "http-status-codes";
 import {
   setSessionData,
-  setSessionEntry,
   sessionEntryKeys,
   sessionKeys,
   getSessionData,
@@ -45,9 +44,12 @@ export const selectFundingRouteHandlers = [
         failAction: async (request, h, error) => {
           request.logger.error({ error });
           clearFundingSelection(request);
-          setSessionData(request, sessionEntryKeys.fundingSelection, {
-            [sessionKeys.fundingSelection.error]: "No funding selected",
-          });
+          setSessionData(
+            request,
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.error,
+            "No funding selected",
+          );
           const { livestockText, poultryText, organisation } = getScreenInformation(request);
           return h
             .view(dashboardViews.selectFunding, {
@@ -79,34 +81,66 @@ export const selectFundingRouteHandlers = [
         );
 
         if (type === "IAHW" && latestEndemicsApplication) {
-          setSessionEntry(request, sessionEntryKeys.fundingSelection, {
-            [sessionKeys.fundingSelection.selectedFunding]: type,
-            agreement: latestEndemicsApplication.reference,
-          });
+          setSessionData(
+            request,
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.selectedFunding,
+            type,
+          );
+          setSessionData(
+            request,
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.agreement,
+            latestEndemicsApplication.reference,
+          );
           return h.redirect(dashboardRoutes.manageYourClaims);
         }
 
         if (type === "IAHW") {
-          setSessionEntry(request, sessionEntryKeys.fundingSelection, {
-            [sessionKeys.fundingSelection.selectedFunding]: type,
-            agreement: undefined,
-          });
+          setSessionData(
+            request,
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.selectedFunding,
+            type,
+          );
+          setSessionData(
+            request,
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.agreement,
+            undefined,
+          );
           return h.redirect(applyRoutes.youCanClaimMultiple);
         }
 
         if (type === "POUL" && latestPoultryApplication) {
-          setSessionEntry(request, sessionEntryKeys.fundingSelection, {
-            [sessionKeys.fundingSelection.selectedFunding]: type,
-            agreement: latestPoultryApplication.reference,
-          });
+          setSessionData(
+            request,
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.selectedFunding,
+            type,
+          );
+          setSessionData(
+            request,
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.agreement,
+            latestPoultryApplication.reference,
+          );
           return h.redirect(dashboardRoutes.manageYourClaims);
         }
 
         if (type === "POUL") {
-          setSessionEntry(request, sessionEntryKeys.fundingSelection, {
-            [sessionKeys.fundingSelection.selectedFunding]: type,
-            agreement: undefined,
-          });
+          setSessionData(
+            request,
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.selectedFunding,
+            type,
+          );
+          setSessionData(
+            request,
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.agreement,
+            undefined,
+          );
           return h.redirect(poultryApplyRoutes.youCanClaimMultiple);
         }
       },

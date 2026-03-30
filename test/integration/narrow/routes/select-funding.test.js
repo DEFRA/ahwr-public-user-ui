@@ -3,7 +3,6 @@ import { getCrumbs } from "../../../utils/get-crumbs.js";
 import {
   getSessionData,
   setSessionData,
-  setSessionEntry,
   clearFundingSelection,
   sessionEntryKeys,
   sessionKeys,
@@ -196,13 +195,17 @@ describe("select-funding", () => {
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual(applyRoutes.youCanClaimMultiple);
       expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
-      expect(setSessionEntry).toHaveBeenCalledWith(
+      expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.fundingSelection,
-        {
-          selectedFunding: "IAHW",
-          agreement: undefined,
-        },
+        sessionKeys.fundingSelection.selectedFunding,
+        "IAHW",
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        sessionKeys.fundingSelection.agreement,
+        undefined,
       );
     });
 
@@ -228,13 +231,17 @@ describe("select-funding", () => {
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual(dashboardRoutes.manageYourClaims);
       expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
-      expect(setSessionEntry).toHaveBeenCalledWith(
+      expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.fundingSelection,
-        {
-          selectedFunding: "IAHW",
-          agreement: livestockAgreement,
-        },
+        sessionKeys.fundingSelection.selectedFunding,
+        "IAHW",
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        sessionKeys.fundingSelection.agreement,
+        livestockAgreement,
       );
     });
 
@@ -260,13 +267,17 @@ describe("select-funding", () => {
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual(poultryApplyRoutes.youCanClaimMultiple);
       expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
-      expect(setSessionEntry).toHaveBeenCalledWith(
+      expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.fundingSelection,
-        {
-          selectedFunding: "POUL",
-          agreement: undefined,
-        },
+        sessionKeys.fundingSelection.selectedFunding,
+        "POUL",
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        sessionKeys.fundingSelection.agreement,
+        undefined,
       );
     });
 
@@ -292,13 +303,17 @@ describe("select-funding", () => {
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual(dashboardRoutes.manageYourClaims);
       expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
-      expect(setSessionEntry).toHaveBeenCalledWith(
+      expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.fundingSelection,
-        {
-          selectedFunding: "POUL",
-          agreement: poultryAgreement,
-        },
+        sessionKeys.fundingSelection.selectedFunding,
+        "POUL",
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        sessionKeys.fundingSelection.agreement,
+        poultryAgreement,
       );
     });
 
@@ -319,9 +334,8 @@ describe("select-funding", () => {
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.fundingSelection,
-        {
-          error: "No funding selected",
-        },
+        "error",
+        "No funding selected",
       );
     });
   });
