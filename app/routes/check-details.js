@@ -75,7 +75,9 @@ export const checkDetailsHandlers = [
             sessionKeys.signInRedirect,
           );
 
-          if (config.poultry.enabled) return h.redirect(dashboardRoutes.selectFunding);
+          if (config.poultry.enabled) {
+            return h.redirect(dashboardRoutes.selectFunding);
+          }
 
           if (redirectToApply === true) {
             return h.redirect(applyRoutes.youCanClaimMultiple);
