@@ -10,7 +10,7 @@
 
 Use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-By default, a commit into the trunk will cause a `minor` version increment. If you need either the `major` or `patch` version, append `#major` or `#patch` to the commit message.
+By default, a commit into the trunk will cause a `minor` version increment. If you need either a `major` or `patch` version, append `#major` or `#patch` to the commit message.
 
 ## Integration Tests
 
