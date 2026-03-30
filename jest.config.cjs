@@ -38,7 +38,7 @@ module.exports = {
     {
       ...sharedConfig,
       displayName: "unit",
-      testMatch: ["<rootDir>/test/unit/**/*.test.js"],
+      testMatch: ["<rootDir>/test/unit/**/*.test.js", "<rootDir>/app/**/*.test.js"],
       testEnvironment: "node",
     },
     {

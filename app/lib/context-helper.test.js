@@ -6,16 +6,16 @@ import {
   refreshApplications,
   skipOtherHerdsOnSbiPage,
   skipSameHerdPage,
-} from "../../../../app/lib/context-helper.js";
+} from "./context-helper.js";
 import {
   ONLY_HERD,
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
-} from "../../../../app/constants/claim-constants.js";
-import { getApplicationsBySbi } from "../../../../app/api-requests/application-api.js";
-import { setSessionData } from "../../../../app/session/index.js";
+} from "../constants/claim-constants.js";
+import { getApplicationsBySbi } from "../api-requests/application-api.js";
+import { setSessionData } from "../session/index.js";
 
-jest.mock("../../../../app/api-requests/application-api.js");
-jest.mock("../../../../app/session/index.js");
+jest.mock("../api-requests/application-api.js");
+jest.mock("../session/index.js");
 
 describe("context-helper", () => {
   test("isVisitDateAfterPIHuntAndDairyGoLive throws error when no visit date provided", () => {
