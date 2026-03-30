@@ -18,7 +18,16 @@
 <div class="govuk-grid-row govuk-width-container">
   <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
     <p class="govuk-body govuk-!-static-margin-bottom-1">
-      <span class="govuk-!-font-weight-bold">Agreement number:</span> <span class="govuk-body">{{ reference }}</span>
+      <span class="govuk-!-font-weight-bold">Agreement number:</span> <span class="govuk-body">{{ reference }}</span></br>
+      {% if isPoultryEnabled %}
+        <span class="govuk-!-font-weight-bold">Species included in this agreement: </span><span class="govuk-body">
+          {% if isPoultryAgreement %}
+            poultry
+          {% else %}
+            cattle, pigs and sheep
+          {% endif %}
+        </span>
+     {% endif %}
     </p>
   </div>
   <div class="govuk-grid-column-one-third govuk-!-static-padding-0">
@@ -27,6 +36,12 @@
         default('_self') }} href={{ downloadedDocument | default('#') }}>
         Download agreement summary
       </a>
+      {% if isPoultryEnabled %}
+      <br/>
+      <a class="govuk-link" id="selectFundingLink" href="/select-funding">
+        Claim for a different agreement
+      </a>
+      {% endif %}
     </p>
   </div>
 

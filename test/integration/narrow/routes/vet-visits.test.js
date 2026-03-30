@@ -6,7 +6,7 @@ import { config } from "../../../../app/config/index.js";
 import { createServer } from "../../../../app/server.js";
 import { getTableCells } from "../../../helpers/get-table-cells.js";
 import globalJsdom from "global-jsdom";
-import { getByRole, queryByRole } from "@testing-library/dom";
+import { getByRole, getByText, queryByRole, queryByText, within } from "@testing-library/dom";
 import { getClaimsByApplicationReference } from "../../../../app/api-requests/claim-api.js";
 import { refreshApplications } from "../../../../app/lib/context-helper.js";
 
@@ -25,8 +25,10 @@ jest
 describe("GET /vet-visits", () => {
   let cleanUpFunction = () => {};
   let server;
+
   beforeEach(async () => {
     server = await createServer();
+    config.poultry.enabled = false;
   });
 
   test("details not checked redirects to get them checked", async () => {
@@ -85,12 +87,11 @@ describe("GET /vet-visits", () => {
   });
 
   describe("Poultry", () => {
-    beforeAll(() => {
-      config.poultry.enabled = true;
-    });
+    beforeAll(() => {});
 
     beforeEach(() => {
       cleanUpFunction();
+      config.poultry.enabled = true;
     });
 
     test("poultry agreement, no claims made", async () => {
@@ -135,13 +136,19 @@ describe("GET /vet-visits", () => {
         "href",
         expect.stringContaining("/which-species-of-poultry"),
       );
+      expect(getByText(document.body, "Claim for a different agreement")).toBeTruthy();
+      const container = getByText(
+        document.body,
+        "Species included in this agreement:",
+      ).parentElement;
+      expect(within(container).getByText("poultry")).toBeTruthy();
     });
   });
 
   describe("Cattle/Pig/Sheep", () => {
-    config.poultry.enabled = false;
     beforeEach(() => {
       cleanUpFunction();
+      config.poultry.enabled = false;
     });
 
     test("new world, multiple businesses", async () => {
@@ -224,6 +231,8 @@ describe("GET /vet-visits", () => {
           name: "Claim for a different business",
         }),
       ).toHaveProperty("href", expect.stringContaining("auth-code-url"));
+      expect(queryByText(document.body, "Claim for a different agreement")).toBeFalsy();
+      expect(queryByText(document.body, "Species included in this agreement: ")).toBeFalsy();
     });
 
     test("new world, multiple businesses, for sheep (flock not herd)", async () => {
@@ -526,6 +535,66 @@ describe("GET /vet-visits", () => {
       const applyLink = getByRole(document.body, "link", { name: "Apply for a new agreement" });
       expect(applyLink).not.toBeNull();
       expect(applyLink.getAttribute("href")).toBe("/you-can-claim-multiple");
+    });
+
+    test("poultry enabled and livestock agreement with no claims", async () => {
+      config.poultry.enabled = true;
+
+      const applicationReference = "IAHW-TEST-NEW1";
+      const sbi = "106354662";
+      const state = {
+        confirmedDetails: true,
+        customer: {
+          attachedToMultipleBusinesses: true,
+        },
+        endemicsClaim: {
+          latestEndemicsApplication: {
+            sbi,
+            type: "EE",
+            reference: applicationReference,
+            redacted: false,
+            status: "AGREED",
+          },
+          latestVetVisitApplication: undefined,
+        },
+        organisation: {
+          sbi,
+          name: "PARTRIDGES",
+          farmerName: "Janice Harrison",
+        },
+      };
+
+      await setServerState(server, state);
+
+      const claims = [
+        {
+          applicationReference,
+          reference: "REBC-A89F-7776",
+          data: {
+            dateOfVisit: "2024-12-29",
+            typeOfLivestock: "beef",
+            claimType: "REVIEW",
+          },
+          status: "WITHDRAWN",
+        },
+      ];
+      getClaimsByApplicationReference.mockResolvedValueOnce(claims);
+
+      const { payload } = await server.inject({
+        url: "/vet-visits",
+        auth: {
+          credentials: {},
+          strategy: "cookie",
+        },
+      });
+      cleanUpFunction = globalJsdom(payload);
+
+      expect(queryByText(document.body, "Claim for a different agreement")).toBeTruthy();
+      const container = getByText(
+        document.body,
+        /species included in this agreement/i,
+      ).parentElement;
+      expect(within(container).getByText(/cattle, pigs and sheep/i)).toBeTruthy();
     });
   });
 });

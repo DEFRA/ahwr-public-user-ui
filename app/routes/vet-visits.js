@@ -198,8 +198,8 @@ export const vetVisitsHandlers = [
         const showNotificationBanner = showMultiHerdsBanner(latestEndemicsApplication, claims);
 
         const { sheepHeaders, nonSheepHeaders } = buildTableHeaders();
-
         const isPoultryAgreement = checkIfPoultryAgreement(latestEndemicsApplication);
+        const isPoultryEnabled = config.poultry.enabled;
 
         return h.view("vet-visits", {
           beefClaimsRows,
@@ -224,6 +224,8 @@ export const vetVisitsHandlers = [
             hostname: await requestAuthorizationCodeUrl(request),
           }),
           latestTermsAndConditionsUri,
+          isPoultryEnabled,
+          isPoultryAgreement,
         });
       },
     },
