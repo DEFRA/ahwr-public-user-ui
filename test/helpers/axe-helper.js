@@ -5,4 +5,7 @@ export const axe = configureAxe({
     type: "tag",
     values: ["wcag22aa"],
   },
+  rules: {
+    list: { enabled: true },
+  },
 });
