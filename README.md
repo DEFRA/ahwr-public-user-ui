@@ -30,6 +30,7 @@ and tested without relying on an external service
 
 - Docker
 - Docker Compose
+- [pre-commit](https://pre-commit.com/)
 
 ## Running the application
 
