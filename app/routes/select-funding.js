@@ -80,14 +80,15 @@ export const selectFundingRouteHandlers = [
           sessionKeys.poultryClaim.latestPoultryApplication,
         );
 
+        await setSessionData(
+          request,
+          sessionEntryKeys.fundingSelection,
+          sessionKeys.fundingSelection.selectedFunding,
+          type,
+        );
+
         if (type === "IAHW" && latestEndemicsApplication) {
-          setSessionData(
-            request,
-            sessionEntryKeys.fundingSelection,
-            sessionKeys.fundingSelection.selectedFunding,
-            type,
-          );
-          setSessionData(
+          await setSessionData(
             request,
             sessionEntryKeys.fundingSelection,
             sessionKeys.fundingSelection.agreement,
@@ -97,13 +98,7 @@ export const selectFundingRouteHandlers = [
         }
 
         if (type === "IAHW") {
-          setSessionData(
-            request,
-            sessionEntryKeys.fundingSelection,
-            sessionKeys.fundingSelection.selectedFunding,
-            type,
-          );
-          setSessionData(
+          await setSessionData(
             request,
             sessionEntryKeys.fundingSelection,
             sessionKeys.fundingSelection.agreement,
@@ -113,13 +108,7 @@ export const selectFundingRouteHandlers = [
         }
 
         if (type === "POUL" && latestPoultryApplication) {
-          setSessionData(
-            request,
-            sessionEntryKeys.fundingSelection,
-            sessionKeys.fundingSelection.selectedFunding,
-            type,
-          );
-          setSessionData(
+          await setSessionData(
             request,
             sessionEntryKeys.fundingSelection,
             sessionKeys.fundingSelection.agreement,
@@ -129,13 +118,7 @@ export const selectFundingRouteHandlers = [
         }
 
         if (type === "POUL") {
-          setSessionData(
-            request,
-            sessionEntryKeys.fundingSelection,
-            sessionKeys.fundingSelection.selectedFunding,
-            type,
-          );
-          setSessionData(
+          await setSessionData(
             request,
             sessionEntryKeys.fundingSelection,
             sessionKeys.fundingSelection.agreement,

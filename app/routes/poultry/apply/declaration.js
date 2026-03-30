@@ -102,6 +102,11 @@ export const poultryDeclarationRouteHandlers = [
           "yes",
         );
         const poultryApplyData = getSessionData(request, sessionEntryKeys.poultryApplyData);
+        const fundingSelectionType = getSessionData(
+          request,
+          sessionEntryKeys.fundingSelection,
+          sessionKeys.fundingSelection.selectedFunding,
+        );
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
         const { reference: tempApplicationReference } = poultryApplyData;
 
@@ -110,7 +115,7 @@ export const poultryDeclarationRouteHandlers = [
         resetFarmerApplyDataBeforeApplication(poultryApplyData);
 
         const { applicationReference } = await createApplication(
-          { ...poultryApplyData, organisation },
+          { ...poultryApplyData, type: fundingSelectionType, organisation },
           request.logger,
         );
 

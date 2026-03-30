@@ -127,6 +127,13 @@ describe("Declaration test", () => {
 
   describe("POST /declaration route", () => {
     test("returns 200, caches data and sends message for valid request", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.fundingSelection,
+          sessionKeys.fundingSelection.selectedFunding,
+        )
+        .mockReturnValue("POUL");
       const applications = [{ organisation, reference: "TEMP-PJ7E-WSI8" }];
       getApplicationsBySbi.mockReturnValue(applications);
       const crumb = await getCrumbs(server);
@@ -151,7 +158,7 @@ describe("Declaration test", () => {
       expect(clearApplyRedirect).toHaveBeenCalled();
       expect(refreshApplications).toHaveBeenCalledWith(organisation.sbi, expect.anything());
       expect(createApplication).toHaveBeenCalledWith(
-        { organisation, ...poultryApplyData },
+        { organisation, ...poultryApplyData, type: "POUL" },
         expect.anything(),
       );
       expect(trackEvent).toHaveBeenCalledWith(
@@ -192,7 +199,7 @@ describe("Declaration test", () => {
       );
       ok($);
       expect(createApplication).toHaveBeenCalledWith(
-        { organisation, ...poultryApplyData },
+        { organisation, ...poultryApplyData, type: "POUL" },
         expect.anything(),
       );
       expect(refreshApplications).not.toHaveBeenCalled();
