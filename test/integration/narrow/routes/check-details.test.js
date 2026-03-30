@@ -223,10 +223,7 @@ describe("/check-details", () => {
     );
   });
 
-  test("POST /check-details with confirmCheckDetails = yes in payload, and redirects to apply", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.signInRedirect, sessionKeys.signInRedirect)
-      .mockReturnValue(true);
+  test("POST /check-details with confirmCheckDetails = yes in payload, and flag is up", async () => {
     config.poultry.enabled = true;
 
     const res = await server.inject({

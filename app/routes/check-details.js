@@ -75,12 +75,12 @@ export const checkDetailsHandlers = [
             sessionKeys.signInRedirect,
           );
 
+          if (config.poultry.enabled) {
+            return h.redirect(dashboardRoutes.selectFunding);
+          }
+
           if (redirectToApply === true) {
-            return h.redirect(
-              config.poultry.enabled
-                ? dashboardRoutes.selectFunding
-                : applyRoutes.youCanClaimMultiple,
-            );
+            return h.redirect(applyRoutes.youCanClaimMultiple);
           }
 
           return h.redirect("/vet-visits");
