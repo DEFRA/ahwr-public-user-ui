@@ -30,6 +30,9 @@ export const sessionKeys = {
     offerStatus: "offerStatus",
     type: "type",
   },
+  poultryClaim: {
+    latestPoultryApplication: "latestPoultryApplication",
+  },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",
     vetsName: "vetsName",
@@ -101,6 +104,11 @@ export const sessionKeys = {
     backLink: "backLink",
     organisation: "organisation",
   },
+  fundingSelection: {
+    agreement: "agreement",
+    selectedFunding: "selectedFunding",
+    error: "error",
+  },
 };
 
 // This object must always be in line with the above object.
@@ -113,6 +121,7 @@ export const sessionEntryKeys = {
   farmerApplyData: "farmerApplyData",
   poultryApplyData: "poultryApplyData",
   endemicsClaim: "endemicsClaim",
+  poultryClaim: "poultryClaim",
   pkcecodes: "pkcecodes",
   tokens: "tokens",
   customer: "customer",
@@ -121,6 +130,7 @@ export const sessionEntryKeys = {
   confirmedDetails: "confirmedDetails",
   application: "application",
   organisation: "organisation",
+  fundingSelection: "fundingSelection",
 };
 
 // This function is used for setting individual values which are not in nested objects
@@ -204,6 +214,10 @@ export async function clearAllOfSession(request) {
 
 export function clearApplyRedirect(request) {
   request.yar.clear(sessionEntryKeys.signInRedirect);
+}
+
+export function clearFundingSelection(request) {
+  request.yar.clear(sessionEntryKeys.fundingSelection);
 }
 
 export function clearEndemicsClaim(request) {

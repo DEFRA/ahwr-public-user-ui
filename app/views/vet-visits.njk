@@ -1,4 +1,5 @@
 {% extends './layouts/layout.njk' %}
+{% from "./macros/organisation-header.njk" import organisationHeader %}
 {% set mainClasses = "govuk-!-padding-top-2" %}
 
 {% block pageTitle %}Manage your claims - {{ serviceName }} - GOV.UK{% endblock %}
@@ -6,23 +7,13 @@
 {% set spanText = "(column headers with buttons are sortable by ascending or descending order)." %}
 
 {% block content %}
-<div class="govuk-grid-row govuk-width-container">
-  <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
-    <h2 class="govuk-heading-m govuk-!-static-margin-bottom-1">{{ name }}</h2>
-    <p class="govuk-body govuk-!-static-margin-bottom-1" id="SBI">
-      <span class="govuk-!-font-weight-bold">Single Business Identifier (SBI):</span> {{ sbi }}</br>
-      <span class="govuk-!-font-weight-bold">Agreement holder:</span> {{farmerName }}
-    </p>
-  </div>
-  <div class="govuk-grid-column-one-third govuk-!-static-padding-0">
-    {% if attachedToMultipleBusinesses %}
-    <p class="govuk-!-text-align-right">
-      <a id="MBILink" href={{ hostname }}>Claim for a different business</a>
-    </p>
-    {% endif %}
-  </div>
-</div>
-<hr />
+{{ organisationHeader({
+  name: name,
+  sbi: sbi,
+  farmerName: farmerName,
+  attachedToMultipleBusinesses: attachedToMultipleBusinesses,
+  hostname: hostname
+}) }}
 
 <div class="govuk-grid-row govuk-width-container">
   <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">

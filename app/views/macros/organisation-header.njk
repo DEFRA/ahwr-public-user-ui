@@ -1,0 +1,19 @@
+{% macro organisationHeader(model) %}
+<div class="govuk-grid-row govuk-width-container">
+  <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+    <h2 class="govuk-heading-m govuk-!-static-margin-bottom-1">{{ model.name }}</h2>
+    <p class="govuk-body govuk-!-static-margin-bottom-1" id="SBI">
+      <span class="govuk-!-font-weight-bold">Single Business Identifier (SBI):</span> {{ model.sbi }}</br>
+      <span class="govuk-!-font-weight-bold">Agreement holder:</span> {{ model.farmerName }}
+    </p>
+  </div>
+  <div class="govuk-grid-column-one-third govuk-!-static-padding-0">
+    {% if model.attachedToMultipleBusinesses %}
+    <p class="govuk-!-text-align-right">
+      <a id="MBILink" href={{ model.hostname }}>Claim for a different business</a>
+    </p>
+    {% endif %}
+  </div>
+</div>
+<hr />
+{% endmacro %}

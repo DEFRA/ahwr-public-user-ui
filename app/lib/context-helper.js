@@ -52,7 +52,18 @@ export async function refreshApplications(sbi, request) {
     latestEndemicsApplication,
   );
 
-  return { latestEndemicsApplication, latestVetVisitApplication };
+  const latestPoultryApplication = applications.find(
+    (application) => application.type === applicationType.POULTRY,
+  );
+
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.latestPoultryApplication,
+    latestPoultryApplication,
+  );
+
+  return { latestEndemicsApplication, latestPoultryApplication, latestVetVisitApplication };
 }
 
 export async function refreshClaims(request, applicationRef) {

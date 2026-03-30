@@ -6,16 +6,16 @@ import {
   refreshApplications,
   skipOtherHerdsOnSbiPage,
   skipSameHerdPage,
-} from "../../../../app/lib/context-helper.js";
+} from "./context-helper.js";
 import {
   ONLY_HERD,
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
-} from "../../../../app/constants/claim-constants.js";
-import { getApplicationsBySbi } from "../../../../app/api-requests/application-api.js";
-import { setSessionData } from "../../../../app/session/index.js";
+} from "../constants/claim-constants.js";
+import { getApplicationsBySbi } from "../api-requests/application-api.js";
+import { setSessionData } from "../session/index.js";
 
-jest.mock("../../../../app/api-requests/application-api.js");
-jest.mock("../../../../app/session/index.js");
+jest.mock("../api-requests/application-api.js");
+jest.mock("../session/index.js");
 
 describe("context-helper", () => {
   test("isVisitDateAfterPIHuntAndDairyGoLive throws error when no visit date provided", () => {
@@ -284,6 +284,51 @@ describe("context-helper", () => {
         "endemicsClaim",
         "latestEndemicsApplication",
         undefined,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestVetVisitApplication",
+        undefined,
+      );
+    });
+
+    it("returns poultry application", async () => {
+      const poultry = {
+        type: "POUL",
+        reference: "POUL-1111-2222",
+        createdAt: "2025-05-01T00:00:00.000Z",
+      };
+      const newWorld = {
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        createdAt: "2025-05-01T00:00:00.000Z",
+      };
+      const oldWorld = {
+        type: "VV",
+        reference: "AHWR-1111-2222",
+        data: {
+          visitDate: "2023-04-15T00:00:00.000Z",
+        },
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([newWorld, oldWorld, poultry]);
+      const { latestPoultryApplication, latestEndemicsApplication, latestVetVisitApplication } =
+        await refreshApplications("123456789", mockRequest);
+
+      expect(latestEndemicsApplication.reference).toBe("IAHW-1111-2222");
+      expect(latestPoultryApplication.reference).toBe("POUL-1111-2222");
+      expect(latestVetVisitApplication).toBeUndefined();
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestEndemicsApplication",
+        newWorld,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "poultryClaim",
+        "latestPoultryApplication",
+        poultry,
       );
       expect(setSessionData).toHaveBeenCalledWith(
         mockRequest,

@@ -1,26 +1,36 @@
 {% extends './layouts/layout.njk' %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "./macros/organisation-header.njk" import organisationHeader %}
 
 {% set pageHeadingText='Select funding' %}
 
 {% block pageTitle %}{{ pageHeadingText }} - {{ serviceName }} - GOV.UK{% endblock %}
 
-{% block beforeContent %}
-{{ govukBackLink({
-text: "Back",
-href: backLink,
-attributes: {id: "back"}
-}) }}
-{% endblock %}
-
 {% block content %}
+{{ organisationHeader({
+  name: name,
+  sbi: sbi,
+  farmerName: farmerName,
+  attachedToMultipleBusinesses: attachedToMultipleBusinesses,
+  hostname: hostname
+}) }}
+<br />
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds"> 
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+
     <form method="POST" novalidate="novalidate">
       <input type="hidden" name="crumb" value="{{crumb}}" />
 
       {{ govukRadios({
+        id: "selectFunding",
         name: "type",
+        errorMessage: errorMessage,
         fieldset: {
           legend: {
             text: pageHeadingText,
@@ -31,16 +41,16 @@ attributes: {id: "back"}
         items: [
           {
             value: "IAHW",
-            text: "Cattle, pig, and sheep review and follow-up",
+            html: "<b>Cattle, pig, and sheep review and follow-up</b>",
             hint: {
-              text: "Create or manage claims for this agreement"
+              html: livestockText
             }
           },
           {
             value: "POUL",
-            text: "Poultry biosecurity review",
+            html: "<b>Poultry biosecurity review</b>",
             hint: {
-              text: "Create an agreement for poultry biosecurity assessments"
+              html: poultryText
             }
           }
         ]

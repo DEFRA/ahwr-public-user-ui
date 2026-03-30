@@ -4,3 +4,4 @@ app/frontend/dist
 snyk-cli
 snyk_report.html
 snyk-result.json
+.claude
