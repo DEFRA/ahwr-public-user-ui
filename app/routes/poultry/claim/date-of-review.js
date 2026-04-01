@@ -1,4 +1,4 @@
-import { poultryClaimRoutes } from "../../../constants/routes";
+import { poultryClaimRoutes } from "../../../constants/routes.js";
 
 const getHandler = {
   method: "GET",
