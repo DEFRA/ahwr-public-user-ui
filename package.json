@@ -81,6 +81,7 @@
     "dotenv": "16.6.1",
     "eslint": "9.39.2",
     "eslint-config-prettier": "10.1.1",
+    "eslint-plugin-import": "^2.32.0",
     "global-jsdom": "26.0.0",
     "html-webpack-plugin": "5.6.4",
     "husky": "9.1.7",

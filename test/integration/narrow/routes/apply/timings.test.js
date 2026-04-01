@@ -2,7 +2,7 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../app/server.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
-import { getApplicationsBySbi } from "../../../../../app/api-requests/application-api";
+import { getApplicationsBySbi } from "../../../../../app/api-requests/application-api.js";
 import { applyRoutes } from "../../../../../app/constants/routes.js";
 import { userType } from "../../../../../app/constants/constants.js";
 import { when } from "jest-when";

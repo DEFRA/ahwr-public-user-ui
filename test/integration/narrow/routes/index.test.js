@@ -1,4 +1,4 @@
-import { config } from "../../../../app/config";
+import { config } from "../../../../app/config/index.js";
 import { when } from "jest-when";
 import { createServer } from "../../../../app/server.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";

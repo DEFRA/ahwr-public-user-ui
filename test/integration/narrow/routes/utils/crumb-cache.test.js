@@ -2,7 +2,7 @@ import {
   lookupSubmissionCrumb,
   cacheSubmissionCrumb,
   generateNewCrumb,
-} from "../../../../../app/routes/utils/crumb-cache";
+} from "../../../../../app/routes/utils/crumb-cache.js";
 
 describe("Crumb Functions", () => {
   let request;

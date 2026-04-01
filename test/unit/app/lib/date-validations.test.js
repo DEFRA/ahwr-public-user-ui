@@ -1,4 +1,4 @@
-import { isValidDate } from "../../../../app/lib/date-validations";
+import { isValidDate } from "../../../../app/lib/date-validations.js";
 
 describe("isValidDate", () => {
   it("returns true for a valid date", () => {

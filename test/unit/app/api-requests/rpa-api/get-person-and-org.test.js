@@ -1,18 +1,18 @@
-import { getPersonAndOrg } from "../../../../../app/api-requests/rpa-api/get-person-and-org";
-import { getPersonSummary } from "../../../../../app/api-requests/rpa-api/person";
+import { getPersonAndOrg } from "../../../../../app/api-requests/rpa-api/get-person-and-org.js";
+import { getPersonSummary } from "../../../../../app/api-requests/rpa-api/person.js";
 import {
   getOrganisationAuthorisation,
   getOrganisation,
   getOrganisationRole,
-} from "../../../../../app/api-requests/rpa-api/organisation";
+} from "../../../../../app/api-requests/rpa-api/organisation.js";
 import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
   getSessionData,
   setSessionEntry,
-} from "../../../../../app/session";
-import { getCphNumbers } from "../../../../../app/api-requests/rpa-api/cph-numbers";
+} from "../../../../../app/session/index.js";
+import { getCphNumbers } from "../../../../../app/api-requests/rpa-api/cph-numbers.js";
 import { when } from "jest-when";
 
 when(getSessionData)

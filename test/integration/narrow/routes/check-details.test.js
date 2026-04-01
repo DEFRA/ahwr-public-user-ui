@@ -1,14 +1,14 @@
 import { StatusCodes } from "http-status-codes";
-import { createServer } from "../../../../app/server";
+import { createServer } from "../../../../app/server.js";
 import {
   setSessionEntry,
   getSessionData,
   sessionEntryKeys,
   sessionKeys,
-} from "../../../../app/session";
-import { getCrumbs } from "../../../utils/get-crumbs";
+} from "../../../../app/session/index.js";
+import { getCrumbs } from "../../../utils/get-crumbs.js";
 import { when, resetAllWhenMocks } from "jest-when";
-import { config } from "../../../../app/config";
+import { config } from "../../../../app/config/index.js";
 
 jest.mock("../../../../app/session/index.js");
 jest.mock("../../../../app/auth/cookie-auth/cookie-auth.js");

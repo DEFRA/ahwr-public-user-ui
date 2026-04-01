@@ -1,12 +1,12 @@
 import { StatusCodes } from "http-status-codes";
-import { createServer } from "../../../../app/server";
-import { setServerState } from "../../../helpers/set-server-state";
+import { createServer } from "../../../../app/server.js";
+import { setServerState } from "../../../helpers/set-server-state.js";
 import { randomUUID } from "node:crypto";
-import * as authModule from "../../../../app/auth/authenticate";
-import * as apimModule from "../../../../app/auth/client-credential-grant/retrieve-apim-access-token";
-import * as personAndOrgModule from "../../../../app/api-requests/rpa-api/get-person-and-org";
-import * as checkLoginValidModule from "../../../../app/routes/utils/check-login-valid";
-import * as cphCheckModule from "../../../../app/api-requests/rpa-api/cph-check";
+import * as authModule from "../../../../app/auth/authenticate.js";
+import * as apimModule from "../../../../app/auth/client-credential-grant/retrieve-apim-access-token.js";
+import * as personAndOrgModule from "../../../../app/api-requests/rpa-api/get-person-and-org.js";
+import * as checkLoginValidModule from "../../../../app/routes/utils/check-login-valid.js";
+import * as cphCheckModule from "../../../../app/api-requests/rpa-api/cph-check.js";
 import { trackError, trackEvent } from "../../../../app/logging/logger.js";
 import { metricsCounter } from "../../../../app/lib/metrics.js";
 

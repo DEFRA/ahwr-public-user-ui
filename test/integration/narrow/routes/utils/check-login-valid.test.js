@@ -1,15 +1,15 @@
-import { checkLoginValid } from "../../../../../app/routes/utils/check-login-valid";
+import { checkLoginValid } from "../../../../../app/routes/utils/check-login-valid.js";
 import {
   getSessionData,
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
   setSessionEntry,
-} from "../../../../../app/session";
-import { customerHasAtLeastOneValidCph } from "../../../../../app/api-requests/rpa-api/cph-check";
+} from "../../../../../app/session/index.js";
+import { customerHasAtLeastOneValidCph } from "../../../../../app/api-requests/rpa-api/cph-check.js";
 import { when } from "jest-when";
 import { refreshApplications } from "../../../../../app/lib/context-helper.js";
-import { sendIneligibilityEvent } from "../../../../../app/messaging/ineligibility-event-emission";
+import { sendIneligibilityEvent } from "../../../../../app/messaging/ineligibility-event-emission.js";
 import { trackError } from "../../../../../app/logging/logger.js";
 
 when(getSessionData)

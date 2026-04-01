@@ -1,11 +1,11 @@
 import * as cheerio from "cheerio";
-import { ok } from "../../../../utils/phase-banner-expect";
+import { ok } from "../../../../utils/phase-banner-expect.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
-import { createServer } from "../../../../../app/server";
-import { getApplicationsBySbi } from "../../../../../app/api-requests/application-api";
-import { applyRoutes } from "../../../../../app/constants/routes";
-import { userType } from "../../../../../app/constants/constants";
+import { createServer } from "../../../../../app/server.js";
+import { getApplicationsBySbi } from "../../../../../app/api-requests/application-api.js";
+import { applyRoutes } from "../../../../../app/constants/routes.js";
+import { userType } from "../../../../../app/constants/constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../helpers/axe-helper.js";
 

@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import { createServer } from "../../../../app/server";
+import { createServer } from "../../../../app/server.js";
 import { getByText, queryByText } from "@testing-library/dom";
 import globalJsdom from "global-jsdom";
 import "@testing-library/jest-dom";

@@ -2,7 +2,7 @@ import HttpStatus from "http-status-codes";
 import wreck from "@hapi/wreck";
 import jwktopem from "jwk-to-pem";
 import { verifyState } from "../../../../app/auth/auth-code-grant/state.js";
-import { authenticate } from "../../../../app/auth/authenticate";
+import { authenticate } from "../../../../app/auth/authenticate.js";
 import {
   getSessionData,
   setSessionData,
