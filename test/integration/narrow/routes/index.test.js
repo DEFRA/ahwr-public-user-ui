@@ -16,7 +16,7 @@ describe("root / path", () => {
     afterEach(() => {
       jest.resetAllMocks();
     });
-    test("no check no agreement", async () => {
+    test("no check no agreements", async () => {
       const res = await server.inject({
         url: "/",
         auth: {
@@ -53,7 +53,7 @@ describe("root / path", () => {
       expect(res.headers.location).toBe("/vet-visits");
     });
 
-    test("check no agreement with poultry flag", async () => {
+    test("check no agreements with poultry flag", async () => {
       when(getSessionData)
         .calledWith(
           expect.anything(),
@@ -75,7 +75,7 @@ describe("root / path", () => {
       expect(res.headers.location).toBe("/select-funding");
     });
 
-    test("check and agreement no poultry flag", async () => {
+    test("check and livestock agreement no poultry flag", async () => {
       config.poultry.enabled = false;
 
       when(getSessionData)
@@ -105,7 +105,7 @@ describe("root / path", () => {
       expect(res.headers.location).toBe("/vet-visits");
     });
 
-    test("check and agreement with poultry flag", async () => {
+    test("check and livestock agreement with poultry flag", async () => {
       config.poultry.enabled = true;
 
       when(getSessionData)
@@ -113,6 +113,36 @@ describe("root / path", () => {
           expect.anything(),
           sessionEntryKeys.endemicsClaim,
           sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue({ status: "AGREED" });
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.confirmedDetails,
+          sessionKeys.confirmedDetails,
+        )
+        .mockReturnValue(true);
+      const res = await server.inject({
+        url: "/",
+        auth: {
+          credentials: {},
+          strategy: "cookie",
+        },
+      });
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/select-funding");
+    });
+
+    test("check and poultry agreement with poultry flag", async () => {
+      config.poultry.enabled = true;
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.latestPoultryApplication,
         )
         .mockReturnValue({ status: "AGREED" });
 
