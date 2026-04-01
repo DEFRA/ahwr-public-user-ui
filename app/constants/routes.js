@@ -189,3 +189,7 @@ export const claimViews = {
   whichTypeOfReview: "claim/which-type-of-review",
   youCannotClaim: "claim/you-cannot-claim",
 };
+
+export const poultryClaimRoutes = { dateOfReview: "/poultry/date-of-review" };
+
+export const poultryClaimViews = { dateOfReview: "poultry/claim/date-of-review" };
