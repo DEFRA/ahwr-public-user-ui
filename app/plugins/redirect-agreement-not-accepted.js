@@ -1,45 +1,14 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import {
-  applyRoutes,
-  dashboardRoutes,
-  loginRoutes,
-  poultryApplyRoutes,
-  supportRoutes,
-} from "../constants/routes.js";
-import { config } from "../config/index.js";
+import { applyRoutes, claimRoutes, dashboardRoutes } from "../constants/routes.js";
 
 export const redirectAgreementNotAcceptedPlugin = {
   plugin: {
     name: "redirect-agreement-not-accepted",
     register: (server, _) => {
-      const excludedPaths = [
-        loginRoutes.signIn,
-        loginRoutes.devLandingPage,
-        loginRoutes.devSignIn,
-        loginRoutes.signOut,
-        loginRoutes.signInOidc,
-        loginRoutes.cannotSignIn,
-        supportRoutes.health,
-        supportRoutes.accessibility,
-        supportRoutes.missingRoutes,
-        supportRoutes.assets,
-        supportRoutes.updateDetails,
-        supportRoutes.cookies,
-        dashboardRoutes.checkDetails,
-        applyRoutes.declaration,
-        applyRoutes.numbers,
-        applyRoutes.timings,
-        applyRoutes.youCanClaimMultiple,
-        poultryApplyRoutes.checkDetails,
-        poultryApplyRoutes.declaration,
-        poultryApplyRoutes.numbers,
-        poultryApplyRoutes.timings,
-        poultryApplyRoutes.youCanClaimMultiple,
-        dashboardRoutes.selectFunding,
-      ];
+      const includedPaths = [dashboardRoutes.manageYourClaims, ...Object.values(claimRoutes)];
       server.ext("onPreHandler", (request, h) => {
-        const excludedPath = excludedPaths.some((term) => request.path.includes(term));
-        if (request.method === "get" && !excludedPath) {
+        const includedPath = includedPaths.some((term) => request.path.includes(term));
+        if (request.method === "get" && includedPath) {
           const latestEndemicsApplication = getSessionData(
             request,
             sessionEntryKeys.endemicsClaim,
@@ -47,13 +16,7 @@ export const redirectAgreementNotAcceptedPlugin = {
           );
 
           if (latestEndemicsApplication?.status !== "AGREED") {
-            return h
-              .redirect(
-                config.poultry.enabled
-                  ? dashboardRoutes.selectFunding
-                  : applyRoutes.youCanClaimMultiple,
-              )
-              .takeover();
+            return h.redirect(applyRoutes.youCanClaimMultiple).takeover();
           }
         }
         return h.continue;

@@ -22,6 +22,7 @@ import { poultryDeclarationRouteHandlers } from "../routes/poultry/apply/declara
 import { poultryNumbersRouteHandlers } from "../routes/poultry/apply/numbers.js";
 import { poultryTimingsRouteHandlers } from "../routes/poultry/apply/timings.js";
 import { poultryClaimMultipleRouteHandlers } from "../routes/poultry/apply/you-can-claim-multiple.js";
+import { poultryDateOfReviewHandlers } from "../routes/poultry/claim/date-of-review.js";
 import { selectFundingRouteHandlers } from "../routes/select-funding.js";
 import { biosecurityHandlers } from "../routes/claim/biosecurity.js";
 import { checkAnswersHandlers } from "../routes/claim/check-answers.js";
@@ -121,20 +122,24 @@ const alwaysOnRoutes = [
   whichSpeciesHandlers,
   whichSpeciesPoultryHandlers,
   whichReviewHandlers,
-  ...(config.poultry.enabled
-    ? [
-        poultryDeclarationRouteHandlers,
-        poultryNumbersRouteHandlers,
-        poultryTimingsRouteHandlers,
-        poultryClaimMultipleRouteHandlers,
-        selectFundingRouteHandlers,
-      ]
-    : []),
+].flat();
+
+const poultryRoutes = [
+  poultryDeclarationRouteHandlers,
+  poultryNumbersRouteHandlers,
+  poultryTimingsRouteHandlers,
+  poultryClaimMultipleRouteHandlers,
+  poultryDateOfReviewHandlers,
+  selectFundingRouteHandlers,
 ].flat();
 
 let routes;
 const mapRoutes = () => {
   routes = alwaysOnRoutes;
+
+  if (config.poultry.enabled) {
+    routes = routes.concat(poultryRoutes);
+  }
 
   if (config.devLogin.enabled) {
     routes = routes.concat(devLoginHandlers);
