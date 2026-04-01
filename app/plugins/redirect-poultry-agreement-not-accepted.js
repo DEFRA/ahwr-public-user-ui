@@ -6,7 +6,7 @@ export const redirectPoultryAgreementNotAcceptedPlugin = {
   plugin: {
     name: "redirect-poultry-agreement-not-accepted",
     register: (server, _) => {
-      const includedPaths = [...Object.values(poultryClaimRoutes)];
+      const includedPaths = Object.values(poultryClaimRoutes);
       server.ext("onPreHandler", (request, h) => {
         if (!config.poultry.enabled) {
           return h.continue;
