@@ -1,4 +1,4 @@
-import { customerHasAtLeastOneValidCph } from "../../../../../../app/api-requests/rpa-api/cph-check";
+import { customerHasAtLeastOneValidCph } from "../../../../../../app/api-requests/rpa-api/cph-check.js";
 
 test("customerHasAtLeastOneValidCph returns false if the users cph is not valid", async () => {
   expect(customerHasAtLeastOneValidCph(["33/333/8888"])).toBeFalsy();

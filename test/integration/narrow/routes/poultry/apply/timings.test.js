@@ -6,7 +6,7 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../../../../../app/session/index.js";
-import { getApplicationsBySbi } from "../../../../../../app/api-requests/application-api";
+import { getApplicationsBySbi } from "../../../../../../app/api-requests/application-api.js";
 import { poultryApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";

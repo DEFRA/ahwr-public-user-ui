@@ -1,4 +1,4 @@
-import { normalizeCphNumber } from "./cph-normalization";
+import { normalizeCphNumber } from "./cph-normalization.js";
 
 describe("Normalization of cph number", () => {
   it("returns undefined unchanged", () => {

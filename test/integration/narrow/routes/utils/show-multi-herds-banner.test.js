@@ -1,4 +1,4 @@
-import { showMultiHerdsBanner } from "../../../../../app/routes/utils/show-multi-herds-banner";
+import { showMultiHerdsBanner } from "../../../../../app/routes/utils/show-multi-herds-banner.js";
 
 beforeEach(() => {
   jest.resetAllMocks();

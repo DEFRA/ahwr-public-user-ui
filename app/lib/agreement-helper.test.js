@@ -1,5 +1,5 @@
-import { config } from "../config";
-import { checkIfPoultryAgreement } from "./agreement-helper";
+import { config } from "../config/index.js";
+import { checkIfPoultryAgreement } from "./agreement-helper.js";
 
 describe("checkIfPoultryAgreement", () => {
   test("latestEndemicsApplication is null", () => {

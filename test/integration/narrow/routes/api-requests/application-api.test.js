@@ -2,9 +2,9 @@ import {
   createApplication,
   getApplicationsBySbi,
   getHerds,
-} from "../../../../../app/api-requests/application-api";
-import { config } from "../../../../../app/config";
-import { testWreckApiFunction } from "../../../../helpers/test-wreck-api";
+} from "../../../../../app/api-requests/application-api.js";
+import { config } from "../../../../../app/config/index.js";
+import { testWreckApiFunction } from "../../../../helpers/test-wreck-api.js";
 
 jest.mock("@hapi/wreck");
 jest.mock("../../../../../app/logging/logger.js", () => ({

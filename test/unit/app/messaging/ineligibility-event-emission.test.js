@@ -1,8 +1,8 @@
 import {
   sendIneligibilityEvent,
   sendInvalidDataEvent,
-} from "../../../../app/messaging/ineligibility-event-emission";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session";
+} from "../../../../app/messaging/ineligibility-event-emission.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
 import { when } from "jest-when";
 
 const mockPublishEvent = jest.fn();

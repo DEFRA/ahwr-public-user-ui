@@ -1,6 +1,10 @@
 import { config } from "../../../../../../app/config/index.js";
-import { createServer } from "../../../../../../app/server";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../../app/session";
+import { createServer } from "../../../../../../app/server.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 
 jest.mock("../../../../../../app/session");

@@ -1,12 +1,12 @@
-import { getApplicationsBySbi } from "../../../../app/api-requests/application-api";
-import { userType } from "../../../../app/constants/constants";
-import { preApplyHandler } from "../../../../app/lib/pre-apply-handler";
+import { getApplicationsBySbi } from "../../../../app/api-requests/application-api.js";
+import { userType } from "../../../../app/constants/constants.js";
+import { preApplyHandler } from "../../../../app/lib/pre-apply-handler.js";
 import {
   getSessionData,
   setSessionData,
   sessionEntryKeys,
   setSessionEntry,
-} from "../../../../app/session";
+} from "../../../../app/session/index.js";
 import { when } from "jest-when";
 
 jest.mock("../../../../app/session");

@@ -1,4 +1,4 @@
-import { userNeedsNotification } from "../../../../../app/routes/utils/user-needs-notification";
+import { userNeedsNotification } from "../../../../../app/routes/utils/user-needs-notification.js";
 import { config } from "../../../../../app/config/index.js";
 
 const { multiSpecies } = config;

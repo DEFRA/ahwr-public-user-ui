@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
-import { ok } from "../../../../../utils/phase-banner-expect";
-import { getCrumbs } from "../../../../../utils/get-crumbs";
-import { userType } from "../../../../../../app/constants/constants";
+import { ok } from "../../../../../utils/phase-banner-expect.js";
+import { getCrumbs } from "../../../../../utils/get-crumbs.js";
+import { userType } from "../../../../../../app/constants/constants.js";
 import {
   clearApplyRedirect,
   getSessionData,
@@ -9,15 +9,15 @@ import {
   sessionKeys,
   setSessionData,
 } from "../../../../../../app/session/index.js";
-import { createServer } from "../../../../../../app/server";
+import { createServer } from "../../../../../../app/server.js";
 import { StatusCodes } from "http-status-codes";
 import {
   createApplication,
   getApplicationsBySbi,
-} from "../../../../../../app/api-requests/application-api";
+} from "../../../../../../app/api-requests/application-api.js";
 import { when } from "jest-when";
 import { trackEvent } from "../../../../../../app/logging/logger.js";
-import { refreshApplications } from "../../../../../../app/lib/context-helper";
+import { refreshApplications } from "../../../../../../app/lib/context-helper.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/lib/context-helper");

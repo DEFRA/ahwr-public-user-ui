@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
-import { createServer } from "../../../../app/server";
-import { DEFRA_ID_BASE_URL } from "../../../../app/auth/auth-code-grant/request-authorization-code-url";
+import { createServer } from "../../../../app/server.js";
+import { DEFRA_ID_BASE_URL } from "../../../../app/auth/auth-code-grant/request-authorization-code-url.js";
 import { randomUUID } from "crypto";
 import { metricsCounter } from "../../../../app/lib/metrics.js";
 import { clearAllOfSession } from "../../../../app/session/index.js";

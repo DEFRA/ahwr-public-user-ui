@@ -1,6 +1,6 @@
 import Hapi from "@hapi/hapi";
 import HttpStatus from "http-status-codes";
-import { cookiePlugin } from "../../../../app/plugins/cookies";
+import { cookiePlugin } from "../../../../app/plugins/cookies.js";
 jest.mock("../../../../app/config", () => ({
   ...jest.requireActual("../../../../app/config"),
   cookie: {
@@ -67,7 +67,7 @@ describe("Cookie plugin", () => {
     });
 
     test("should apply cookie policy for non-error, view responses", async () => {
-      const getCurrentPolicy = require("../../../../app/cookies").getCurrentPolicy;
+      const getCurrentPolicy = require("../../../../app/cookies.js").getCurrentPolicy;
       getCurrentPolicy.mockReturnValue({
         /* Your mock policy data */
       });
