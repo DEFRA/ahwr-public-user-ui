@@ -4,7 +4,7 @@ const getHandler = {
   method: "GET",
   path: poultryClaimRoutes.dateOfReview,
   options: {
-    handler: async (request, h) => {},
+    handler: async (_request, _h) => {},
   },
 };
 
@@ -12,7 +12,7 @@ const postHandler = {
   method: "POST",
   path: poultryClaimRoutes.dateOfReview,
   options: {
-    handler: async (request, h) => {},
+    handler: async (_request, _h) => {},
   },
 };
 
