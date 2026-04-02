@@ -86,7 +86,7 @@ const postHandler = {
           "review-date-year": year,
         } = request.payload;
         const date = { day, month, year };
-        const errorMessage = "Enter the date of review";
+        const errorMessage = "Enter a date in the boxes below";
         const inputsInError = getInputsInError(error);
 
         await sendInvalidDataEvent({
@@ -140,7 +140,7 @@ const postHandler = {
       const applicationCreatedAt = new Date(latestPoultryApplication.createdAt);
 
       if (dateOfReview < applicationCreatedAt) {
-        return await handleTimingException(request, h, date);
+        return await handleTimingException(request, h, date, applicationCreatedAt);
       }
 
       setSessionData(request, poultryClaimEntry, dateOfReviewKey, dateOfReview);
@@ -150,9 +150,13 @@ const postHandler = {
   },
 };
 
-async function handleTimingException(request, h, date) {
-  const errorMessage =
-    "The date of review must be the same as or after the date your agreement started";
+async function handleTimingException(request, h, date, agreementDate) {
+  const formattedDate = agreementDate.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const errorMessage = `The date the biosecurity review happened must be on or after ${formattedDate}, the date your agreement started`;
 
   await sendInvalidDataEvent({
     request,

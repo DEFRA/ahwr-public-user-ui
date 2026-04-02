@@ -177,52 +177,60 @@ describe("POST /poultry/date-of-review", () => {
       day: "",
       month: "",
       year: "",
+      expectedError: "Enter a date in the boxes below",
     },
     {
       description: "non-numeric day",
       day: "abc",
       month: "01",
       year: "2025",
+      expectedError: "Enter a date in the boxes below",
     },
     {
       description: "non-numeric month",
       day: "21",
       month: "abc",
       year: "2025",
+      expectedError: "Enter a date in the boxes below",
     },
     {
       description: "non-numeric year",
       day: "21",
       month: "01",
       year: "abc",
+      expectedError: "Enter a date in the boxes below",
     },
     {
       description: "invalid day (32)",
       day: "32",
       month: "01",
       year: "2025",
+      expectedError: "Enter a date in the boxes below",
     },
     {
       description: "invalid month (13)",
       day: "21",
       month: "13",
       year: "2025",
+      expectedError: "Enter a date in the boxes below",
     },
     {
       description: "invalid date (Feb 30)",
       day: "30",
       month: "02",
       year: "2025",
+      expectedError: "The date of review must be a real date",
     },
     {
       description: "missing day",
       day: "",
       month: "01",
       year: "2025",
+      expectedError: "Enter a date in the boxes below",
     },
   ])(
     "when adding invalid date ($description), shows error and calls sendInvalidDataEvent",
-    async ({ day, month, year }) => {
+    async ({ day, month, year, expectedError }) => {
       const options = {
         method: "POST",
         url,
@@ -243,18 +251,20 @@ describe("POST /poultry/date-of-review", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text().trim()).toBe("Date of review");
       expect($(".govuk-error-summary")).toHaveLength(1);
+      expect($(".govuk-error-summary").text()).toContain(expectedError);
       expect($("#back").attr("href")).toBe("/vet-visits");
     },
   );
 
   test("when date is before latestPoultryApplication.createdAt, shows error", async () => {
+    const createdAt = "2025-03-01";
     when(getSessionData)
       .calledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.latestPoultryApplication,
       )
-      .mockReturnValue({ status: "AGREED", createdAt: "2025-03-01" });
+      .mockReturnValue({ status: "AGREED", createdAt });
 
     const options = {
       method: "POST",
@@ -273,10 +283,13 @@ describe("POST /poultry/date-of-review", () => {
     expect(res.statusCode).toBe(400);
     expect(sendInvalidDataEvent).toHaveBeenCalled();
 
+    const expectedError =
+      "The date the biosecurity review happened must be on or after 1 March 2025, the date your agreement started";
+
     const $ = cheerio.load(res.payload);
     expect($("h1").text().trim()).toBe("Date of review");
     expect($(".govuk-error-summary")).toHaveLength(1);
-    expect($(".govuk-error-summary").text()).toContain("date");
+    expect($(".govuk-error-summary").text()).toContain(expectedError);
     expect($("#back").attr("href")).toBe("/vet-visits");
   });
 });
