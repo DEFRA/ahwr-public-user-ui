@@ -55,6 +55,8 @@ const getHandler = {
   },
 };
 
+const reviewDateDayAnchor = "#review-date-day";
+
 const payloadSchema = joi.object({
   crumb: joi.any(),
   "review-date-day": joi.number().min(1).max(MAX_POSSIBLE_DAY).required(),
@@ -66,9 +68,15 @@ const getInputsInError = (error) => {
   const inputsInError = { day: false, month: false, year: false };
   const errorKeys = error?.details?.map(({ context }) => context.key) || [];
 
-  if (errorKeys.includes("review-date-day")) inputsInError.day = true;
-  if (errorKeys.includes("review-date-month")) inputsInError.month = true;
-  if (errorKeys.includes("review-date-year")) inputsInError.year = true;
+  if (errorKeys.includes("review-date-day")) {
+    inputsInError.day = true;
+  }
+  if (errorKeys.includes("review-date-month")) {
+    inputsInError.month = true;
+  }
+  if (errorKeys.includes("review-date-year")) {
+    inputsInError.year = true;
+  }
 
   return inputsInError;
 };
@@ -97,7 +105,7 @@ const postHandler = {
 
         return h
           .view(poultryClaimViews.dateOfReview, {
-            errorSummary: [{ text: errorMessage, href: "#review-date-day" }],
+            errorSummary: [{ text: errorMessage, href: reviewDateDayAnchor }],
             inputsInError,
             dateOfReview: {
               day: date.day || "",
@@ -123,7 +131,7 @@ const postHandler = {
       if (!isValidDate(year, month, day)) {
         const validationError = buildErrorSummary({
           errorMessage: "The date of review must be a real date",
-          href: "#review-date-day",
+          href: reviewDateDayAnchor,
           inputsInError: { day: true, month: true, year: true },
         });
         return await handleValidationError(request, validationError, h, date);
@@ -172,7 +180,7 @@ async function handleTimingException(request, h, date, agreementDate) {
 
   return h
     .view(poultryClaimViews.dateOfReview, {
-      errorSummary: [{ text: errorMessage, href: "#review-date-day" }],
+      errorSummary: [{ text: errorMessage, href: reviewDateDayAnchor }],
       inputsInError: { day: true, month: true, year: true },
       dateOfReview: {
         day: date.day,
