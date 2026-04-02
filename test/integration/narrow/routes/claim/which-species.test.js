@@ -75,7 +75,6 @@ describe("Endemics which species test", () => {
         auth,
         url,
       };
-      console.log("0.5");
 
       const res = await server.inject(options);
       const $ = cheerio.load(res.payload);
