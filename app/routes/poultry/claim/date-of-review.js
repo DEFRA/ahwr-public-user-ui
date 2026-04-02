@@ -41,14 +41,11 @@ const getHandler = {
   path: poultryClaimRoutes.dateOfReview,
   options: {
     handler: async (request, h) => {
-      const { dateOfReview } = getSessionData(request, poultryClaimEntry);
+      const { dateOfReview: dateOfReviewRaw } = getSessionData(request, poultryClaimEntry);
 
+      const dateOfReview = parseDateOfReview(dateOfReviewRaw);
       return h.view(poultryClaimViews.dateOfReview, {
-        dateOfReview: {
-          day: dateOfReview ? new Date(dateOfReview).getDate() : "",
-          month: dateOfReview ? new Date(dateOfReview).getMonth() + 1 : "",
-          year: dateOfReview ? new Date(dateOfReview).getFullYear() : "",
-        },
+        dateOfReview,
         backLink: dashboardRoutes.poultryManageYourClaims,
       });
     },
@@ -163,6 +160,23 @@ const postHandler = {
     },
   },
 };
+
+function parseDateOfReview(dateOfReviewRaw) {
+  if (dateOfReviewRaw) {
+    const dateOfReview = new Date(dateOfReviewRaw);
+    return {
+      day: dateOfReview.getDate(),
+      month: dateOfReview.getMonth() + 1,
+      year: dateOfReview.getFullYear(),
+    };
+  } else {
+    return {
+      day: "",
+      month: "",
+      year: "",
+    };
+  }
+}
 
 async function handleTimingException(request, h, date, agreementDate) {
   const formattedDate = agreementDate.toLocaleDateString("en-GB", {
