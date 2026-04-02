@@ -61,66 +61,6 @@
   <hr class="govuk-section-break govuk-section-break--m">
 
   <div class="govuk-grid-column-full govuk-!-padding-0">
-
-    {% if beefClaimsRows | length %}
-    <h2 class="govuk-heading-m govuk-!-static-margin-top-2">
-      Beef cattle <span class="govuk-visually-hidden">{{spanText}}</span>
-    </h2>
-
-    <div>
-      {{ govukTable({
-      attributes: {
-      'data-module': 'moj-sortable-table'
-      },
-      firstCellIsHeader: false,
-      head: headers,
-      rows: beefClaimsRows,
-      classes: 'fixed-layout-table'
-      }) }}
-    </div>
-    {% endif %}
-
-    {% if dairyClaimsRows | length %}
-    <h2 class="govuk-heading-m govuk-!-static-margin-top-2">
-      Dairy cattle <span class="govuk-visually-hidden">{{spanText}}</span>
-    </h2>
-
-    <div>
-      {{ govukTable({
-      attributes: {
-      'data-module': 'moj-sortable-table'
-      },
-      firstCellIsHeader: false,
-      head: headers,
-      rows: dairyClaimsRows,
-      classes: 'fixed-layout-table'
-      }) }}
-    </div>
-    {% endif %}
-
-    {% if pigClaimsRows | length %}
-    <h2 class="govuk-heading-m govuk-!-static-margin-top-2">
-      Pigs <span class="govuk-visually-hidden">{{spanText}}</span>
-    </h2>
-
-    <div>
-      {{ govukTable({
-      attributes: {
-      'data-module': 'moj-sortable-table'
-      },
-      firstCellIsHeader: false,
-      head: headers,
-      rows: pigClaimsRows,
-      classes: 'fixed-layout-table'
-      }) }}
-    </div>
-    {% endif %}
-
-    {% if sheepClaimsRows | length %}
-    <h2 class="govuk-heading-m govuk-!-static-margin-top-2">
-      Sheep <span class="govuk-visually-hidden">{{spanText}}</span>
-    </h2>
-
     <div>
       {{ govukTable({
       attributes: {
@@ -132,12 +72,9 @@
       classes: 'fixed-layout-table'
       }) }}
     </div>
-    {% endif %}
 
-    {% if not (beefClaimsRows.length or dairyClaimsRows.length or pigClaimsRows.length or sheepClaimsRows.length) %}
     <h2 class="govuk-heading-m govuk-!-static-margin-top-2">Your claims</h2>
     <p class="govuk-caption-m">Your claims will appear here once you have submitted them.</p>
-    {% endif %}
 
   </div>
   <div class="govuk-grid-column-full govuk-!-padding-0">
