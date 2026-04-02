@@ -19,6 +19,7 @@ import { claimRoutes } from "../constants/routes.js";
 import {
   AHWR_SCHEME,
   APPLICATION_REFERENCE_PREFIX_NEW_WORLD,
+  APPLICATION_REFERENCE_PREFIX_OLD_WORLD,
   APPLICATION_REFERENCE_PREFIX_POULTRY,
   claimType,
   POULTRY_SCHEME,
@@ -37,7 +38,7 @@ export async function refreshApplications(sbi, request) {
   const latestVetVisitApplication = applications.find((application) => {
     // endemics application must have been created within 10 months of vet-visit application visit date
     return (
-      application.type === "VV" &&
+      application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_OLD_WORLD) &&
       areDatesWithin10Months(application.data?.visitDate, latestEndemicsApplication?.createdAt ?? 0)
     );
   });
