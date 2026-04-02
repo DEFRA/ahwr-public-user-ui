@@ -69,7 +69,7 @@ describe("Endemics which species test", () => {
   });
 
   describe("GET /which-species", () => {
-    test.only("should render page when no previous session exists", async () => {
+    test("should render page when no previous session exists", async () => {
       const options = {
         method: "GET",
         auth,
