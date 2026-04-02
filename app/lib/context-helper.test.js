@@ -1,5 +1,6 @@
 import {
   getReviewHerdId,
+  getScheme,
   isMultipleHerdsUserJourney,
   isPigsAndPaymentsUserJourney,
   isVisitDateAfterPIHuntAndDairyGoLive,
@@ -12,7 +13,8 @@ import {
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
 } from "../constants/claim-constants.js";
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
-import { setSessionData } from "../session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../session/index.js";
+import { AHWR_SCHEME, POULTRY_SCHEME } from "ffc-ahwr-common-library";
 
 jest.mock("../api-requests/application-api.js");
 jest.mock("../session/index.js");
@@ -336,6 +338,43 @@ describe("context-helper", () => {
         "latestVetVisitApplication",
         undefined,
       );
+    });
+  });
+
+  describe("getScheme", () => {
+    const mockRequest = {};
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("returns undefined when fundingSelectionType is missing", () => {
+      getSessionData.mockReturnValue(undefined);
+
+      const result = getScheme(mockRequest);
+
+      expect(getSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        sessionEntryKeys.fundingSelection,
+        sessionKeys.fundingSelection.selectedFunding,
+      );
+      expect(result).toBeUndefined();
+    });
+
+    it("returns POULTRY_SCHEME when fundingSelectionType is POUL", () => {
+      getSessionData.mockReturnValue("POUL");
+
+      const result = getScheme(mockRequest);
+
+      expect(result).toBe(POULTRY_SCHEME);
+    });
+
+    it("returns AHWR_SCHEME when fundingSelectionType is IAHW", () => {
+      getSessionData.mockReturnValue("IAHW");
+
+      const result = getScheme(mockRequest);
+
+      expect(result).toBe(AHWR_SCHEME);
     });
   });
 });

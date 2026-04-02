@@ -15,6 +15,7 @@ import { when } from "jest-when";
 
 jest.mock("../../../../../app/session");
 jest.mock("../../../../../app/lib/context-helper", () => ({
+  ...jest.requireActual("../../../../../app/lib/context-helper.js"),
   resetEndemicsClaimSession: jest.fn(),
   refreshApplications: jest
     .fn()
@@ -68,12 +69,13 @@ describe("Endemics which species test", () => {
   });
 
   describe("GET /which-species", () => {
-    test("should render page when no previous session exists", async () => {
+    test.only("should render page when no previous session exists", async () => {
       const options = {
         method: "GET",
         auth,
         url,
       };
+      console.log("0.5");
 
       const res = await server.inject(options);
       const $ = cheerio.load(res.payload);

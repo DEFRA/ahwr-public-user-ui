@@ -16,16 +16,20 @@ import {
   PIGS_AND_PAYMENTS_RELEASE_DATE,
 } from "../constants/claim-constants.js";
 import { claimRoutes } from "../constants/routes.js";
-import { claimType } from "ffc-ahwr-common-library";
-
-import { applicationType } from "../constants/constants.js";
+import {
+  AHWR_SCHEME,
+  APPLICATION_REFERENCE_PREFIX_NEW_WORLD,
+  APPLICATION_REFERENCE_PREFIX_POULTRY,
+  claimType,
+  POULTRY_SCHEME,
+} from "ffc-ahwr-common-library";
 
 export async function refreshApplications(sbi, request) {
   const applications = await getApplicationsBySbi(sbi, request.logger);
 
   // get latest new world
-  const latestEndemicsApplication = applications.find(
-    (application) => application.type === applicationType.ENDEMICS,
+  const latestEndemicsApplication = applications.find((application) =>
+    application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_NEW_WORLD),
   );
 
   // get latest old world - if there isn't one, or it's not within 10 months of the new world one, then we won't consider it,
@@ -52,8 +56,8 @@ export async function refreshApplications(sbi, request) {
     latestEndemicsApplication,
   );
 
-  const latestPoultryApplication = applications.find(
-    (application) => application.type === applicationType.POULTRY,
+  const latestPoultryApplication = applications.find((application) =>
+    application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY),
   );
 
   await setSessionData(
@@ -177,4 +181,18 @@ export const isWithin4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesti
   fourMonthsAfter.setHours(AFTER_HOURS, AFTER_MINS, AFTER_SECONDS, AFTER_MILLIS);
 
   return testingDate >= fourMonthsBefore && testingDate <= fourMonthsAfter;
+};
+
+export const getScheme = (request) => {
+  const fundingSelectionType = getSessionData(
+    request,
+    sessionEntryKeys.fundingSelection,
+    sessionKeys.fundingSelection.selectedFunding,
+  );
+
+  if (!fundingSelectionType) {
+    return;
+  }
+
+  return fundingSelectionType === "POUL" ? POULTRY_SCHEME : AHWR_SCHEME;
 };

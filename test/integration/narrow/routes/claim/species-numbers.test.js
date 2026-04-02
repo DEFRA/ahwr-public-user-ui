@@ -20,7 +20,6 @@ import { config } from "../../../../../app/config/index.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/messaging/ineligibility-event-emission.js");
-jest.mock("../../../../../app/lib/context-helper.js");
 jest.mock("../../../../../app/lib/context-helper.js", () => ({
   ...jest.requireActual("../../../../../app/lib/context-helper.js"),
   isMultipleHerdsUserJourney: jest.fn(),

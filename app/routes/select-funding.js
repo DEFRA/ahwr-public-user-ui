@@ -69,17 +69,6 @@ export const selectFundingRouteHandlers = [
         clearFundingSelection(request);
         const { type } = request.payload;
 
-        const latestEndemicsApplication = getSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.latestEndemicsApplication,
-        );
-        const latestPoultryApplication = getSessionData(
-          request,
-          sessionEntryKeys.poultryClaim,
-          sessionKeys.poultryClaim.latestPoultryApplication,
-        );
-
         await setSessionData(
           request,
           sessionEntryKeys.fundingSelection,
@@ -87,44 +76,42 @@ export const selectFundingRouteHandlers = [
           type,
         );
 
-        if (type === "IAHW" && latestEndemicsApplication) {
-          await setSessionData(
-            request,
-            sessionEntryKeys.fundingSelection,
-            sessionKeys.fundingSelection.agreement,
-            latestEndemicsApplication.reference,
-          );
-          return h.redirect(dashboardRoutes.manageYourClaims);
-        }
-
         if (type === "IAHW") {
+          const latestEndemicsApplication = getSessionData(
+            request,
+            sessionEntryKeys.endemicsClaim,
+            sessionKeys.endemicsClaim.latestEndemicsApplication,
+          );
           await setSessionData(
             request,
             sessionEntryKeys.fundingSelection,
             sessionKeys.fundingSelection.agreement,
-            undefined,
+            latestEndemicsApplication?.reference,
           );
-          return h.redirect(applyRoutes.youCanClaimMultiple);
-        }
-
-        if (type === "POUL" && latestPoultryApplication) {
-          await setSessionData(
-            request,
-            sessionEntryKeys.fundingSelection,
-            sessionKeys.fundingSelection.agreement,
-            latestPoultryApplication.reference,
+          return h.redirect(
+            latestEndemicsApplication
+              ? dashboardRoutes.manageYourClaims
+              : applyRoutes.youCanClaimMultiple,
           );
-          return h.redirect(dashboardRoutes.manageYourClaims);
         }
 
         if (type === "POUL") {
+          const latestPoultryApplication = getSessionData(
+            request,
+            sessionEntryKeys.poultryClaim,
+            sessionKeys.poultryClaim.latestPoultryApplication,
+          );
           await setSessionData(
             request,
             sessionEntryKeys.fundingSelection,
             sessionKeys.fundingSelection.agreement,
-            undefined,
+            latestPoultryApplication?.reference,
           );
-          return h.redirect(poultryApplyRoutes.youCanClaimMultiple);
+          return h.redirect(
+            latestPoultryApplication
+              ? dashboardRoutes.poultryManageYourClaims
+              : poultryApplyRoutes.youCanClaimMultiple,
+          );
         }
       },
     },
