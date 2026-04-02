@@ -137,7 +137,6 @@ const poultryRoutes = [
   poultryVetVisitsHandlers,
   poultrySelectTheSiteHandlers,
   poultryEnterSiteNameHandlers,
-  selectFundingRouteHandlers,
 ].flat();
 
 let routes;
