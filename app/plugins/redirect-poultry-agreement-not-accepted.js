@@ -1,12 +1,15 @@
 import { config } from "../config/index.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { poultryApplyRoutes, poultryClaimRoutes } from "../constants/routes.js";
+import { dashboardRoutes, poultryApplyRoutes, poultryClaimRoutes } from "../constants/routes.js";
 
 export const redirectPoultryAgreementNotAcceptedPlugin = {
   plugin: {
     name: "redirect-poultry-agreement-not-accepted",
     register: (server, _) => {
-      const includedPaths = Object.values(poultryClaimRoutes);
+      const includedPaths = [
+        dashboardRoutes.poultryManageYourClaims,
+        ...Object.values(poultryClaimRoutes),
+      ];
       server.ext("onPreHandler", (request, h) => {
         if (!config.poultry.enabled) {
           return h.continue;
