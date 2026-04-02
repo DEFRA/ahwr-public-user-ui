@@ -32,6 +32,9 @@ jobs:
       - name: Scan security vulnerabilities
         run: npm audit --audit-level=high --omit dev
 
+      - name: Lint
+        run: npm run lint
+
       - name: Test code and Create Test Coverage Reports
         run: |
           ./scripts/test
