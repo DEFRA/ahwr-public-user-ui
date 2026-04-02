@@ -1,19 +1,21 @@
 import * as cheerio from "cheerio";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { config } from "../../../../../../app/config/index.js";
-import { createServer } from "../../../../../../app/server";
+import { createServer } from "../../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import {
   getSessionData,
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
-} from "../../../../../../app/session";
+} from "../../../../../../app/session/index.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
+import { getSites } from "../../../../../../app/api-requests/application-api.js";
 import { when } from "jest-when";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
+jest.mock("../../../../../../app/api-requests/application-api.js");
 jest.mock("../../../../../../app/session");
 
 config.poultry.enabled = true;
@@ -146,7 +148,9 @@ describe("POST /poultry/date-of-review", () => {
     jest.resetAllMocks();
   });
 
-  test("when adding a correct date, we redirect to the same page", async () => {
+  test("when adding a correct date and sites exist, redirects to select-the-site", async () => {
+    getSites.mockResolvedValue({ herds: [{ id: "1", name: "Site 1" }] });
+
     const options = {
       method: "POST",
       url,
@@ -162,7 +166,34 @@ describe("POST /poultry/date-of-review", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location.toString()).toEqual(`/poultry/you-can-claim-multiple`);
+    expect(res.headers.location.toString()).toEqual("/poultry/select-the-site");
+    expect(setSessionData).toHaveBeenCalledWith(
+      expect.anything(),
+      sessionEntryKeys.poultryClaim,
+      sessionKeys.poultryClaim.dateOfReview,
+      new Date(2025, 0, 21),
+    );
+  });
+
+  test("when adding a correct date and no sites exist, redirects to enter-site-name", async () => {
+    getSites.mockResolvedValue({ herds: [] });
+
+    const options = {
+      method: "POST",
+      url,
+      payload: {
+        crumb,
+        "review-date-day": "21",
+        "review-date-month": "01",
+        "review-date-year": "2025",
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` },
+    };
+    const res = await server.inject(options);
+
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location.toString()).toEqual("/poultry/enter-site-name");
     expect(setSessionData).toHaveBeenCalledWith(
       expect.anything(),
       sessionEntryKeys.poultryClaim,

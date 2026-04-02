@@ -10,11 +10,11 @@ import {
 import HttpStatus from "http-status-codes";
 import {
   dashboardRoutes,
-  poultryApplyRoutes,
   poultryClaimRoutes,
   poultryClaimViews,
 } from "../../../constants/routes.js";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
+import { getSites } from "../../../api-requests/application-api.js";
 
 const { poultryClaim: poultryClaimEntry } = sessionEntryKeys;
 const {
@@ -145,7 +145,13 @@ const postHandler = {
 
       setSessionData(request, poultryClaimEntry, dateOfReviewKey, dateOfReview);
 
-      return h.redirect(poultryApplyRoutes.youCanClaimMultiple);
+      const { herds } = await getSites(latestPoultryApplication.reference, request.logger);
+
+      if (herds.length) {
+        return h.redirect(poultryClaimRoutes.selectTheSite);
+      } else {
+        return h.redirect(poultryClaimRoutes.enterSiteName);
+      }
     },
   },
 };
