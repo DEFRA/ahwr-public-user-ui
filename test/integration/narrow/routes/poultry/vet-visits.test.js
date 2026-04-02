@@ -1,43 +1,27 @@
-/**
- * @jest-environment node
- */
 import { setServerState } from "../../../../helpers/set-server-state.js";
 import { config } from "../../../../../app/config/index.js";
 import { createServer } from "../../../../../app/server.js";
-import globalJsdom from "global-jsdom";
-import { getByRole, getByText, within } from "@testing-library/dom";
+import { load } from "cheerio";
 import { getClaimsByApplicationReference } from "../../../../../app/api-requests/claim-api.js";
+import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/api-requests/claim-api.js");
 jest.mock("../../../../../app/auth/auth-code-grant/request-authorization-code-url.js", () => ({
   requestAuthorizationCodeUrl: jest.fn().mockReturnValue("auth-code-url"),
 }));
 jest.mock("../../../../../app/lib/context-helper.js");
-config.poultry.enabled = true;
 
 describe("GET /vet-visits", () => {
-  let cleanUpFunction = () => {};
   let server;
 
   beforeAll(async () => {
     config.poultry.enabled = true;
     server = await createServer();
-    config.poultry.enabled = true;
-
     await server.initialize();
-  });
-
-  beforeEach(async () => {
-    cleanUpFunction();
-    config.poultry.enabled = true;
-
-    // server = await createServer();
-    // config.poultry.enabled = true;
   });
 
   afterAll(async () => {
     await server.stop();
-    jest.resetAllMocks();
   });
 
   const options = {
@@ -48,15 +32,14 @@ describe("GET /vet-visits", () => {
     },
   };
 
-  test("details not checked redirects to get them checked", async () => {
-    const sbi = "106354662";
+  test("should redirect to check details when they have not been checked", async () => {
     const state = {
       customer: {
         attachedToMultipleBusinesses: false,
       },
       poultryClaim: {},
       organisation: {
-        sbi,
+        sbi: "106354662",
         name: "PARTRIDGES",
         farmerName: "Janice Harrison",
       },
@@ -64,13 +47,12 @@ describe("GET /vet-visits", () => {
 
     await setServerState(server, state);
 
-    const { headers } = await server.inject(options);
+    const res = await server.inject(options);
 
-    expect(headers.location).toBe("/check-details");
+    expect(res.headers.location).toBe("/check-details");
   });
 
-  test("no agreement redirects to new one", async () => {
-    const sbi = "106354662";
+  test("should redirect to apply journey when no agreement", async () => {
     const state = {
       confirmedDetails: true,
       customer: {
@@ -78,7 +60,7 @@ describe("GET /vet-visits", () => {
       },
       poultryClaim: {},
       organisation: {
-        sbi,
+        sbi: "106354662",
         name: "PARTRIDGES",
         farmerName: "Janice Harrison",
       },
@@ -86,13 +68,14 @@ describe("GET /vet-visits", () => {
 
     await setServerState(server, state);
 
-    const { headers } = await server.inject(options);
+    const res = await server.inject(options);
 
-    expect(headers.location).toBe("/you-can-claim-multiple");
+    expect(res.headers.location).toBe("/you-can-claim-multiple");
   });
 
-  test("poultry agreement, no claims made", async () => {
+  test("should show no poultry claims when no claims have been made", async () => {
     const sbi = "123123123";
+
     const state = {
       confirmedDetails: true,
       customer: {
@@ -124,22 +107,23 @@ describe("GET /vet-visits", () => {
         farmerName: "Farmer Joe",
       },
     };
+
     await setServerState(server, state);
 
     getClaimsByApplicationReference.mockResolvedValueOnce([]);
 
-    const response = await server.inject(options);
-    const { payload } = response;
-    cleanUpFunction = globalJsdom(payload);
+    const res = await server.inject(options);
+    const $ = load(res.payload);
 
-    console.log(response);
+    const startLink = $('a:contains("Start a new claim")');
+    expect(startLink.length).toBeGreaterThan(0);
+    expect(startLink.attr("href")).toContain("/which-species-of-poultry");
 
-    expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
-      "href",
-      expect.stringContaining("/which-species-of-poultry"),
-    );
-    expect(getByText(document.body, "Claim for a different agreement")).toBeTruthy();
-    const container = getByText(document.body, "Species included in this agreement:").parentElement;
-    expect(within(container).getByText("poultry")).toBeTruthy();
+    expect($("body").text()).toContain("Claim for a different agreement");
+
+    const container = $("*:contains('Species included in this agreement:')").parent();
+    expect(container.text()).toContain("poultry");
+
+    expect(await axe(res.payload)).toHaveNoViolations();
   });
 });
