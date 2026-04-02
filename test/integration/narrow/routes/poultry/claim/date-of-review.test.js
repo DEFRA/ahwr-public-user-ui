@@ -283,7 +283,7 @@ describe("POST /poultry/date-of-review", () => {
       expect($("h1").text().trim()).toBe("Date of review");
       expect($(".govuk-error-summary")).toHaveLength(1);
       expect($(".govuk-error-summary").text()).toContain(expectedError);
-      expect($("#back").attr("href")).toBe("/vet-visits");
+      expect($("#back").attr("href")).toBe("/poultry/vet-visits");
     },
   );
 
@@ -321,6 +321,6 @@ describe("POST /poultry/date-of-review", () => {
     expect($("h1").text().trim()).toBe("Date of review");
     expect($(".govuk-error-summary")).toHaveLength(1);
     expect($(".govuk-error-summary").text()).toContain(expectedError);
-    expect($("#back").attr("href")).toBe("/vet-visits");
+    expect($("#back").attr("href")).toBe("/poultry/vet-visits");
   });
 });

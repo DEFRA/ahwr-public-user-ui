@@ -49,7 +49,7 @@ const getHandler = {
           month: dateOfReview ? new Date(dateOfReview).getMonth() + 1 : "",
           year: dateOfReview ? new Date(dateOfReview).getFullYear() : "",
         },
-        backLink: dashboardRoutes.manageYourClaims,
+        backLink: dashboardRoutes.poultryManageYourClaims,
       });
     },
   },
@@ -105,7 +105,7 @@ const postHandler = {
               year: date.year || "",
               errorMessage: { text: errorMessage },
             },
-            backLink: dashboardRoutes.manageYourClaims,
+            backLink: dashboardRoutes.poultryManageYourClaims,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -180,7 +180,7 @@ async function handleTimingException(request, h, date, agreementDate) {
         year: date.year,
         errorMessage: { text: errorMessage },
       },
-      backLink: dashboardRoutes.manageYourClaims,
+      backLink: dashboardRoutes.poultryManageYourClaims,
     })
     .code(HttpStatus.BAD_REQUEST);
 }
@@ -201,7 +201,7 @@ async function handleValidationError(request, validationError, h, date) {
         year: date.year || "",
         errorMessage: { text: validationError.errorSummary[0].text },
       },
-      backLink: dashboardRoutes.manageYourClaims,
+      backLink: dashboardRoutes.poultryManageYourClaims,
     })
     .code(HttpStatus.BAD_REQUEST);
 }
