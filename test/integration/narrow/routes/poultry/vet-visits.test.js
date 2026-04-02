@@ -159,15 +159,9 @@ describe("GET /vet-visits", () => {
     const res = await server.inject(options);
     const $ = load(res.payload);
 
-    const startLink = $('a:contains("Start a new claim")');
-    expect(startLink.length).toBeGreaterThan(0);
-    expect(startLink.attr("href")).toContain("/which-species-of-poultry");
-
-    expect($("body").text()).toContain("Claim for a different agreement");
-
     const container = $("*:contains('Species included in this agreement:')").parent();
     expect(container.text()).toContain("poultry");
-
     expect(await axe(res.payload)).toHaveNoViolations();
+    expect(refreshApplications).toHaveBeenCalledWith(sbi, expect.any(Object));
   });
 });

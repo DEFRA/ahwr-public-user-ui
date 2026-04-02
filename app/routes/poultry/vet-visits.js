@@ -1,7 +1,6 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
 import { requestAuthorizationCodeUrl } from "../../auth/auth-code-grant/request-authorization-code-url.js";
 import { config } from "../../config/index.js";
-import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 import { claimRoutes } from "../../constants/routes.js";
 import { refreshApplications } from "../../lib/context-helper.js";
 
@@ -40,13 +39,6 @@ export const poultryVetVisitsHandlers = [
         );
 
         const application = await getOrRefreshApplication(request, organisation.sbi);
-
-        if (application.redacted) {
-          return h.view("agreement-redacted", {
-            ruralPaymentsAgency: RPA_CONTACT_DETAILS,
-            privacyPolicyUri: config.privacyPolicyUri,
-          });
-        }
 
         const downloadedDocument = `/download-application/${organisation.sbi}/${application.reference}`;
 
