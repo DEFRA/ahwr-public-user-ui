@@ -1,7 +1,8 @@
 import { config } from "../config/index.js";
-import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
+import { POULTRY_SCHEME, RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 import { applyRoutes, dashboardRoutes } from "../constants/routes.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import { getScheme } from "../lib/context-helper.js";
 
 const { serviceName, serviceUri, customerSurvey } = config;
 
@@ -31,6 +32,10 @@ export const viewContextPlugin = {
           ctx.userHasAgreement = getUserHasAgreement(request);
           ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS;
           ctx.dashboardLink = dashboardRoutes.manageYourClaims;
+          ctx.dashboardLink =
+            getScheme(request) === POULTRY_SCHEME
+              ? dashboardRoutes.poultryManageYourClaims
+              : dashboardRoutes.manageYourClaims;
 
           response.source.context = ctx;
         }

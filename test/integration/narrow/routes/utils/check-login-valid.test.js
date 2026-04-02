@@ -33,6 +33,7 @@ jest.mock("../../../../../app/api-requests/rpa-api/cph-check", () => ({
 }));
 
 jest.mock("../../../../../app/lib/context-helper.js", () => ({
+  ...jest.requireActual("../../../../../app/lib/context-helper.js"),
   refreshApplications: jest.fn().mockResolvedValue({
     latestEndemicsApplication: {
       type: "EE",

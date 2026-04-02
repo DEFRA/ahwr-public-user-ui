@@ -15,6 +15,7 @@ import { when } from "jest-when";
 
 jest.mock("../../../../../app/session");
 jest.mock("../../../../../app/lib/context-helper", () => ({
+  ...jest.requireActual("../../../../../app/lib/context-helper.js"),
   resetEndemicsClaimSession: jest.fn(),
   refreshApplications: jest
     .fn()

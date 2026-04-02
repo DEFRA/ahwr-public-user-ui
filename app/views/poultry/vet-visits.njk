@@ -19,11 +19,9 @@
   <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
     <p class="govuk-body govuk-!-static-margin-bottom-1">
       <span class="govuk-!-font-weight-bold">Agreement number:</span> <span class="govuk-body">{{ reference }}</span></br>
-      {% if isPoultryEnabled %}
-        <span class="govuk-!-font-weight-bold">Species included in this agreement: </span><span class="govuk-body">
-          cattle, pigs and sheep
-        </span>
-     {% endif %}
+      <span class="govuk-!-font-weight-bold">Species included in this agreement: </span><span class="govuk-body">
+        poultry
+      </span>
     </p>
   </div>
   <div class="govuk-grid-column-one-third govuk-!-static-padding-0">
@@ -32,31 +30,16 @@
         default('_self') }} href={{ downloadedDocument | default('#') }}>
         Download agreement summary
       </a>
-      {% if isPoultryEnabled %}
       <br/>
       <a class="govuk-link" id="selectFundingLink" href="/select-funding">
         Claim for a different agreement
       </a>
-      {% endif %}
     </p>
   </div>
 
 </div>
 <hr />
 <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-6">
-  {% if showNotificationBanner %}
-  {% set html %}
-  <p class="govuk-notification-banner__heading">
-    You can now claim for more than one herd or flock of any species.
-  </p>
-  {% endset %}
-  <div class="two-thirds-width">
-    {{ govukNotificationBanner({
-    html: html
-    }) }}
-  </div>
-  {% endif %}
-
   <h1 class="govuk-heading-xl govuk-!-static-margin-bottom-4">Manage your claims</h1>
 
   <div class="govuk-grid-column-full govuk-!-padding-0">
@@ -78,83 +61,20 @@
   <hr class="govuk-section-break govuk-section-break--m">
 
   <div class="govuk-grid-column-full govuk-!-padding-0">
-
-    {% if beefClaimsRows | length %}
-    <h2 class="govuk-heading-m govuk-!-static-margin-top-2">
-      Beef cattle <span class="govuk-visually-hidden">{{spanText}}</span>
-    </h2>
-
     <div>
       {{ govukTable({
       attributes: {
       'data-module': 'moj-sortable-table'
       },
       firstCellIsHeader: false,
-      head: headers.nonSheepHeaders,
-      rows: beefClaimsRows,
-      classes: 'fixed-layout-table'
-      }) }}
-    </div>
-    {% endif %}
-
-    {% if dairyClaimsRows | length %}
-    <h2 class="govuk-heading-m govuk-!-static-margin-top-2">
-      Dairy cattle <span class="govuk-visually-hidden">{{spanText}}</span>
-    </h2>
-
-    <div>
-      {{ govukTable({
-      attributes: {
-      'data-module': 'moj-sortable-table'
-      },
-      firstCellIsHeader: false,
-      head: headers.nonSheepHeaders,
-      rows: dairyClaimsRows,
-      classes: 'fixed-layout-table'
-      }) }}
-    </div>
-    {% endif %}
-
-    {% if pigClaimsRows | length %}
-    <h2 class="govuk-heading-m govuk-!-static-margin-top-2">
-      Pigs <span class="govuk-visually-hidden">{{spanText}}</span>
-    </h2>
-
-    <div>
-      {{ govukTable({
-      attributes: {
-      'data-module': 'moj-sortable-table'
-      },
-      firstCellIsHeader: false,
-      head: headers.nonSheepHeaders,
-      rows: pigClaimsRows,
-      classes: 'fixed-layout-table'
-      }) }}
-    </div>
-    {% endif %}
-
-    {% if sheepClaimsRows | length %}
-    <h2 class="govuk-heading-m govuk-!-static-margin-top-2">
-      Sheep <span class="govuk-visually-hidden">{{spanText}}</span>
-    </h2>
-
-    <div>
-      {{ govukTable({
-      attributes: {
-      'data-module': 'moj-sortable-table'
-      },
-      firstCellIsHeader: false,
-      head: headers.sheepHeaders,
+      head: headers,
       rows: sheepClaimsRows,
       classes: 'fixed-layout-table'
       }) }}
     </div>
-    {% endif %}
 
-    {% if not (beefClaimsRows.length or dairyClaimsRows.length or pigClaimsRows.length or sheepClaimsRows.length) %}
     <h2 class="govuk-heading-m govuk-!-static-margin-top-2">Your claims</h2>
     <p class="govuk-caption-m">Your claims will appear here once you have submitted them.</p>
-    {% endif %}
 
   </div>
   <div class="govuk-grid-column-full govuk-!-padding-0">
@@ -164,7 +84,7 @@
       <li>
         <a class="govuk-link" rel="external"
           href="https://www.gov.uk/government/collections/funding-to-improve-animal-health-and-welfare-guidance-for-farmers-and-vets">Guidance
-          for funding to improve animal health and welfare</a>
+          for poultry biosecurity reviews</a>
       </li>
       <li>
         <a class="govuk-link" rel="external" href={{ latestTermsAndConditionsUri }}>Terms and conditions</a>

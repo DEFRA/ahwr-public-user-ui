@@ -16,10 +16,11 @@ import { config } from "../../../../../app/config/index.js";
 
 jest.mock("../../../../../app/session");
 jest.mock("../../../../../app/lib/context-helper", () => ({
+  ...jest.requireActual("../../../../../app/lib/context-helper.js"),
   resetEndemicsClaimSession: jest.fn(),
-  refreshApplications: jest
-    .fn()
-    .mockResolvedValue({ latestEndemicsApplication: { reference: "POUL123" } }),
+  refreshApplications: jest.fn().mockResolvedValue({
+    latestEndemicsApplication: { reference: "POUL123" },
+  }),
 }));
 
 config.poultry.enabled = true;

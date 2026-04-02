@@ -33,7 +33,7 @@ const getHandler = {
         ...(typeOfLivestock && {
           previousAnswer: typeOfLivestock,
         }),
-        backLink: dashboardRoutes.manageYourClaims,
+        backLink: dashboardRoutes.poultryManageYourClaims,
       });
     },
   },
@@ -54,7 +54,7 @@ const postHandler = {
         return h
           .view(claimViews.whichSpeciesPoultry, {
             errorMessage,
-            backLink: dashboardRoutes.manageYourClaims,
+            backLink: dashboardRoutes.poultryManageYourClaims,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();

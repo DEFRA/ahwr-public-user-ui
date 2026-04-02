@@ -14,7 +14,6 @@ import { isWithin10MonthsFromNow } from "../lib/utils.js";
 import { claimRoutes } from "../constants/routes.js";
 import { SHEEP } from "../constants/claim-constants.js";
 import { refreshApplications } from "../lib/context-helper.js";
-import { checkIfPoultryAgreement } from "../lib/agreement-helper.js";
 
 const { latestTermsAndConditionsUri } = config;
 
@@ -198,8 +197,7 @@ export const vetVisitsHandlers = [
         const showNotificationBanner = showMultiHerdsBanner(latestEndemicsApplication, claims);
 
         const { sheepHeaders, nonSheepHeaders } = buildTableHeaders();
-
-        const isPoultryAgreement = checkIfPoultryAgreement(latestEndemicsApplication);
+        const isPoultryEnabled = config.poultry.enabled;
 
         return h.view("vet-visits", {
           beefClaimsRows,
@@ -212,9 +210,7 @@ export const vetVisitsHandlers = [
           },
           showNotificationBanner,
           attachedToMultipleBusinesses,
-          claimJourneyStartPointUri: isPoultryAgreement
-            ? claimRoutes.whichSpeciesPoultry
-            : claimRoutes.whichSpecies,
+          claimJourneyStartPointUri: claimRoutes.whichSpecies,
           ...organisation,
           ...(latestEndemicsApplication?.reference && {
             reference: latestEndemicsApplication.reference,
@@ -224,6 +220,7 @@ export const vetVisitsHandlers = [
             hostname: await requestAuthorizationCodeUrl(request),
           }),
           latestTermsAndConditionsUri,
+          isPoultryEnabled,
         });
       },
     },

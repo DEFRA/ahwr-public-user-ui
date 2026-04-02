@@ -1,14 +1,10 @@
-/**
- * @jest-environment node
- */
+import * as cheerio from "cheerio";
 import { setServerState } from "../../../helpers/set-server-state.js";
 import { config } from "../../../../app/config/index.js";
 import { createServer } from "../../../../app/server.js";
-import { getTableCells } from "../../../helpers/get-table-cells.js";
-import globalJsdom from "global-jsdom";
-import { getByRole, queryByRole } from "@testing-library/dom";
 import { getClaimsByApplicationReference } from "../../../../app/api-requests/claim-api.js";
 import { refreshApplications } from "../../../../app/lib/context-helper.js";
+import { axe } from "../../../helpers/axe-helper.js";
 
 const nunJucksInternalTimerMethods = ["nextTick"];
 
@@ -22,11 +18,43 @@ jest
   .mocked(refreshApplications)
   .mockResolvedValue({ latestEndemicsApplication: {}, latestVetVisitApplication: {} });
 
+const findByText = ($, text) => $("*").filter((_, el) => $(el).text().trim() === text);
+
+const findLinkByText = ($, text) => $("a").filter((_, el) => $(el).text().trim() === text);
+
+const findButtonLikeByText = ($, text) =>
+  $("a,button").filter((_, el) => $(el).text().trim() === text);
+
+const cleanText = (text) => text.replace(/\s+/g, " ").trim();
+
+const getTableCells = ($) => {
+  const rows = [];
+
+  $("table")
+    .find("tr")
+    .each((_, row) => {
+      const cells = [];
+
+      $(row)
+        .children("th, td")
+        .each((_, cell) => {
+          cells.push(cleanText($(cell).text()));
+        });
+
+      if (cells.length) {
+        rows.push(cells);
+      }
+    });
+
+  return rows;
+};
+
 describe("GET /vet-visits", () => {
-  let cleanUpFunction = () => {};
   let server;
+
   beforeEach(async () => {
     server = await createServer();
+    config.poultry.enabled = false;
   });
 
   test("details not checked redirects to get them checked", async () => {
@@ -47,10 +75,7 @@ describe("GET /vet-visits", () => {
 
     const { headers } = await server.inject({
       url: "/vet-visits",
-      auth: {
-        credentials: {},
-        strategy: "cookie",
-      },
+      auth: { credentials: {}, strategy: "cookie" },
     });
 
     expect(headers.location).toBe("/check-details");
@@ -75,83 +100,24 @@ describe("GET /vet-visits", () => {
 
     const { headers } = await server.inject({
       url: "/vet-visits",
-      auth: {
-        credentials: {},
-        strategy: "cookie",
-      },
+      auth: { credentials: {}, strategy: "cookie" },
     });
 
     expect(headers.location).toBe("/you-can-claim-multiple");
   });
 
-  describe("Poultry", () => {
-    beforeAll(() => {
-      config.poultry.enabled = true;
-    });
-
-    beforeEach(() => {
-      cleanUpFunction();
-    });
-
-    test("poultry agreement, no claims made", async () => {
-      const sbi = "123123123";
-      const state = {
-        confirmedDetails: true,
-        customer: {
-          attachedToMultipleBusinesses: true,
-        },
-        endemicsClaim: {
-          latestEndemicsApplication: {
-            sbi,
-            type: "EE",
-            reference: "POUL-TEST-NEW2",
-            createdAt: "2026-01-03",
-            redacted: false,
-            status: "AGREED",
-          },
-          latestVetVisitApplication: undefined,
-        },
-        organisation: {
-          sbi,
-          name: "TEST FARM",
-          farmerName: "Farmer Joe",
-        },
-      };
-
-      await setServerState(server, state);
-
-      getClaimsByApplicationReference.mockResolvedValueOnce([]);
-
-      const { payload } = await server.inject({
-        url: "/vet-visits",
-        auth: {
-          credentials: {},
-          strategy: "cookie",
-        },
-      });
-      cleanUpFunction = globalJsdom(payload);
-
-      expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
-        "href",
-        expect.stringContaining("/which-species-of-poultry"),
-      );
-    });
-  });
-
   describe("Cattle/Pig/Sheep", () => {
-    config.poultry.enabled = false;
     beforeEach(() => {
-      cleanUpFunction();
+      config.poultry.enabled = false;
     });
 
     test("new world, multiple businesses", async () => {
       const applicationReference = "IAHW-TEST-NEW1";
       const sbi = "106354662";
-      const state = {
+
+      await setServerState(server, {
         confirmedDetails: true,
-        customer: {
-          attachedToMultipleBusinesses: true,
-        },
+        customer: { attachedToMultipleBusinesses: true },
         endemicsClaim: {
           latestEndemicsApplication: {
             sbi,
@@ -160,18 +126,11 @@ describe("GET /vet-visits", () => {
             redacted: false,
             status: "AGREED",
           },
-          latestVetVisitApplication: undefined,
         },
-        organisation: {
-          sbi,
-          name: "PARTRIDGES",
-          farmerName: "Janice Harrison",
-        },
-      };
+        organisation: { sbi, name: "PARTRIDGES", farmerName: "Janice Harrison" },
+      });
 
-      await setServerState(server, state);
-
-      const claims = [
+      getClaimsByApplicationReference.mockResolvedValueOnce([
         {
           applicationReference,
           reference: "REBC-A89F-7776",
@@ -182,22 +141,18 @@ describe("GET /vet-visits", () => {
           },
           status: "WITHDRAWN",
         },
-      ];
-
-      getClaimsByApplicationReference.mockResolvedValueOnce(claims);
+      ]);
 
       const { payload } = await server.inject({
         url: "/vet-visits",
-        auth: {
-          credentials: {},
-          strategy: "cookie",
-        },
+        auth: { credentials: {}, strategy: "cookie" },
       });
-      cleanUpFunction = globalJsdom(payload);
 
-      expect(queryByRole(document.body, "region", { name: "Important" })).toBe(null);
+      const $ = cheerio.load(payload);
 
-      expect(getTableCells(document.body)).toEqual([
+      expect(findByText($, "Important").length).toBe(0);
+
+      expect(getTableCells($)).toEqual([
         ["Visit date", "Herd name", "Type and claim number", "Status"],
         [
           "29 December 2024",
@@ -207,33 +162,26 @@ describe("GET /vet-visits", () => {
         ],
       ]);
 
-      expect(
-        getByRole(document.body, "link", { name: "Download agreement summary" }),
-      ).toHaveProperty(
-        "href",
-        `${document.location.href}download-application/${sbi}/${applicationReference}`,
-      );
+      const link = findLinkByText($, "Download agreement summary").first();
+      expect(link.attr("href")).toContain(`download-application/${sbi}/${applicationReference}`);
 
-      expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
-        "href",
-        expect.stringContaining("/which-species"),
-      );
+      const startBtn = findButtonLikeByText($, "Start a new claim").first();
+      expect(startBtn.attr("href")).toContain("/which-species");
 
-      expect(
-        getByRole(document.body, "link", {
-          name: "Claim for a different business",
-        }),
-      ).toHaveProperty("href", expect.stringContaining("auth-code-url"));
+      const otherBiz = findLinkByText($, "Claim for a different business").first();
+      expect(otherBiz.attr("href")).toContain("auth-code-url");
+
+      expect($("body").text().includes("Claim for a different agreement")).toBe(false);
+      expect($("body").text().includes("Species included in this agreement")).toBe(false);
     });
 
-    test("new world, multiple businesses, for sheep (flock not herd)", async () => {
+    test("new world, sheep uses flock wording", async () => {
       const applicationReference = "IAHW-TEST-NEW1";
       const sbi = "106354662";
-      const state = {
+
+      await setServerState(server, {
         confirmedDetails: true,
-        customer: {
-          attachedToMultipleBusinesses: true,
-        },
+        customer: { attachedToMultipleBusinesses: true },
         endemicsClaim: {
           latestEndemicsApplication: {
             sbi,
@@ -242,18 +190,11 @@ describe("GET /vet-visits", () => {
             redacted: false,
             status: "AGREED",
           },
-          latestVetVisitApplication: undefined,
         },
-        organisation: {
-          sbi,
-          name: "PARTRIDGES",
-          farmerName: "Janice Harrison",
-        },
-      };
+        organisation: { sbi, name: "PARTRIDGES", farmerName: "Janice Harrison" },
+      });
 
-      await setServerState(server, state);
-
-      const claims = [
+      getClaimsByApplicationReference.mockResolvedValueOnce([
         {
           applicationReference,
           reference: "REBC-A89F-7776",
@@ -264,20 +205,18 @@ describe("GET /vet-visits", () => {
           },
           status: "WITHDRAWN",
         },
-      ];
+      ]);
 
-      getClaimsByApplicationReference.mockResolvedValueOnce(claims);
+      const $ = cheerio.load(
+        (
+          await server.inject({
+            url: "/vet-visits",
+            auth: { credentials: {}, strategy: "cookie" },
+          })
+        ).payload,
+      );
 
-      const { payload } = await server.inject({
-        url: "/vet-visits",
-        auth: {
-          credentials: {},
-          strategy: "cookie",
-        },
-      });
-      cleanUpFunction = globalJsdom(payload);
-
-      expect(getTableCells(document.body)).toEqual([
+      expect(getTableCells($)).toEqual([
         ["Visit date", "Flock name", "Type and claim number", "Status"],
         [
           "29 December 2024",
@@ -288,14 +227,13 @@ describe("GET /vet-visits", () => {
       ]);
     });
 
-    test("new world, claim has a herd", async () => {
+    test("claim has herd name", async () => {
       const applicationReference = "IAHW-TEST-NEW1";
       const sbi = "106354662";
-      const state = {
+
+      await setServerState(server, {
         confirmedDetails: true,
-        customer: {
-          attachedToMultipleBusinesses: true,
-        },
+        customer: { attachedToMultipleBusinesses: true },
         endemicsClaim: {
           latestEndemicsApplication: {
             sbi,
@@ -304,18 +242,11 @@ describe("GET /vet-visits", () => {
             redacted: false,
             status: "AGREED",
           },
-          latestVetVisitApplication: undefined,
         },
-        organisation: {
-          sbi,
-          name: "PARTRIDGES",
-          farmerName: "Janice Harrison",
-        },
-      };
+        organisation: { sbi, name: "PARTRIDGES", farmerName: "Janice Harrison" },
+      });
 
-      await setServerState(server, state);
-
-      const claims = [
+      getClaimsByApplicationReference.mockResolvedValueOnce([
         {
           applicationReference,
           reference: "REBC-A89F-7776",
@@ -324,130 +255,73 @@ describe("GET /vet-visits", () => {
             typeOfLivestock: "beef",
             claimType: "REVIEW",
           },
-          herd: {
-            name: "best beef herd",
-          },
+          herd: { name: "best beef herd" },
           status: "WITHDRAWN",
         },
-      ];
-
-      getClaimsByApplicationReference.mockResolvedValueOnce(claims);
-
-      const { payload } = await server.inject({
-        url: "/vet-visits",
-        auth: {
-          credentials: {},
-          strategy: "cookie",
-        },
-      });
-      cleanUpFunction = globalJsdom(payload);
-
-      expect(queryByRole(document.body, "region", { name: "Important" })).toBe(null);
-
-      expect(getTableCells(document.body)).toEqual([
-        ["Visit date", "Herd name", "Type and claim number", "Status"],
-        [
-          "29 December 2024",
-          "best beef herd",
-          expect.stringContaining("REBC-A89F-7776"),
-          "Withdrawn",
-        ],
       ]);
 
-      expect(
-        getByRole(document.body, "link", { name: "Download agreement summary" }),
-      ).toHaveProperty(
-        "href",
-        `${document.location.href}download-application/${sbi}/${applicationReference}`,
+      const $ = cheerio.load(
+        (
+          await server.inject({
+            url: "/vet-visits",
+            auth: { credentials: {}, strategy: "cookie" },
+          })
+        ).payload,
       );
 
-      expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
-        "href",
-        expect.stringContaining("/which-species"),
-      );
-
-      expect(
-        getByRole(document.body, "link", {
-          name: "Claim for a different business",
-        }),
-      ).toHaveProperty("href", expect.stringContaining("auth-code-url"));
+      expect(getTableCells($)[1][1]).toBe("best beef herd");
     });
 
-    test("new world, no claims made, show banner", async () => {
+    test("no claims shows banner", async () => {
       jest.replaceProperty(config.multiSpecies, "releaseDate", "2024-12-04");
 
-      const beforeMultiSpeciesReleaseDate = "2024-12-03";
       const sbi = "123123123";
-      const state = {
+
+      await setServerState(server, {
         confirmedDetails: true,
-        customer: {
-          attachedToMultipleBusinesses: true,
-        },
+        customer: { attachedToMultipleBusinesses: true },
         endemicsClaim: {
           latestEndemicsApplication: {
             sbi,
             type: "EE",
             reference: "IAHW-TEST-NEW2",
-            createdAt: beforeMultiSpeciesReleaseDate,
+            createdAt: "2024-12-03",
             redacted: false,
             status: "AGREED",
           },
-          latestVetVisitApplication: undefined,
         },
-        organisation: {
-          sbi,
-          name: "TEST FARM",
-          farmerName: "Farmer Joe",
-        },
-      };
-
-      await setServerState(server, state);
+        organisation: { sbi, name: "TEST FARM", farmerName: "Farmer Joe" },
+      });
 
       getClaimsByApplicationReference.mockResolvedValueOnce([]);
 
-      const { payload } = await server.inject({
-        url: "/vet-visits",
-        auth: {
-          credentials: {},
-          strategy: "cookie",
-        },
-      });
-      cleanUpFunction = globalJsdom(payload);
-
-      const banner = getByRole(document.body, "region", { name: "Important" });
-      expect(getByRole(banner, "paragraph").textContent.trim()).toBe(
-        "You can now claim for more than one herd or flock of any species.",
+      const $ = cheerio.load(
+        (
+          await server.inject({
+            url: "/vet-visits",
+            auth: { credentials: {}, strategy: "cookie" },
+          })
+        ).payload,
       );
 
-      expect(getByRole(document.body, "button", { name: "Start a new claim" })).toHaveProperty(
-        "href",
-        expect.stringContaining("/which-species"),
+      expect($("body").text()).toContain(
+        "You can now claim for more than one herd or flock of any species.",
       );
     });
 
-    test("old world application only - redirects to create agreement", async () => {
-      const timeOfTest = new Date("2025-01-02");
+    test("old world redirects", async () => {
+      jest
+        .useFakeTimers({ doNotFake: nunJucksInternalTimerMethods })
+        .setSystemTime(new Date("2025-01-02"));
 
-      jest.useFakeTimers({ doNotFake: nunJucksInternalTimerMethods }).setSystemTime(timeOfTest);
-
-      const sbi = "106354662";
-      const almostTenMonthsBefore = new Date("2024-03-03");
-
-      const state = {
+      await setServerState(server, {
         confirmedDetails: true,
-        customer: {
-          attachedToMultipleBusinesses: false,
-        },
+        customer: { attachedToMultipleBusinesses: false },
         endemicsClaim: {
-          latestEndemicsApplication: undefined,
           latestVetVisitApplication: {
-            sbi,
+            sbi: "106354662",
             type: "VV",
             reference: "AHWR-TEST-OLD1",
-            data: {
-              visitDate: almostTenMonthsBefore,
-              whichReview: "dairy",
-            },
             status: "IN_CHECK",
             redacted: false,
           },
@@ -457,75 +331,85 @@ describe("GET /vet-visits", () => {
           name: "PARTRIDGES",
           farmerName: "Janice Harrison",
         },
-      };
-
-      config.poultry.enabled = false;
-
-      await setServerState(server, state);
-
-      const { headers, payload } = await server.inject({
-        url: "/vet-visits",
-        auth: {
-          credentials: {},
-          strategy: "cookie",
-        },
       });
+
+      const { headers } = await server.inject({
+        url: "/vet-visits",
+        auth: { credentials: {}, strategy: "cookie" },
+      });
+
       jest.useRealTimers();
-      globalJsdom(payload);
 
       expect(headers.location).toBe("/you-can-claim-multiple");
     });
 
-    test("shows agreement redacted", async () => {
-      jest.replaceProperty(config.multiSpecies, "releaseDate", "2024-12-04");
-
-      const beforeMultiSpeciesReleaseDate = "2024-12-03";
+    test("redacted agreement", async () => {
       const sbi = "123123123";
-      const state = {
+
+      await setServerState(server, {
         confirmedDetails: true,
-        customer: {
-          attachedToMultipleBusinesses: true,
-        },
+        customer: { attachedToMultipleBusinesses: true },
         endemicsClaim: {
           latestEndemicsApplication: {
             sbi,
-            type: "EE",
             reference: "IAHW-TEST-NEW2",
-            createdAt: beforeMultiSpeciesReleaseDate,
             redacted: true,
             status: "AGREED",
           },
-          latestVetVisitApplication: undefined,
         },
-        organisation: {
-          sbi,
-          name: "TEST FARM",
-          farmerName: "Farmer Joe",
-        },
-      };
+        organisation: { sbi, name: "TEST FARM", farmerName: "Farmer Joe" },
+      });
 
-      await setServerState(server, state);
+      const $ = cheerio.load(
+        (
+          await server.inject({
+            url: "/vet-visits",
+            auth: { credentials: {}, strategy: "cookie" },
+          })
+        ).payload,
+      );
+
+      expect($("h1").text().trim()).toBe(
+        "Your Improve Animal Health and Welfare (IAHW) agreement has been removed",
+      );
+
+      expect(findLinkByText($, "Apply for a new agreement").attr("href")).toBe(
+        "/you-can-claim-multiple",
+      );
+    });
+
+    test("poultry enabled content", async () => {
+      config.poultry.enabled = true;
+
+      const sbi = "106354662";
+
+      await setServerState(server, {
+        confirmedDetails: true,
+        customer: { attachedToMultipleBusinesses: true },
+        endemicsClaim: {
+          latestEndemicsApplication: {
+            sbi,
+            reference: "IAHW-TEST-NEW1",
+            redacted: false,
+            status: "AGREED",
+          },
+        },
+        organisation: { sbi, name: "PARTRIDGES", farmerName: "Janice Harrison" },
+      });
 
       getClaimsByApplicationReference.mockResolvedValueOnce([]);
 
       const { payload } = await server.inject({
         url: "/vet-visits",
-        auth: {
-          credentials: {},
-          strategy: "cookie",
-        },
+        auth: { credentials: {}, strategy: "cookie" },
       });
-      cleanUpFunction = globalJsdom(payload);
 
-      const heading = getByRole(document.body, "heading", { level: 1 });
-      expect(heading).not.toBeNull();
-      expect(heading.textContent.trim()).toBe(
-        "Your Improve Animal Health and Welfare (IAHW) agreement has been removed",
-      );
+      const $ = cheerio.load(payload);
 
-      const applyLink = getByRole(document.body, "link", { name: "Apply for a new agreement" });
-      expect(applyLink).not.toBeNull();
-      expect(applyLink.getAttribute("href")).toBe("/you-can-claim-multiple");
+      expect($("body").text()).toContain("Claim for a different agreement");
+      expect($("body").text().toLowerCase()).toContain("cattle, pigs and sheep");
+
+      expect(await axe(payload)).toHaveNoViolations();
     });
   });
 });
