@@ -134,7 +134,7 @@ const postHandler = {
           href: reviewDateDayAnchor,
           inputsInError: { day: true, month: true, year: true },
         });
-        return await handleValidationError(request, validationError, h, date);
+        return handleValidationError(request, validationError, h, date);
       }
 
       const dateOfReview = new Date(year, month - 1, day);
@@ -148,7 +148,7 @@ const postHandler = {
       const applicationCreatedAt = new Date(latestPoultryApplication.createdAt);
 
       if (dateOfReview < applicationCreatedAt) {
-        return await handleTimingException(request, h, date, applicationCreatedAt);
+        return handleTimingException(request, h, date, applicationCreatedAt);
       }
 
       setSessionData(request, poultryClaimEntry, dateOfReviewKey, dateOfReview);
