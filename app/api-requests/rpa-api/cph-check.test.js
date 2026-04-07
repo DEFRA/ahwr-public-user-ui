@@ -1,5 +1,5 @@
-import { customerHasAtLeastOneValidCph } from "../../../../../../app/api-requests/rpa-api/cph-check.js";
-import { config } from "../../../../../../app/config/index.js";
+import { customerHasAtLeastOneValidCph } from "./cph-check.js";
+import { config } from "../../config/index.js";
 
 describe("poultry flag is down", () => {
   beforeAll(() => {
