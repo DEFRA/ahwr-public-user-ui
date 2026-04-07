@@ -32,7 +32,6 @@ const restrictedToPoultry = (cphNumber) => {
     return false;
   }
 
-  // Need customers' associated CPH to not include slaughter houses or poultry
   const sliceNo = -4;
   const poultry = {
     MIN: 9000,
