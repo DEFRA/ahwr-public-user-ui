@@ -5,6 +5,7 @@ import { getSignOutUrl } from "../../../../app/routes/sign-out.js";
 import { clearAuthCookie } from "../../../../app/auth/cookie-auth/cookie-auth.js";
 import { setSessionForErrorPage } from "../../../../app/routes/utils/check-login-valid.js";
 import { requestAuthorizationCodeUrl } from "../../../../app/auth/auth-code-grant/request-authorization-code-url.js";
+import { config } from "../../../../app/config/index.js";
 
 jest.mock("../../../../app/session", () => {
   const actual = jest.requireActual("../../../../app/session");
@@ -107,6 +108,49 @@ describe("GET /cannot-sign-in handler", () => {
       error,
       hasMultipleBusinesses,
       organisation,
+    });
+  });
+
+  describe("NoEligibleCphError with poultry flag", () => {
+    const organisation = {
+      address: "1 Brown Lane,Smithering,West Sussex,England,UK",
+      email: "unit@test.email.com.test",
+      name: "Unit test org",
+      sbi: 999000,
+    };
+    const error = "NoEligibleCphError";
+    const hasMultipleBusinesses = false;
+
+    test("it does not show 9000 poultry text when poultry is enabled", async () => {
+      config.poultry.enabled = true;
+      getSessionData.mockReturnValue({ error, hasMultipleBusinesses, organisation });
+
+      const res = await server.inject({
+        url: "/cannot-sign-in",
+        auth: {
+          credentials: {},
+          strategy: "cookie",
+        },
+      });
+
+      expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(res.payload).not.toContain("a 9000 number used for poultry keepers");
+    });
+
+    test("it shows 9000 poultry text when poultry is disabled", async () => {
+      config.poultry.enabled = false;
+      getSessionData.mockReturnValue({ error, hasMultipleBusinesses, organisation });
+
+      const res = await server.inject({
+        url: "/cannot-sign-in",
+        auth: {
+          credentials: {},
+          strategy: "cookie",
+        },
+      });
+
+      expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(res.payload).toContain("a 9000 number used for poultry keepers");
     });
   });
 });

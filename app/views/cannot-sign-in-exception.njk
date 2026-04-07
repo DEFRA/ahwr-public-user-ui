@@ -33,7 +33,9 @@
         <p class="govuk-body">The CPH number cannot be:</p>
         <ul class="govuk-list govuk-list--bullet">
           <li>an 8000 number used for abattoirs, pet food manufacturers, racing pigeon establishments and showgrounds</li>
+          {% if poultryEnabled !== true %}
           <li>a 9000 number used for poultry keepers</li>
+          {% endif %}
         </ul>
 
         {% if hasMultipleBusinesses %}
