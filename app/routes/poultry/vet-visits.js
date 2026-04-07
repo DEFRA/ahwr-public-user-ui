@@ -1,7 +1,7 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
 import { requestAuthorizationCodeUrl } from "../../auth/auth-code-grant/request-authorization-code-url.js";
 import { config } from "../../config/index.js";
-import { claimRoutes } from "../../constants/routes.js";
+import { poultryClaimRoutes } from "../../constants/routes.js";
 import { refreshApplications } from "../../lib/context-helper.js";
 
 const { latestTermsAndConditionsUri } = config;
@@ -44,7 +44,7 @@ export const poultryVetVisitsHandlers = [
 
         return h.view("poultry/vet-visits", {
           attachedToMultipleBusinesses,
-          claimJourneyStartPointUri: claimRoutes.whichSpeciesPoultry,
+          claimJourneyStartPointUri: poultryClaimRoutes.dateOfReview,
           ...organisation,
           reference: application.reference,
           downloadedDocument,

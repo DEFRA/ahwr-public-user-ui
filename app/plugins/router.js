@@ -63,6 +63,8 @@ import { whichReviewHandlers } from "../routes/claim/which-type-of-review.js";
 import { whichSpeciesPoultryHandlers } from "../routes/claim/which-species-poultry.js";
 import { assuranceSchemeHandlers } from "../routes/claim/assurance-scheme.js";
 import { poultryVetVisitsHandlers } from "../routes/poultry/vet-visits.js";
+import { poultrySelectTheSiteHandlers } from "../routes/poultry/claim/select-the-site.js";
+import { poultryEnterSiteNameHandlers } from "../routes/poultry/claim/enter-site-name.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
@@ -133,6 +135,8 @@ const poultryRoutes = [
   poultryClaimMultipleRouteHandlers,
   poultryDateOfReviewHandlers,
   poultryVetVisitsHandlers,
+  poultrySelectTheSiteHandlers,
+  poultryEnterSiteNameHandlers,
 ].flat();
 
 let routes;

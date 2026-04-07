@@ -7,6 +7,9 @@ export const redirectAgreementNotAcceptedPlugin = {
     register: (server, _) => {
       const includedPaths = [dashboardRoutes.manageYourClaims, ...Object.values(claimRoutes)];
       server.ext("onPreHandler", (request, h) => {
+        if (request.path.startsWith("/poultry")) {
+          return h.continue;
+        }
         const includedPath = includedPaths.some((term) => request.path.includes(term));
         if (request.method === "get" && includedPath) {
           const latestEndemicsApplication = getSessionData(

@@ -62,3 +62,25 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
     throw error;
   }
 };
+
+export const getSites = async (applicationReference, logger) => {
+  const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/herds`;
+
+  try {
+    const { payload } = await Wreck.get(endpoint, {
+      json: true,
+      headers: withTraceId(tracing.header, { "x-api-key": apiKeys.publicUiBackendApiKey }),
+    });
+    return payload;
+  } catch (error) {
+    const statusCode = error?.output?.statusCode;
+    if (statusCode === StatusCodes.NOT_FOUND) {
+      return [];
+    }
+
+    trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to get herds", {
+      kind: endpoint,
+    });
+    throw error;
+  }
+};

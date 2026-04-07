@@ -2,6 +2,7 @@ import {
   createApplication,
   getApplicationsBySbi,
   getHerds,
+  getSites,
 } from "../../../../../app/api-requests/application-api.js";
 import { config } from "../../../../../app/config/index.js";
 import { testWreckApiFunction } from "../../../../helpers/test-wreck-api.js";
@@ -51,6 +52,18 @@ describe("application api", () => {
       args: ["IAHW-ABVR-1234", "beef"],
       outboundPayload: null,
       returnPayload: "ABC123",
+      logger: makeLogger(),
+    });
+  });
+
+  test("getSites", async () => {
+    await testWreckApiFunction({
+      fn: getSites,
+      method: "get",
+      endpoint: `${config.applicationApiUri}/applications/IAHW-POULTRY-1234/herds`,
+      args: ["IAHW-POULTRY-1234"],
+      outboundPayload: null,
+      returnPayload: { herds: [{ id: "1", name: "Site 1" }] },
       logger: makeLogger(),
     });
   });

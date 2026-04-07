@@ -32,6 +32,7 @@ export const sessionKeys = {
   },
   poultryClaim: {
     latestPoultryApplication: "latestPoultryApplication",
+    dateOfReview: "dateOfReview",
   },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",

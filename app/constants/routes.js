@@ -191,6 +191,14 @@ export const claimViews = {
   youCannotClaim: "claim/you-cannot-claim",
 };
 
-export const poultryClaimRoutes = { dateOfReview: "/poultry/date-of-review" };
+export const poultryClaimRoutes = {
+  dateOfReview: "/poultry/date-of-review",
+  selectTheSite: "/poultry/select-the-site",
+  enterSiteName: "/poultry/enter-site-name",
+};
 
-export const poultryClaimViews = { dateOfReview: "poultry/claim/date-of-review" };
+export const poultryClaimViews = {
+  dateOfReview: "poultry/claim/date-of-review",
+  selectTheSite: "/poultry/claim/select-the-site",
+  enterSiteName: "/poultry/claim/enter-site-name",
+};
