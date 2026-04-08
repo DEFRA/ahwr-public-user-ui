@@ -143,6 +143,7 @@ const postHandler = {
       );
 
       const applicationCreatedAt = new Date(latestPoultryApplication.createdAt);
+      applicationCreatedAt.setHours(0, 0, 0, 0);
 
       if (dateOfReview < applicationCreatedAt) {
         return handleTimingException(request, h, date, applicationCreatedAt);
