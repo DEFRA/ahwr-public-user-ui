@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Enter the {{ herdOrFlock }} name - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Enter the site name - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -25,12 +25,12 @@
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         {{ govukInput({
         label: {
-            text: "Enter the " ~ herdOrFlock ~ " name",
+            text: "Enter the site name",
             classes: "govuk-label--l",
             isPageHeading: true
         },
          hint: {
-            text: "You can find this information on the ‘Tell us about this " ~ herdOrFlock ~ "’ section of the form that the vet filled in for you."
+            text: "You can find this information on the ‘Tell us about this site’ section of the form that the vet filled in for you. This might be the farm name associated with your CPH. For example, Home Farm, East Farm."
          },
         classes: "govuk-input govuk-!-width-three-quarters",
         id: "herdName",
@@ -46,8 +46,8 @@
       }}
       </form>
       {{ govukDetails({
-        summaryText: "I don't have the " ~ herdOrFlock ~ " details from the vet",
-        text: ("Your vet should have completed the  ‘Tell us about this " ~ herdOrFlock ~ "’ section on the vet template. You can ask them to <a class='govuk-link' href='https://www.gov.uk/guidance/vet-summary-templates-for-all-species'>download the form</a> and fill the details in for you.") | safe
+        summaryText: "I don't have the site details from the vet",
+        text: ("Your vet should have completed the  ‘Tell us about this site’ section on the vet template. You can ask them to <a class='govuk-link' href='https://www.gov.uk/guidance/vet-summary-templates-for-all-species'>download the form</a> and fill the details in for you.") | safe
       }) }}
     </div>
   </div>

@@ -195,10 +195,11 @@ export const poultryClaimRoutes = {
   dateOfReview: "/poultry/date-of-review",
   selectTheSite: "/poultry/select-the-site",
   enterSiteName: "/poultry/enter-site-name",
+  enterCphNumber: "/poultry/enter-cph-number",
 };
 
 export const poultryClaimViews = {
   dateOfReview: "poultry/claim/date-of-review",
-  selectTheSite: "/poultry/claim/select-the-site",
-  enterSiteName: "/poultry/claim/enter-site-name",
+  selectTheSite: "poultry/claim/select-the-site",
+  enterSiteName: "poultry/claim/enter-site-name",
 };
