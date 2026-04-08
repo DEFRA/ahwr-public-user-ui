@@ -103,7 +103,7 @@ const postHandler = {
       await setSessionData(
         request,
         sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.siteName,
+        sessionKeys.poultryClaim.herdName,
         herdName.trim(),
         { shouldEmitEvent: false },
       );

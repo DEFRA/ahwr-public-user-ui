@@ -33,7 +33,7 @@ export const sessionKeys = {
   poultryClaim: {
     latestPoultryApplication: "latestPoultryApplication",
     dateOfReview: "dateOfReview",
-    siteName: "siteName",
+    herdName: "herdName",
   },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",
