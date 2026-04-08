@@ -13,6 +13,7 @@ import {
   poultryApplyRoutes,
 } from "../constants/routes.js";
 import Joi from "joi";
+import { requestAuthorizationCodeUrl } from "../auth/auth-code-grant/request-authorization-code-url.js";
 
 export const selectFundingRouteHandlers = [
   {
@@ -22,9 +23,19 @@ export const selectFundingRouteHandlers = [
       handler: async (request, h) => {
         const { livestockText, poultryText, organisation } = getScreenInformation(request);
 
+        const attachedToMultipleBusinesses = getSessionData(
+          request,
+          sessionEntryKeys.customer,
+          sessionKeys.customer.attachedToMultipleBusinesses,
+        );
+
         return h.view(dashboardViews.selectFunding, {
+          attachedToMultipleBusinesses,
           livestockText,
           poultryText,
+          ...(attachedToMultipleBusinesses && {
+            hostname: await requestAuthorizationCodeUrl(request),
+          }),
           ...organisation,
         });
       },
@@ -51,11 +62,22 @@ export const selectFundingRouteHandlers = [
             "No funding selected",
           );
           const { livestockText, poultryText, organisation } = getScreenInformation(request);
+
+          const attachedToMultipleBusinesses = getSessionData(
+            request,
+            sessionEntryKeys.customer,
+            sessionKeys.customer.attachedToMultipleBusinesses,
+          );
+
           return h
             .view(dashboardViews.selectFunding, {
+              attachedToMultipleBusinesses,
               livestockText,
               poultryText,
               ...organisation,
+              ...(attachedToMultipleBusinesses && {
+                hostname: await requestAuthorizationCodeUrl(request),
+              }),
               errorMessage: {
                 text: error.details[0].message,
                 href: "#selectFunding",
