@@ -1,6 +1,13 @@
 import { dashboardRoutes } from "../constants/routes.js";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionEntry,
+} from "../session/index.js";
 import { trackError } from "../logging/logger.js";
+import { getApplicationsBySbi } from "../api-requests/application-api.js";
+import { applicationType, JOURNEY } from "../constants/constants.js";
 
 export const preApplyHandler = async (request, h) => {
   if (request.method === "get") {
@@ -11,12 +18,15 @@ export const preApplyHandler = async (request, h) => {
     }
 
     // Use latestEndemicsApplication from session (set during login by refreshApplications)
-    // to stay consistent with select-funding.js and redirect-agreement-not-accepted plugin
+    // to stay consistent with select-funding.js and redirect-agreement-not-accepted plugin.
+    // But we leave for now application as it generates a event for the MI report
     const latestEndemicsApplication = getSessionData(
       request,
       sessionEntryKeys.endemicsClaim,
       sessionKeys.endemicsClaim.latestEndemicsApplication,
     );
+
+    await generateApplicationEvent(request, organisation);
 
     if (latestEndemicsApplication?.status === "AGREED" && !latestEndemicsApplication.redacted) {
       trackError(
@@ -34,3 +44,17 @@ export const preApplyHandler = async (request, h) => {
 
   return h.continue;
 };
+
+async function generateApplicationEvent(request, organisation) {
+  let application = getSessionData(request, sessionEntryKeys.application);
+  if (!application) {
+    const latestApplications = await getApplicationsBySbi(organisation.sbi);
+    const newWorldApplications = latestApplications.filter(
+      (newWorldApp) => newWorldApp.type === applicationType.ENDEMICS,
+    );
+    application = newWorldApplications.length ? newWorldApplications[0] : null;
+    await setSessionEntry(request, sessionEntryKeys.application, application, {
+      journey: JOURNEY.APPLY,
+    });
+  }
+}
