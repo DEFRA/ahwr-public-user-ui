@@ -29,7 +29,7 @@ export const viewContextPlugin = {
           ctx.serviceUri = serviceUri;
           ctx.customerSurveyUri = getSurveyUri(request, path, method);
           ctx.userIsSignedIn = request.auth.isAuthenticated;
-          ctx.userHasAgreement = getUserHasAgreement(request);
+          ctx.showManageYourClaims = shouldShowManageYourClaims(request);
           ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS;
           ctx.dashboardLink = dashboardRoutes.manageYourClaims;
           ctx.dashboardLink =
@@ -66,4 +66,14 @@ const getUserHasAgreement = (request) => {
     sessionKeys.endemicsClaim.latestEndemicsApplication,
   );
   return latestEndemicsApplication?.status === "AGREED";
+};
+
+const shouldShowManageYourClaims = (request) => {
+  const hiddenPaths = [dashboardRoutes.checkDetails, dashboardRoutes.selectFunding];
+
+  if (hiddenPaths.includes(request.path)) {
+    return false;
+  }
+
+  return getUserHasAgreement(request);
 };
