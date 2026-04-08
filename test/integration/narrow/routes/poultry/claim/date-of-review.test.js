@@ -323,4 +323,34 @@ describe("POST /poultry/date-of-review", () => {
     expect($(".govuk-error-summary").text()).toContain(expectedError);
     expect($("#back").attr("href")).toBe("/poultry/vet-visits");
   });
+
+  test("when date is the same day as latestPoultryApplication.createdAt (with time component), should succeed", async () => {
+    const createdAt = "2025-03-01T14:30:00Z";
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.latestPoultryApplication,
+      )
+      .mockReturnValue({ status: "AGREED", createdAt, reference: "TEST-REF" });
+
+    getSites.mockResolvedValue({ herds: [] });
+
+    const options = {
+      method: "POST",
+      url,
+      payload: {
+        crumb,
+        "review-date-day": "1",
+        "review-date-month": "03",
+        "review-date-year": "2025",
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` },
+    };
+    const res = await server.inject(options);
+
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location.toString()).toEqual("/poultry/enter-site-name");
+  });
 });
