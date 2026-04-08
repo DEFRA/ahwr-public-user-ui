@@ -10,7 +10,7 @@ import {
 import HttpStatus from "http-status-codes";
 
 const getBackLink = (herds) =>
-  !herds?.length ? poultryClaimRoutes.dateOfReview : poultryClaimRoutes.selectTheSite;
+  herds?.length ? poultryClaimRoutes.selectTheSite : poultryClaimRoutes.dateOfReview;
 
 const getHandler = {
   method: "GET",

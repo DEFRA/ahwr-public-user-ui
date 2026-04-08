@@ -200,6 +200,6 @@ export const poultryClaimRoutes = {
 
 export const poultryClaimViews = {
   dateOfReview: "poultry/claim/date-of-review",
-  selectTheSite: "/poultry/claim/select-the-site",
+  selectTheSite: "poultry/claim/select-the-site",
   enterSiteName: "poultry/claim/enter-site-name",
 };
