@@ -1,16 +1,9 @@
-import { getApplicationsBySbi } from "../../../../app/api-requests/application-api.js";
 import { userType } from "../../../../app/constants/constants.js";
 import { preApplyHandler } from "../../../../app/lib/pre-apply-handler.js";
-import {
-  getSessionData,
-  setSessionData,
-  sessionEntryKeys,
-  setSessionEntry,
-} from "../../../../app/session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
 import { when } from "jest-when";
 
 jest.mock("../../../../app/session");
-jest.mock("../../../../app/api-requests/application-api");
 
 const mockSetBindings = jest.fn();
 const error = jest.fn();
@@ -67,40 +60,31 @@ describe("preApplyHandler", () => {
     expect(getSessionData).toHaveBeenCalled();
   });
 
-  test("sends an API request to get applications if they arent in the session, but organisation is in the session", async () => {
+  test("allows apply journey when latestEndemicsApplication is undefined", async () => {
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(organisation);
 
-    const closedNewWorldApplications = [
-      {
-        sbi: 112231312,
-        type: "EE",
-        reference: "IAHW-1111-2222",
-        redacted: false,
-        status: "CLOSED",
-      },
-    ];
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue(undefined);
 
-    getApplicationsBySbi.mockResolvedValue(closedNewWorldApplications);
+    const result = await preApplyHandler(getRequest, h);
 
-    await preApplyHandler(getRequest, h);
-
-    expect(getApplicationsBySbi).toHaveBeenCalled();
-    expect(setSessionEntry).toHaveBeenCalledWith(
-      getRequest,
-      sessionEntryKeys.application,
-      closedNewWorldApplications[0],
-      { journey: "apply" },
-    );
+    expect(result).toBe(mockContinue);
+    expect(h.redirect).not.toHaveBeenCalled();
   });
 
-  test("does not send an API request to get applications if the application is already in the session", async () => {
+  test("allows apply journey when latestEndemicsApplication has non-AGREED status", async () => {
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(organisation);
 
-    const closedNewWorldApplication = {
+    const closedApplication = {
       sbi: 112231312,
       type: "EE",
       reference: "IAHW-1111-2222",
@@ -109,13 +93,17 @@ describe("preApplyHandler", () => {
     };
 
     when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.application)
-      .mockReturnValue(closedNewWorldApplication);
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue(closedApplication);
 
-    await preApplyHandler(getRequest, h);
+    const result = await preApplyHandler(getRequest, h);
 
-    expect(getApplicationsBySbi).not.toHaveBeenCalled();
-    expect(setSessionData).not.toHaveBeenCalled();
+    expect(result).toBe(mockContinue);
+    expect(h.redirect).not.toHaveBeenCalled();
   });
 
   test("returns a redirect if user already has an agreed agreement", async () => {
@@ -123,7 +111,7 @@ describe("preApplyHandler", () => {
       .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(organisation);
 
-    const closedNewWorldApplication = {
+    const agreedApplication = {
       sbi: 112231312,
       type: "EE",
       reference: "IAHW-1111-2222",
@@ -132,8 +120,12 @@ describe("preApplyHandler", () => {
     };
 
     when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.application)
-      .mockReturnValue(closedNewWorldApplication);
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue(agreedApplication);
 
     await preApplyHandler(getRequest, h);
 
@@ -148,5 +140,32 @@ describe("preApplyHandler", () => {
       "User attempted to use apply journey despite already having an agreed agreement.",
     );
     expect(h.redirect).toHaveBeenCalledWith("/vet-visits");
+  });
+
+  test("allows apply journey if application is agreed but redacted", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue(organisation);
+
+    const redactedApplication = {
+      sbi: 112231312,
+      type: "EE",
+      reference: "IAHW-1111-2222",
+      redacted: true,
+      status: "AGREED",
+    };
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue(redactedApplication);
+
+    const result = await preApplyHandler(getRequest, h);
+
+    expect(result).toBe(mockContinue);
+    expect(h.redirect).not.toHaveBeenCalled();
   });
 });
