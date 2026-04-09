@@ -54,7 +54,7 @@
 
   {% set nav = [] %}
 
-  {% if userHasAgreement %}
+  {% if showManageYourClaims %}
     {% set nav = nav.concat([{ "href": dashboardLink, "text": "Manage your claims" }]) %}
   {% endif %}
   

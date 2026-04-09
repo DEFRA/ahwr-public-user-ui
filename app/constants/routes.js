@@ -43,7 +43,6 @@ export const poultryApplyRoutes = {
   declaration: "/poultry/declaration",
   offerRejected: "/poultry/offer-rejected",
   confirmation: "/poultry/confirmation",
-  checkDetails: "/poultry/check-details",
 };
 
 export const applyViews = {

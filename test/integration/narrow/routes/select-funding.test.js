@@ -181,7 +181,6 @@ describe("select-funding", () => {
           sessionKeys.customer.attachedToMultipleBusinesses,
         )
         .mockReturnValue(true);
-
       const res = await server.inject({ ...optionsBase, method: "GET" });
 
       expect(res.statusCode).toBe(StatusCodes.OK);
@@ -191,6 +190,22 @@ describe("select-funding", () => {
       const mbiLink = $("#MBILink");
       expect(mbiLink.text()).toBe("Claim for a different business");
       expect(mbiLink.attr("href")).toBe(mockUrl.toString());
+    });
+
+    test("does not show Manage your claims link even with AGREED status", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue({ status: "AGREED", reference: livestockAgreement });
+
+      const res = await server.inject({ ...optionsBase, method: "GET" });
+
+      expect(res.statusCode).toBe(StatusCodes.OK);
+
+      expect(res.payload).not.toContain("Manage your claims");
     });
   });
 
