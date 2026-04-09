@@ -47,7 +47,7 @@ export const selectFundingRouteHandlers = [
     options: {
       validate: {
         payload: Joi.object({
-          type: Joi.string()
+          fundingType: Joi.string()
             .valid("IAHW", "POUL")
             .required()
             .messages({ "any.required": "Select a funding" }),
@@ -80,7 +80,7 @@ export const selectFundingRouteHandlers = [
               }),
               errorMessage: {
                 text: error.details[0].message,
-                href: "#selectFunding",
+                href: "#fundingType",
               },
             })
             .code(HttpStatus.BAD_REQUEST)
@@ -89,16 +89,16 @@ export const selectFundingRouteHandlers = [
       },
       handler: async (request, h) => {
         clearFundingSelection(request);
-        const { type } = request.payload;
+        const { fundingType } = request.payload;
 
         await setSessionData(
           request,
           sessionEntryKeys.fundingSelection,
           sessionKeys.fundingSelection.selectedFunding,
-          type,
+          fundingType,
         );
 
-        if (type === "IAHW") {
+        if (fundingType === "IAHW") {
           const latestEndemicsApplication = getSessionData(
             request,
             sessionEntryKeys.endemicsClaim,
@@ -117,7 +117,7 @@ export const selectFundingRouteHandlers = [
           );
         }
 
-        if (type === "POUL") {
+        if (fundingType === "POUL") {
           const latestPoultryApplication = getSessionData(
             request,
             sessionEntryKeys.poultryClaim,

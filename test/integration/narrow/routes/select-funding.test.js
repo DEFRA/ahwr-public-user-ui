@@ -105,7 +105,7 @@ describe("select-funding", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Select funding");
-      expect($('input[name="type"]').first().next("label").text().trim()).toBe(
+      expect($('input[name="fundingType"]').first().next("label").text().trim()).toBe(
         "Cattle, pig, and sheep review and follow-up",
       );
       expect($(".govuk-radios__hint").first().text().trim()).toBe(
@@ -119,7 +119,7 @@ describe("select-funding", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Select funding");
-      expect($('input[name="type"]').eq(1).next("label").text().trim()).toBe(
+      expect($('input[name="fundingType"]').eq(1).next("label").text().trim()).toBe(
         "Poultry biosecurity review",
       );
       expect($(".govuk-radios__hint").eq(1).text().trim()).toBe(
@@ -140,7 +140,7 @@ describe("select-funding", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Select funding");
-      expect($('input[name="type"]').first().next("label").text().trim()).toBe(
+      expect($('input[name="fundingType"]').first().next("label").text().trim()).toBe(
         "Cattle, pig, and sheep review and follow-up",
       );
       expect($(".govuk-radios__hint").first().text().trim()).toBe(
@@ -162,7 +162,7 @@ describe("select-funding", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Select funding");
-      expect($('input[name="type"]').eq(1).next("label").text().trim()).toBe(
+      expect($('input[name="fundingType"]').eq(1).next("label").text().trim()).toBe(
         "Poultry biosecurity review",
       );
       expect($(".govuk-radios__hint").eq(1).text().trim()).toBe(
@@ -235,7 +235,7 @@ describe("select-funding", () => {
         ...postOptionsBase,
         payload: {
           ...postOptionsBase.payload,
-          type: "IAHW",
+          fundingType: "IAHW",
         },
       };
 
@@ -271,7 +271,7 @@ describe("select-funding", () => {
         ...postOptionsBase,
         payload: {
           ...postOptionsBase.payload,
-          type: "IAHW",
+          fundingType: "IAHW",
         },
       };
 
@@ -307,7 +307,7 @@ describe("select-funding", () => {
         ...postOptionsBase,
         payload: {
           ...postOptionsBase.payload,
-          type: "POUL",
+          fundingType: "POUL",
         },
       };
 
@@ -343,7 +343,7 @@ describe("select-funding", () => {
         ...postOptionsBase,
         payload: {
           ...postOptionsBase.payload,
-          type: "POUL",
+          fundingType: "POUL",
         },
       };
 
