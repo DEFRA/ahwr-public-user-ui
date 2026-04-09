@@ -167,5 +167,5 @@ function getPoultryText(latestPoultryApplication) {
 function getLivestockText(latestEndemicsApplication) {
   return latestEndemicsApplication
     ? `<b>Agreement number</b>: ${latestEndemicsApplication.reference}<br/>Create or manage claims for this agreement`
-    : "Create an agreement for cattle, sheep and pig";
+    : "Create an agreement for improve animal health and welfare for cattle, pigs and sheep";
 }
