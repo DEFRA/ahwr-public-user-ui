@@ -1,16 +1,16 @@
-import { getApplicationsBySbi } from "../../../../app/api-requests/application-api.js";
-import { userType } from "../../../../app/constants/constants.js";
-import { preApplyHandler } from "../../../../app/lib/pre-apply-handler.js";
+import { getApplicationsBySbi } from "../api-requests/application-api.js";
+import { userType } from "../constants/constants.js";
+import { preApplyHandler } from "./pre-apply-handler.js";
 import {
   getSessionData,
   setSessionData,
   sessionEntryKeys,
   setSessionEntry,
-} from "../../../../app/session/index.js";
+} from "../session/index.js";
 import { when } from "jest-when";
 
-jest.mock("../../../../app/session");
-jest.mock("../../../../app/api-requests/application-api");
+jest.mock("../session");
+jest.mock("../api-requests/application-api");
 
 const mockSetBindings = jest.fn();
 const error = jest.fn();
