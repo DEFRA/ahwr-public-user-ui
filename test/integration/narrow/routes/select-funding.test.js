@@ -109,7 +109,7 @@ describe("select-funding", () => {
         "Cattle, pig, and sheep review and follow-up",
       );
       expect($(".govuk-radios__hint").first().text().trim()).toBe(
-        "Create an agreement for cattle, sheep and pig",
+        "Create an agreement for improve animal health and welfare for cattle, pigs and sheep",
       );
     });
 
