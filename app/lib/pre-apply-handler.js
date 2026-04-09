@@ -1,5 +1,7 @@
+import { getApplicationsBySbi } from "../api-requests/application-api.js";
+import { applicationType, JOURNEY } from "../constants/constants.js";
 import { dashboardRoutes } from "../constants/routes.js";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
 import { trackError } from "../logging/logger.js";
 
 export const preApplyHandler = async (request, h) => {
@@ -10,15 +12,20 @@ export const preApplyHandler = async (request, h) => {
       throw new Error("No organisation found in session");
     }
 
-    // Use latestEndemicsApplication from session (set during login by refreshApplications)
-    // to stay consistent with select-funding.js and redirect-agreement-not-accepted plugin
-    const latestEndemicsApplication = getSessionData(
-      request,
-      sessionEntryKeys.endemicsClaim,
-      sessionKeys.endemicsClaim.latestEndemicsApplication,
-    );
+    let application = getSessionData(request, sessionEntryKeys.application);
 
-    if (latestEndemicsApplication?.status === "AGREED" && !latestEndemicsApplication.redacted) {
+    if (!application) {
+      const latestApplications = await getApplicationsBySbi(organisation.sbi);
+      const newWorldApplications = latestApplications.filter(
+        (newWorldApp) => newWorldApp.type === applicationType.ENDEMICS,
+      );
+      application = newWorldApplications.length ? newWorldApplications[0] : null;
+      await setSessionEntry(request, sessionEntryKeys.application, application, {
+        journey: JOURNEY.APPLY,
+      });
+    }
+
+    if (application?.status === "AGREED" && !application.redacted) {
       trackError(
         request.logger,
         new Error(
