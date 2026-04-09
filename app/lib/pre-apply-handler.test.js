@@ -1,16 +1,16 @@
-import { getApplicationsBySbi } from "../../../../app/api-requests/application-api.js";
-import { userType } from "../../../../app/constants/constants.js";
-import { preApplyHandler } from "../../../../app/lib/pre-apply-handler.js";
+import { getApplicationsBySbi } from "../api-requests/application-api.js";
+import { userType } from "../constants/constants.js";
+import { preApplyHandler } from "./pre-apply-handler.js";
 import {
   getSessionData,
   setSessionData,
   sessionEntryKeys,
   setSessionEntry,
-} from "../../../../app/session/index.js";
+} from "../session/index.js";
 import { when } from "jest-when";
 
-jest.mock("../../../../app/session");
-jest.mock("../../../../app/api-requests/application-api");
+jest.mock("../session");
+jest.mock("../api-requests/application-api");
 
 const mockSetBindings = jest.fn();
 const error = jest.fn();
@@ -49,6 +49,13 @@ const organisation = {
 describe("preApplyHandler", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Default mock setup for generateApplicationEvent
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.application)
+      .mockReturnValue(null);
+
+    getApplicationsBySbi.mockResolvedValue([]);
   });
 
   test("nothing happens if the request is not a GET", async () => {
@@ -148,5 +155,98 @@ describe("preApplyHandler", () => {
       "User attempted to use apply journey despite already having an agreed agreement.",
     );
     expect(h.redirect).toHaveBeenCalledWith("/vet-visits");
+  });
+
+  test("allows apply journey if application is agreed but redacted", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue(organisation);
+
+    const redactedApplication = {
+      sbi: 112231312,
+      type: "EE",
+      reference: "IAHW-1111-2222",
+      redacted: true,
+      status: "AGREED",
+    };
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.application)
+      .mockReturnValue(redactedApplication);
+
+    const result = await preApplyHandler(getRequest, h);
+
+    expect(result).toBe(mockContinue);
+    expect(h.redirect).not.toHaveBeenCalled();
+  });
+
+  describe("generateApplicationEvent", () => {
+    test("fetches from API and sets application in session when not cached", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(organisation);
+
+      const apiApplication = {
+        sbi: 112231312,
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        status: "CLOSED",
+      };
+
+      getApplicationsBySbi.mockResolvedValue([apiApplication]);
+
+      await preApplyHandler(getRequest, h);
+
+      expect(getApplicationsBySbi).toHaveBeenCalledWith(organisation.sbi);
+      expect(setSessionEntry).toHaveBeenCalledWith(
+        getRequest,
+        sessionEntryKeys.application,
+        apiApplication,
+        { journey: "apply" },
+      );
+    });
+
+    test("does not fetch from API when application is already cached", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(organisation);
+
+      const cachedApplication = {
+        sbi: 112231312,
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        status: "CLOSED",
+      };
+
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.application)
+        .mockReturnValue(cachedApplication);
+
+      await preApplyHandler(getRequest, h);
+
+      expect(getApplicationsBySbi).not.toHaveBeenCalled();
+      expect(setSessionEntry).not.toHaveBeenCalled();
+    });
+
+    test("sets application to null when API returns no ENDEMICS applications", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(organisation);
+
+      const poultryApplication = {
+        sbi: 112231312,
+        type: "POUL",
+        reference: "POUL-1111-2222",
+        status: "AGREED",
+      };
+
+      getApplicationsBySbi.mockResolvedValue([poultryApplication]);
+
+      await preApplyHandler(getRequest, h);
+
+      expect(setSessionEntry).toHaveBeenCalledWith(getRequest, sessionEntryKeys.application, null, {
+        journey: "apply",
+      });
+    });
   });
 });

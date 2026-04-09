@@ -1,8 +1,9 @@
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
-import { applicationType, JOURNEY } from "../constants/constants.js";
+import { JOURNEY } from "../constants/constants.js";
 import { dashboardRoutes } from "../constants/routes.js";
 import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
 import { trackError } from "../logging/logger.js";
+import { APPLICATION_REFERENCE_PREFIX_NEW_WORLD } from "ffc-ahwr-common-library";
 
 export const preApplyHandler = async (request, h) => {
   if (request.method === "get") {
@@ -16,8 +17,8 @@ export const preApplyHandler = async (request, h) => {
 
     if (!application) {
       const latestApplications = await getApplicationsBySbi(organisation.sbi);
-      const newWorldApplications = latestApplications.filter(
-        (newWorldApp) => newWorldApp.type === applicationType.ENDEMICS,
+      const newWorldApplications = latestApplications.filter((newWorldApp) =>
+        newWorldApp.reference.startsWith(APPLICATION_REFERENCE_PREFIX_NEW_WORLD),
       );
       application = newWorldApplications.length ? newWorldApplications[0] : null;
       await setSessionEntry(request, sessionEntryKeys.application, application, {

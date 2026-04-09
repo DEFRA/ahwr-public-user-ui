@@ -74,6 +74,11 @@ describe("Declaration test", () => {
     .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
     .mockReturnValue(true);
 
+  // Mock for generateApplicationEvent in preApplyHandler
+  when(getSessionData)
+    .calledWith(expect.anything(), sessionEntryKeys.application)
+    .mockReturnValue({ reference: "IAHW-1234-ABCD" });
+
   createApplication.mockResolvedValue({ applicationReference: "IAHW-PJ7E-WSI8" });
 
   describe("GET /declaration route", () => {
