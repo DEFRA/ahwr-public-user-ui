@@ -75,6 +75,10 @@ describe("Declaration test", () => {
     .mockReturnValue(poultryApplyData);
 
   when(getSessionData)
+    .calledWith(expect.anything(), sessionEntryKeys.application)
+    .mockReturnValue({ reference: "IAHW-1234-ABCD" });
+
+  when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
     .mockReturnValue(true);
 
