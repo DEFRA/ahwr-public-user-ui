@@ -17,8 +17,10 @@ import {
 import { when } from "jest-when";
 import { axe } from "../../../helpers/axe-helper.js";
 import { userType } from "../../../../app/constants/constants.js";
+import { requestAuthorizationCodeUrl } from "../../../../app/auth/auth-code-grant/request-authorization-code-url.js";
 
 jest.mock("../../../../app/session/index.js");
+jest.mock("../../../../app/auth/auth-code-grant/request-authorization-code-url.js");
 jest.mock("../../../../app/config/index.js", () => ({
   config: {
     ...jest.requireActual("../../../../app/config/index.js").config,
@@ -50,6 +52,15 @@ describe("select-funding", () => {
   when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
     .mockReturnValue(true);
+
+  // Default to false for attachedToMultipleBusinesses
+  when(getSessionData)
+    .calledWith(
+      expect.anything(),
+      sessionEntryKeys.customer,
+      sessionKeys.customer.attachedToMultipleBusinesses,
+    )
+    .mockReturnValue(false);
 
   const optionsBase = {
     auth: {
@@ -157,6 +168,29 @@ describe("select-funding", () => {
       expect($(".govuk-radios__hint").eq(1).text().trim()).toBe(
         `Agreement number: ${poultryAgreement}Create or manage claims for this agreement`,
       );
+    });
+
+    test("shows 'Claim for a different business' link when attachedToMultipleBusinesses is true", async () => {
+      const mockUrl = new URL("https://example.com/auth");
+      requestAuthorizationCodeUrl.mockResolvedValue(mockUrl);
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.customer,
+          sessionKeys.customer.attachedToMultipleBusinesses,
+        )
+        .mockReturnValue(true);
+
+      const res = await server.inject({ ...optionsBase, method: "GET" });
+
+      expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(requestAuthorizationCodeUrl).toHaveBeenCalled();
+
+      const $ = cheerio.load(res.payload);
+      const mbiLink = $("#MBILink");
+      expect(mbiLink.text()).toBe("Claim for a different business");
+      expect(mbiLink.attr("href")).toBe(mockUrl.toString());
     });
   });
 
@@ -337,6 +371,33 @@ describe("select-funding", () => {
         "error",
         "No funding selected",
       );
+    });
+
+    test("shows 'Claim for a different business' link in failAction when attachedToMultipleBusinesses is true", async () => {
+      const mockUrl = new URL("https://example.com/auth");
+      requestAuthorizationCodeUrl.mockResolvedValue(mockUrl);
+
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.customer,
+          sessionKeys.customer.attachedToMultipleBusinesses,
+        )
+        .mockReturnValue(true);
+
+      const options = {
+        ...postOptionsBase,
+      };
+
+      const response = await server.inject(options);
+
+      expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+      expect(requestAuthorizationCodeUrl).toHaveBeenCalled();
+
+      const $ = cheerio.load(response.payload);
+      const mbiLink = $("#MBILink");
+      expect(mbiLink.text()).toBe("Claim for a different business");
+      expect(mbiLink.attr("href")).toBe(mockUrl.toString());
     });
   });
 });
