@@ -5,7 +5,6 @@ import {
   getSessionData,
   setSessionData,
   sessionEntryKeys,
-  sessionKeys,
   setSessionEntry,
 } from "../../../../app/session/index.js";
 import { when } from "jest-when";
@@ -172,11 +171,7 @@ describe("preApplyHandler", () => {
     };
 
     when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.latestEndemicsApplication,
-      )
+      .calledWith(expect.anything(), sessionEntryKeys.application)
       .mockReturnValue(redactedApplication);
 
     const result = await preApplyHandler(getRequest, h);
@@ -190,14 +185,6 @@ describe("preApplyHandler", () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.organisation)
         .mockReturnValue(organisation);
-
-      when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.latestEndemicsApplication,
-        )
-        .mockReturnValue(undefined);
 
       const apiApplication = {
         sbi: 112231312,
@@ -224,14 +211,6 @@ describe("preApplyHandler", () => {
         .calledWith(expect.anything(), sessionEntryKeys.organisation)
         .mockReturnValue(organisation);
 
-      when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.latestEndemicsApplication,
-        )
-        .mockReturnValue(undefined);
-
       const cachedApplication = {
         sbi: 112231312,
         type: "EE",
@@ -253,14 +232,6 @@ describe("preApplyHandler", () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.organisation)
         .mockReturnValue(organisation);
-
-      when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.latestEndemicsApplication,
-        )
-        .mockReturnValue(undefined);
 
       const poultryApplication = {
         sbi: 112231312,
