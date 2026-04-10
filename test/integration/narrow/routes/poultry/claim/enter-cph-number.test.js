@@ -12,8 +12,10 @@ import {
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { config } from "../../../../../../app/config/index.js";
+import { isCPHUnique } from "../../../../../../app/api-requests/claim-api.js";
 
 jest.mock("../../../../../../app/session/index.js");
+jest.mock("../../../../../../app/api-requests/claim-api.js");
 
 describe("/enter-cph-number tests", () => {
   const url = `/poultry/enter-cph-number`;
@@ -124,6 +126,10 @@ describe("/enter-cph-number tests", () => {
   });
 
   describe("POST", () => {
+    beforeEach(async () => {
+      isCPHUnique.mockResolvedValue({ isCPHUnique: true });
+    });
+
     beforeAll(async () => {
       crumb = await getCrumbs(server);
     });
@@ -264,6 +270,40 @@ describe("/enter-cph-number tests", () => {
         expect(setSessionData).toHaveBeenCalled();
         expect(emitHerdEvent).toHaveBeenCalled();
       });
+
+      test("displays error when cph has been used in other claims", async () => {
+        getSessionData.mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          herdId: "e3d320b7-b2cf-469a-903f-ead7587d98e9",
+        });
+        isCPHUnique.mockResolvedValueOnce({ isCPHUnique: false });
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdCph: "22/333/4444" },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(400);
+        expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
+        expect($('a[href="#herdCph"]').text()).toContain(
+          "You have already used this CPH, the CPH must be unique",
+        );
+        expect($('p[id="herdCph-error"]').text()).toContain(
+          "You have already used this CPH, the CPH must be unique",
+        );
+        expectSiteText($);
+        expect(emitHerdEvent).not.toHaveBeenCalled();
+        expect(isCPHUnique).toHaveBeenCalledWith(
+          "22/333/4444",
+          "e3d320b7-b2cf-469a-903f-ead7587d98e9",
+          expect.any(Object),
+        );
+      });
     });
 
     test("display errors with back link to select site when payload invalid and updating an existing herd", async () => {
@@ -292,40 +332,6 @@ describe("/enter-cph-number tests", () => {
       );
       expectSiteText($);
       expect($(".govuk-back-link").attr("href")).toContain("/select-the-site");
-      expect(emitHerdEvent).not.toHaveBeenCalled();
-    });
-
-    test("displays error when cph has been used in a previous claim", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        previousClaims: [
-          {
-            herd: {
-              cph: "22/333/4444",
-            },
-          },
-        ],
-      });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, herdCph: "22/333/4444" },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#herdCph"]').text()).toContain(
-        "You have already used this CPH, the CPH must be unique",
-      );
-      expect($('p[id="herdCph-error"]').text()).toContain(
-        "You have already used this CPH, the CPH must be unique",
-      );
-      expectSiteText($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
   });

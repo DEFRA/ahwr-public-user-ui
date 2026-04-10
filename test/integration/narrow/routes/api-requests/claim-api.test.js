@@ -2,6 +2,7 @@ import {
   getClaimsByApplicationReference,
   submitNewClaim,
   isURNUnique,
+  isCPHUnique,
 } from "../../../../../app/api-requests/claim-api.js";
 import { config } from "../../../../../app/config/index.js";
 import { testWreckApiFunction } from "../../../../helpers/test-wreck-api.js";
@@ -51,6 +52,22 @@ describe("claim api", () => {
       args: [{ testData: "stuff" }],
       outboundPayload: { testData: "stuff" },
       returnPayload: "ABC123",
+      logger: makeLogger(),
+    });
+  });
+
+  test("isCPHUnique", async () => {
+    const params = new URLSearchParams({
+      cph: "22/333/4444",
+      herdId: "e3d320b7-b2cf-469a-903f-ead7587d98e9",
+    });
+    await testWreckApiFunction({
+      fn: isCPHUnique,
+      method: "get",
+      endpoint: `${config.applicationApiUri}/claims/is-cph-unique?${params.toString()}`,
+      args: ["22/333/4444", "e3d320b7-b2cf-469a-903f-ead7587d98e9"],
+      outboundPayload: null,
+      returnPayload: { isCPHUnique: true },
       logger: makeLogger(),
     });
   });

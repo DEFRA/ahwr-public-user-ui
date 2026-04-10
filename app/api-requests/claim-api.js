@@ -64,3 +64,26 @@ export async function isURNUnique(data, logger) {
     throw error;
   }
 }
+
+export async function isCPHUnique(cph, herdId, logger) {
+  const params = new URLSearchParams({ cph });
+
+  if (herdId) {
+    params.append("herdId", herdId);
+  }
+
+  const endpoint = `${config.applicationApiUri}/claims/is-cph-unique?${params.toString()}`;
+  try {
+    const { payload } = await Wreck.get(endpoint, {
+      json: true,
+      headers: withTraceId(tracing.header, { "x-api-key": apiKeys.publicUiBackendApiKey }),
+    });
+
+    return payload;
+  } catch (error) {
+    trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to check Unique CPH", {
+      kind: endpoint,
+    });
+    throw error;
+  }
+}
