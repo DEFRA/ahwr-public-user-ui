@@ -11,15 +11,17 @@ import {
 } from "../../../../../../app/session/index.js";
 import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { getSites } from "../../../../../../app/api-requests/application-api.js";
+import { sendInvalidDataPoultryEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 
+jest.mock("../../../../../../app/session/index.js");
+jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
+jest.mock("../../../../../../app/api-requests/application-api.js");
 jest.mock("../../../../../../app/logging/logger.js", () => ({
   ...jest.requireActual("../../../../../../app/logging/logger.js"),
   trackEvent: jest.fn(),
 }));
-jest.mock("../../../../../../app/api-requests/application-api.js");
-jest.mock("../../../../../../app/session");
 
 config.poultry.enabled = true;
 
@@ -289,7 +291,7 @@ describe("POST /poultry/date-of-review", () => {
     },
   );
 
-  test("when date is before latestPoultryApplication.createdAt, shows error and calls trackEvent", async () => {
+  test("when date is before latestPoultryApplication.createdAt, shows error and calls trackEvent and sendInvalidDataPoultryEvent", async () => {
     const createdAt = "2025-03-01";
     when(getSessionData)
       .calledWith(
@@ -318,6 +320,8 @@ describe("POST /poultry/date-of-review", () => {
 
     const expectedError =
       "The date the biosecurity review happened must be on or after 1 March 2025, the date your agreement started";
+
+    expect(sendInvalidDataPoultryEvent).toHaveBeenCalled();
 
     const $ = cheerio.load(res.payload);
     expect($("h1").text().trim()).toBe("Date of review");

@@ -15,6 +15,7 @@ import {
 } from "../../../constants/routes.js";
 import { getSites } from "../../../api-requests/application-api.js";
 import { trackEvent } from "../../../logging/logger.js";
+import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 
 const INVALID_DATE_OF_REVIEW_EVENT = "claim-invalid-date-of-review";
 
@@ -120,7 +121,6 @@ const postHandler = {
       } = request.payload;
       const date = { day, month, year };
 
-      // Check if date is a valid calendar date (e.g., not Feb 30)
       if (!isValidDate(year, month, day)) {
         const validationError = buildErrorSummary({
           errorMessage: "The date of review must be a real date",
@@ -188,6 +188,12 @@ async function handleTimingException(request, h, date, agreementDate, tempClaimR
     reference: tempClaimReference,
     kind: `dateEntered: ${date.year}-${date.month}-${date.day}, dateOfAgreement: ${formattedDate}`,
     reason: errorMessage,
+  });
+
+  await sendInvalidDataPoultryEvent({
+    request,
+    sessionKey: date,
+    exception: errorMessage,
   });
 
   return h
