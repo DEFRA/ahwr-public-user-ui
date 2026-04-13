@@ -31,7 +31,7 @@ describe("buildRedisClient", () => {
   let mockLogger;
 
   beforeEach(() => {
-    mockLogger = { info: jest.fn() };
+    mockLogger = { info: jest.fn(), error: jest.fn() };
     getLogger.mockReturnValue(mockLogger);
     jest.clearAllMocks();
   });
@@ -122,6 +122,6 @@ describe("buildRedisClient", () => {
 
     errorHandler("BOOM");
 
-    expect(mockLogger.info).toHaveBeenCalledWith("Redis connection error BOOM");
+    expect(mockLogger.error).toHaveBeenCalledWith({ error: "BOOM" }, "Redis connection error");
   });
 });
