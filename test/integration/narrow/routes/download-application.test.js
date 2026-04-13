@@ -15,6 +15,10 @@ when(getSessionData)
   .mockReturnValue({ sbi: "106354662" });
 
 when(getSessionData)
+  .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
+  .mockReturnValue(true);
+
+when(getSessionData)
   .calledWith(
     expect.anything(),
     sessionEntryKeys.endemicsClaim,
@@ -22,15 +26,84 @@ when(getSessionData)
   )
   .mockReturnValue({ reference: "IAHW-A89F-7776", status: "AGREED" });
 
-when(getSessionData)
-  .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
-  .mockReturnValue(true);
-
 describe("/download-application", () => {
-  test("returns a URL to the application from s3 when sbi and agreement reference match request", async () => {
+  beforeEach(() => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        sessionKeys.fundingSelection.selectedFunding,
+      )
+      .mockReturnValue(undefined);
+  });
+
+  test("returns a URL to the application from s3 when sbi and agreement reference match request and fundingType is missing", async () => {
     getS3Client.mockReturnValueOnce({
       send: () => {},
     });
+    const server = await createServer();
+    const sbi = "106354662";
+    const reference = "IAHW-A89F-7776";
+
+    const res = await server.inject({
+      url: `/download-application/${sbi}/${reference}`,
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
+    expect(res.headers.location).toEqual("I am a presigned url");
+  });
+
+  test("returns a URL to the application from s3 when sbi and agreement reference match request and fundingType is poultry", async () => {
+    getS3Client.mockReturnValueOnce({
+      send: () => {},
+    });
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        sessionKeys.fundingSelection.selectedFunding,
+      )
+      .mockReturnValue("POUL");
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.latestPoultryApplication,
+      )
+      .mockReturnValue({ reference: "POUL-A89F-7776", status: "AGREED" });
+
+    const server = await createServer();
+    const sbi = "106354662";
+    const reference = "POUL-A89F-7776";
+
+    const res = await server.inject({
+      url: `/download-application/${sbi}/${reference}`,
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
+    expect(res.headers.location).toEqual("I am a presigned url");
+  });
+
+  test("returns a URL to the application from s3 when sbi and agreement reference match request and fundingType is livestock", async () => {
+    getS3Client.mockReturnValueOnce({
+      send: () => {},
+    });
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.fundingSelection,
+        sessionKeys.fundingSelection.selectedFunding,
+      )
+      .mockReturnValue("AHWR");
+
     const server = await createServer();
     const sbi = "106354662";
     const reference = "IAHW-A89F-7776";

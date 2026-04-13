@@ -12,13 +12,26 @@ export const downloadApplicationHandlers = {
     request.logger.info(`Downloading application: ${reference}`);
 
     const organisation = getSessionData(request, sessionEntryKeys.organisation);
-    const latestEndemicsApplication = getSessionData(
+    const fundingType = getSessionData(
       request,
-      sessionEntryKeys.endemicsClaim,
-      sessionKeys.endemicsClaim.latestEndemicsApplication,
+      sessionEntryKeys.fundingSelection,
+      sessionKeys.fundingSelection.selectedFunding,
     );
 
-    if (latestEndemicsApplication.reference === reference && organisation.sbi === sbi) {
+    const application =
+      fundingType === "POUL"
+        ? getSessionData(
+            request,
+            sessionEntryKeys.poultryClaim,
+            sessionKeys.poultryClaim.latestPoultryApplication,
+          )
+        : getSessionData(
+            request,
+            sessionEntryKeys.endemicsClaim,
+            sessionKeys.endemicsClaim.latestEndemicsApplication,
+          );
+
+    if (application.reference === reference && organisation.sbi === sbi) {
       const s3Client = getS3Client();
       const key = `${sbi}/${reference}.pdf`;
 
@@ -37,7 +50,7 @@ export const downloadApplicationHandlers = {
       const command = new GetObjectCommand({
         Bucket: config.documentBucketName,
         Key: key,
-        ResponseContentDisposition: `attachment; filename="${latestEndemicsApplication.reference}.pdf"`,
+        ResponseContentDisposition: `attachment; filename="${application.reference}.pdf"`,
       });
 
       const signedUrl = await getSignedUrl(s3Client, command, {
