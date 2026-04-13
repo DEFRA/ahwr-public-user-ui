@@ -30,17 +30,19 @@ export const sendIneligibilityEvent = async ({ sessionId, sbi, email, crn, excep
   await publishEvent(payload);
 };
 
-export const sendInvalidDataEvent = async ({
+const sendInvalidDataEventCore = async ({
   request,
   sessionKey,
   exception,
   raisedDate = new Date().toISOString(),
+  claimSessionEntryKey,
+  applicationPropertyName,
 }) => {
   const { publishEvent } = getEventPublisher();
-  const { reference, latestEndemicsApplication } = getSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-  );
+  const claimSession = getSessionData(request, claimSessionEntryKey);
+  const reference = claimSession?.reference;
+  const applicationReference = claimSession?.[applicationPropertyName]?.reference;
+
   const organisation = getSessionData(request, sessionEntryKeys.organisation);
   const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
 
@@ -61,7 +63,7 @@ export const sendInvalidDataEvent = async ({
       raisedAt: raisedDate,
       journey: "claim",
       reference,
-      applicationReference: latestEndemicsApplication.reference,
+      applicationReference,
     },
     status: "alert",
     raisedBy: organisation?.email,
@@ -71,43 +73,29 @@ export const sendInvalidDataEvent = async ({
   await publishEvent(payload);
 };
 
+export const sendInvalidDataEvent = async ({ request, sessionKey, exception, raisedDate }) => {
+  return sendInvalidDataEventCore({
+    request,
+    sessionKey,
+    exception,
+    raisedDate,
+    claimSessionEntryKey: sessionEntryKeys.endemicsClaim,
+    applicationPropertyName: "latestEndemicsApplication",
+  });
+};
+
 export const sendInvalidDataPoultryEvent = async ({
   request,
   sessionKey,
   exception,
-  raisedDate = new Date().toISOString(),
+  raisedDate,
 }) => {
-  const { publishEvent } = getEventPublisher();
-  const { reference, latestPoultryApplication } = getSessionData(
+  return sendInvalidDataEventCore({
     request,
-    sessionEntryKeys.poultryClaim,
-  );
-  const organisation = getSessionData(request, sessionEntryKeys.organisation);
-  const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
-
-  const payload = {
-    id: request.yar.id,
-    sbi: organisation?.sbi,
-    cph: "n/a",
-    checkpoint: config.serviceName,
-    email: organisation?.email,
-    name: "send-invalid-data-event",
-    type: `claim-${sessionKey}-invalid`,
-    message: `${sessionKey}: ${exception}`,
-    data: {
-      sbi: organisation?.sbi,
-      crn,
-      sessionKey,
-      exception,
-      raisedAt: raisedDate,
-      journey: "claim",
-      reference,
-      applicationReference: latestPoultryApplication.reference,
-    },
-    status: "alert",
-    raisedBy: organisation?.email,
-    raisedOn: raisedDate,
-  };
-
-  await publishEvent(payload);
+    sessionKey,
+    exception,
+    raisedDate,
+    claimSessionEntryKey: sessionEntryKeys.poultryClaim,
+    applicationPropertyName: "latestPoultryApplication",
+  });
 };
