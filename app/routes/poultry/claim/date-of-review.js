@@ -127,7 +127,7 @@ const postHandler = {
           href: reviewDateDayAnchor,
           inputsInError: { day: true, month: true, year: true },
         });
-        return handleValidationError(request, validationError, h, date);
+        return handleValidationError(validationError, h, date);
       }
 
       const dateOfReview = new Date(year, month - 1, day);
@@ -205,7 +205,7 @@ async function handleTimingException(request, h, date, agreementDate, tempClaimR
     .code(HttpStatus.BAD_REQUEST);
 }
 
-async function handleValidationError(request, validationError, h, date) {
+async function handleValidationError(validationError, h, date) {
   return h
     .view(poultryClaimViews.dateOfReview, {
       ...validationError,
