@@ -57,7 +57,7 @@ export function buildRedisClient() {
   });
 
   redisClient.on("error", (error) => {
-    getLogger().info(`Redis connection error ${error}`);
+    getLogger().error({ error, service: "redis", host }, "Redis connection error");
   });
 
   return redisClient;
