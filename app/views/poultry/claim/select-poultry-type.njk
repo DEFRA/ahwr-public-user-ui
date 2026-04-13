@@ -1,0 +1,72 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Enter the site name - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+
+        {{ govukCheckboxes({
+          name: "typesOfPoultry",
+          errorMessage: errorMessage,
+          fieldset: {
+          legend: {
+            text: "Which type of poultry do you keep on this site?",
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--l"
+            }
+          },
+          hint: {
+            text: "Select all that apply"
+          },
+          items: [
+            {
+              value: "chickens",
+              text: "Chickens"
+             },
+             {
+               value: "ducks",
+               text: "Ducks"
+             },
+             {
+               value: "geese",
+               text: "Geese"
+             },
+             {
+               value: "turkeys",
+               text: "Turkeys"
+             }
+            ]
+          }) }}
+          {{ govukButton({
+            text: "Continue",
+            attributes: { id: "btnContinue" },
+            preventDoubleClick: true
+        }) 
+      }}
+      </form>
+      {{ govukDetails({
+        summaryText: "I don't have the site details from the vet",
+        text: ("Your vet should have completed the  ‘Tell us about this site’ section on the vet template. You can ask them to <a class='govuk-link' href='https://www.gov.uk/guidance/vet-summary-templates-for-all-species'>download the form</a> and fill the details in for you.") | safe
+      }) }}
+    </div>
+  </div>
+{% endblock %}
