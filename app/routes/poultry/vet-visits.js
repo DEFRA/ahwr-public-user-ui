@@ -52,6 +52,7 @@ export const poultryVetVisitsHandlers = [
             hostname: await requestAuthorizationCodeUrl(request),
           }),
           latestTermsAndConditionsUri,
+          rows: [],
         });
       },
     },

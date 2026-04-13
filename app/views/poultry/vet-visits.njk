@@ -61,6 +61,8 @@
   <hr class="govuk-section-break govuk-section-break--m">
 
   <div class="govuk-grid-column-full govuk-!-padding-0">
+
+    {% if rows | length %}
     <div>
       {{ govukTable({
       attributes: {
@@ -68,10 +70,11 @@
       },
       firstCellIsHeader: false,
       head: headers,
-      rows: sheepClaimsRows,
+      rows: rows,
       classes: 'fixed-layout-table'
       }) }}
     </div>
+    {% endif %}
 
     <h2 class="govuk-heading-m govuk-!-static-margin-top-2">Your claims</h2>
     <p class="govuk-caption-m">Your claims will appear here once you have submitted them.</p>
