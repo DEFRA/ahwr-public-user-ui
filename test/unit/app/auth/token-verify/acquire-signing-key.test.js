@@ -1,12 +1,20 @@
 import wreck from "@hapi/wreck";
 import { acquireSigningKey } from "../../../../../app/auth/token-verify/acquire-signing-key.js";
+import { trackError, getLogger } from "../../../../../app/logging/logger.js";
 
 jest.mock("@hapi/wreck", () => ({
   get: jest.fn(),
 }));
 
-jest.mock("../../../../../app/config", () => ({
-  ...jest.requireActual("../../../../../app/config"),
+const mockLogger = { error: jest.fn() };
+
+jest.mock("../../../../../app/logging/logger.js", () => ({
+  getLogger: jest.fn(() => mockLogger),
+  trackError: jest.fn(),
+  API_CALL_FAILED_CATEGORY: "api-call-failed",
+}));
+
+jest.mock("../../../../../app/config/auth.js", () => ({
   authConfig: {
     ruralPaymentsAgency: {
       hostname: "https://example.com",
@@ -19,7 +27,11 @@ jest.mock("../../../../../app/config", () => ({
 }));
 
 describe("acquireSigningKey error scenario", () => {
-  it("should return throw errors", async () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should throw errors and call trackError", async () => {
     const response = {
       res: {
         statusCode: 500,
@@ -32,6 +44,16 @@ describe("acquireSigningKey error scenario", () => {
     await expect(async () => {
       await acquireSigningKey();
     }).rejects.toEqual(response);
+
+    expect(trackError).toHaveBeenCalledWith(
+      getLogger(),
+      response,
+      "api-call-failed",
+      "Failed to acquire signing key",
+      {
+        kind: "https://example.com/discovery/v2.0/keys?p=policy123",
+      },
+    );
   });
 });
 
