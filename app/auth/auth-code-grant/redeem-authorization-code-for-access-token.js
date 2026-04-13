@@ -2,6 +2,7 @@ import Wreck from "@hapi/wreck";
 import FormData from "form-data";
 import { authConfig } from "../../config/auth.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
+import { API_CALL_FAILED_CATEGORY, trackError } from "../../logging/logger.js";
 
 export const redeemAuthorizationCodeForAccessToken = async (request) => {
   const endpoint = `${authConfig.defraId.hostname}/${authConfig.defraId.policy}/oauth2/v2.0/token`;
@@ -32,7 +33,15 @@ export const redeemAuthorizationCodeForAccessToken = async (request) => {
     });
     return payload;
   } catch (error) {
-    request.logger.error({ error, endpoint });
+    trackError(
+      request.logger,
+      error,
+      API_CALL_FAILED_CATEGORY,
+      "Failed to redeem authorization code",
+      {
+        kind: endpoint,
+      },
+    );
     throw error;
   }
 };
