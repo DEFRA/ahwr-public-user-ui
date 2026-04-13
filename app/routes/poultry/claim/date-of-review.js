@@ -13,8 +13,10 @@ import {
   poultryClaimRoutes,
   poultryClaimViews,
 } from "../../../constants/routes.js";
-import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 import { getSites } from "../../../api-requests/application-api.js";
+import { trackEvent } from "../../../logging/logger.js";
+
+const INVALID_DATE_OF_REVIEW_EVENT = "claim-invalid-date-of-review";
 
 const { poultryClaim: poultryClaimEntry } = sessionEntryKeys;
 const {
@@ -94,12 +96,6 @@ const postHandler = {
         const errorMessage = "Enter a date in the boxes below";
         const inputsInError = getInputsInError(error);
 
-        await sendInvalidDataEvent({
-          request,
-          sessionKey: dateOfReviewKey,
-          exception: errorMessage,
-        });
-
         return h
           .view(poultryClaimViews.dateOfReview, {
             errorSummary: [{ text: errorMessage, href: reviewDateDayAnchor }],
@@ -146,7 +142,8 @@ const postHandler = {
       applicationCreatedAt.setHours(0, 0, 0, 0);
 
       if (dateOfReview < applicationCreatedAt) {
-        return handleTimingException(request, h, date, applicationCreatedAt);
+        const { reference: tempClaimReference } = getSessionData(request, poultryClaimEntry);
+        return handleTimingException(request, h, date, applicationCreatedAt, tempClaimReference);
       }
 
       setSessionData(request, poultryClaimEntry, dateOfReviewKey, dateOfReview);
@@ -179,7 +176,7 @@ function parseDateOfReview(dateOfReviewRaw) {
   }
 }
 
-async function handleTimingException(request, h, date, agreementDate) {
+async function handleTimingException(request, h, date, agreementDate, tempClaimReference) {
   const formattedDate = agreementDate.toLocaleDateString("en-GB", {
     day: "numeric",
     month: "long",
@@ -187,10 +184,10 @@ async function handleTimingException(request, h, date, agreementDate) {
   });
   const errorMessage = `The date the biosecurity review happened must be on or after ${formattedDate}, the date your agreement started`;
 
-  await sendInvalidDataEvent({
-    request,
-    sessionKey: dateOfReviewKey,
-    exception: errorMessage,
+  trackEvent(request.logger, INVALID_DATE_OF_REVIEW_EVENT, "review", {
+    reference: tempClaimReference,
+    kind: `dateEntered: ${date.year}-${date.month}-${date.day}, dateOfAgreement: ${formattedDate}`,
+    reason: errorMessage,
   });
 
   return h
@@ -209,12 +206,6 @@ async function handleTimingException(request, h, date, agreementDate) {
 }
 
 async function handleValidationError(request, validationError, h, date) {
-  await sendInvalidDataEvent({
-    request,
-    sessionKey: dateOfReviewKey,
-    exception: validationError.errorSummary[0].text,
-  });
-
   return h
     .view(poultryClaimViews.dateOfReview, {
       ...validationError,

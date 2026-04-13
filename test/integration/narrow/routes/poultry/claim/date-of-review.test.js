@@ -9,12 +9,15 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../../../../../app/session/index.js";
-import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
+import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { getSites } from "../../../../../../app/api-requests/application-api.js";
 import { when } from "jest-when";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 
-jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
+jest.mock("../../../../../../app/logging/logger.js", () => ({
+  ...jest.requireActual("../../../../../../app/logging/logger.js"),
+  trackEvent: jest.fn(),
+}));
 jest.mock("../../../../../../app/api-requests/application-api.js");
 jest.mock("../../../../../../app/session");
 
@@ -105,7 +108,7 @@ describe("GET /poultry/date-of-review", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, "/vet-visits");
+    expectPageContentOk($, "/poultry/vet-visits");
     expectPhaseBanner.ok($);
   });
 });
@@ -260,7 +263,7 @@ describe("POST /poultry/date-of-review", () => {
       expectedError: "Enter a date in the boxes below",
     },
   ])(
-    "when adding invalid date ($description), shows error and calls sendInvalidDataEvent",
+    "when adding invalid date ($description), shows error",
     async ({ day, month, year, expectedError }) => {
       const options = {
         method: "POST",
@@ -277,17 +280,16 @@ describe("POST /poultry/date-of-review", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(400);
-      expect(sendInvalidDataEvent).toHaveBeenCalled();
 
       const $ = cheerio.load(res.payload);
       expect($("h1").text().trim()).toBe("Date of review");
       expect($(".govuk-error-summary")).toHaveLength(1);
       expect($(".govuk-error-summary").text()).toContain(expectedError);
-      expect($("#back").attr("href")).toBe("/poultry/vet-visits");
+      expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
     },
   );
 
-  test("when date is before latestPoultryApplication.createdAt, shows error", async () => {
+  test("when date is before latestPoultryApplication.createdAt, shows error and calls trackEvent", async () => {
     const createdAt = "2025-03-01";
     when(getSessionData)
       .calledWith(
@@ -312,7 +314,7 @@ describe("POST /poultry/date-of-review", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(400);
-    expect(sendInvalidDataEvent).toHaveBeenCalled();
+    expect(trackEvent).toHaveBeenCalled();
 
     const expectedError =
       "The date the biosecurity review happened must be on or after 1 March 2025, the date your agreement started";
@@ -321,7 +323,7 @@ describe("POST /poultry/date-of-review", () => {
     expect($("h1").text().trim()).toBe("Date of review");
     expect($(".govuk-error-summary")).toHaveLength(1);
     expect($(".govuk-error-summary").text()).toContain(expectedError);
-    expect($("#back").attr("href")).toBe("/poultry/vet-visits");
+    expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
   });
 
   test("when date is the same day as latestPoultryApplication.createdAt (with time component), should succeed", async () => {
