@@ -12,7 +12,7 @@ import {
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { config } from "../../../../../../app/config/index.js";
-import { isCPHUnique } from "../../../../../../app/api-requests/claim-api.js";
+import { getClaimsCount } from "../../../../../../app/api-requests/claim-api.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/api-requests/claim-api.js");
@@ -127,7 +127,7 @@ describe("/enter-cph-number tests", () => {
 
   describe("POST", () => {
     beforeEach(async () => {
-      isCPHUnique.mockResolvedValue({ isCPHUnique: true });
+      getClaimsCount.mockResolvedValue({ count: 0 });
     });
 
     beforeAll(async () => {
@@ -276,7 +276,7 @@ describe("/enter-cph-number tests", () => {
           reference: "TEMP-6GSE-PIR8",
           herdId: "e3d320b7-b2cf-469a-903f-ead7587d98e9",
         });
-        isCPHUnique.mockResolvedValueOnce({ isCPHUnique: false });
+        getClaimsCount.mockResolvedValueOnce({ count: 2 });
 
         const res = await server.inject({
           method: "POST",
@@ -298,7 +298,7 @@ describe("/enter-cph-number tests", () => {
         );
         expectSiteText($);
         expect(emitHerdEvent).not.toHaveBeenCalled();
-        expect(isCPHUnique).toHaveBeenCalledWith(
+        expect(getClaimsCount).toHaveBeenCalledWith(
           "22/333/4444",
           "e3d320b7-b2cf-469a-903f-ead7587d98e9",
           expect.any(Object),

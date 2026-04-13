@@ -65,14 +65,14 @@ export async function isURNUnique(data, logger) {
   }
 }
 
-export async function isCPHUnique(cph, herdId, logger) {
+export async function getClaimsCount(cph, herdId, logger) {
   const params = new URLSearchParams({ cph });
 
   if (herdId) {
     params.append("herdId", herdId);
   }
 
-  const endpoint = `${config.applicationApiUri}/claims/is-cph-unique?${params.toString()}`;
+  const endpoint = `${config.applicationApiUri}/claims/count?${params.toString()}`;
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,
@@ -81,7 +81,7 @@ export async function isCPHUnique(cph, herdId, logger) {
 
     return payload;
   } catch (error) {
-    trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to check Unique CPH", {
+    trackError(logger, error, API_CALL_FAILED_CATEGORY, "Failed to get claims count", {
       kind: endpoint,
     });
     throw error;

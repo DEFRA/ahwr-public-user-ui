@@ -11,7 +11,7 @@ import { ONLY_HERD_ON_SBI } from "../../../constants/claim-constants.js";
 import { skipOtherHerdsOnSbiPage } from "../../../lib/context-helper.js";
 import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes.js";
 import { normalizeCphNumber } from "../../../lib/cph-normalization.js";
-import { isCPHUnique } from "../../../api-requests/claim-api.js";
+import { getClaimsCount } from "../../../api-requests/claim-api.js";
 
 const getBackLink = (herdVersion) =>
   !herdVersion || herdVersion === 1
@@ -68,9 +68,9 @@ const postHandler = {
         sessionEntryKeys.poultryClaim,
       );
 
-      const response = await isCPHUnique(herdCph, herdId, request.logger);
+      const response = await getClaimsCount(herdCph, herdId, request.logger);
 
-      if (!response.isCPHUnique) {
+      if (response.count > 0) {
         return h
           .view(poultryClaimViews.enterCphNumber, {
             ...request.payload,
