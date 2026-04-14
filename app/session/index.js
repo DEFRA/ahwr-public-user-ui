@@ -35,6 +35,7 @@ export const sessionKeys = {
     dateOfReview: "dateOfReview",
     herdName: "herdName",
     herdCph: "herdCph",
+    typesOfPoultry: "typesOfPoultry",
   },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",

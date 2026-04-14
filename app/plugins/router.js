@@ -66,6 +66,7 @@ import { poultryVetVisitsHandlers } from "../routes/poultry/vet-visits.js";
 import { poultrySelectTheSiteHandlers } from "../routes/poultry/claim/select-the-site.js";
 import { poultryEnterSiteNameHandlers } from "../routes/poultry/claim/enter-site-name.js";
 import { poultryEnterCphNumberHandlers } from "../routes/poultry/claim/enter-cph-number.js";
+import { poultrySelectPoultryTypeHandlers } from "../routes/poultry/claim/select-poultry-type.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
@@ -139,6 +140,7 @@ const poultryRoutes = [
   poultrySelectTheSiteHandlers,
   poultryEnterSiteNameHandlers,
   poultryEnterCphNumberHandlers,
+  poultrySelectPoultryTypeHandlers,
 ].flat();
 
 let routes;

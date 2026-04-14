@@ -1,0 +1,99 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Select poultry type - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessageMain %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessageMain]
+          }) }}
+      {% endif %}
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+
+        {% set chickenSubTypes %}
+          {{ govukCheckboxes({
+            name: "typesOfPoultry",
+            errorMessage: errorMessageChicken,
+            items: [
+              {
+                value: "broilers",
+                text: "Broilers",
+                checked: typesOfPoultry and "broilers" in typesOfPoultry
+              },
+              {
+                value: "laying-hens",
+                text: "Laying hens",
+                checked: typesOfPoultry and "laying-hens" in typesOfPoultry
+              },
+              {
+                value: "breeders",
+                text: "Breeders",
+                checked: typesOfPoultry and "breeders" in typesOfPoultry
+              }
+            ]
+          }) }}
+        {% endset %}
+
+        {{ govukCheckboxes({
+          name: "typesOfPoultry",
+          errorMessage: errorMessage,
+          fieldset: {
+          legend: {
+            text: "Which type of poultry do you keep on this site?",
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--l"
+            }
+          },
+          hint: {
+            text: "Select all types of poultry you keep on this site"
+          },
+          items: [
+            {
+              value: "chickens",
+              text: "Chickens",
+              checked: typesOfPoultry and "chickens" in typesOfPoultry,
+              conditional: {
+                html: chickenSubTypes
+              }
+             },
+             {
+               value: "ducks",
+               text: "Ducks",
+               checked: typesOfPoultry and "ducks" in typesOfPoultry
+             },
+             {
+               value: "geese",
+               text: "Geese",
+               checked: typesOfPoultry and "geese" in typesOfPoultry
+             },
+             {
+               value: "turkeys",
+               text: "Turkeys",
+               checked: typesOfPoultry and "turkeys" in typesOfPoultry
+             }
+            ]
+          }) }}
+          {{ govukButton({
+            text: "Continue",
+            attributes: { id: "btnContinue" },
+            preventDoubleClick: true
+        }) 
+      }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
