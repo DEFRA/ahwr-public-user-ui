@@ -208,4 +208,5 @@ export const poultryClaimViews = {
   enterSiteName: "poultry/claim/enter-site-name",
   enterCphNumber: "poultry/claim/enter-cph-number",
   selectPoultryType: "poultry/claim/select-poultry-type",
+  siteOthersOnSbi: "poultry/claim/site-others-on-sbi",
 };
