@@ -1,6 +1,7 @@
 import {
   sendIneligibilityEvent,
   sendInvalidDataEvent,
+  sendInvalidDataPoultryEvent,
 } from "../../../../app/messaging/ineligibility-event-emission.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
 import { when } from "jest-when";
@@ -101,6 +102,57 @@ describe("ineligibility-event-emission", () => {
           journey: "claim",
           reference: mockSession.reference,
           applicationReference: mockSession.latestEndemicsApplication.reference,
+        },
+        status: "alert",
+        raisedBy: "fred@email.com",
+        raisedOn: expect.any(String),
+      });
+    });
+  });
+
+  describe("sendInvalidDataPoultryEvent", () => {
+    it("pulls data from the poultry claim session and combines it with the arguments to create an event to publish", async () => {
+      const mockSession = {
+        reference: "POULTRY123",
+        latestPoultryApplication: { reference: "POULTRY987" },
+      };
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue(mockSession);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ sbi: "13131313", email: "fred@email.com" });
+
+      const mockCrn = 34321442;
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.customer, sessionKeys.customer.crn)
+        .mockReturnValue(mockCrn);
+
+      const inputs = {
+        request: { yar: { id: 222 } },
+        sessionKey: "TestPoultryKey",
+        exception: "Test poultry error",
+      };
+      await sendInvalidDataPoultryEvent(inputs);
+
+      expect(mockPublishEvent).toHaveBeenCalledWith({
+        id: inputs.request.yar.id,
+        sbi: "13131313",
+        checkpoint: "Get funding to improve animal health and welfare",
+        cph: "n/a",
+        email: "fred@email.com",
+        name: "send-invalid-data-event",
+        type: `claim-${inputs.sessionKey}-invalid`,
+        message: `${inputs.sessionKey}: ${inputs.exception}`,
+        data: {
+          sbi: "13131313",
+          crn: mockCrn,
+          sessionKey: inputs.sessionKey,
+          exception: inputs.exception,
+          raisedAt: expect.any(String),
+          journey: "claim",
+          reference: mockSession.reference,
+          applicationReference: mockSession.latestPoultryApplication.reference,
         },
         status: "alert",
         raisedBy: "fred@email.com",
