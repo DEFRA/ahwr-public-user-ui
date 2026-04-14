@@ -199,7 +199,7 @@ export const poultryClaimRoutes = {
   siteOthersOnSbi: "/poultry/site-others-on-sbi",
   checkSiteDetails: "/poultry/check-site-details",
   selectPoultryType: "/poultry/select-poultry-type",
-  minimumNumberOfAnimals: "/poultry/minimum-number-of-animals",
+  minimumNumberOfBirds: "/poultry/minimum-number-of-birds",
 };
 
 export const poultryClaimViews = {
