@@ -3,7 +3,6 @@ import { createServer } from "../../../../../../app/server.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
 import {
-  emitHerdEvent,
   getSessionData,
   sessionEntryKeys,
   sessionKeys,
@@ -122,7 +121,7 @@ describe("/site-others-on-sbi tests", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("navigates to enter site details when no existing herd and they select yes", async () => {
+    test("saves answer in session and navigates to select poultry type", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
       });
@@ -136,8 +135,8 @@ describe("/site-others-on-sbi tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/check-site-details");
-      expect(setSessionData).toHaveBeenCalledTimes(2);
+      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(setSessionData).toHaveBeenCalledTimes(1);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "poultryClaim",
@@ -145,43 +144,9 @@ describe("/site-others-on-sbi tests", () => {
         "yes",
         { shouldEmitEvent: false },
       );
-      expect(setSessionData).toHaveBeenCalledWith(
-        expect.any(Object),
-        "poultryClaim",
-        "herdReasons",
-        ["onlyHerd"],
-        { shouldEmitEvent: false },
-      );
-      expect(emitHerdEvent).toHaveBeenCalled();
     });
 
-    test("navigates to check site details when no existing herd and they select no", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-      });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, isOnlyHerdOnSbi: "no" },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/enter-site-details");
-      expect(setSessionData).toHaveBeenCalledTimes(1);
-      expect(setSessionData).toHaveBeenCalledWith(
-        expect.any(Object),
-        "poultryClaim",
-        "isOnlyHerdOnSbi",
-        "no",
-        { shouldEmitEvent: false },
-      );
-      expect(emitHerdEvent).not.toHaveBeenCalled();
-    });
-
-    test("display errors with site labels when no answer selected and typeOfLivestock is not sheep", async () => {
+    test("display errors when no answer selected", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
       });
@@ -205,7 +170,6 @@ describe("/site-others-on-sbi tests", () => {
         "Is this the only site associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-hint").text()).toContain("Tell us about this site");
-      expect(emitHerdEvent).not.toHaveBeenCalled();
     });
   });
 });
