@@ -88,6 +88,7 @@ const postHandler = {
     validate: {
       payload: payloadSchema,
       failAction: async (request, h, error) => {
+        request.logger.error({ error });
         const {
           "review-date-day": day,
           "review-date-month": month,
@@ -127,7 +128,7 @@ const postHandler = {
           href: reviewDateDayAnchor,
           inputsInError: { day: true, month: true, year: true },
         });
-        return handleValidationError(validationError, h, date);
+        return handleValidationError(request, validationError, h, date);
       }
 
       const dateOfReview = new Date(year, month - 1, day);
@@ -211,7 +212,8 @@ async function handleTimingException(request, h, date, agreementDate, tempClaimR
     .code(HttpStatus.BAD_REQUEST);
 }
 
-async function handleValidationError(validationError, h, date) {
+async function handleValidationError(request, validationError, h, date) {
+  request.logger.error({ validationError });
   return h
     .view(poultryClaimViews.dateOfReview, {
       ...validationError,
