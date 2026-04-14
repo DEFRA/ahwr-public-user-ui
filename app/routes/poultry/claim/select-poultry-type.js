@@ -23,10 +23,6 @@ const getHandler = {
 };
 
 const errorMessage = { text: "Select at least one option", href: "#typesOfPoultry" };
-const chickenSubTypeError = {
-  text: "Select which type of chickens you keep",
-  href: "#typesOfPoultry-2",
-};
 
 const postHandler = {
   method: "POST",
@@ -43,6 +39,7 @@ const postHandler = {
         return h
           .view(poultryClaimViews.selectPoultryType, {
             backLink: "",
+            errorMessageMain: errorMessage,
             errorMessage,
           })
           .code(HttpStatus.BAD_REQUEST)
@@ -52,15 +49,18 @@ const postHandler = {
     handler: async (request, h) => {
       const { typesOfPoultry } = request.payload;
       const typesArray = Array.isArray(typesOfPoultry) ? typesOfPoultry : [typesOfPoultry];
-      // Filter out "chickens" as we only want the sub-types (broilers, laying-hens, breeders)
-      const filteredTypes = typesArray.filter((type) => type !== "chickens");
+      const hasChicken = typesArray.includes("chickens");
+      const noSubtypes =
+        typesArray.filter(
+          (entry) => entry === "broilers" || entry === "laying-hens" || entry === "breeders",
+        ).length === 0;
 
-      // If only "chickens" was selected without any sub-types, show error
-      if (filteredTypes.length === 0) {
+      if (hasChicken && noSubtypes) {
         return h
           .view(poultryClaimViews.selectPoultryType, {
             backLink: "",
-            errorMessage: chickenSubTypeError,
+            errorMessageMain: errorMessage,
+            errorMessageChicken: errorMessage,
             typesOfPoultry: typesArray,
           })
           .code(HttpStatus.BAD_REQUEST);
@@ -70,7 +70,7 @@ const postHandler = {
         request,
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.typesOfPoultry,
-        filteredTypes.join(", "),
+        typesArray,
       );
       return h.redirect(poultryClaimRoutes.minimumNumberOfAnimals);
     },

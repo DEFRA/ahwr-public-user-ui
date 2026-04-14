@@ -57,7 +57,7 @@ describe("/poultry/select-poultry-type", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("saves chicken sub-types and other poultry types to session (filters out 'chickens')", async () => {
+    test("saves chicken sub-types and other poultry types to session", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
       });
@@ -87,11 +87,11 @@ describe("/poultry/select-poultry-type", () => {
         expect.anything(),
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.typesOfPoultry,
-        "broilers, laying-hens, breeders, ducks, turkeys, geese",
+        ["chickens", "broilers", "laying-hens", "breeders", "ducks", "turkeys", "geese"],
       );
     });
 
-    test("saves only broilers when only broilers is selected under chickens", async () => {
+    test("saves broilers when only broilers is selected under chickens", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
       });
@@ -113,7 +113,7 @@ describe("/poultry/select-poultry-type", () => {
         expect.anything(),
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.typesOfPoultry,
-        "broilers",
+        ["chickens", "broilers"],
       );
     });
 
@@ -135,9 +135,36 @@ describe("/poultry/select-poultry-type", () => {
 
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-error-summary__list").text()).toContain(
-        "Select which type of chickens you keep",
+      expect($(".govuk-error-summary__list").text()).toContain("Select at least one option");
+      expect($("#typesOfPoultry-error").text()).toContain("Select at least one option");
+      expect(setSessionData).not.toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.typesOfPoultry,
+        expect.anything(),
       );
+    });
+
+    test("returns 400 and shows error when chickens is selected without sub-types and some other poultry", async () => {
+      getSessionData.mockReturnValue({
+        reference: "TEMP-6GSE-PIR8",
+      });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: {
+          crumb,
+          typesOfPoultry: ["chickens", "ducks"],
+        },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(400);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-error-summary__list").text()).toContain("Select at least one option");
+      expect($("#typesOfPoultry-error").text()).toContain("Select at least one option");
       expect(setSessionData).not.toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -164,6 +191,7 @@ describe("/poultry/select-poultry-type", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-error-summary__list").text()).toContain("Select at least one option");
+      expect($("#typesOfPoultry-error").text()).toContain("Select at least one option");
       expect(setSessionData).not.toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,

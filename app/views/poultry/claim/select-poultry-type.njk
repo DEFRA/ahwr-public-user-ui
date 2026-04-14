@@ -15,10 +15,10 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {% if errorMessage %}
+      {% if errorMessageMain %}
         {{ govukErrorSummary({
             titleText: "There is a problem",
-            errorList: [errorMessage]
+            errorList: [errorMessageMain]
           }) }}
       {% endif %}
       <form method="POST" autocomplete="off" novalidate="novalidate">
@@ -27,7 +27,7 @@
         {% set chickenSubTypes %}
           {{ govukCheckboxes({
             name: "typesOfPoultry",
-            classes: "govuk-checkboxes--small",
+            errorMessage: errorMessageChicken,
             items: [
               {
                 value: "broilers",
@@ -65,7 +65,7 @@
             {
               value: "chickens",
               text: "Chickens",
-              checked: typesOfPoultry and ("broilers" in typesOfPoultry or "laying-hens" in typesOfPoultry or "breeders" in typesOfPoultry),
+              checked: typesOfPoultry and "chickens" in typesOfPoultry,
               conditional: {
                 html: chickenSubTypes
               }
