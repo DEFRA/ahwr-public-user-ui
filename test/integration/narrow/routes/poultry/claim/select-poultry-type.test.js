@@ -37,7 +37,7 @@ describe("/poultry/select-poultry-type", () => {
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.latestPoultryApplication,
       )
-      .mockReturnValue({ status: "AGREED" });
+      .mockReturnValue({ reference: "TEMP-6GSE-PIR8", status: "AGREED" });
 
     when(getSessionData)
       .calledWith(
@@ -50,6 +50,52 @@ describe("/poultry/select-poultry-type", () => {
 
   afterEach(() => {
     jest.resetAllMocks();
+  });
+
+  describe("GET", () => {
+    test("when not logged in redirects to /sign-in", async () => {
+      const options = {
+        method: "GET",
+        url,
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    });
+
+    test("shows information", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ typesOfPoultry: [] });
+
+      const res = await server.inject({
+        method: "GET",
+        url,
+        auth,
+      });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
+    });
+
+    test("shows page when session data is undefined", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue(undefined);
+
+      const res = await server.inject({
+        method: "GET",
+        url,
+        auth,
+      });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
+    });
   });
 
   describe("POST", () => {

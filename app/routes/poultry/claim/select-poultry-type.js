@@ -13,9 +13,10 @@ const getHandler = {
   path: poultryClaimRoutes.selectPoultryType,
   options: {
     handler: async (request, h) => {
-      const { typesOfPoultry } = getSessionData(request, sessionEntryKeys.poultryClaim);
+      const typesOfPoultry =
+        getSessionData(request, sessionEntryKeys.poultryClaim)?.typesOfPoultry ?? [];
       return h.view(poultryClaimViews.selectPoultryType, {
-        backLink: "",
+        backLink: poultryClaimRoutes.siteOthersOnSbi,
         typesOfPoultry,
       });
     },
@@ -38,7 +39,7 @@ const postHandler = {
         request.logger.error({ error });
         return h
           .view(poultryClaimViews.selectPoultryType, {
-            backLink: "",
+            backLink: poultryClaimRoutes.siteOthersOnSbi,
             errorMessageMain: errorMessage,
             errorMessage,
           })
@@ -58,7 +59,7 @@ const postHandler = {
       if (hasChicken && noSubtypes) {
         return h
           .view(poultryClaimViews.selectPoultryType, {
-            backLink: "",
+            backLink: poultryClaimRoutes.siteOthersOnSbi,
             errorMessageMain: errorMessage,
             errorMessageChicken: errorMessage,
             typesOfPoultry: typesArray,

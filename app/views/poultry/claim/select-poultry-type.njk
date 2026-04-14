@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Enter the site name - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Select poultry type - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -59,7 +59,7 @@
             }
           },
           hint: {
-            text: "Select all that apply"
+            text: "Select all types of poultry you keep on this site"
           },
           items: [
             {
@@ -94,10 +94,6 @@
         }) 
       }}
       </form>
-      {{ govukDetails({
-        summaryText: "I don't have the site details from the vet",
-        text: ("Your vet should have completed the  ‘Tell us about this site’ section on the vet template. You can ask them to <a class='govuk-link' href='https://www.gov.uk/guidance/vet-summary-templates-for-all-species'>download the form</a> and fill the details in for you.") | safe
-      }) }}
     </div>
   </div>
 {% endblock %}
