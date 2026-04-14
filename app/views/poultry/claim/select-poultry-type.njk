@@ -24,6 +24,30 @@
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
+        {% set chickenSubTypes %}
+          {{ govukCheckboxes({
+            name: "typesOfPoultry",
+            classes: "govuk-checkboxes--small",
+            items: [
+              {
+                value: "broilers",
+                text: "Broilers",
+                checked: typesOfPoultry and "broilers" in typesOfPoultry
+              },
+              {
+                value: "laying-hens",
+                text: "Laying hens",
+                checked: typesOfPoultry and "laying-hens" in typesOfPoultry
+              },
+              {
+                value: "breeders",
+                text: "Breeders",
+                checked: typesOfPoultry and "breeders" in typesOfPoultry
+              }
+            ]
+          }) }}
+        {% endset %}
+
         {{ govukCheckboxes({
           name: "typesOfPoultry",
           errorMessage: errorMessage,
@@ -40,19 +64,26 @@
           items: [
             {
               value: "chickens",
-              text: "Chickens"
+              text: "Chickens",
+              checked: typesOfPoultry and ("broilers" in typesOfPoultry or "laying-hens" in typesOfPoultry or "breeders" in typesOfPoultry),
+              conditional: {
+                html: chickenSubTypes
+              }
              },
              {
                value: "ducks",
-               text: "Ducks"
+               text: "Ducks",
+               checked: typesOfPoultry and "ducks" in typesOfPoultry
              },
              {
                value: "geese",
-               text: "Geese"
+               text: "Geese",
+               checked: typesOfPoultry and "geese" in typesOfPoultry
              },
              {
                value: "turkeys",
-               text: "Turkeys"
+               text: "Turkeys",
+               checked: typesOfPoultry and "turkeys" in typesOfPoultry
              }
             ]
           }) }}
