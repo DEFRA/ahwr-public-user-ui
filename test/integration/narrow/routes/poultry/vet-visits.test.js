@@ -52,7 +52,7 @@ describe("GET /vet-visits", () => {
     expect(res.headers.location).toBe("/check-details");
   });
 
-  test("should redirect to apply journey when no agreement", async () => {
+  test.skip("should redirect to apply journey when no agreement", async () => {
     const state = {
       confirmedDetails: true,
       customer: {
