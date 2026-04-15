@@ -199,7 +199,8 @@ export const poultryClaimRoutes = {
   siteOthersOnSbi: "/poultry/site-others-on-sbi",
   checkSiteDetails: "/poultry/check-site-details",
   selectPoultryType: "/poultry/select-poultry-type",
-  minimumNumberOfAnimals: "/poultry/minimum-number-of-animals",
+  minimumNumberOfBirds: "/poultry/minimum-number-of-birds",
+  vetName: "/poultry/vet-name",
 };
 
 export const poultryClaimViews = {
@@ -209,4 +210,6 @@ export const poultryClaimViews = {
   enterCphNumber: "poultry/claim/enter-cph-number",
   selectPoultryType: "poultry/claim/select-poultry-type",
   siteOthersOnSbi: "poultry/claim/site-others-on-sbi",
+  minimumNumberOfBirds: "poultry/claim/minimum-number-of-birds",
+  minimumNumberOfBirdsException: "poultry/claim/minimum-number-of-birds-exception",
 };

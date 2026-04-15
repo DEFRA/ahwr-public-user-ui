@@ -73,7 +73,7 @@ const postHandler = {
         sessionKeys.poultryClaim.typesOfPoultry,
         typesArray,
       );
-      return h.redirect(poultryClaimRoutes.minimumNumberOfAnimals);
+      return h.redirect(poultryClaimRoutes.minimumNumberOfBirds);
     },
   },
 };

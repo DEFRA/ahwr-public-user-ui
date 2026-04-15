@@ -38,6 +38,7 @@ export const sessionKeys = {
     typesOfPoultry: "typesOfPoultry",
     herdReasons: "herdReasons",
     isOnlyHerdOnSbi: "isOnlyHerdOnSbi",
+    minimumNumberOfBirds: "minimumNumberOfBirds",
   },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",
