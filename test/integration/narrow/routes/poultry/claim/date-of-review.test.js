@@ -113,6 +113,29 @@ describe("GET /poultry/date-of-review", () => {
     expectPageContentOk($, "/poultry/vet-visits");
     expectPhaseBanner.ok($);
   });
+
+  test("with previous dateOfReview in session, shows the screen with pre-populated date boxes", async () => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.latestPoultryApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+      .mockReturnValue({ dateOfReview: new Date(2025, 2, 15) });
+
+    const res = await server.inject(options);
+
+    expect(res.statusCode).toBe(200);
+    const $ = cheerio.load(res.payload);
+    expectPageContentOk($, "/poultry/vet-visits");
+    expect($("#review-date-day").val()).toBe("15");
+    expect($("#review-date-month").val()).toBe("3");
+    expect($("#review-date-year").val()).toBe("2025");
+  });
 });
 
 describe("POST /poultry/date-of-review", () => {
@@ -290,6 +313,33 @@ describe("POST /poultry/date-of-review", () => {
       expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
     },
   );
+
+  test("when date is in the future, shows error", async () => {
+    const futureYear = new Date().getFullYear() + 1;
+    const options = {
+      method: "POST",
+      url,
+      payload: {
+        crumb,
+        "review-date-day": "15",
+        "review-date-month": "06",
+        "review-date-year": String(futureYear),
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` },
+    };
+    const res = await server.inject(options);
+
+    expect(res.statusCode).toBe(400);
+
+    const $ = cheerio.load(res.payload);
+    expect($("h1").text().trim()).toBe("Date of review");
+    expect($(".govuk-error-summary")).toHaveLength(1);
+    expect($(".govuk-error-summary").text()).toContain(
+      "The date of review must be today or in the past",
+    );
+    expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
+  });
 
   test("when date is before latestPoultryApplication.createdAt, shows error and calls trackEvent and sendInvalidDataPoultryEvent", async () => {
     const createdAt = "2025-03-01";
