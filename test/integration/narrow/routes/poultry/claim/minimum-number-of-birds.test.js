@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
+import { sendInvalidDataPoultryEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import {
   getSessionData,
   sessionEntryKeys,
@@ -13,6 +14,7 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 import { config } from "../../../../../../app/config/index.js";
 
 jest.mock("../../../../../../app/session/index.js");
+jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 
 describe("/poultry/minimum-number-of-birds tests", () => {
   const url = `/poultry/minimum-number-of-birds`;
@@ -57,6 +59,18 @@ describe("/poultry/minimum-number-of-birds tests", () => {
   });
 
   describe("GET", () => {
+    test("when not logged in redirects to /sign-in", async () => {
+      const options = {
+        method: "GET",
+        url,
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    });
+
     test("returns 200 and displays page correctly", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -75,7 +89,7 @@ describe("/poultry/minimum-number-of-birds tests", () => {
       expect($("#back").attr("href")).toContain("/select-poultry-type");
       const legend = $(".govuk-fieldset__legend--l");
       expect(legend.text().trim()).toBe(
-        "Has your vet confirmed that this site can hold the minimum number of birds?",
+        "Has your vet confirmed that this site has the capacity to hold the minimum number of birds?",
       );
       expectPhaseBanner.ok($);
     });
@@ -167,6 +181,7 @@ describe("/poultry/minimum-number-of-birds tests", () => {
         "no",
         { shouldEmitEvent: false },
       );
+      expect(sendInvalidDataPoultryEvent).toHaveBeenCalled();
     });
 
     test("displays errors when no answer selected", async () => {

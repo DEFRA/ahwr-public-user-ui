@@ -28,16 +28,15 @@
           govukRadios({
             id: "minimumNumberOfBirds",
             name: "minimumNumberOfBirds",
-            classes: 'govuk-radios--inline',
             fieldset:{
               legend:{
                 isPageHeading: true,
                 classes: "govuk-fieldset__legend--l",
-                text: 'Has your vet confirmed that this site can hold the minimum number of birds?'
+                text: 'Has your vet confirmed that this site has the capacity to hold the minimum number of birds?'
               }
             }, 
             hint: {
-              html: "Minimum number of birds per species:<ul><li>1,000 broilers</li><li>1,000 laying hens</li><li>1,000 breeders</li><li>500 ducks</li><li>500 geese</li><li>500 turkeys</li></ul>"
+              html: "You might not have any birds at the time of the review. You need to confirm the site can hold the minimum number of birds. You only need to meet the minimum number for one species.</br></br>Minimum number of birds per species:<ul><li>1,000 broilers</li><li>1,000 laying hens</li><li>1,000 breeders</li><li>500 ducks</li><li>500 geese</li><li>500 turkeys</li></ul>"
             }, 
             errorMessage: errorMessage,
             items: [

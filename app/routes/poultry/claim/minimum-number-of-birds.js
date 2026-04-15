@@ -7,6 +7,7 @@ import {
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes.js";
+import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 
 const getHandler = {
   method: "GET",
@@ -63,7 +64,14 @@ const postHandler = {
       if (minimumNumberOfBirds === "yes") {
         return h.redirect(poultryClaimRoutes.vetName);
       } else {
-        return h.view(poultryClaimViews.minimumNumberOfBirdsException);
+        await sendInvalidDataPoultryEvent({
+          request,
+          sessionKey: sessionKeys.poultryClaim.minimumNumberOfBirds,
+          exception: `Value ${minimumNumberOfBirds} is not equal to required value yes`,
+        });
+        return h.view(poultryClaimViews.minimumNumberOfBirdsException, {
+          backLink: poultryClaimRoutes.minimumNumberOfBirds,
+        });
       }
     },
   },
