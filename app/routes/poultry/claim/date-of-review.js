@@ -133,6 +133,15 @@ const postHandler = {
 
       const dateOfReview = new Date(year, month - 1, day);
 
+      if (dateIsInFuture(dateOfReview)) {
+        const validationError = buildErrorSummary({
+          errorMessage: "The date of review must be today or in the past",
+          href: reviewDateDayAnchor,
+          inputsInError: { day: true, month: true, year: true },
+        });
+        return handleValidationError(request, validationError, h, date);
+      }
+
       const latestPoultryApplication = getSessionData(
         request,
         poultryClaimEntry,
@@ -159,6 +168,12 @@ const postHandler = {
     },
   },
 };
+
+function dateIsInFuture(dateOfReview) {
+  const now = new Date();
+
+  return dateOfReview > now;
+}
 
 function parseDateOfReview(dateOfReviewRaw) {
   if (dateOfReviewRaw) {
