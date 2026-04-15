@@ -42,6 +42,7 @@ export const sessionKeys = {
     vetRCVSNumber: "vetRCVSNumber",
     biosecurity: "biosecurity",
     vetsName: "vetsName",
+    previousClaims: "previousClaims",
   },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",
@@ -240,6 +241,18 @@ export function clearEndemicsClaim(request) {
   };
 
   request.yar.set(sessionEntryKeys.endemicsClaim, retained);
+  request.yar.set(sessionEntryKeys.organisation, organisation);
+}
+
+export function clearPoultryClaim(request) {
+  const poultryClaim = getSessionData(request, sessionEntryKeys.poultryClaim);
+  const organisation = getSessionData(request, sessionEntryKeys.organisation);
+
+  const retained = {
+    [sessionKeys.poultryClaim.latestPoultryApplication]: poultryClaim?.latestPoultryApplication,
+  };
+
+  request.yar.set(sessionEntryKeys.poultryClaim, retained);
   request.yar.set(sessionEntryKeys.organisation, organisation);
 }
 

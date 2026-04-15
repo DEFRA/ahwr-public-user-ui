@@ -4,6 +4,7 @@ import {
   sessionEntryKeys,
   sessionKeys,
   clearEndemicsClaim,
+  clearPoultryClaim,
 } from "../session/index.js";
 import { areDatesWithin10Months } from "./utils.js";
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
@@ -95,6 +96,32 @@ export const resetEndemicsClaimSession = async (request, applicationRef, claimRe
     tempClaimRef,
   );
   await refreshClaims(request, applicationRef);
+};
+
+export async function refreshPoultryClaims(request, applicationRef) {
+  const claims = await getClaimsByApplicationReference(applicationRef, request.logger);
+
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.previousClaims,
+    claims,
+  );
+
+  return claims;
+}
+
+export const resetPoultryClaimSession = async (request, applicationRef, claimRef) => {
+  const tempClaimRef = claimRef ?? createTempReference({ referenceForClaim: true });
+
+  clearPoultryClaim(request);
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.reference,
+    tempClaimRef,
+  );
+  await refreshPoultryClaims(request, applicationRef);
 };
 
 export function canChangeSpecies(request, typeOfReview) {

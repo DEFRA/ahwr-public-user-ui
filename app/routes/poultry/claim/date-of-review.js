@@ -16,6 +16,7 @@ import {
 import { getSites } from "../../../api-requests/application-api.js";
 import { trackEvent } from "../../../logging/logger.js";
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
+import { refreshApplications, resetPoultryClaimSession } from "../../../lib/context-helper.js";
 
 const INVALID_DATE_OF_REVIEW_EVENT = "claim-invalid-date-of-review";
 
@@ -47,6 +48,13 @@ const getHandler = {
       const { dateOfReview: dateOfReviewRaw } = getSessionData(request, poultryClaimEntry);
 
       const dateOfReview = parseDateOfReview(dateOfReviewRaw);
+
+      const organisation = getSessionData(request, sessionEntryKeys.organisation);
+      const { latestPoultryApplication } = await refreshApplications(organisation.sbi, request);
+
+      // reset the session as this is the entry point - if user goes all the way back
+      // to this point to the date of review, we don't keep all their answers
+      await resetPoultryClaimSession(request, latestPoultryApplication.reference);
       return h.view(poultryClaimViews.dateOfReview, {
         dateOfReview,
         backLink: dashboardRoutes.poultryManageYourClaims,
