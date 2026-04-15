@@ -201,6 +201,8 @@ export const poultryClaimRoutes = {
   selectPoultryType: "/poultry/select-poultry-type",
   minimumNumberOfBirds: "/poultry/minimum-number-of-birds",
   vetName: "/poultry/vet-name",
+  vetRcvs: "/poultry/vet-rcvs",
+  biosecurity: "/poultry/biosecurity",
 };
 
 export const poultryClaimViews = {
@@ -212,4 +214,5 @@ export const poultryClaimViews = {
   siteOthersOnSbi: "poultry/claim/site-others-on-sbi",
   minimumNumberOfBirds: "poultry/claim/minimum-number-of-birds",
   minimumNumberOfBirdsException: "poultry/claim/minimum-number-of-birds-exception",
+  vetRcvs: "poultry/claim/vet-rcvs",
 };
