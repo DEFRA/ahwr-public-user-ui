@@ -67,7 +67,7 @@ const postHandler = {
           .code(HttpStatus.BAD_REQUEST);
       }
 
-      setSessionData(
+      await setSessionData(
         request,
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.typesOfPoultry,

@@ -156,7 +156,7 @@ const postHandler = {
         return handleTimingException(request, h, date, applicationCreatedAt, tempClaimReference);
       }
 
-      setSessionData(request, poultryClaimEntry, dateOfReviewKey, dateOfReview);
+      await setSessionData(request, poultryClaimEntry, dateOfReviewKey, dateOfReview);
 
       const { herds } = await getSites(latestPoultryApplication.reference, request.logger);
 
