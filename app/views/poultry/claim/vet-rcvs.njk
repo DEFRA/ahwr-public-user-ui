@@ -1,0 +1,53 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {{ govukInput({
+          label: {
+          text: "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
+          classes: "govuk-label--l",
+          isPageHeading: true
+          },
+          hint: {
+            text: "You can find this on the summary the vet gave you."
+          },
+          classes: "govuk-input--width-10",
+          id: "vetRCVSNumber",
+          name: "vetRCVSNumber",
+          value: vetRCVSNumber,
+          errorMessage: errorMessage
+        }) }}
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "continue"
+          },
+          preventDoubleClick: true
+        }) }}
+
+      </form>
+    </div>
+  </div>
+{% endblock %}
