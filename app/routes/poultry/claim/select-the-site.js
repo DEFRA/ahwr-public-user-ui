@@ -1,5 +1,3 @@
-// import { poultryClaimRoutes } from "../../../constants/routes.js";
-
 const getHandler = {
   method: "GET",
   path: "/select-the-site",
