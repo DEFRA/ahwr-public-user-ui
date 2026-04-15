@@ -41,6 +41,7 @@ export const sessionKeys = {
     minimumNumberOfBirds: "minimumNumberOfBirds",
     vetRCVSNumber: "vetRCVSNumber",
     biosecurity: "biosecurity",
+    vetsName: "vetsName",
   },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",

@@ -1,0 +1,50 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}What is the vet's name? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href:backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {{ govukInput({
+        label: {
+         text: "What is the vet's name?",
+        classes: "govuk-label--l",
+       isPageHeading: true
+        },
+         hint: {
+         text: "Enter the vet’s personal name, not their business name. You can find this on the summary the vet gave you."
+         },
+        classes: "govuk-input govuk-!-width-three-quarters",
+        id: "vetsName",
+        name: "vetsName",
+        value: vetsName,
+        errorMessage: errorMessage
+      }) }}
+        {{ govukButton({
+          text: "Continue",
+          attributes: {id: "btnContinue"},
+          preventDoubleClick: true
+        }) 
+      }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
