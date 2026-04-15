@@ -44,10 +44,7 @@ const postHandler = {
         const errorMessage = { text: YES_TO_ASSESSMENT_TEXT, href: "#biosecurity" };
         const errors = {
           errorMessage,
-          radioErrorMessage:
-            biosecurity === undefined
-              ? { text: YES_TO_ASSESSMENT_TEXT, href: "#biosecurity" }
-              : undefined,
+          radioErrorMessage: biosecurity === undefined ? errorMessage : undefined,
         };
 
         return h
