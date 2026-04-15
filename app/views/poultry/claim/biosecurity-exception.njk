@@ -1,0 +1,33 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+
+        <p class="govuk-body">The vet should have done a biosecurity assessment.</p>
+        <p class="govuk-body">If the vet did a biosecurity assessment, you’ll need to go back and change your answer.</p>
+        <p class="govuk-body"><a class="govuk-link" href={{backLink}}>Change your answer if the vet did a biosecurity assessment.</a></p>
+
+        {{ govukWarningText({
+          text: "Your claim will be checked by our team.",
+          iconFallbackText: "Warning"
+        }) }}
+        {% include './chunks/get-help-with-claim.njk' %}
+    </div>
+  </div>
+{% endblock %}
+
+
