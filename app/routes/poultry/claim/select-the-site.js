@@ -1,14 +1,14 @@
-import { poultryClaimRoutes } from "../../../constants/routes.js";
+// import { poultryClaimRoutes } from "../../../constants/routes.js";
 
 const getHandler = {
   method: "GET",
-  path: poultryClaimRoutes.selectTheSite,
+  path: "/select-the-site",
   handler: async (_request, _h) => {},
 };
 
 const postHandler = {
   method: "POST",
-  path: poultryClaimRoutes.selectTheSite,
+  path: "/select-the-site",
   handler: async (_request, _h) => {},
 };
 
