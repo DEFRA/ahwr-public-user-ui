@@ -10,6 +10,7 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { config } from "../../../../../../app/config/index.js";
+import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
@@ -76,6 +77,7 @@ describe("/poultry/vet-rcvs", () => {
         "What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare",
       );
       expectPhaseBanner.ok($);
+      expect(await axe(res.payload)).toHaveNoViolations();
     });
 
     test("returns 200 and displays page correctly with previously entered answer", async () => {
@@ -100,6 +102,7 @@ describe("/poultry/vet-rcvs", () => {
         "What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare",
       );
       expectPhaseBanner.ok($);
+      expect(await axe(res.payload)).toHaveNoViolations();
     });
 
     test("when not logged in redirects to /sign-in", async () => {
@@ -169,6 +172,7 @@ describe("/poultry/vet-rcvs", () => {
           errorMessage,
         );
         expect($("#vetRCVSNumber").val()).toEqual(expectedVal);
+        expect(await axe(res.payload)).toHaveNoViolations();
       },
     );
 
