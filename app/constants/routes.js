@@ -203,6 +203,7 @@ export const poultryClaimRoutes = {
   vetName: "/poultry/vet-name",
   vetRcvs: "/poultry/vet-rcvs",
   biosecurity: "/poultry/biosecurity",
+  biosecurityUsefulness: "/poultry/biosecurity-usefulness",
 };
 
 export const poultryClaimViews = {
@@ -215,4 +216,6 @@ export const poultryClaimViews = {
   minimumNumberOfBirds: "poultry/claim/minimum-number-of-birds",
   minimumNumberOfBirdsException: "poultry/claim/minimum-number-of-birds-exception",
   vetRcvs: "poultry/claim/vet-rcvs",
+  biosecurityException: "poultry/claim/biosecurity-exception",
+  biosecurity: "poultry/claim/biosecurity",
 };

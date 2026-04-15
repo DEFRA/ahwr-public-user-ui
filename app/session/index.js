@@ -40,6 +40,7 @@ export const sessionKeys = {
     isOnlyHerdOnSbi: "isOnlyHerdOnSbi",
     minimumNumberOfBirds: "minimumNumberOfBirds",
     vetRCVSNumber: "vetRCVSNumber",
+    biosecurity: "biosecurity",
   },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",
