@@ -1,18 +1,19 @@
 import * as cheerio from "cheerio";
+import Wreck from "@hapi/wreck";
 import { createServer } from "../../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import {
   getSessionData,
+  setSessionData,
   sessionEntryKeys,
   sessionKeys,
 } from "../../../../../../app/session/index.js";
-import { getSites } from "../../../../../../app/api-requests/application-api.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { config } from "../../../../../../app/config/index.js";
+import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 
 jest.mock("../../../../../../app/session/index.js");
-jest.mock("../../../../../../app/api-requests/application-api.js");
 
 describe("Poultry check answers test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
@@ -32,6 +33,7 @@ describe("Poultry check answers test", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
 
     when(getSessionData)
       .calledWith(
@@ -44,7 +46,7 @@ describe("Poultry check answers test", () => {
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
       .mockReturnValue({
-        latestPoultryApplication: { reference: "AHWR-1234-5678" },
+        latestPoultryApplication: { reference: "POUL-1234-5678" },
         dateOfReview: "2024-01-15T10:30:00.000Z",
         herdName: "North Farm Site",
         herdCph: "12/345/6789",
@@ -60,7 +62,19 @@ describe("Poultry check answers test", () => {
         interview: "yes",
       });
 
-    getSites.mockResolvedValue({ herds: [] });
+    setSessionData.mockImplementation(() => {});
+
+    jest.spyOn(Wreck, "get").mockResolvedValue({
+      payload: { herds: [] },
+    });
+
+    jest.spyOn(Wreck, "post").mockResolvedValue({
+      payload: {
+        reference: "PORE-CLAIM-1234",
+        status: "SUBMITTED",
+        data: { amount: 1000 },
+      },
+    });
 
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.organisation)
@@ -193,7 +207,7 @@ describe("Poultry check answers test", () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
-          latestPoultryApplication: { reference: "AHWR-1234-5678" },
+          latestPoultryApplication: { reference: "POUL-1234-5678" },
           dateOfReview: "2024-01-15T10:30:00.000Z",
           herdName: "Existing Farm Site",
           herdCph: "12/345/6789",
@@ -209,7 +223,7 @@ describe("Poultry check answers test", () => {
           interview: "yes",
         });
 
-      getSites.mockResolvedValue({ herds: [{ name: "Existing Farm Site" }] });
+      Wreck.get.mockResolvedValue({ payload: { herds: [{ name: "Existing Farm Site" }] } });
 
       const options = {
         method: "GET",
@@ -252,7 +266,7 @@ describe("Poultry check answers test", () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
-          latestPoultryApplication: { reference: "AHWR-1234-5678" },
+          latestPoultryApplication: { reference: "POUL-1234-5678" },
           dateOfReview: "2024-01-15T10:30:00.000Z",
           herdName: "Existing Farm Site",
           herdCph: "98/765/4321",
@@ -268,7 +282,7 @@ describe("Poultry check answers test", () => {
           interview: "yes",
         });
 
-      getSites.mockResolvedValue({ herds: [{ name: "Existing Farm Site" }] });
+      Wreck.get.mockResolvedValue({ payload: { herds: [{ name: "Existing Farm Site" }] } });
 
       const options = {
         method: "GET",
@@ -311,7 +325,7 @@ describe("Poultry check answers test", () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
-          latestPoultryApplication: { reference: "AHWR-1234-5678" },
+          latestPoultryApplication: { reference: "POUL-1234-5678" },
           dateOfReview: "2024-01-15T10:30:00.000Z",
           herdName: "Existing Farm Site",
           herdCph: "12/345/6789",
@@ -327,7 +341,7 @@ describe("Poultry check answers test", () => {
           interview: "yes",
         });
 
-      getSites.mockResolvedValue({ herds: [{ name: "Existing Farm Site" }] });
+      Wreck.get.mockResolvedValue({ payload: { herds: [{ name: "Existing Farm Site" }] } });
 
       const options = {
         method: "GET",
@@ -370,6 +384,7 @@ describe("Poultry check answers test", () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
+          latestPoultryApplication: { reference: "POUL-1234-5678" },
           dateOfReview: "2024-01-15T10:30:00.000Z",
           herdName: "North Farm Site",
           herdCph: "12/345/6789",
@@ -379,6 +394,10 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
+          biosecurityUsefulness: "very useful",
+          changesInBiosecurity: "yes",
+          costOfChanges: "less than £500",
+          interview: "yes",
         });
 
       const options = {
@@ -401,6 +420,7 @@ describe("Poultry check answers test", () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
+          latestPoultryApplication: { reference: "POUL-1234-5678" },
           dateOfReview: "2024-01-15T10:30:00.000Z",
           herdName: "North Farm Site",
           herdCph: "12/345/6789",
@@ -410,6 +430,10 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
+          biosecurityUsefulness: "very useful",
+          changesInBiosecurity: "yes",
+          costOfChanges: "less than £500",
+          interview: "yes",
         });
 
       const options = {
@@ -593,6 +617,84 @@ describe("Poultry check answers test", () => {
       expect(interviewRow.find(".govuk-summary-list__value").text().trim()).toBe("Yes");
       expect(interviewRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
         "/poultry/interview",
+      );
+    });
+  });
+
+  describe(`POST ${url} route`, () => {
+    let crumb;
+
+    beforeEach(async () => {
+      crumb = await getCrumbs(server);
+    });
+
+    test("when not logged in redirects to /sign-in", async () => {
+      const options = {
+        method: "POST",
+        url,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location.toString()).toEqual("/sign-in");
+    });
+
+    test("submits claim and redirects to confirmation page", async () => {
+      const options = {
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/poultry/confirmation");
+      expect(Wreck.post).toHaveBeenCalledTimes(1);
+    });
+
+    test("sets session data with claim reference after successful submission", async () => {
+      const options = {
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(setSessionData).toHaveBeenCalledWith(
+        res.request,
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.reference,
+        "PORE-CLAIM-1234",
+      );
+    });
+
+    test("sets session data with claim amount after successful submission", async () => {
+      const options = {
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(setSessionData).toHaveBeenCalledWith(
+        res.request,
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.amount,
+        1000,
       );
     });
   });

@@ -582,8 +582,8 @@ export const buildPoultryClaimPayload = (poultryClaimSession) => {
     createdBy: "admin",
     data: {
       dateOfReview: poultryClaimSession.dateOfReview,
-      herdName: poultryClaimSession.herdName,
-      herdCph: poultryClaimSession.herdCph,
+      siteName: poultryClaimSession.herdName,
+      siteCph: poultryClaimSession.herdCph,
       isOnlySite: poultryClaimSession.isOnlyHerdOnSbi,
       typesOfPoultry: poultryClaimSession.typesOfPoultry.filter((type) => type !== "chickens"),
       minimumNumberOfBirds: poultryClaimSession.minimumNumberOfBirds,
