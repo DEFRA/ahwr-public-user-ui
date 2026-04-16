@@ -136,6 +136,7 @@ export const getConfig = () => {
       isSameSite: process.env.DISABLE_COOKIE_SAME_SITE === "true" ? false : "Lax",
       isSecure: process.env.NODE_ENV === "production",
       password: process.env.COOKIE_PASSWORD,
+      path: "/",
       ttl: oneYearInMs,
     },
     env: process.env.NODE_ENV,
