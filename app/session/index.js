@@ -44,6 +44,10 @@ export const sessionKeys = {
     vetsName: "vetsName",
     previousClaims: "previousClaims",
     reference: "reference",
+    biosecurityUsefulness: "biosecurityUsefulness",
+    changesInBiosecurity: "changesInBiosecurity",
+    costOfChanges: "costOfChanges",
+    interview: "interview",
   },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",

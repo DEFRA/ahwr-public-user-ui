@@ -235,6 +235,34 @@ export const buildPoultryRows = ({ poultryClaimSession, organisation }) => {
     "biosecurity assessment",
   );
 
+  const biosecurityUsefulnessRow = createdHerdRowObject(
+    "Biosecurity usefulness",
+    upperFirstLetter(poultryClaimSession.biosecurityUsefulness),
+    poultryClaimRoutes.biosecurityUsefulness,
+    "biosecurity usefulness",
+  );
+
+  const changesInBiosecurityRow = createdHerdRowObject(
+    "Biosecurity recommended changes",
+    upperFirstLetter(poultryClaimSession.changesInBiosecurity),
+    poultryClaimRoutes.changesInBiosecurity,
+    "biosecurity recommended changes",
+  );
+
+  const costOfChangesRow = createdHerdRowObject(
+    "Expected cost for biosecurity changes",
+    upperFirstLetter(poultryClaimSession.costOfChanges),
+    poultryClaimRoutes.costOfChanges,
+    "expected cost for biosecurity changes",
+  );
+
+  const interviewRow = createdHerdRowObject(
+    "Evaluation interview",
+    upperFirstLetter(poultryClaimSession.interview),
+    poultryClaimRoutes.interview,
+    "evaluation interview",
+  );
+
   return [
     organisationNameRow,
     dateOfReviewRow,
@@ -246,6 +274,10 @@ export const buildPoultryRows = ({ poultryClaimSession, organisation }) => {
     vetsNameRow,
     vetsRCVSRow,
     biosecurityAssessmentRow,
+    biosecurityUsefulnessRow,
+    changesInBiosecurityRow,
+    costOfChangesRow,
+    interviewRow,
   ];
 };
 

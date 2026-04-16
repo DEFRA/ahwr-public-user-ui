@@ -204,6 +204,8 @@ export const poultryClaimRoutes = {
   minimumNumberOfBirds: "/poultry/minimum-number-of-birds",
   vetName: "/poultry/vet-name",
   vetRcvs: "/poultry/vet-rcvs",
+  changesInBiosecurity: "/poultry/changes-in-biosecurity",
+  costOfChanges: "/poultry/cost-of-changes",
   interview: "/poultry/interview",
 };
 
