@@ -46,6 +46,8 @@ Use the start script inside the /scripts folder.
 ./scripts/start
 ```
 
+You need to also spin up the [application backend](https://github.com/DEFRA/ahwr-application-backend).
+
 ### Running tests
 
 A convenience script is provided to run automated tests in a containerised
