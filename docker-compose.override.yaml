@@ -11,11 +11,22 @@ services:
       USE_PRETTY_PRINT: ${USE_PRETTY_PRINT:-true}
       DEV_LOGIN_ENABLED: ${DEV_LOGIN_ENABLED:-true}
     ports:
-      - "3003:3000"
       - "9232:9229"
     volumes:
       - ./app:/home/node/app
       - ./package.json:/home/node/package.json
+    networks:
+      - ahwr-local
+
+  nginx:
+    image: nginx:alpine
+    container_name: ahwr-nginx-sidecar
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "3003:3000"
+    depends_on:
+      - ahwr-public-user-ui
     networks:
       - ahwr-local
 
