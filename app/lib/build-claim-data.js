@@ -162,7 +162,7 @@ export const buildVetTestandPiHuntRows = ({ endemicsClaimSession, isReview }) =>
   };
 };
 
-export const buildPoultryRows = ({ poultryClaimSession, organisation }) => {
+export const buildPoultryRows = ({ poultryClaimSession, organisation, herds }) => {
   const organisationNameRow = createImmutableRowObject(
     "BusinessName",
     upperFirstLetter(organisation.name),
@@ -175,26 +175,37 @@ export const buildPoultryRows = ({ poultryClaimSession, organisation }) => {
     "date of review",
   );
 
-  const siteNameRow = createdHerdRowObject(
-    "Site name",
-    poultryClaimSession.herdName,
-    poultryClaimRoutes.enterSiteName,
-    "site name",
-  );
+  const isExistingSite = herds?.some((herd) => herd.name === poultryClaimSession.herdName);
 
-  const cphNumberRow = createdHerdRowObject(
-    "Site CPH",
-    poultryClaimSession.herdCph,
-    poultryClaimRoutes.enterCphNumber,
-    "site CPH",
-  );
+  const siteNameRow = isExistingSite
+    ? createImmutableRowObject("Site name", poultryClaimSession.herdName)
+    : createdHerdRowObject(
+        "Site name",
+        poultryClaimSession.herdName,
+        poultryClaimRoutes.enterSiteName,
+        "site name",
+      );
 
-  const siteOthersRow = createdHerdRowObject(
-    "Only site within the SBI",
-    upperFirstLetter(poultryClaimSession.isOnlyHerdOnSbi),
-    poultryClaimRoutes.siteOthersOnSbi,
-    "only site within the SBI",
-  );
+  const cphNumberRow = isExistingSite
+    ? createImmutableRowObject("Site CPH", poultryClaimSession.herdCph)
+    : createdHerdRowObject(
+        "Site CPH",
+        poultryClaimSession.herdCph,
+        poultryClaimRoutes.enterCphNumber,
+        "site CPH",
+      );
+
+  const siteOthersRow = isExistingSite
+    ? createImmutableRowObject(
+        "Only site within the SBI",
+        upperFirstLetter(poultryClaimSession.isOnlyHerdOnSbi),
+      )
+    : createdHerdRowObject(
+        "Only site within the SBI",
+        upperFirstLetter(poultryClaimSession.isOnlyHerdOnSbi),
+        poultryClaimRoutes.siteOthersOnSbi,
+        "only site within the SBI",
+      );
 
   const filteredPoultryTypes = poultryClaimSession.typesOfPoultry.filter(
     (type) => type !== "chickens",
