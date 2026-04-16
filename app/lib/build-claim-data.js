@@ -573,6 +573,31 @@ const getHerdInformation = ({
   return {};
 };
 
+export const buildPoultryClaimPayload = (poultryClaimSession) => {
+  return {
+    applicationReference: poultryClaimSession.latestPoultryApplication.reference,
+    // This is a temporal claim reference
+    reference: poultryClaimSession.reference,
+    type: "Review",
+    createdBy: "admin",
+    data: {
+      dateOfReview: poultryClaimSession.dateOfReview,
+      herdName: poultryClaimSession.herdName,
+      herdCph: poultryClaimSession.herdCph,
+      isOnlySite: poultryClaimSession.isOnlyHerdOnSbi,
+      typesOfPoultry: poultryClaimSession.typesOfPoultry.filter((type) => type !== "chickens"),
+      minimumNumberOfBirds: poultryClaimSession.minimumNumberOfBirds,
+      vetsName: poultryClaimSession.vetsName,
+      vetRCVSNumber: poultryClaimSession.vetRCVSNumber,
+      biosecurity: poultryClaimSession.biosecurity,
+      biosecurityUsefulness: poultryClaimSession.biosecurityUsefulness,
+      changesInBiosecurity: poultryClaimSession.changesInBiosecurity,
+      costOfChanges: poultryClaimSession.costOfChanges,
+      interview: poultryClaimSession.interview,
+    },
+  };
+};
+
 export const buildClaimPayload = (endemicsClaimSession) => {
   const {
     typeOfLivestock,
