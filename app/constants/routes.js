@@ -189,6 +189,10 @@ export const claimViews = {
 };
 
 export const poultryClaimRoutes = {
+  biosecurity: "/poultry/biosecurity",
+  biosecurityUsefulness: "/poultry/biosecurity-usefulness",
+  checkAnswers: "/poultry/check-answers",
+  confirmation: "/poultry/confirmation",
   dateOfReview: "/poultry/date-of-review",
   selectTheSite: "/poultry/select-the-site",
   enterSiteName: "/poultry/enter-site-name",
@@ -200,11 +204,11 @@ export const poultryClaimRoutes = {
   minimumNumberOfBirds: "/poultry/minimum-number-of-birds",
   vetName: "/poultry/vet-name",
   vetRcvs: "/poultry/vet-rcvs",
-  biosecurity: "/poultry/biosecurity",
-  biosecurityUsefulness: "/poultry/biosecurity-usefulness",
+  interview: "/poultry/interview",
 };
 
 export const poultryClaimViews = {
+  checkAnswers: "poultry/claim/check-answers",
   dateOfReview: "poultry/claim/date-of-review",
   selectTheSite: "poultry/claim/select-the-site",
   enterSiteName: "poultry/claim/enter-site-name",

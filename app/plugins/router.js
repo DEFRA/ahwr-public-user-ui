@@ -71,6 +71,7 @@ import { poultryMinimumNumberOfBirdsHandlers } from "../routes/poultry/claim/min
 import { poultryVetRCVSHandlers } from "../routes/poultry/claim/vet-rcvs.js";
 import { poultryBiosecurityHandlers } from "../routes/poultry/claim/biosecurity.js";
 import { poultryVetsNameHandlers } from "../routes/poultry/claim/vet-name.js";
+import { poultryCheckAnswersHandlers } from "../routes/poultry/claim/check-answers.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
@@ -149,6 +150,7 @@ const poultryRoutes = [
   poultryVetRCVSHandlers,
   poultryBiosecurityHandlers,
   poultryVetsNameHandlers,
+  poultryCheckAnswersHandlers,
 ].flat();
 
 let routes;

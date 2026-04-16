@@ -5,7 +5,7 @@ import {
   getVaccinationStatusForDisplay,
   upperFirstLetter,
 } from "./display-helpers.js";
-import { claimRoutes } from "../constants/routes.js";
+import { claimRoutes, poultryClaimRoutes } from "../constants/routes.js";
 import {
   sheepPackages,
   sheepTestResultsType,
@@ -29,6 +29,15 @@ const createdHerdRowObject = (keyText, htmlValue, href, visuallyHiddenText) => {
           visuallyHiddenText,
         },
       ],
+    },
+  };
+};
+
+const createImmutableRowObject = (keyText, htmlValue) => {
+  return {
+    key: { text: keyText },
+    value: {
+      html: htmlValue,
     },
   };
 };
@@ -151,6 +160,93 @@ export const buildVetTestandPiHuntRows = ({ endemicsClaimSession, isReview }) =>
     testResultsRow,
     vetVisitsReviewTestResultsRow,
   };
+};
+
+export const buildPoultryRows = ({ poultryClaimSession, organisation }) => {
+  const organisationNameRow = createImmutableRowObject(
+    "BusinessName",
+    upperFirstLetter(organisation.name),
+  );
+
+  const dateOfReviewRow = createdHerdRowObject(
+    "Date of review",
+    formatDate(poultryClaimSession.dateOfReview),
+    poultryClaimRoutes.dateOfReview,
+    "date of review",
+  );
+
+  const siteNameRow = createdHerdRowObject(
+    "Site name",
+    poultryClaimSession.herdName,
+    poultryClaimRoutes.enterSiteName,
+    "site name",
+  );
+
+  const cphNumberRow = createdHerdRowObject(
+    "Site CPH",
+    poultryClaimSession.herdCph,
+    poultryClaimRoutes.enterCphNumber,
+    "site CPH",
+  );
+
+  const siteOthersRow = createdHerdRowObject(
+    "Only site within the SBI",
+    upperFirstLetter(poultryClaimSession.isOnlyHerdOnSbi),
+    poultryClaimRoutes.siteOthersOnSbi,
+    "only site within the SBI",
+  );
+
+  const filteredPoultryTypes = poultryClaimSession.typesOfPoultry.filter(
+    (type) => type !== "chickens",
+  );
+
+  const typesOfPoultryRow = createdHerdRowObject(
+    "Species",
+    upperFirstLetter(filteredPoultryTypes.join(", ")),
+    poultryClaimRoutes.selectPoultryType,
+    "species",
+  );
+
+  const minimumNumberOfBirdsRow = createdHerdRowObject(
+    "Minimum number of birds",
+    upperFirstLetter(poultryClaimSession.minimumNumberOfBirds),
+    poultryClaimRoutes.minimumNumberOfBirds,
+    "minimum number of birds",
+  );
+
+  const vetsNameRow = createdHerdRowObject(
+    "Vet's name",
+    upperFirstLetter(poultryClaimSession.vetsName),
+    poultryClaimRoutes.vetName,
+    "vet's name",
+  );
+
+  const vetsRCVSRow = createdHerdRowObject(
+    "Vet's RCVS number",
+    poultryClaimSession.vetRCVSNumber,
+    poultryClaimRoutes.vetRcvs,
+    "vet's RCVS number",
+  );
+
+  const biosecurityAssessmentRow = createdHerdRowObject(
+    "Biosecurity assessment",
+    upperFirstLetter(poultryClaimSession.biosecurity),
+    poultryClaimRoutes.biosecurity,
+    "biosecurity assessment",
+  );
+
+  return [
+    organisationNameRow,
+    dateOfReviewRow,
+    siteNameRow,
+    cphNumberRow,
+    siteOthersRow,
+    typesOfPoultryRow,
+    minimumNumberOfBirdsRow,
+    vetsNameRow,
+    vetsRCVSRow,
+    biosecurityAssessmentRow,
+  ];
 };
 
 export const buildRows = ({

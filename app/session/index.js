@@ -43,6 +43,7 @@ export const sessionKeys = {
     biosecurity: "biosecurity",
     vetsName: "vetsName",
     previousClaims: "previousClaims",
+    reference: "reference",
   },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",
