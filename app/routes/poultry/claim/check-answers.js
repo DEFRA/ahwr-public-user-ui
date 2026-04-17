@@ -2,7 +2,10 @@ import { getSites } from "../../../api-requests/application-api.js";
 import { submitNewClaim } from "../../../api-requests/claim-api.js";
 import { JOURNEY } from "../../../constants/constants.js";
 import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes.js";
-import { buildPoultryClaimPayload, buildPoultryRows } from "../../../lib/build-claim-data.js";
+import {
+  buildPoultryClaimPayload,
+  buildPoultryRows,
+} from "../../../lib/build-poultry-claim-data.js";
 import { trackEvent } from "../../../logging/logger.js";
 import {
   getSessionData,
