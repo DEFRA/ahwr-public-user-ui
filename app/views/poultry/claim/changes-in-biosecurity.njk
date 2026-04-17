@@ -1,0 +1,103 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}What was the main change the vet recommended to improve your farm's biosecurity? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{%block beforeContent %}
+  {{ 
+    govukBackLink({
+      text: "Back",
+      href: backLink
+    })
+  }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+      <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+        {% if errorMessage %}
+          {{ govukErrorSummary({
+              titleText: "There is a problem",
+              errorList:[{
+                text: errorMessage.text,
+                href: errorMessage.href
+              }]
+            }) 
+          }}
+        {% endif %}
+        <div class="govuk-grid-row">
+          <h1 class="govuk-heading-l">What was the main change the vet recommended to improve your farm's biosecurity?</h1>
+          <form method="POST" autocomplete="off" novalidate="novalidate">
+            <input type="hidden" name="crumb" value="{{crumb}}"/>
+            {{ 
+              govukRadios({
+                id: "changesInBiosecurity",
+                name: "changesInBiosecurity",
+                fieldset:{
+                  legend:{
+                    classes: "govuk-fieldset__legend--l"
+                  }
+                }, 
+                hint: {
+                  text: "Please choose the one category that best fits the main recommendation."
+                }, 
+                errorMessage: radioErrorMessage,
+                items: [
+                  {
+                    value:"infra-and-control",
+                    text: "Housing, buildings, infrastructure, and wild bird control",
+                    hint: {
+                      text: "For example, repairs to sheds, improving building structure or layout, blocking wild bird access, netting/mesh, improving separation between areas"
+                    },
+                    checked: previousAnswer == "infra-and-control"
+                  },
+                  {
+                    value:"people-and-hygiene",
+                    text: "People, visitors, and hygiene procedures",
+                    hint: {
+                      text: "For example, footbaths, boot changes, handwashing, visitor controls, staff routines, hygiene locks, clean/dirty area protocols"
+                    },
+                    checked: previousAnswer == "people-and-hygiene"
+                  },
+                  {
+                    value:"movement-and-management",
+                    text: "Bird movements, and flock management",
+                    hint: {
+                      text: "For example, bringing in day-old chicks or older birds, quarantine routines, thinning/depopulation practices, movement of birds between sheds"
+                    },
+                    checked: previousAnswer == "movement-and-management"
+                  },
+                  {
+                    value:"bird-handling",
+                    text: "Feed, water, bedding, eggs, and waste handling",
+                    hint:  {
+                      text: "For example, feed/water hygiene, storage improvements, egg collection/transport hygiene, muck and carcass disposal, bedding management"
+                    },
+                    checked: previousAnswer == "bird-handling"
+                  },
+                  {
+                    value:"cleaning",
+                    text: "Cleaning, disinfection, and disease control",
+                    hint: {
+                      text: "For example, cleaning shed interiors, correct order of disinfection, disease monitoring, improving mortality checks"
+                    },
+                    checked: previousAnswer == "cleaning"
+                  },
+                  {
+                    value:"no-recommendation",
+                    text: "No recommendations were made in my review",
+                    checked: previousAnswer == "no-recommendation"
+                  }
+                ]
+              })
+            }}
+            {{ govukButton({
+                  text: "Continue",
+                  attributes: {id: "btnContinue"},
+                  preventDoubleClick: true
+                })
+            }}
+          </form>
+        </div>
+      </div>
+    {% endblock %}
