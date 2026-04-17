@@ -129,6 +129,7 @@ describe("Poultry check answers test", () => {
 
       const res = await server.inject(options);
 
+      expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toBe("/poultry/interview");
