@@ -72,6 +72,7 @@ import { poultryVetRCVSHandlers } from "../routes/poultry/claim/vet-rcvs.js";
 import { poultryBiosecurityHandlers } from "../routes/poultry/claim/biosecurity.js";
 import { poultryVetsNameHandlers } from "../routes/poultry/claim/vet-name.js";
 import { poultryCheckAnswersHandlers } from "../routes/poultry/claim/check-answers.js";
+import { poultryBiosecurityUsefulnessHandlers } from "../routes/poultry/claim/biosecurity-usefulness.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
@@ -149,6 +150,7 @@ const poultryRoutes = [
   poultryMinimumNumberOfBirdsHandlers,
   poultryVetRCVSHandlers,
   poultryBiosecurityHandlers,
+  poultryBiosecurityUsefulnessHandlers,
   poultryVetsNameHandlers,
   poultryCheckAnswersHandlers,
 ].flat();
