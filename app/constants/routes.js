@@ -119,7 +119,6 @@ export const claimRoutes = {
   vetRcvs: "/vet-rcvs",
   vetVisitsReviewTestResults: "/vet-visits-review-test-results",
   whichSpecies: "/which-species",
-  whichSpeciesPoultry: "/which-species-of-poultry",
   whichTypeOfReviewDairyFollowUpException: "/which-type-of-review-dairy-follow-up-exception",
   whichTypeOfReviewException: "/which-type-of-review-exception",
   whichTypeOfReview: "/which-type-of-review",
@@ -183,7 +182,6 @@ export const claimViews = {
   vetRcvs: "claim/vet-rcvs",
   vetVisitsReviewTestResults: "claim/vet-visits-review-test-results",
   whichSpecies: "claim/which-species",
-  whichSpeciesPoultry: "claim/which-species-poultry",
   whichTypeOfReviewDairyFollowUpException: "claim/which-type-of-review-dairy-follow-up-exception",
   whichTypeOfReviewException: "claim/which-type-of-review-exception",
   whichTypeOfReview: "claim/which-type-of-review",
@@ -191,6 +189,10 @@ export const claimViews = {
 };
 
 export const poultryClaimRoutes = {
+  biosecurity: "/poultry/biosecurity",
+  biosecurityUsefulness: "/poultry/biosecurity-usefulness",
+  checkAnswers: "/poultry/check-answers",
+  confirmation: "/poultry/confirmation",
   dateOfReview: "/poultry/date-of-review",
   selectTheSite: "/poultry/select-the-site",
   enterSiteName: "/poultry/enter-site-name",
@@ -202,11 +204,13 @@ export const poultryClaimRoutes = {
   minimumNumberOfBirds: "/poultry/minimum-number-of-birds",
   vetName: "/poultry/vet-name",
   vetRcvs: "/poultry/vet-rcvs",
-  biosecurity: "/poultry/biosecurity",
-  biosecurityUsefulness: "/poultry/biosecurity-usefulness",
+  changesInBiosecurity: "/poultry/changes-in-biosecurity",
+  costOfChanges: "/poultry/cost-of-changes",
+  interview: "/poultry/interview",
 };
 
 export const poultryClaimViews = {
+  checkAnswers: "poultry/claim/check-answers",
   dateOfReview: "poultry/claim/date-of-review",
   selectTheSite: "poultry/claim/select-the-site",
   enterSiteName: "poultry/claim/enter-site-name",

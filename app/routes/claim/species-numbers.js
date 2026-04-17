@@ -21,7 +21,6 @@ import {
 } from "../../session/index.js";
 import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
-import { checkIfPoultryAgreement } from "../../lib/agreement-helper.js";
 
 const backLink = (request) => {
   const {
@@ -204,7 +203,7 @@ const postHandler = {
       },
     },
     handler: async (request, h) => {
-      const { typeOfLivestock, typeOfReview, latestEndemicsApplication } = getSessionData(
+      const { typeOfLivestock, typeOfReview } = getSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
       );
@@ -220,11 +219,6 @@ const postHandler = {
       );
 
       if (answer === "yes") {
-        const isPoultryAgreement = checkIfPoultryAgreement(latestEndemicsApplication);
-        if (isPoultryAgreement) {
-          return h.redirect(claimRoutes.vetName);
-        }
-
         if (isDairy || (isBeef && isEndemicsFollowUp)) {
           return h.redirect(claimRoutes.vetName);
         }

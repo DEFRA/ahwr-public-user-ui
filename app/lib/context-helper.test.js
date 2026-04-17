@@ -5,6 +5,8 @@ import {
   isPigsAndPaymentsUserJourney,
   isVisitDateAfterPIHuntAndDairyGoLive,
   refreshApplications,
+  resetEndemicsClaimSession,
+  resetPoultryClaimSession,
   skipOtherHerdsOnSbiPage,
   skipSameHerdPage,
 } from "./context-helper.js";
@@ -13,11 +15,22 @@ import {
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
 } from "../constants/claim-constants.js";
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
-import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../session/index.js";
+import { getClaimsByApplicationReference } from "../api-requests/claim-api.js";
+import {
+  clearEndemicsClaim,
+  clearPoultryClaim,
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../session/index.js";
+import { createTempReference } from "./create-temp-ref.js";
 import { AHWR_SCHEME, POULTRY_SCHEME } from "ffc-ahwr-common-library";
 
 jest.mock("../api-requests/application-api.js");
+jest.mock("../api-requests/claim-api.js");
 jest.mock("../session/index.js");
+jest.mock("./create-temp-ref.js");
 
 describe("context-helper", () => {
   test("isVisitDateAfterPIHuntAndDairyGoLive throws error when no visit date provided", () => {
@@ -375,6 +388,130 @@ describe("context-helper", () => {
       const result = getScheme(mockRequest);
 
       expect(result).toBe(AHWR_SCHEME);
+    });
+  });
+
+  describe("resetEndemicsClaimSession", () => {
+    const mockRequest = { logger: {} };
+    const applicationRef = "IAHW-1111-2222";
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      getClaimsByApplicationReference.mockResolvedValue([]);
+    });
+
+    it("clears endemic claim session and sets a generated temp reference when claimRef not provided", async () => {
+      const generatedRef = "TEMP-CLAIM-1234";
+      createTempReference.mockReturnValue(generatedRef);
+
+      await resetEndemicsClaimSession(mockRequest, applicationRef);
+
+      expect(clearEndemicsClaim).toHaveBeenCalledWith(mockRequest);
+      expect(createTempReference).toHaveBeenCalledWith({ referenceForClaim: true });
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.reference,
+        generatedRef,
+      );
+    });
+
+    it("uses provided claimRef instead of generating a new one", async () => {
+      const providedRef = "PROVIDED-CLAIM-REF";
+
+      await resetEndemicsClaimSession(mockRequest, applicationRef, providedRef);
+
+      expect(createTempReference).not.toHaveBeenCalled();
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.reference,
+        providedRef,
+      );
+    });
+
+    it("fetches and stores previous claims for the application", async () => {
+      const mockClaims = [
+        { id: "1", reference: "CLAIM-001" },
+        { id: "2", reference: "CLAIM-002" },
+      ];
+      createTempReference.mockReturnValue("TEMP-REF");
+      getClaimsByApplicationReference.mockResolvedValue(mockClaims);
+
+      await resetEndemicsClaimSession(mockRequest, applicationRef);
+
+      expect(getClaimsByApplicationReference).toHaveBeenCalledWith(
+        applicationRef,
+        mockRequest.logger,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.previousClaims,
+        mockClaims,
+      );
+    });
+  });
+
+  describe("resetPoultryClaimSession", () => {
+    const mockRequest = { logger: {} };
+    const applicationRef = "POUL-1111-2222";
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      getClaimsByApplicationReference.mockResolvedValue([]);
+    });
+
+    it("clears poultry claim session and sets a generated temp reference when claimRef not provided", async () => {
+      const generatedRef = "TEMP-CLAIM-5678";
+      createTempReference.mockReturnValue(generatedRef);
+
+      await resetPoultryClaimSession(mockRequest, applicationRef);
+
+      expect(clearPoultryClaim).toHaveBeenCalledWith(mockRequest);
+      expect(createTempReference).toHaveBeenCalledWith({ referenceForClaim: true });
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.reference,
+        generatedRef,
+      );
+    });
+
+    it("uses provided claimRef instead of generating a new one", async () => {
+      const providedRef = "PROVIDED-POULTRY-REF";
+
+      await resetPoultryClaimSession(mockRequest, applicationRef, providedRef);
+
+      expect(createTempReference).not.toHaveBeenCalled();
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.reference,
+        providedRef,
+      );
+    });
+
+    it("fetches and stores previous claims for the application", async () => {
+      const mockClaims = [
+        { id: "1", reference: "POUL-CLAIM-001" },
+        { id: "2", reference: "POUL-CLAIM-002" },
+      ];
+      createTempReference.mockReturnValue("TEMP-REF");
+      getClaimsByApplicationReference.mockResolvedValue(mockClaims);
+
+      await resetPoultryClaimSession(mockRequest, applicationRef);
+
+      expect(getClaimsByApplicationReference).toHaveBeenCalledWith(
+        applicationRef,
+        mockRequest.logger,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.previousClaims,
+        mockClaims,
+      );
     });
   });
 });

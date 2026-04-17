@@ -12,12 +12,17 @@ import {
 import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { getSites } from "../../../../../../app/api-requests/application-api.js";
 import { sendInvalidDataPoultryEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
+import {
+  refreshApplications,
+  resetPoultryClaimSession,
+} from "../../../../../../app/lib/context-helper.js";
 import { when } from "jest-when";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/api-requests/application-api.js");
+jest.mock("../../../../../../app/lib/context-helper.js");
 jest.mock("../../../../../../app/logging/logger.js", () => ({
   ...jest.requireActual("../../../../../../app/logging/logger.js"),
   trackEvent: jest.fn(),
@@ -47,6 +52,9 @@ function expectPageContentOk($, previousPageUrl) {
 describe("GET /poultry/date-of-review", () => {
   let server;
 
+  const mockOrganisation = { sbi: "123456789", name: "Test Farm" };
+  const mockLatestPoultryApplication = { status: "AGREED", reference: "AHWR-POUL-1234" };
+
   beforeAll(async () => {
     server = await createServer();
     await server.initialize();
@@ -56,12 +64,16 @@ describe("GET /poultry/date-of-review", () => {
       .mockReturnValue({});
 
     when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue(mockOrganisation);
+
+    when(getSessionData)
       .calledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.latestPoultryApplication,
       )
-      .mockReturnValue({ status: "AGREED" });
+      .mockReturnValue(mockLatestPoultryApplication);
 
     when(getSessionData)
       .calledWith(
@@ -70,11 +82,50 @@ describe("GET /poultry/date-of-review", () => {
         sessionKeys.confirmedDetails,
       )
       .mockReturnValue(true);
+
+    refreshApplications.mockResolvedValue({
+      latestPoultryApplication: mockLatestPoultryApplication,
+    });
+    resetPoultryClaimSession.mockResolvedValue();
   });
 
   afterAll(async () => {
     await server.stop();
     jest.resetAllMocks();
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    getSessionData.mockReset();
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+      .mockReturnValue({});
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue(mockOrganisation);
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.latestPoultryApplication,
+      )
+      .mockReturnValue(mockLatestPoultryApplication);
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+
+    refreshApplications.mockResolvedValue({
+      latestPoultryApplication: mockLatestPoultryApplication,
+    });
+    resetPoultryClaimSession.mockResolvedValue();
   });
 
   const options = {
@@ -91,20 +142,13 @@ describe("GET /poultry/date-of-review", () => {
         sessionKeys.poultryClaim.latestPoultryApplication,
       )
       .mockReturnValue({});
+
     const res = await server.inject(options);
     expect(res.statusCode).toBe(302);
     expect(res.headers.location.toString()).toEqual(`/poultry/you-can-claim-multiple`);
   });
 
   test("without previous data, shows the screen with empty date boxes", async () => {
-    when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.latestPoultryApplication,
-      )
-      .mockReturnValue({ status: "AGREED" });
-
     const res = await server.inject(options);
 
     expect(await axe(res.payload)).toHaveNoViolations();
@@ -114,24 +158,31 @@ describe("GET /poultry/date-of-review", () => {
     expectPhaseBanner.ok($);
   });
 
-  test("with previous dateOfReview in session, shows the screen with pre-populated date boxes", async () => {
-    when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.latestPoultryApplication,
-      )
-      .mockReturnValue({ status: "AGREED" });
+  test("calls refreshApplications with organisation sbi", async () => {
+    await server.inject(options);
 
+    expect(refreshApplications).toHaveBeenCalledWith(mockOrganisation.sbi, expect.anything());
+  });
+
+  test("calls resetPoultryClaimSession with application reference", async () => {
+    await server.inject(options);
+
+    expect(resetPoultryClaimSession).toHaveBeenCalledWith(
+      expect.anything(),
+      mockLatestPoultryApplication.reference,
+    );
+  });
+
+  test("displays previously entered date of review", async () => {
+    const previousDate = new Date(2025, 2, 15);
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-      .mockReturnValue({ dateOfReview: new Date(2025, 2, 15) });
+      .mockReturnValue({ dateOfReview: previousDate });
 
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, "/poultry/vet-visits");
     expect($("#review-date-day").val()).toBe("15");
     expect($("#review-date-month").val()).toBe("3");
     expect($("#review-date-year").val()).toBe("2025");

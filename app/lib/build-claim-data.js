@@ -12,26 +12,8 @@ import {
   sheepTestTypes,
   PIGS_SAMPLE_TYPES,
 } from "../constants/claim-constants.js";
-import { generatePigStatusAnswerRows } from "./generate-answer-rows.js";
+import { createdHerdRowObject, generatePigStatusAnswerRows } from "./generate-answer-rows.js";
 import { getLivestockTypes, getReviewType } from "./utils.js";
-
-const createdHerdRowObject = (keyText, htmlValue, href, visuallyHiddenText) => {
-  return {
-    key: { text: keyText },
-    value: {
-      html: htmlValue,
-    },
-    actions: {
-      items: [
-        {
-          href,
-          text: "Change",
-          visuallyHiddenText,
-        },
-      ],
-    },
-  };
-};
 
 const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
   return createdHerdRowObject(

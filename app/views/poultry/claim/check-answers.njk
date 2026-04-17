@@ -1,0 +1,40 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Check your answers - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+	  attributes: {id: "back"}
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Check your answers</h1>
+
+      {{ govukSummaryList({
+      classes: "govuk-!-margin-bottom-9",
+      rows: listData.rows
+    }) }}
+
+      <p class="govuk-body">By submitting your claim, you confirm that:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>you understand you may have to provide evidence to the Rural Payments Agency to support this claim</li>
+        <li>all the information you have provided in this claim is correct to the best of your knowledge</li>
+      </ul>
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {{ govukButton({
+            text: "Submit your claim",
+            attributes: {
+            id: "submit-claim"
+          },
+          preventDoubleClick: true}) 
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

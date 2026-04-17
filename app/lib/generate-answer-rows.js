@@ -1,6 +1,33 @@
 import { claimRoutes } from "../constants/routes.js";
 import { PIG_GENETIC_SEQUENCING_VALUES } from "ffc-ahwr-common-library";
 
+export const createdHerdRowObject = (keyText, htmlValue, href, visuallyHiddenText) => {
+  return {
+    key: { text: keyText },
+    value: {
+      html: htmlValue,
+    },
+    actions: {
+      items: [
+        {
+          href,
+          text: "Change",
+          visuallyHiddenText,
+        },
+      ],
+    },
+  };
+};
+
+export const createImmutableRowObject = (keyText, htmlValue) => {
+  return {
+    key: { text: keyText },
+    value: {
+      html: htmlValue,
+    },
+  };
+};
+
 export const generatePigStatusAnswerRows = (sessionData) => {
   const testResultRow = {
     key: { text: "Test result" },

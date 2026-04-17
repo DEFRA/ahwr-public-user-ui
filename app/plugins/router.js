@@ -60,7 +60,6 @@ import { vetRCVSHandlers } from "../routes/claim/vet-rcvs.js";
 import { vetVisitsReviewTestResultsHandlers } from "../routes/claim/vet-visits-review-test-results.js";
 import { whichSpeciesHandlers } from "../routes/claim/which-species.js";
 import { whichReviewHandlers } from "../routes/claim/which-type-of-review.js";
-import { whichSpeciesPoultryHandlers } from "../routes/claim/which-species-poultry.js";
 import { assuranceSchemeHandlers } from "../routes/claim/assurance-scheme.js";
 import { poultryVetVisitsHandlers } from "../routes/poultry/vet-visits.js";
 import { poultrySelectTheSiteHandlers } from "../routes/poultry/claim/select-the-site.js";
@@ -72,6 +71,7 @@ import { poultryMinimumNumberOfBirdsHandlers } from "../routes/poultry/claim/min
 import { poultryVetRCVSHandlers } from "../routes/poultry/claim/vet-rcvs.js";
 import { poultryBiosecurityHandlers } from "../routes/poultry/claim/biosecurity.js";
 import { poultryVetsNameHandlers } from "../routes/poultry/claim/vet-name.js";
+import { poultryCheckAnswersHandlers } from "../routes/poultry/claim/check-answers.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
@@ -130,7 +130,6 @@ const alwaysOnRoutes = [
   vetRCVSHandlers,
   vetVisitsReviewTestResultsHandlers,
   whichSpeciesHandlers,
-  whichSpeciesPoultryHandlers,
   whichReviewHandlers,
 ].flat();
 
@@ -151,6 +150,7 @@ const poultryRoutes = [
   poultryVetRCVSHandlers,
   poultryBiosecurityHandlers,
   poultryVetsNameHandlers,
+  poultryCheckAnswersHandlers,
 ].flat();
 
 let routes;

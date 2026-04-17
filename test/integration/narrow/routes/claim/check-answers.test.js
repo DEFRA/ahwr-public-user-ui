@@ -38,7 +38,6 @@ import { isMultipleHerdsUserJourney } from "../../../../../app/lib/context-helpe
 import { submitNewClaim } from "../../../../../app/api-requests/claim-api.js";
 import { when } from "jest-when";
 import { trackEvent } from "../../../../../app/logging/logger.js";
-import { config } from "../../../../../app/config/index.js";
 import { axe } from "../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../app/session/index.js");
@@ -614,55 +613,6 @@ describe("Check answers test", () => {
             testResults: "testResults",
             reference: "TEMP-6GSE-PIR8",
             latestEndemicsApplication: { flags: [] },
-          });
-        when(getSessionData)
-          .calledWith(expect.anything(), sessionEntryKeys.organisation)
-          .mockReturnValue({ name: "business name" });
-        const options = {
-          method: "GET",
-          url,
-          auth,
-        };
-
-        const res = await server.inject(options);
-
-        expect(await axe(res.payload)).toHaveNoViolations();
-        expect(res.statusCode).toBe(200);
-        const $ = cheerio.load(res.payload);
-
-        expect($("h1").text()).toMatch("Check your answers");
-        expect($("title").text()).toMatch(
-          "Check your answers - Get funding to improve animal health and welfare",
-        );
-        expect($(".govuk-summary-list__key").text()).toContain(content);
-        expect($(".govuk-summary-list__value").text()).toContain("SpeciesNumbers");
-        expect($(".govuk-back-link").attr("href")).toEqual(backLink);
-      },
-    );
-
-    test.each([
-      {
-        typeOfLivestock: "ducks",
-        typeOfReview: "REVIEW",
-        content: "or more ducks",
-        backLink: "/biosecurity",
-      },
-    ])(
-      "check species content and back links are correct for typeOfLivestock: $typeOfLivestock}",
-      async ({ typeOfLivestock, typeOfReview, content, backLink }) => {
-        config.poultry.enabled = true;
-        when(getSessionData)
-          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-          .mockReturnValue({
-            typeOfLivestock,
-            typeOfReview,
-            dateOfVisit: "2023-12-19T10:25:11.318Z",
-            dateOfTesting: "2023-12-19T10:25:11.318Z",
-            speciesNumbers: "SpeciesNumbers",
-            vetsName: "vetsName",
-            vetRCVSNumber: "2323232",
-            reference: "TEMP-6GSE-PIR8",
-            latestEndemicsApplication: { flags: [], reference: "POUL-G3CL-V59P" },
           });
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.organisation)
