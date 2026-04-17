@@ -223,4 +223,5 @@ export const poultryClaimViews = {
   vetName: "poultry/claim/vet-name",
   biosecurityException: "poultry/claim/biosecurity-exception",
   biosecurity: "poultry/claim/biosecurity",
+  biosecurityUsefulness: "poultry/claim/biosecurity-usefulness",
 };

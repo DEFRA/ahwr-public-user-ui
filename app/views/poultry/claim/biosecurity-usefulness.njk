@@ -1,0 +1,83 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}How useful was the vet's advice for improving your farm's biosecurity? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{%block beforeContent %}
+  {{ 
+    govukBackLink({
+      text: "Back",
+      href: backLink
+    })
+  }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+      <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+        {% if errorMessage %}
+          {{ govukErrorSummary({
+              titleText: "There is a problem",
+              errorList:[{
+                text: errorMessage.text,
+                href: errorMessage.href
+              }]
+            }) 
+          }}
+        {% endif %}
+        <div class="govuk-grid-row">
+          <h1 class="govuk-heading-l">How useful was the vet's advice for improving your farm's biosecurity?</h1>
+          <form method="POST" autocomplete="off" novalidate="novalidate">
+            <input type="hidden" name="crumb" value="{{crumb}}"/>
+            {{ 
+              govukRadios({
+                id: "biosecurityUsefulness",
+                name: "biosecurityUsefulness",
+                fieldset:{
+                  legend:{
+                    classes: "govuk-fieldset__legend--l"
+                  }
+                }, 
+                hint: {
+                  text: "Your feedback helps us learn how helpful the advice was in practice, so we can improve future support for poultry keepers."
+                }, 
+                errorMessage: radioErrorMessage,
+                items: [
+                  {
+                    value:"very-useful",
+                    text: "Very useful",
+                    checked: previousAnswer == "very-useful"
+                  },
+                  {
+                    value:"somewhat-useful",
+                    text: "Somewhat useful",
+                    checked: previousAnswer == "somewhat-useful"
+                  },
+                  {
+                    value:"not-very-useful",
+                    text: "Not very useful",
+                    checked: previousAnswer == "not-very-useful"
+                  },
+                  {
+                    value:"not-useful",
+                    text: "Not useful at all",
+                    checked: previousAnswer == "not-useful"
+                  },
+                  {
+                    value:"not-sure",
+                    text: "I am not sure yet",
+                    checked: previousAnswer == "not-sure"
+                  }
+                ]
+              })
+            }}
+            {{ govukButton({
+                  text: "Continue",
+                  attributes: {id: "btnContinue"},
+                  preventDoubleClick: true
+                })
+            }}
+          </form>
+        </div>
+      </div>
+    {% endblock %}
