@@ -716,6 +716,50 @@ describe("Poultry check answers test", () => {
       );
     });
 
+    test("omits chickens from typesOfPoultry in claim payload", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
+          dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
+          herdName: "North Farm Site",
+          herdCph: "12/345/6789",
+          isOnlyHerdOnSbi: "yes",
+          typesOfPoultry: ["chickens", "laying hens", "broilers"],
+          minimumNumberOfBirds: "yes",
+          vetsName: "John Smith",
+          vetRCVSNumber: "1234567",
+          biosecurity: "yes",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
+          interview: "yes",
+        });
+
+      const options = {
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      await server.inject(options);
+
+      expect(Wreck.post).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          payload: expect.objectContaining({
+            data: expect.objectContaining({
+              typesOfPoultry: ["laying hens", "broilers"],
+            }),
+          }),
+        }),
+      );
+    });
+
     test("sets session data with claim reference after successful submission", async () => {
       const options = {
         method: "POST",
