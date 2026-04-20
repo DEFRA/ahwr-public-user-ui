@@ -19,14 +19,14 @@ const getHandler = {
   path: poultryClaimRoutes.checkAnswers,
   options: {
     handler: async (request, h) => {
-      const poultryClaimSession = getSessionData(request, sessionEntryKeys.poultryClaim);
+      const poultryClaim = getSessionData(request, sessionEntryKeys.poultryClaim);
       const organisation = getSessionData(request, sessionEntryKeys.organisation);
       const { herds } = await getSites(
-        poultryClaimSession.latestPoultryApplication.reference,
+        poultryClaim.latestPoultryApplication.reference,
         request.logger,
       );
 
-      const rows = buildPoultryRows({ poultryClaimSession, organisation, herds });
+      const rows = buildPoultryRows({ poultryClaim, organisation, herds });
 
       const rowsWithData = rows.filter((row) => row.value?.html !== undefined);
 

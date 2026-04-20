@@ -2,7 +2,7 @@ import { poultryClaimRoutes } from "../constants/routes.js";
 import { formatDate, upperFirstLetter } from "./display-helpers.js";
 import { createdHerdRowObject, createImmutableRowObject } from "./generate-answer-rows.js";
 
-export const buildPoultryRows = ({ poultryClaimSession, organisation, herds }) => {
+export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
   const organisationNameRow = createImmutableRowObject(
     "BusinessName",
     upperFirstLetter(organisation.name),
@@ -10,19 +10,17 @@ export const buildPoultryRows = ({ poultryClaimSession, organisation, herds }) =
 
   const dateOfReviewRow = createdHerdRowObject(
     "Date of review",
-    formatDate(poultryClaimSession.dateOfReview),
+    formatDate(poultryClaim.dateOfReview),
     poultryClaimRoutes.dateOfReview,
     "date of review",
   );
 
   const { siteNameRow, cphNumberRow, siteOthersRow } = createSiteInformationRows(
     herds,
-    poultryClaimSession,
+    poultryClaim,
   );
 
-  const filteredPoultryTypes = poultryClaimSession.typesOfPoultry.filter(
-    (type) => type !== "chickens",
-  );
+  const filteredPoultryTypes = poultryClaim.typesOfPoultry.filter((type) => type !== "chickens");
 
   const typesOfPoultryRow = createdHerdRowObject(
     "Species",
@@ -33,21 +31,21 @@ export const buildPoultryRows = ({ poultryClaimSession, organisation, herds }) =
 
   const minimumNumberOfBirdsRow = createdHerdRowObject(
     "Minimum number of birds",
-    upperFirstLetter(poultryClaimSession.minimumNumberOfBirds),
+    upperFirstLetter(poultryClaim.minimumNumberOfBirds),
     poultryClaimRoutes.minimumNumberOfBirds,
     "minimum number of birds",
   );
 
   const vetsNameRow = createdHerdRowObject(
     "Vet's name",
-    upperFirstLetter(poultryClaimSession.vetsName),
+    upperFirstLetter(poultryClaim.vetsName),
     poultryClaimRoutes.vetName,
     "vet's name",
   );
 
   const vetsRCVSRow = createdHerdRowObject(
     "Vet's RCVS number",
-    poultryClaimSession.vetRCVSNumber,
+    poultryClaim.vetRCVSNumber,
     poultryClaimRoutes.vetRcvs,
     "vet's RCVS number",
   );
@@ -57,11 +55,11 @@ export const buildPoultryRows = ({ poultryClaimSession, organisation, herds }) =
     biosecurityUsefulnessRow,
     changesInBiosecurityRow,
     costOfChangesRow,
-  } = createBiosecurityRows(poultryClaimSession);
+  } = createBiosecurityRows(poultryClaim);
 
   const interviewRow = createdHerdRowObject(
     "Evaluation interview",
-    upperFirstLetter(poultryClaimSession.interview),
+    upperFirstLetter(poultryClaim.interview),
     poultryClaimRoutes.interview,
     "evaluation interview",
   );
@@ -108,31 +106,32 @@ export const buildPoultryClaimPayload = (poultryClaimSession) => {
     },
   };
 };
-function createBiosecurityRows(poultryClaimSession) {
+
+function createBiosecurityRows(poultryClaim) {
   const biosecurityAssessmentRow = createdHerdRowObject(
     "Biosecurity assessment",
-    upperFirstLetter(poultryClaimSession.biosecurity),
+    upperFirstLetter(poultryClaim.biosecurity),
     poultryClaimRoutes.biosecurity,
     "biosecurity assessment",
   );
 
   const biosecurityUsefulnessRow = createdHerdRowObject(
     "Biosecurity usefulness",
-    upperFirstLetter(poultryClaimSession.biosecurityUsefulness),
+    upperFirstLetter(poultryClaim.biosecurityUsefulness),
     poultryClaimRoutes.biosecurityUsefulness,
     "biosecurity usefulness",
   );
 
   const changesInBiosecurityRow = createdHerdRowObject(
     "Biosecurity recommended changes",
-    upperFirstLetter(poultryClaimSession.changesInBiosecurity),
+    upperFirstLetter(poultryClaim.changesInBiosecurity),
     poultryClaimRoutes.changesInBiosecurity,
     "biosecurity recommended changes",
   );
 
   const costOfChangesRow = createdHerdRowObject(
     "Expected cost for biosecurity changes",
-    upperFirstLetter(poultryClaimSession.costOfChanges),
+    upperFirstLetter(poultryClaim.costOfChanges),
     poultryClaimRoutes.costOfChanges,
     "expected cost for biosecurity changes",
   );
@@ -144,23 +143,23 @@ function createBiosecurityRows(poultryClaimSession) {
   };
 }
 
-function createSiteInformationRows(herds, poultryClaimSession) {
-  const isExistingSite = herds?.some((herd) => herd.name === poultryClaimSession.herdName);
+function createSiteInformationRows(herds, poultryClaim) {
+  const isExistingSite = herds?.some((herd) => herd.name === poultryClaim.herdName);
 
   const siteNameRow = isExistingSite
-    ? createImmutableRowObject("Site name", poultryClaimSession.herdName)
+    ? createImmutableRowObject("Site name", poultryClaim.herdName)
     : createdHerdRowObject(
         "Site name",
-        poultryClaimSession.herdName,
+        poultryClaim.herdName,
         poultryClaimRoutes.enterSiteName,
         "site name",
       );
 
   const cphNumberRow = isExistingSite
-    ? createImmutableRowObject("Site CPH", poultryClaimSession.herdCph)
+    ? createImmutableRowObject("Site CPH", poultryClaim.herdCph)
     : createdHerdRowObject(
         "Site CPH",
-        poultryClaimSession.herdCph,
+        poultryClaim.herdCph,
         poultryClaimRoutes.enterCphNumber,
         "site CPH",
       );
@@ -168,11 +167,11 @@ function createSiteInformationRows(herds, poultryClaimSession) {
   const siteOthersRow = isExistingSite
     ? createImmutableRowObject(
         "Only site within the SBI",
-        upperFirstLetter(poultryClaimSession.isOnlyHerdOnSbi),
+        upperFirstLetter(poultryClaim.isOnlyHerdOnSbi),
       )
     : createdHerdRowObject(
         "Only site within the SBI",
-        upperFirstLetter(poultryClaimSession.isOnlyHerdOnSbi),
+        upperFirstLetter(poultryClaim.isOnlyHerdOnSbi),
         poultryClaimRoutes.siteOthersOnSbi,
         "only site within the SBI",
       );
