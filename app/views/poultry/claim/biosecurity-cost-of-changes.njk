@@ -1,0 +1,88 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}What do you expect to spend on recommended biosecurity changes? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{%block beforeContent %}
+  {{ 
+    govukBackLink({
+      text: "Back",
+      href: backLink
+    })
+  }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+      <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+        {% if errorMessage %}
+          {{ govukErrorSummary({
+              titleText: "There is a problem",
+              errorList:[{
+                text: errorMessage.text,
+                href: errorMessage.href
+              }]
+            }) 
+          }}
+        {% endif %}
+        <div class="govuk-grid-row">
+          <h1 class="govuk-heading-l">What do you expect to spend on recommended biosecurity changes?</h1>
+          <form method="POST" autocomplete="off" novalidate="novalidate">
+            <input type="hidden" name="crumb" value="{{crumb}}"/>
+            {{ 
+              govukRadios({
+                id: "costOfChanges",
+                name: "costOfChanges",
+                fieldset:{
+                  legend:{
+                    classes: "govuk-fieldset__legend--l"
+                  }
+                }, 
+                hint: {
+                  text: "Please give your best estimate."
+                }, 
+                errorMessage: radioErrorMessage,
+                items: [
+                  {
+                    value:"0-1500",
+                    text: "Up to £1,500",
+                    checked: previousAnswer == "0-1500"
+                  },
+                  {
+                    value:"1500-3000",
+                    text: "£1,500 to £3,000",
+                    checked: previousAnswer == "1500-3000"
+                  },
+                  {
+                    value:"3000-4500",
+                    text: "£3,000 to £4,500",
+                    checked: previousAnswer == "3000-4500"
+                  },
+                  {
+                    value:"over-4500",
+                    text: "Over £4,500",
+                    checked: previousAnswer == "over-4500"
+                  },
+                  {
+                    value:"not-sure",
+                    text: "I am not sure about the cost",
+                    checked: previousAnswer == "not-sure"
+                  },
+                  {
+                    value:"no-intention",
+                    text: "I do not intend to make changes",
+                    checked: previousAnswer == "no-intention"
+                  }
+                ]
+              })
+            }}
+            {{ govukButton({
+                  text: "Continue",
+                  attributes: {id: "btnContinue"},
+                  preventDoubleClick: true
+                })
+            }}
+          </form>
+        </div>
+      </div>
+    {% endblock %}
