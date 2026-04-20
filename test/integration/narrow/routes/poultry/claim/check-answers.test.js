@@ -58,9 +58,9 @@ describe("Poultry check answers test", () => {
         vetsName: "John Smith",
         vetRCVSNumber: "1234567",
         biosecurity: "yes",
-        biosecurityUsefulness: "very useful",
-        changesInBiosecurity: "yes",
-        costOfChanges: "less than £500",
+        biosecurityUsefulness: "very-useful",
+        changesInBiosecurity: "infra-and-control",
+        costOfChanges: "0-1500",
         interview: "yes",
       });
 
@@ -222,9 +222,9 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
-          biosecurityUsefulness: "very useful",
-          changesInBiosecurity: "yes",
-          costOfChanges: "less than £500",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
           interview: "yes",
         });
 
@@ -283,9 +283,9 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
-          biosecurityUsefulness: "very useful",
-          changesInBiosecurity: "yes",
-          costOfChanges: "less than £500",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
           interview: "yes",
         });
 
@@ -344,9 +344,9 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
-          biosecurityUsefulness: "very useful",
-          changesInBiosecurity: "yes",
-          costOfChanges: "less than £500",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
           interview: "yes",
         });
 
@@ -405,9 +405,9 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
-          biosecurityUsefulness: "very useful",
-          changesInBiosecurity: "yes",
-          costOfChanges: "less than £500",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
           interview: "yes",
         });
 
@@ -443,9 +443,9 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
-          biosecurityUsefulness: "very useful",
-          changesInBiosecurity: "yes",
-          costOfChanges: "less than £500",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
           interview: "yes",
         });
 
@@ -583,7 +583,9 @@ describe("Poultry check answers test", () => {
       expect(changesInBiosecurityRow.find(".govuk-summary-list__key").text().trim()).toBe(
         "Biosecurity recommended changes",
       );
-      expect(changesInBiosecurityRow.find(".govuk-summary-list__value").text().trim()).toBe("Yes");
+      expect(changesInBiosecurityRow.find(".govuk-summary-list__value").text().trim()).toBe(
+        "Housing, buildings, infrastructure, and wild bird control",
+      );
       expect(changesInBiosecurityRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
         "/poultry/changes-in-biosecurity",
       );
@@ -605,7 +607,7 @@ describe("Poultry check answers test", () => {
         "Expected cost for biosecurity changes",
       );
       expect(costOfChangesRow.find(".govuk-summary-list__value").text().trim()).toBe(
-        "Less than £500",
+        "Up to £1,500",
       );
       expect(costOfChangesRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
         "/poultry/cost-of-changes",
@@ -688,7 +690,7 @@ describe("Poultry check answers test", () => {
           payload: {
             applicationReference: "POUL-1234-5678",
             reference: "TEMP-CLAIM-REF-123",
-            type: "Review",
+            type: "REVIEW",
             createdBy: "admin",
             data: {
               dateOfReview: "2024-01-15T10:30:00.000Z",
@@ -704,9 +706,9 @@ describe("Poultry check answers test", () => {
               vetsName: "John Smith",
               vetRCVSNumber: "1234567",
               biosecurity: "yes",
-              biosecurityUsefulness: "very useful",
-              changesInBiosecurity: "yes",
-              costOfChanges: "less than £500",
+              biosecurityUsefulness: "very-useful",
+              changesInBiosecurity: "infra-and-control",
+              costOfChanges: "0-1500",
               interview: "yes",
             },
           },

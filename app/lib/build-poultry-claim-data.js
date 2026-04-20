@@ -2,6 +2,32 @@ import { poultryClaimRoutes } from "../constants/routes.js";
 import { formatDate, upperFirstLetter } from "./display-helpers.js";
 import { createdHerdRowObject, createImmutableRowObject } from "./generate-answer-rows.js";
 
+const biosecurityUsefulnessLabels = {
+  "very-useful": "Very useful",
+  "somewhat-useful": "Somewhat useful",
+  "not-very-useful": "Not very useful",
+  "not-useful": "Not useful at all",
+  "not-sure": "I am not sure yet",
+};
+
+const changesInBiosecurityLabels = {
+  "infra-and-control": "Housing, buildings, infrastructure, and wild bird control",
+  "people-and-hygiene": "People, visitors, and hygiene procedures",
+  "movement-and-management": "Bird movements, and flock management",
+  "bird-handling": "Feed, water, bedding, eggs, and waste handling",
+  cleaning: "Cleaning, disinfection, and disease control",
+  "no-recommendation": "No recommendations were made in my review",
+};
+
+const costOfChangesLabels = {
+  "0-1500": "Up to £1,500",
+  "1500-3000": "£1,500 to £3,000",
+  "3000-4500": "£3,000 to £4,500",
+  "over-4500": "Over £4,500",
+  "not-sure": "I am not sure about the cost",
+  "no-intention": "I do not intend to make changes",
+};
+
 export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
   const organisationNameRow = createImmutableRowObject(
     "BusinessName",
@@ -121,21 +147,21 @@ function createBiosecurityRows(poultryClaim) {
 
   const biosecurityUsefulnessRow = createdHerdRowObject(
     "Biosecurity usefulness",
-    upperFirstLetter(poultryClaim.biosecurityUsefulness),
+    biosecurityUsefulnessLabels[poultryClaim.biosecurityUsefulness],
     poultryClaimRoutes.biosecurityUsefulness,
     "biosecurity usefulness",
   );
 
   const changesInBiosecurityRow = createdHerdRowObject(
     "Biosecurity recommended changes",
-    upperFirstLetter(poultryClaim.changesInBiosecurity),
+    changesInBiosecurityLabels[poultryClaim.changesInBiosecurity],
     poultryClaimRoutes.changesInBiosecurity,
     "biosecurity recommended changes",
   );
 
   const costOfChangesRow = createdHerdRowObject(
     "Expected cost for biosecurity changes",
-    upperFirstLetter(poultryClaim.costOfChanges),
+    costOfChangesLabels[poultryClaim.costOfChanges],
     poultryClaimRoutes.costOfChanges,
     "expected cost for biosecurity changes",
   );
