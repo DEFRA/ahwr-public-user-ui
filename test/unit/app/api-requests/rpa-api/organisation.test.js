@@ -58,7 +58,10 @@ describe("organisation API", () => {
       });
 
       expect(result).toBeNull();
-      expect(mockLogger.error).toHaveBeenCalled();
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        { error: expect.any(TypeError) },
+        "Error finding organisation roles",
+      );
     });
   });
   describe("organisationHasPermission", () => {
