@@ -47,7 +47,9 @@ describe("Poultry check answers test", () => {
       .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
       .mockReturnValue({
         latestPoultryApplication: { reference: "POUL-1234-5678" },
+        reference: "TEMP-CLAIM-REF-123",
         dateOfReview: "2024-01-15T10:30:00.000Z",
+        herdId: "site-uuid-1234",
         herdName: "North Farm Site",
         herdCph: "12/345/6789",
         isOnlyHerdOnSbi: "yes",
@@ -209,7 +211,9 @@ describe("Poultry check answers test", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
           dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
           herdName: "Existing Farm Site",
           herdCph: "12/345/6789",
           isOnlyHerdOnSbi: "yes",
@@ -268,7 +272,9 @@ describe("Poultry check answers test", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
           dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
           herdName: "Existing Farm Site",
           herdCph: "98/765/4321",
           isOnlyHerdOnSbi: "yes",
@@ -327,7 +333,9 @@ describe("Poultry check answers test", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
           dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
           herdName: "Existing Farm Site",
           herdCph: "12/345/6789",
           isOnlyHerdOnSbi: "no",
@@ -386,7 +394,9 @@ describe("Poultry check answers test", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
           dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
           herdName: "North Farm Site",
           herdCph: "12/345/6789",
           isOnlyHerdOnSbi: "yes",
@@ -422,7 +432,9 @@ describe("Poultry check answers test", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
           dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
           herdName: "North Farm Site",
           herdCph: "12/345/6789",
           isOnlyHerdOnSbi: "yes",
@@ -657,6 +669,49 @@ describe("Poultry check answers test", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/poultry/confirmation");
       expect(Wreck.post).toHaveBeenCalledTimes(1);
+    });
+
+    test("submits claim with correct payload structure", async () => {
+      const options = {
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      await server.inject(options);
+
+      expect(Wreck.post).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          payload: {
+            applicationReference: "POUL-1234-5678",
+            reference: "TEMP-CLAIM-REF-123",
+            type: "Review",
+            createdBy: "admin",
+            data: {
+              dateOfReview: "2024-01-15T10:30:00.000Z",
+              site: {
+                id: "site-uuid-1234",
+                version: 1,
+                name: "North Farm Site",
+                cph: "12/345/6789",
+                same: "yes",
+              },
+              typesOfPoultry: ["laying hens"],
+              minimumNumberOfBirds: "yes",
+              vetsName: "John Smith",
+              vetRCVSNumber: "1234567",
+              biosecurity: "yes",
+              biosecurityUsefulness: "very useful",
+              changesInBiosecurity: "yes",
+              costOfChanges: "less than £500",
+              interview: "yes",
+            },
+          },
+        }),
+      );
     });
 
     test("sets session data with claim reference after successful submission", async () => {

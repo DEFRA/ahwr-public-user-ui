@@ -82,27 +82,31 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
   ];
 };
 
-export const buildPoultryClaimPayload = (poultryClaimSession) => {
+export const buildPoultryClaimPayload = (poultryClaim) => {
   return {
-    applicationReference: poultryClaimSession.latestPoultryApplication.reference,
+    applicationReference: poultryClaim.latestPoultryApplication.reference,
     // This is a temporal claim reference
-    reference: poultryClaimSession.reference,
-    type: "Review",
+    reference: poultryClaim.reference,
+    type: "REVIEW",
     createdBy: "admin",
     data: {
-      dateOfReview: poultryClaimSession.dateOfReview,
-      siteName: poultryClaimSession.herdName,
-      siteCph: poultryClaimSession.herdCph,
-      isOnlySite: poultryClaimSession.isOnlyHerdOnSbi,
-      typesOfPoultry: poultryClaimSession.typesOfPoultry.filter((type) => type !== "chickens"),
-      minimumNumberOfBirds: poultryClaimSession.minimumNumberOfBirds,
-      vetsName: poultryClaimSession.vetsName,
-      vetRCVSNumber: poultryClaimSession.vetRCVSNumber,
-      biosecurity: poultryClaimSession.biosecurity,
-      biosecurityUsefulness: poultryClaimSession.biosecurityUsefulness,
-      changesInBiosecurity: poultryClaimSession.changesInBiosecurity,
-      costOfChanges: poultryClaimSession.costOfChanges,
-      interview: poultryClaimSession.interview,
+      dateOfReview: poultryClaim.dateOfReview,
+      site: {
+        id: poultryClaim.herdId ?? poultryClaim.tempSiteId,
+        version: 1, // We don't update sites, should have the single version
+        name: poultryClaim.herdName,
+        cph: poultryClaim.herdCph,
+        same: poultryClaim.isOnlyHerdOnSbi,
+      },
+      typesOfPoultry: poultryClaim.typesOfPoultry.filter((type) => type !== "chickens"),
+      minimumNumberOfBirds: poultryClaim.minimumNumberOfBirds,
+      vetsName: poultryClaim.vetsName,
+      vetRCVSNumber: poultryClaim.vetRCVSNumber,
+      biosecurity: poultryClaim.biosecurity,
+      biosecurityUsefulness: poultryClaim.biosecurityUsefulness,
+      changesInBiosecurity: poultryClaim.changesInBiosecurity,
+      costOfChanges: poultryClaim.costOfChanges,
+      interview: poultryClaim.interview,
     },
   };
 };

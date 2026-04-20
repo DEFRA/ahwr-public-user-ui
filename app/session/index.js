@@ -31,6 +31,7 @@ export const sessionKeys = {
     type: "type",
   },
   poultryClaim: {
+    amount: "amount",
     latestPoultryApplication: "latestPoultryApplication",
     dateOfReview: "dateOfReview",
     herdName: "herdName",
@@ -48,6 +49,7 @@ export const sessionKeys = {
     changesInBiosecurity: "changesInBiosecurity",
     costOfChanges: "costOfChanges",
     interview: "interview",
+    tempSiteId: "tempSiteId",
   },
   endemicsClaim: {
     assuranceScheme: "assuranceScheme",
