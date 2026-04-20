@@ -226,4 +226,5 @@ export const poultryClaimViews = {
   biosecurityUsefulness: "poultry/claim/biosecurity-usefulness",
   changesInBiosecurity: "poultry/claim/changes-in-biosecurity",
   costOfChanges: "poultry/claim/biosecurity-cost-of-changes",
+  interview: "poultry/claim/interview",
 };
