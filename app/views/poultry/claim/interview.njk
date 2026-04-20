@@ -1,0 +1,68 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Would you be willing to take part in a short follow-up interview about your experience of this scheme? - {{ serviceName }} - GOV.UK{% endblock %}
+
+{%block beforeContent %}
+  {{ 
+    govukBackLink({
+      text: "Back",
+      href: backLink
+    })
+  }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+      <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+        {% if errorMessage %}
+          {{ govukErrorSummary({
+              titleText: "There is a problem",
+              errorList:[{
+                text: errorMessage.text,
+                href: errorMessage.href
+              }]
+            }) 
+          }}
+        {% endif %}
+        <div class="govuk-grid-row">
+          <h1 class="govuk-heading-l">Would you be willing to take part in a short follow-up interview about your experience of this scheme?</h1>
+          <form method="POST" autocomplete="off" novalidate="novalidate">
+            <input type="hidden" name="crumb" value="{{crumb}}"/>
+            {{ 
+              govukRadios({
+                id: "interview",
+                name: "interview",
+                fieldset:{
+                  legend:{
+                    classes: "govuk-fieldset__legend--l"
+                  }
+                }, 
+                hint: {
+                  text: "An independent evaluation contractor working on behalf of Defra may contact you for a short voluntary interview. This will help us to improve this scheme and other services."
+                }, 
+                errorMessage: radioErrorMessage,
+                items: [
+                  {
+                    value:"yes",
+                    text: "Yes",
+                    checked: previousAnswer == "yes"
+                  },
+                  {
+                    value: "no",
+                    text: "No",
+                    checked: previousAnswer == "no"
+                  }
+                ]
+              })
+            }}
+            {{ govukButton({
+                  text: "Continue",
+                  attributes: {id: "btnContinue"},
+                  preventDoubleClick: true
+                })
+            }}
+          </form>
+        </div>
+      </div>
+    {% endblock %}
