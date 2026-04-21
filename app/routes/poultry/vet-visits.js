@@ -5,6 +5,7 @@ import { poultryClaimRoutes } from "../../constants/routes.js";
 import { refreshApplications } from "../../lib/context-helper.js";
 import nunjucks from "nunjucks";
 import { getClaimsByApplicationReference } from "../../api-requests/claim-api.js";
+import { upperFirstLetter } from "../../lib/display-helpers.js";
 
 const { latestTermsAndConditionsUri } = config;
 
@@ -21,7 +22,9 @@ const createRowsForTable = (claims) => {
       year: "numeric",
     });
 
-    const typesOfPoultry = claim.data.typesOfPoultry.replaceAll(",", ", ");
+    const typesOfPoultry = upperFirstLetter(
+      claim.data.typesOfPoultry.join(", ").replaceAll("-", " "),
+    );
 
     return [
       {
