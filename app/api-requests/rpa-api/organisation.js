@@ -38,10 +38,7 @@ export const getOrganisationRole = ({ organisationAuthorisation, personId, logge
       return prEntry.personId === personId;
     })?.role;
   } catch (error) {
-    logger.error(
-      { error: { message: error.message, stack: error.stack } },
-      "Error finding organisation roles",
-    );
+    logger.error({ error }, "Error finding organisation roles");
     return null;
   }
 };
