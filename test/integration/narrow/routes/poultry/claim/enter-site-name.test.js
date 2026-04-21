@@ -67,14 +67,14 @@ describe("/poultry/enter-site-name", () => {
   };
 
   describe("GET", () => {
-    test("returns 200 and displays page correctly", async () => {
+    test("returns 200 and displays page correctly with previous claims", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           reference: "TEMP-6GSE-PIR8",
-          herds: [
+          previousClaims: [
             {
-              id: "1",
+              herd: { id: "1", name: "Farm 1", cph: "12/345/6789" },
             },
           ],
         });
@@ -94,9 +94,9 @@ describe("/poultry/enter-site-name", () => {
         .mockReturnValue({
           reference: "TEMP-6GSE-PIR8",
           herdName: "Commercial Herd",
-          herds: [
+          previousClaims: [
             {
-              id: "1",
+              herd: { id: "1", name: "Farm 1", cph: "12/345/6789" },
             },
           ],
         });
@@ -112,12 +112,12 @@ describe("/poultry/enter-site-name", () => {
       expect($("#herdName").val()).toBe("Commercial Herd");
     });
 
-    test("returns 200 with back link to date of review when no previous sites", async () => {
+    test("returns 200 with back link to date of review when no previous claims", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           reference: "TEMP-6GSE-PIR8",
-          herds: [],
+          previousClaims: [],
         });
 
       const res = await server.inject({ method: "GET", url, auth });
@@ -188,7 +188,7 @@ describe("/poultry/enter-site-name", () => {
     test("displays errors when site name is missing", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: 1 }],
+        previousClaims: [{ herd: { id: "1", name: "Farm 1", cph: "12/345/6789" } }],
       });
 
       const res = await server.inject({
@@ -212,7 +212,7 @@ describe("/poultry/enter-site-name", () => {
     test("displays errors when site name is less than 2 characters", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: 1 }],
+        previousClaims: [{ herd: { id: "1", name: "Farm 1", cph: "12/345/6789" } }],
       });
 
       const res = await server.inject({
@@ -236,7 +236,7 @@ describe("/poultry/enter-site-name", () => {
     test("displays errors when site name is greater than 30 characters", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: 1 }],
+        previousClaims: [{ herd: { id: "1", name: "Farm 1", cph: "12/345/6789" } }],
       });
 
       const res = await server.inject({
@@ -260,7 +260,7 @@ describe("/poultry/enter-site-name", () => {
     test("displays errors when site name contains an invalid character", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: 1 }],
+        previousClaims: [{ herd: { id: "1", name: "Farm 1", cph: "12/345/6789" } }],
       });
 
       const res = await server.inject({
@@ -286,11 +286,12 @@ describe("/poultry/enter-site-name", () => {
     test("displays errors when site name has already been used in a previous claim", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: 1 }],
         previousClaims: [
           {
             herd: {
+              id: "1",
               name: "Commercial Herd",
+              cph: "12/345/6789",
             },
           },
         ],
@@ -316,9 +317,10 @@ describe("/poultry/enter-site-name", () => {
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
-    test("displays errors with back link to date of review when no previous sites", async () => {
+    test("displays errors with back link to date of review when no previous claims", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
+        previousClaims: [],
       });
 
       const res = await server.inject({

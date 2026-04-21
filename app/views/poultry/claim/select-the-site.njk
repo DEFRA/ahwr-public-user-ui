@@ -97,7 +97,7 @@
         {% else %}
           {% set siteItems = [] %}
           {% for item in sites %}
-            {% set siteItems = siteItems.concat([{ value: item.name, text: item.cph, checked: siteSelected == item.id }]) %}
+            {% set siteItems = siteItems.concat([{ value: item.id, text: item.name, hint: {text: "CPH: " ~ item.cph}, checked: siteSelected == item.id }]) %}
           {% endfor %}
           {% set siteItems = siteItems.concat([{ divider: "or" }]) %}
           {% set siteItems = siteItems.concat([{ value: radioValueNewSite, text: "I am claiming for a different site ", checked: siteSelected === radioValueNewSite }]) %}

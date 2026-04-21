@@ -10,17 +10,17 @@ import {
 import HttpStatus from "http-status-codes";
 import { getTempSiteId } from "../../../lib/get-temp-herd-id.js";
 
-const getBackLink = (herds) =>
-  herds?.length ? poultryClaimRoutes.selectTheSite : poultryClaimRoutes.dateOfReview;
+const getBackLink = (previousClaims) =>
+  previousClaims?.length ? poultryClaimRoutes.selectTheSite : poultryClaimRoutes.dateOfReview;
 
 const getHandler = {
   method: "GET",
   path: poultryClaimRoutes.enterSiteName,
   options: {
     handler: async (request, h) => {
-      const { herdName, herds } = getSessionData(request, sessionEntryKeys.poultryClaim);
+      const { herdName, previousClaims } = getSessionData(request, sessionEntryKeys.poultryClaim);
       return h.view(poultryClaimViews.enterSiteName, {
-        backLink: getBackLink(herds),
+        backLink: getBackLink(previousClaims),
         herdName,
       });
     },
@@ -60,7 +60,7 @@ const postHandler = {
       }),
       failAction: async (request, h, error) => {
         request.logger.error({ error });
-        const { herds } = getSessionData(request, sessionEntryKeys.poultryClaim);
+        const { previousClaims } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
         const errorType = error.details[0].type;
         const errorText = isSiteNameEmpty(errorType)
@@ -74,7 +74,7 @@ const postHandler = {
               text: errorText,
               href: "#herdName",
             },
-            backLink: getBackLink(herds),
+            backLink: getBackLink(previousClaims),
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -82,7 +82,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdName } = request.payload;
-      const { herdId, herdVersion, previousClaims, herds } = getSessionData(
+      const { herdId, herdVersion, previousClaims } = getSessionData(
         request,
         sessionEntryKeys.poultryClaim,
       );
@@ -97,7 +97,7 @@ const postHandler = {
               text: ERROR_MESSAGES.NAME_UNIQUE,
               href: "#herdName",
             },
-            backLink: getBackLink(herds),
+            backLink: getBackLink(previousClaims),
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();

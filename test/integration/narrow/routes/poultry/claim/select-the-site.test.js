@@ -151,6 +151,48 @@ describe("/poultry/select-the-site", () => {
       expect($("title").text()).toContain("Select the site you are claiming for");
     });
 
+    test("displays CPH prefix in radio button hints for multiple sites", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+            {
+              herd: {
+                id: "herd-456",
+                name: "Second Farm",
+                cph: "98/765/4321",
+              },
+              data: {
+                typesOfPoultry: "Broilers",
+                dateOfReview: "2024-02-10",
+              },
+              createdAt: "2024-02-15",
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      const hints = $(".govuk-radios__hint");
+      expect(hints.first().text()).toContain("CPH: 12/345/6789");
+      expect(hints.eq(1).text()).toContain("CPH: 98/765/4321");
+    });
+
     test("returns 200 with empty sites when no previous claims", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
