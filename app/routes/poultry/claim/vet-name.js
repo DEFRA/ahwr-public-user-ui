@@ -40,7 +40,7 @@ const postHandler = {
         return h
           .view(poultryClaimViews.vetName, {
             ...request.payload,
-            backLink: poultryClaimRoutes.minimumNumberOfAnimals,
+            backLink: poultryClaimRoutes.minimumNumberOfBirds,
             errorMessage: {
               text: error.details[0].message,
               href: `#${sessionKeys.poultryClaim.vetsName}`,
