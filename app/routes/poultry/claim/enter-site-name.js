@@ -8,6 +8,7 @@ import {
   emitHerdEvent,
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
+import { getTempSiteId } from "../../../lib/get-temp-herd-id.js";
 
 const getBackLink = (herds) =>
   herds?.length ? poultryClaimRoutes.selectTheSite : poultryClaimRoutes.dateOfReview;
@@ -86,6 +87,8 @@ const postHandler = {
         sessionEntryKeys.poultryClaim,
       );
 
+      const siteId = herdId ?? getTempSiteId(request);
+
       if (previousClaims?.some((claim) => claim.herd?.name === herdName.trim())) {
         return h
           .view(poultryClaimViews.enterSiteName, {
@@ -113,7 +116,7 @@ const postHandler = {
         type: "herd-name",
         message: "Herd name collected from user",
         data: {
-          herdId,
+          herdId: siteId,
           herdVersion,
           herdName,
         },

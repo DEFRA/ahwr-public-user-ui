@@ -16,3 +16,15 @@ export const getTempHerdId = async (request, tempHerdIdFromSession) => {
   );
   return tempHerdId;
 };
+
+export const getTempSiteId = async (request) => {
+  const tempSiteId = uuidv4();
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.tempSiteId,
+    tempSiteId,
+    { shouldEmitEvent: false },
+  );
+  return tempSiteId;
+};

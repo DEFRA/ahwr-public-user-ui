@@ -21,7 +21,7 @@ const getHandler = {
       );
       return h.view(poultryClaimViews.vetName, {
         vetsName,
-        backLink: poultryClaimRoutes.minimumNumberOfAnimals,
+        backLink: poultryClaimRoutes.minimumNumberOfBirds,
       });
     },
   },

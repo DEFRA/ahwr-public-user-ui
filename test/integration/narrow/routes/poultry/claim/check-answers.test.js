@@ -47,7 +47,9 @@ describe("Poultry check answers test", () => {
       .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
       .mockReturnValue({
         latestPoultryApplication: { reference: "POUL-1234-5678" },
+        reference: "TEMP-CLAIM-REF-123",
         dateOfReview: "2024-01-15T10:30:00.000Z",
+        herdId: "site-uuid-1234",
         herdName: "North Farm Site",
         herdCph: "12/345/6789",
         isOnlyHerdOnSbi: "yes",
@@ -56,9 +58,9 @@ describe("Poultry check answers test", () => {
         vetsName: "John Smith",
         vetRCVSNumber: "1234567",
         biosecurity: "yes",
-        biosecurityUsefulness: "very useful",
-        changesInBiosecurity: "yes",
-        costOfChanges: "less than £500",
+        biosecurityUsefulness: "very-useful",
+        changesInBiosecurity: "infra-and-control",
+        costOfChanges: "0-1500",
         interview: "yes",
       });
 
@@ -209,7 +211,9 @@ describe("Poultry check answers test", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
           dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
           herdName: "Existing Farm Site",
           herdCph: "12/345/6789",
           isOnlyHerdOnSbi: "yes",
@@ -218,9 +222,9 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
-          biosecurityUsefulness: "very useful",
-          changesInBiosecurity: "yes",
-          costOfChanges: "less than £500",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
           interview: "yes",
         });
 
@@ -268,7 +272,9 @@ describe("Poultry check answers test", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
           dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
           herdName: "Existing Farm Site",
           herdCph: "98/765/4321",
           isOnlyHerdOnSbi: "yes",
@@ -277,9 +283,9 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
-          biosecurityUsefulness: "very useful",
-          changesInBiosecurity: "yes",
-          costOfChanges: "less than £500",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
           interview: "yes",
         });
 
@@ -327,7 +333,9 @@ describe("Poultry check answers test", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
           dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
           herdName: "Existing Farm Site",
           herdCph: "12/345/6789",
           isOnlyHerdOnSbi: "no",
@@ -336,9 +344,9 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
-          biosecurityUsefulness: "very useful",
-          changesInBiosecurity: "yes",
-          costOfChanges: "less than £500",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
           interview: "yes",
         });
 
@@ -386,7 +394,9 @@ describe("Poultry check answers test", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
           dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
           herdName: "North Farm Site",
           herdCph: "12/345/6789",
           isOnlyHerdOnSbi: "yes",
@@ -395,9 +405,9 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
-          biosecurityUsefulness: "very useful",
-          changesInBiosecurity: "yes",
-          costOfChanges: "less than £500",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
           interview: "yes",
         });
 
@@ -422,7 +432,9 @@ describe("Poultry check answers test", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
           dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
           herdName: "North Farm Site",
           herdCph: "12/345/6789",
           isOnlyHerdOnSbi: "yes",
@@ -431,9 +443,9 @@ describe("Poultry check answers test", () => {
           vetsName: "John Smith",
           vetRCVSNumber: "1234567",
           biosecurity: "yes",
-          biosecurityUsefulness: "very useful",
-          changesInBiosecurity: "yes",
-          costOfChanges: "less than £500",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
           interview: "yes",
         });
 
@@ -571,7 +583,9 @@ describe("Poultry check answers test", () => {
       expect(changesInBiosecurityRow.find(".govuk-summary-list__key").text().trim()).toBe(
         "Biosecurity recommended changes",
       );
-      expect(changesInBiosecurityRow.find(".govuk-summary-list__value").text().trim()).toBe("Yes");
+      expect(changesInBiosecurityRow.find(".govuk-summary-list__value").text().trim()).toBe(
+        "Housing, buildings, infrastructure, and wild bird control",
+      );
       expect(changesInBiosecurityRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
         "/poultry/changes-in-biosecurity",
       );
@@ -593,7 +607,7 @@ describe("Poultry check answers test", () => {
         "Expected cost for biosecurity changes",
       );
       expect(costOfChangesRow.find(".govuk-summary-list__value").text().trim()).toBe(
-        "Less than £500",
+        "Up to £1,500",
       );
       expect(costOfChangesRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
         "/poultry/cost-of-changes",
@@ -657,6 +671,93 @@ describe("Poultry check answers test", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/poultry/confirmation");
       expect(Wreck.post).toHaveBeenCalledTimes(1);
+    });
+
+    test("submits claim with correct payload structure", async () => {
+      const options = {
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      await server.inject(options);
+
+      expect(Wreck.post).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          payload: {
+            applicationReference: "POUL-1234-5678",
+            reference: "TEMP-CLAIM-REF-123",
+            type: "REVIEW",
+            createdBy: "admin",
+            data: {
+              dateOfReview: "2024-01-15T10:30:00.000Z",
+              site: {
+                id: "site-uuid-1234",
+                version: 1,
+                name: "North Farm Site",
+                cph: "12/345/6789",
+                same: "yes",
+              },
+              typesOfPoultry: ["laying hens"],
+              minimumNumberOfBirds: "yes",
+              vetsName: "John Smith",
+              vetRCVSNumber: "1234567",
+              biosecurity: "yes",
+              biosecurityUsefulness: "very-useful",
+              changesInBiosecurity: "infra-and-control",
+              costOfChanges: "0-1500",
+              interview: "yes",
+            },
+          },
+        }),
+      );
+    });
+
+    test("omits chickens from typesOfPoultry in claim payload", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
+          dateOfReview: "2024-01-15T10:30:00.000Z",
+          herdId: "site-uuid-1234",
+          herdName: "North Farm Site",
+          herdCph: "12/345/6789",
+          isOnlyHerdOnSbi: "yes",
+          typesOfPoultry: ["chickens", "laying hens", "broilers"],
+          minimumNumberOfBirds: "yes",
+          vetsName: "John Smith",
+          vetRCVSNumber: "1234567",
+          biosecurity: "yes",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
+          interview: "yes",
+        });
+
+      const options = {
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      await server.inject(options);
+
+      expect(Wreck.post).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          payload: expect.objectContaining({
+            data: expect.objectContaining({
+              typesOfPoultry: ["laying hens", "broilers"],
+            }),
+          }),
+        }),
+      );
     });
 
     test("sets session data with claim reference after successful submission", async () => {
