@@ -3,6 +3,13 @@ import { getSessionData, sessionEntryKeys } from "../../../session/index.js";
 
 const radioValueNewSite = "NEW_SITE";
 
+const formatDate = (date) =>
+  new Date(date).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
 const getUniqueSites = (previousClaims) => {
   if (!previousClaims) return [];
 
@@ -19,6 +26,9 @@ const getUniqueSites = (previousClaims) => {
       id: claim.herd.id,
       name: claim.herd.name,
       cph: claim.herd.cph,
+      species: claim.data?.typesOfPoultry,
+      lastVisitDate: claim.data?.dateOfReview ? formatDate(claim.data.dateOfReview) : undefined,
+      claimDate: claim.createdAt ? formatDate(claim.createdAt) : undefined,
     }));
 };
 
@@ -30,23 +40,46 @@ const getHandler = {
 
     const previousSites = getUniqueSites(previousClaims);
 
-    return h.view(poultryClaimViews.selectTheSite, {
-      backLink: poultryClaimRoutes.dateOfReview,
-      pageTitleText:
-        previousSites.length > 1
-          ? `Select the site you are claiming for`
-          : `Is this the same site you have previously claimed for?`,
-      sites: previousSites,
-      radioValueNewSite,
-      siteSelected,
-    });
+    if (previousSites.length > 1) {
+      return h.view(poultryClaimViews.selectTheSite, {
+        backLink: poultryClaimRoutes.dateOfReview,
+        pageTitleText: `Select the site you are claiming for`,
+        sites: previousSites,
+        radioValueNewSite,
+        siteSelected,
+      });
+    } else {
+      const site = previousSites[0];
+      return h.view(poultryClaimViews.selectTheSite, {
+        backLink: poultryClaimRoutes.dateOfReview,
+        pageTitleText: `Is this the same site you have previously claimed for?`,
+        id: site?.id,
+        name: site?.name,
+        sites: previousSites,
+        species: site?.species,
+        lastVisitDate: site?.lastVisitDate,
+        claimDate: site?.claimDate,
+        cphNumber: site?.cph,
+        radioValueNewSite,
+        siteSelected,
+      });
+    }
   },
 };
 
 const postHandler = {
   method: "POST",
   path: poultryClaimRoutes.selectTheSite,
-  handler: async (_request, _h) => {},
+  handler: async (request, h) => {
+    const { siteSelected } = request.payload;
+
+    if (siteSelected === radioValueNewSite) {
+      return h.redirect(poultryClaimRoutes.enterSiteName);
+    }
+
+    // TODO: Handle selecting an existing site
+    return h.redirect(poultryClaimRoutes.enterSiteName);
+  },
 };
 
 export const poultrySelectTheSiteHandlers = [getHandler, postHandler];

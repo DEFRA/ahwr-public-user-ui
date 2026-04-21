@@ -45,7 +45,7 @@
                     text: "Site name"
                   },
                   value: {
-                    text: sites[0].name
+                    text: name
                   }
                 },
                 {
@@ -82,9 +82,9 @@
               errorMessage: errorMessage,
               items: [
                 {
-                  value: sites[0].id,
+                  value: site.id,
                   text: "Yes, it's the same",
-                  checked: siteSelected == sites[0].id
+                  checked: siteSelected == site.id
                 },
                 {
                   value: radioValueNewSite,

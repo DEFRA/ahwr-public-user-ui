@@ -1,0 +1,474 @@
+import * as cheerio from "cheerio";
+import { when } from "jest-when";
+import { createServer } from "../../../../../../app/server.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+} from "../../../../../../app/session/index.js";
+import { config } from "../../../../../../app/config/index.js";
+import { getCrumbs } from "../../../../../utils/get-crumbs.js";
+
+const auth = { credentials: { reference: "1111", sbi: "111111111" }, strategy: "cookie" };
+const url = "/poultry/select-the-site";
+
+jest.mock("../../../../../../app/session/index.js");
+
+describe("/poultry/select-the-site", () => {
+  let server;
+
+  beforeAll(async () => {
+    config.poultry.enabled = true;
+    server = await createServer();
+    await server.initialize();
+  });
+
+  afterAll(async () => {
+    await server.stop();
+  });
+
+  beforeEach(() => {
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.latestPoultryApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  describe("GET", () => {
+    test("returns 200 and displays page correctly with single previous site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-review");
+      expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
+    });
+
+    test("displays species, last visit date, and claim date for single site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.payload).toContain("Main Farm");
+      expect(res.payload).toContain("12/345/6789");
+      expect(res.payload).toContain("Layers");
+      expect(res.payload).toContain("15 March 2024");
+      expect(res.payload).toContain("20 March 2024");
+    });
+
+    test("returns 200 and displays page correctly with multiple previous sites", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+            {
+              herd: {
+                id: "herd-456",
+                name: "Second Farm",
+                cph: "98/765/4321",
+              },
+              data: {
+                typesOfPoultry: "Broilers",
+                dateOfReview: "2024-02-10",
+              },
+              createdAt: "2024-02-15",
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-review");
+      expect($("title").text()).toContain("Select the site you are claiming for");
+    });
+
+    test("returns 200 with empty sites when no previous claims", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+    });
+
+    test("returns 200 with empty sites when previousClaims is undefined", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: undefined,
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+    });
+
+    test("filters out claims without herd name", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+            {
+              herd: {
+                id: "herd-456",
+                cph: "98/765/4321",
+              },
+              data: {
+                typesOfPoultry: "Broilers",
+              },
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
+    });
+
+    test("filters out claims without herd cph", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+            {
+              herd: {
+                id: "herd-456",
+                name: "Second Farm",
+              },
+              data: {
+                typesOfPoultry: "Broilers",
+              },
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
+    });
+
+    test("returns unique sites when duplicate name/cph combinations exist", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+            {
+              herd: {
+                id: "herd-456",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-01-10",
+              },
+              createdAt: "2024-01-15",
+            },
+            {
+              herd: {
+                id: "herd-789",
+                name: "Second Farm",
+                cph: "98/765/4321",
+              },
+              data: {
+                typesOfPoultry: "Broilers",
+                dateOfReview: "2024-02-10",
+              },
+              createdAt: "2024-02-15",
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Select the site you are claiming for");
+    });
+
+    test("filters out claims without herd object", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+            {
+              data: { typesOfPoultry: "Broilers" },
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
+    });
+
+    test("preserves previously selected site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: "herd-123",
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+    });
+
+    test("handles claims with missing data fields gracefully", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
+      expect(res.payload).toContain("Main Farm");
+      expect(res.payload).toContain("12/345/6789");
+    });
+  });
+
+  describe("POST", () => {
+    let crumb;
+
+    beforeAll(async () => {
+      crumb = await getCrumbs(server);
+    });
+
+    test("redirects to enter-site-name when selecting new site from single site view", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+          ],
+        });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb, siteSelected: "NEW_SITE" },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/poultry/enter-site-name");
+    });
+
+    test("redirects to enter-site-name when selecting new site from multiple sites view", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+            {
+              herd: {
+                id: "herd-456",
+                name: "Second Farm",
+                cph: "98/765/4321",
+              },
+              data: {
+                typesOfPoultry: "Broilers",
+                dateOfReview: "2024-02-10",
+              },
+              createdAt: "2024-02-15",
+            },
+          ],
+        });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb, siteSelected: "NEW_SITE" },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/poultry/enter-site-name");
+    });
+  });
+});
