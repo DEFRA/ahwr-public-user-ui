@@ -15,6 +15,10 @@ const chickenSubtypes = [
   TYPE_OF_POULTRY.BREEDERS,
 ];
 
+function getChickenSelections(typesOfChicken) {
+  return Array.isArray(typesOfChicken) ? typesOfChicken : [typesOfChicken];
+}
+
 const getHandler = {
   method: "GET",
   path: poultryClaimRoutes.selectPoultryType,
@@ -63,11 +67,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { typesOfPoultry, typesOfChicken } = request.payload;
       const poultryArray = Array.isArray(typesOfPoultry) ? typesOfPoultry : [typesOfPoultry];
-      const chickenArray = typesOfChicken
-        ? Array.isArray(typesOfChicken)
-          ? typesOfChicken
-          : [typesOfChicken]
-        : [];
+      const chickenArray = typesOfChicken ? getChickenSelections(typesOfChicken) : [];
       const hasChicken = poultryArray.includes("chickens");
 
       if (hasChicken && chickenArray.length === 0) {
