@@ -58,22 +58,20 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typesOfPoultry, typesOfChicken } = request.payload;
-      const poultryArray = Array.isArray(typesOfPoultry) ? typesOfPoultry : [typesOfPoultry];
-      const chickenArray = Array.isArray(typesOfChicken) ? typesOfChicken : [typesOfChicken];
-      const hasChicken = poultryArray.includes("chickens");
+      const hasChicken = typesOfPoultry.includes("chickens");
 
-      if (hasChicken && chickenArray.length === 0) {
+      if (hasChicken && typesOfChicken.length === 0) {
         return h
           .view(poultryClaimViews.selectPoultryType, {
             backLink: poultryClaimRoutes.siteOthersOnSbi,
             errorMessageMain: errorMessage,
             errorMessageChicken: errorMessage,
-            typesOfPoultry: poultryArray,
+            typesOfPoultry,
           })
           .code(HttpStatus.BAD_REQUEST);
       }
 
-      const combinedTypes = [...poultryArray, ...chickenArray];
+      const combinedTypes = [...typesOfPoultry, ...typesOfChicken];
       await setSessionData(
         request,
         sessionEntryKeys.poultryClaim,
