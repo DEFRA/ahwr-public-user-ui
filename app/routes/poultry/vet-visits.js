@@ -136,7 +136,7 @@ export const poultryVetVisitsHandlers = [
 
         return h.view("poultry/vet-visits", {
           attachedToMultipleBusinesses,
-          claimJourneyStartPointUri: poultryClaimRoutes.dateOfReview,
+          claimJourneyStartPointUri: poultryClaimRoutes.dateOfReview + "?journey=new",
           ...organisation,
           reference: application.reference,
           downloadedDocument,

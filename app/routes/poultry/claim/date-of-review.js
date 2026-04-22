@@ -45,16 +45,20 @@ const getHandler = {
   path: poultryClaimRoutes.dateOfReview,
   options: {
     handler: async (request, h) => {
+      const { journey } = request.query;
+      if (journey === "new") {
+        const organisation = getSessionData(request, sessionEntryKeys.organisation);
+        const { latestPoultryApplication } = await refreshApplications(organisation.sbi, request);
+
+        // reset the session as this is the entry point - if user goes all the way back
+        // to this point to the date of review, we don't keep all their answers
+        await resetPoultryClaimSession(request, latestPoultryApplication.reference);
+      }
+
       const { dateOfReview: dateOfReviewRaw } = getSessionData(request, poultryClaimEntry);
 
       const dateOfReview = parseDateOfReview(dateOfReviewRaw);
 
-      const organisation = getSessionData(request, sessionEntryKeys.organisation);
-      const { latestPoultryApplication } = await refreshApplications(organisation.sbi, request);
-
-      // reset the session as this is the entry point - if user goes all the way back
-      // to this point to the date of review, we don't keep all their answers
-      await resetPoultryClaimSession(request, latestPoultryApplication.reference);
       return h.view(poultryClaimViews.dateOfReview, {
         dateOfReview,
         backLink: dashboardRoutes.poultryManageYourClaims,
