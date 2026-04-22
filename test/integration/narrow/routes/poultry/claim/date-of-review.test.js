@@ -159,13 +159,13 @@ describe("GET /poultry/date-of-review", () => {
   });
 
   test("calls refreshApplications with organisation sbi", async () => {
-    await server.inject(options);
+    await server.inject({ ...options, url: url + "?journey=new" });
 
     expect(refreshApplications).toHaveBeenCalledWith(mockOrganisation.sbi, expect.anything());
   });
 
   test("calls resetPoultryClaimSession with application reference", async () => {
-    await server.inject(options);
+    await server.inject({ ...options, url: url + "?journey=new" });
 
     expect(resetPoultryClaimSession).toHaveBeenCalledWith(
       expect.anything(),
