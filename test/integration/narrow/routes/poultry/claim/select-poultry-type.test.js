@@ -114,15 +114,8 @@ describe("/poultry/select-poultry-type", () => {
         auth,
         payload: {
           crumb,
-          typesOfPoultry: [
-            "chickens",
-            "broilers",
-            "laying-hens",
-            "breeders",
-            "ducks",
-            "turkeys",
-            "geese",
-          ],
+          typesOfPoultry: ["chickens", "ducks", "turkeys", "geese"],
+          typesOfChicken: ["broilers", "laying-hens", "breeders"],
         },
         headers: { cookie: `crumb=${crumb}` },
       });
@@ -133,7 +126,7 @@ describe("/poultry/select-poultry-type", () => {
         expect.anything(),
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.typesOfPoultry,
-        ["chickens", "broilers", "laying-hens", "breeders", "ducks", "turkeys", "geese"],
+        ["chickens", "ducks", "turkeys", "geese", "broilers", "laying-hens", "breeders"],
       );
     });
 
@@ -148,7 +141,8 @@ describe("/poultry/select-poultry-type", () => {
         auth,
         payload: {
           crumb,
-          typesOfPoultry: ["chickens", "broilers"],
+          typesOfPoultry: "chickens",
+          typesOfChicken: "broilers",
         },
         headers: { cookie: `crumb=${crumb}` },
       });
@@ -182,7 +176,7 @@ describe("/poultry/select-poultry-type", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-error-summary__list").text()).toContain("Select at least one option");
-      expect($("#typesOfPoultry-error").text()).toContain("Select at least one option");
+      expect($("#typesOfChicken-error").text()).toContain("Select at least one option");
       expect(setSessionData).not.toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -210,7 +204,7 @@ describe("/poultry/select-poultry-type", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-error-summary__list").text()).toContain("Select at least one option");
-      expect($("#typesOfPoultry-error").text()).toContain("Select at least one option");
+      expect($("#typesOfChicken-error").text()).toContain("Select at least one option");
       expect(setSessionData).not.toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,

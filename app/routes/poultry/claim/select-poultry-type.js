@@ -7,17 +7,27 @@ import {
   sessionKeys,
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
+import { TYPE_OF_POULTRY } from "ffc-ahwr-common-library";
+
+const chickenSubtypes = new Set([
+  TYPE_OF_POULTRY.BROILERS,
+  TYPE_OF_POULTRY.LAYING,
+  TYPE_OF_POULTRY.BREEDERS,
+]);
 
 const getHandler = {
   method: "GET",
   path: poultryClaimRoutes.selectPoultryType,
   options: {
     handler: async (request, h) => {
-      const typesOfPoultry =
+      const storedTypes =
         getSessionData(request, sessionEntryKeys.poultryClaim)?.typesOfPoultry ?? [];
+      const typesOfPoultry = storedTypes.filter((t) => !chickenSubtypes.has(t));
+      const typesOfChicken = storedTypes.filter((t) => chickenSubtypes.has(t));
       return h.view(poultryClaimViews.selectPoultryType, {
         backLink: poultryClaimRoutes.siteOthersOnSbi,
         typesOfPoultry,
+        typesOfChicken,
       });
     },
   },
@@ -31,9 +41,8 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        typesOfPoultry: Joi.alternatives()
-          .try(Joi.string(), Joi.array().items(Joi.string()).min(1))
-          .required(),
+        typesOfPoultry: Joi.array().items(Joi.string()).min(1).single().required(),
+        typesOfChicken: Joi.array().items(Joi.string()).min(1).single().optional().default([]),
       }),
       failAction: async (request, h, error) => {
         request.logger.error({ error });
@@ -48,30 +57,26 @@ const postHandler = {
       },
     },
     handler: async (request, h) => {
-      const { typesOfPoultry } = request.payload;
-      const typesArray = Array.isArray(typesOfPoultry) ? typesOfPoultry : [typesOfPoultry];
-      const hasChicken = typesArray.includes("chickens");
-      const noSubtypes =
-        typesArray.filter(
-          (entry) => entry === "broilers" || entry === "laying-hens" || entry === "breeders",
-        ).length === 0;
+      const { typesOfPoultry, typesOfChicken } = request.payload;
+      const hasChicken = typesOfPoultry.includes("chickens");
 
-      if (hasChicken && noSubtypes) {
+      if (hasChicken && typesOfChicken.length === 0) {
         return h
           .view(poultryClaimViews.selectPoultryType, {
             backLink: poultryClaimRoutes.siteOthersOnSbi,
             errorMessageMain: errorMessage,
             errorMessageChicken: errorMessage,
-            typesOfPoultry: typesArray,
+            typesOfPoultry,
           })
           .code(HttpStatus.BAD_REQUEST);
       }
 
+      const combinedTypes = [...typesOfPoultry, ...typesOfChicken];
       await setSessionData(
         request,
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.typesOfPoultry,
-        typesArray,
+        combinedTypes,
       );
       return h.redirect(poultryClaimRoutes.minimumNumberOfBirds);
     },
