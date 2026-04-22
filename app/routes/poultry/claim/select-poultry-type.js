@@ -41,13 +41,8 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        typesOfPoultry: Joi.alternatives()
-          .try(Joi.string(), Joi.array().items(Joi.string()).min(1))
-          .required(),
-        typesOfChicken: Joi.alternatives()
-          .try(Joi.string(), Joi.array().items(Joi.string()).min(1))
-          .optional()
-          .default([]),
+        typesOfPoultry: Joi.array().items(Joi.string()).min(1).single().required(),
+        typesOfChicken: Joi.array().items(Joi.string()).min(1).single().optional().default([]),
       }),
       failAction: async (request, h, error) => {
         request.logger.error({ error });
