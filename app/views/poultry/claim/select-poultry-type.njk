@@ -26,23 +26,23 @@
 
         {% set chickenSubTypes %}
           {{ govukCheckboxes({
-            name: "typesOfPoultry",
+            name: "typesOfChicken",
             errorMessage: errorMessageChicken,
             items: [
               {
                 value: "broilers",
                 text: "Broilers",
-                checked: typesOfPoultry and "broilers" in typesOfPoultry
+                checked: typesOfChicken and "broilers" in typesOfChicken
               },
               {
                 value: "laying-hens",
                 text: "Laying hens",
-                checked: typesOfPoultry and "laying-hens" in typesOfPoultry
+                checked: typesOfChicken and "laying-hens" in typesOfChicken
               },
               {
                 value: "breeders",
                 text: "Breeders",
-                checked: typesOfPoultry and "breeders" in typesOfPoultry
+                checked: typesOfChicken and "breeders" in typesOfChicken
               }
             ]
           }) }}

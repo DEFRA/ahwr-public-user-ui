@@ -7,17 +7,27 @@ import {
   sessionKeys,
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
+import { TYPE_OF_POULTRY } from "ffc-ahwr-common-library";
+
+const chickenSubtypes = [
+  TYPE_OF_POULTRY.BROILERS,
+  TYPE_OF_POULTRY.LAYING,
+  TYPE_OF_POULTRY.BREEDERS,
+];
 
 const getHandler = {
   method: "GET",
   path: poultryClaimRoutes.selectPoultryType,
   options: {
     handler: async (request, h) => {
-      const typesOfPoultry =
+      const storedTypes =
         getSessionData(request, sessionEntryKeys.poultryClaim)?.typesOfPoultry ?? [];
+      const typesOfPoultry = storedTypes.filter((t) => !chickenSubtypes.includes(t));
+      const typesOfChicken = storedTypes.filter((t) => chickenSubtypes.includes(t));
       return h.view(poultryClaimViews.selectPoultryType, {
         backLink: poultryClaimRoutes.siteOthersOnSbi,
         typesOfPoultry,
+        typesOfChicken,
       });
     },
   },
@@ -34,6 +44,9 @@ const postHandler = {
         typesOfPoultry: Joi.alternatives()
           .try(Joi.string(), Joi.array().items(Joi.string()).min(1))
           .required(),
+        typesOfChicken: Joi.alternatives()
+          .try(Joi.string(), Joi.array().items(Joi.string()).min(1))
+          .optional(),
       }),
       failAction: async (request, h, error) => {
         request.logger.error({ error });
@@ -48,30 +61,32 @@ const postHandler = {
       },
     },
     handler: async (request, h) => {
-      const { typesOfPoultry } = request.payload;
-      const typesArray = Array.isArray(typesOfPoultry) ? typesOfPoultry : [typesOfPoultry];
-      const hasChicken = typesArray.includes("chickens");
-      const noSubtypes =
-        typesArray.filter(
-          (entry) => entry === "broilers" || entry === "laying-hens" || entry === "breeders",
-        ).length === 0;
+      const { typesOfPoultry, typesOfChicken } = request.payload;
+      const poultryArray = Array.isArray(typesOfPoultry) ? typesOfPoultry : [typesOfPoultry];
+      const chickenArray = typesOfChicken
+        ? Array.isArray(typesOfChicken)
+          ? typesOfChicken
+          : [typesOfChicken]
+        : [];
+      const hasChicken = poultryArray.includes("chickens");
 
-      if (hasChicken && noSubtypes) {
+      if (hasChicken && chickenArray.length === 0) {
         return h
           .view(poultryClaimViews.selectPoultryType, {
             backLink: poultryClaimRoutes.siteOthersOnSbi,
             errorMessageMain: errorMessage,
             errorMessageChicken: errorMessage,
-            typesOfPoultry: typesArray,
+            typesOfPoultry: poultryArray,
           })
           .code(HttpStatus.BAD_REQUEST);
       }
 
+      const combinedTypes = [...poultryArray, ...chickenArray];
       await setSessionData(
         request,
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.typesOfPoultry,
-        typesArray,
+        combinedTypes,
       );
       return h.redirect(poultryClaimRoutes.minimumNumberOfBirds);
     },
