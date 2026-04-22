@@ -9,11 +9,11 @@ import {
 import HttpStatus from "http-status-codes";
 import { TYPE_OF_POULTRY } from "ffc-ahwr-common-library";
 
-const chickenSubtypes = [
+const chickenSubtypes = new Set([
   TYPE_OF_POULTRY.BROILERS,
   TYPE_OF_POULTRY.LAYING,
   TYPE_OF_POULTRY.BREEDERS,
-];
+]);
 
 function getChickenSelections(typesOfChicken) {
   return Array.isArray(typesOfChicken) ? typesOfChicken : [typesOfChicken];
@@ -26,8 +26,8 @@ const getHandler = {
     handler: async (request, h) => {
       const storedTypes =
         getSessionData(request, sessionEntryKeys.poultryClaim)?.typesOfPoultry ?? [];
-      const typesOfPoultry = storedTypes.filter((t) => !chickenSubtypes.includes(t));
-      const typesOfChicken = storedTypes.filter((t) => chickenSubtypes.includes(t));
+      const typesOfPoultry = storedTypes.filter((t) => !chickenSubtypes.has(t));
+      const typesOfChicken = storedTypes.filter((t) => chickenSubtypes.has(t));
       return h.view(poultryClaimViews.selectPoultryType, {
         backLink: poultryClaimRoutes.siteOthersOnSbi,
         typesOfPoultry,
