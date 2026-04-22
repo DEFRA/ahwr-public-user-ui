@@ -650,6 +650,13 @@ describe("/poultry/select-the-site", () => {
         sessionKeys.poultryClaim.herdCph,
         "12/345/6789",
       );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.isOnlyHerdOnSbi,
+        "false",
+        { shouldEmitEvent: false },
+      );
     });
 
     test("stores site data and redirects to select-poultry-type when existing site is selected from multiple sites view", async () => {
@@ -712,6 +719,13 @@ describe("/poultry/select-the-site", () => {
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.herdCph,
         "98/765/4321",
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.isOnlyHerdOnSbi,
+        "false",
+        { shouldEmitEvent: false },
       );
     });
   });

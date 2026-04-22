@@ -70,7 +70,7 @@ const buildViewData = (previousClaims) => {
   return {
     backLink: poultryClaimRoutes.dateOfReview,
     pageTitleText: "Is this the same site you have previously claimed for?",
-    id: site?.id,
+    siteId: site?.id,
     name: site?.name,
     sites: previousSites,
     species: site?.species,
@@ -129,6 +129,14 @@ const postHandler = {
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.herdCph,
         selectedSite.cph,
+      );
+
+      await setSessionData(
+        request,
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.isOnlyHerdOnSbi,
+        "false",
+        { shouldEmitEvent: false },
       );
 
       return h.redirect(poultryClaimRoutes.selectPoultryType);
