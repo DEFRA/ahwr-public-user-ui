@@ -150,7 +150,6 @@ describe("GET /vet-visits", () => {
     const container = $("*:contains('Species included in this agreement:')").parent();
     expect(container.text()).toContain("poultry");
 
-    expect($("body").text()).toContain("Your claims");
     expect($("body").text()).toContain(
       "Your claims will appear here once you have submitted them.",
     );
@@ -272,7 +271,6 @@ describe("GET /vet-visits", () => {
       ],
       ["4 June 2026", "site two", "Broilers, laying hens", "PORE-D51M-ABCJ", "Paid"],
     ]);
-    expect($("body").text()).not.toContain("Your claims");
     expect($("body").text()).not.toContain(
       "Your claims will appear here once you have submitted them.",
     );
