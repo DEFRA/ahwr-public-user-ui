@@ -15,10 +15,6 @@ const chickenSubtypes = new Set([
   TYPE_OF_POULTRY.BREEDERS,
 ]);
 
-function getChickenSelections(typesOfChicken) {
-  return Array.isArray(typesOfChicken) ? typesOfChicken : [typesOfChicken];
-}
-
 const getHandler = {
   method: "GET",
   path: poultryClaimRoutes.selectPoultryType,
@@ -50,7 +46,8 @@ const postHandler = {
           .required(),
         typesOfChicken: Joi.alternatives()
           .try(Joi.string(), Joi.array().items(Joi.string()).min(1))
-          .optional(),
+          .optional()
+          .default([]),
       }),
       failAction: async (request, h, error) => {
         request.logger.error({ error });
@@ -67,7 +64,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { typesOfPoultry, typesOfChicken } = request.payload;
       const poultryArray = Array.isArray(typesOfPoultry) ? typesOfPoultry : [typesOfPoultry];
-      const chickenArray = typesOfChicken ? getChickenSelections(typesOfChicken) : [];
+      const chickenArray = Array.isArray(typesOfChicken) ? typesOfChicken : [typesOfChicken];
       const hasChicken = poultryArray.includes("chickens");
 
       if (hasChicken && chickenArray.length === 0) {
