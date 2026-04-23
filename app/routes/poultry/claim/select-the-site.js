@@ -28,14 +28,18 @@ const formatDate = (date) =>
   });
 
 const getUniqueSites = (previousClaims) => {
-  if (!previousClaims) return [];
+  if (!previousClaims) {
+    return [];
+  }
 
   const seen = new Set();
   return previousClaims
     .filter((claim) => claim.herd?.name && claim.herd?.cph)
     .filter((claim) => {
       const key = `${claim.herd.name}|${claim.herd.cph}`;
-      if (seen.has(key)) return false;
+      if (seen.has(key)) {
+        return false;
+      }
       seen.add(key);
       return true;
     })
