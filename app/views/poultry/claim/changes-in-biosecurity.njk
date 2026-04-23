@@ -26,7 +26,6 @@
           }}
         {% endif %}
         <div class="govuk-grid-row">
-          <h1 class="govuk-heading-l">What was the main change the vet recommended to improve your farm's biosecurity?</h1>
           <form method="POST" autocomplete="off" novalidate="novalidate">
             <input type="hidden" name="crumb" value="{{crumb}}"/>
             {{ 
@@ -35,6 +34,8 @@
                 name: "changesInBiosecurity",
                 fieldset:{
                   legend:{
+                    text: "What was the main change the vet recommended to improve your farm's biosecurity?",
+                    isPageHeading: true,
                     classes: "govuk-fieldset__legend--l"
                   }
                 }, 

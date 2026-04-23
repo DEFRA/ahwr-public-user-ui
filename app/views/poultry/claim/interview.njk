@@ -26,7 +26,6 @@
           }}
         {% endif %}
         <div class="govuk-grid-row">
-          <h1 class="govuk-heading-l">Would you be willing to take part in a short follow-up interview about your experience of this scheme?</h1>
           <form method="POST" autocomplete="off" novalidate="novalidate">
             <input type="hidden" name="crumb" value="{{crumb}}"/>
             {{ 
@@ -35,6 +34,8 @@
                 name: "interview",
                 fieldset:{
                   legend:{
+                    text: "Would you be willing to take part in a short follow-up interview about your experience of this scheme?",
+                    isPageHeading: true,
                     classes: "govuk-fieldset__legend--l"
                   }
                 }, 

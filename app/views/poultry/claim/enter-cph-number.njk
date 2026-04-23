@@ -22,14 +22,16 @@
         }) }}
       {% endif %}
 
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Enter the County Parish Holding (CPH) number for this site</h1>
-      <p class="govuk-hint govuk-!-margin-bottom-2">Tell us the CPH for this site. You cannot use the same CPH for two sites.</p>
-
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         {{ govukInput({
+          label: {
+              text: "Enter the County Parish Holding (CPH) number for this site",
+              classes: "govuk-label--l",
+              isPageHeading: true
+            },
             hint: {
-                text: "CPH format should be nn/nnn/nnnn"
+              html: "Tell us the CPH for this site. You cannot use the same CPH for two sites.<span class='govuk-!-display-block govuk-!-margin-top-2'>CPH format should be nn/nnn/nnnn</span>"
             },
             classes: "govuk-input",
             id: "herdCph",
