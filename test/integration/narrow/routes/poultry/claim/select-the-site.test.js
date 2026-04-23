@@ -471,6 +471,31 @@ describe("/poultry/select-the-site", () => {
 
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/poultry/enter-site-name");
+
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.tempSiteId,
+        null,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.herdName,
+        null,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.herdCph,
+        null,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.herdSame,
+        "no",
+      );
     });
 
     test("redirects to enter-site-name when selecting new site from multiple sites view", async () => {
@@ -516,6 +541,30 @@ describe("/poultry/select-the-site", () => {
 
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/poultry/enter-site-name");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.tempSiteId,
+        null,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.herdName,
+        null,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.herdCph,
+        null,
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.herdSame,
+        "no",
+      );
     });
 
     test("returns 400 and shows error when no site is selected from single site view", async () => {
@@ -656,8 +705,14 @@ describe("/poultry/select-the-site", () => {
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.herdSame,
+        "yes",
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.isOnlyHerdOnSbi,
-        "false",
+        "no",
         { shouldEmitEvent: false },
       );
     });
@@ -726,8 +781,14 @@ describe("/poultry/select-the-site", () => {
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.herdSame,
+        "yes",
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.isOnlyHerdOnSbi,
-        "false",
+        "no",
         { shouldEmitEvent: false },
       );
     });

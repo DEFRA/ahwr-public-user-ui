@@ -104,6 +104,31 @@ const postHandler = {
       const { siteSelected } = request.payload;
 
       if (siteSelected === radioValueNewSite) {
+        await setSessionData(
+          request,
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.tempSiteId,
+          null,
+        );
+        await setSessionData(
+          request,
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.herdName,
+          null,
+        );
+        await setSessionData(
+          request,
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.herdCph,
+          null,
+        );
+        await setSessionData(
+          request,
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.herdSame,
+          "no",
+        );
+
         return h.redirect(poultryClaimRoutes.enterSiteName);
       }
 
@@ -146,12 +171,17 @@ const postHandler = {
         sessionKeys.poultryClaim.herdCph,
         selectedSite.cph,
       );
-
+      await setSessionData(
+        request,
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.herdSame,
+        "yes",
+      );
       await setSessionData(
         request,
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.isOnlyHerdOnSbi,
-        "false",
+        "no",
         { shouldEmitEvent: false },
       );
 
