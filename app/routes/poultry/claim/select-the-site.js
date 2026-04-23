@@ -102,6 +102,13 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { siteSelected } = request.payload;
+      await setSessionData(
+        request,
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.siteSelected,
+        siteSelected,
+        { shouldEmitEvent: false },
+      );
 
       if (siteSelected === radioValueNewSite) {
         await setSessionData(

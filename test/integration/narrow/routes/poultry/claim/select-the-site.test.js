@@ -475,6 +475,13 @@ describe("/poultry/select-the-site", () => {
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.siteSelected,
+        "NEW_SITE",
+        { shouldEmitEvent: false },
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.tempSiteId,
         null,
       );
@@ -541,6 +548,13 @@ describe("/poultry/select-the-site", () => {
 
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/poultry/enter-site-name");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.siteSelected,
+        "NEW_SITE",
+        { shouldEmitEvent: false },
+      );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -687,6 +701,13 @@ describe("/poultry/select-the-site", () => {
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.siteSelected,
+        "herd-123",
+        { shouldEmitEvent: false },
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.tempSiteId,
         "herd-123",
       );
@@ -760,6 +781,13 @@ describe("/poultry/select-the-site", () => {
 
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.siteSelected,
+        "herd-456",
+        { shouldEmitEvent: false },
+      );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
