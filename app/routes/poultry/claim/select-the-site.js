@@ -111,31 +111,7 @@ const postHandler = {
       );
 
       if (siteSelected === radioValueNewSite) {
-        await setSessionData(
-          request,
-          sessionEntryKeys.poultryClaim,
-          sessionKeys.poultryClaim.tempSiteId,
-          null,
-        );
-        await setSessionData(
-          request,
-          sessionEntryKeys.poultryClaim,
-          sessionKeys.poultryClaim.herdName,
-          null,
-        );
-        await setSessionData(
-          request,
-          sessionEntryKeys.poultryClaim,
-          sessionKeys.poultryClaim.herdCph,
-          null,
-        );
-        await setSessionData(
-          request,
-          sessionEntryKeys.poultryClaim,
-          sessionKeys.poultryClaim.herdSame,
-          "no",
-        );
-
+        await cleanSiteData(request);
         return h.redirect(poultryClaimRoutes.enterSiteName);
       }
 
@@ -160,37 +136,7 @@ const postHandler = {
           .code(HttpStatus.BAD_REQUEST);
       }
 
-      await setSessionData(
-        request,
-        sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.tempSiteId,
-        selectedSite.id,
-      );
-      await setSessionData(
-        request,
-        sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.herdName,
-        selectedSite.name,
-      );
-      await setSessionData(
-        request,
-        sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.herdCph,
-        selectedSite.cph,
-      );
-      await setSessionData(
-        request,
-        sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.herdSame,
-        "yes",
-      );
-      await setSessionData(
-        request,
-        sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.isOnlyHerdOnSbi,
-        "no",
-        { shouldEmitEvent: false },
-      );
+      await setupSiteData(request, selectedSite);
 
       return h.redirect(poultryClaimRoutes.selectPoultryType);
     },
@@ -198,3 +144,63 @@ const postHandler = {
 };
 
 export const poultrySelectTheSiteHandlers = [getHandler, postHandler];
+async function setupSiteData(request, selectedSite) {
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.tempSiteId,
+    selectedSite.id,
+  );
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.herdName,
+    selectedSite.name,
+  );
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.herdCph,
+    selectedSite.cph,
+  );
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.herdSame,
+    "yes",
+  );
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.isOnlyHerdOnSbi,
+    "no",
+    { shouldEmitEvent: false },
+  );
+}
+
+async function cleanSiteData(request) {
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.tempSiteId,
+    null,
+  );
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.herdName,
+    null,
+  );
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.herdCph,
+    null,
+  );
+  await setSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.herdSame,
+    "no",
+  );
+}
