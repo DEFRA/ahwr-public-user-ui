@@ -23,10 +23,10 @@ const getHandler = {
   path: poultryClaimRoutes.selectPoultryType,
   options: {
     handler: async (request, h) => {
-      const { typesOfPoultry: storedTypes, herds } =
+      const { typesOfPoultry: storedTypes = [], herds } =
         getSessionData(request, sessionEntryKeys.poultryClaim) ?? {};
-      const typesOfPoultry = (storedTypes ?? []).filter((t) => !chickenSubtypes.has(t));
-      const typesOfChicken = (storedTypes ?? []).filter((t) => chickenSubtypes.has(t));
+      const typesOfPoultry = storedTypes.filter((t) => !chickenSubtypes.has(t));
+      const typesOfChicken = storedTypes.filter((t) => chickenSubtypes.has(t));
       return h.view(poultryClaimViews.selectPoultryType, {
         backLink: getBackLink(herds),
         typesOfPoultry,
