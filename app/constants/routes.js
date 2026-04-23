@@ -210,6 +210,7 @@ export const poultryClaimRoutes = {
 };
 
 export const poultryClaimViews = {
+  cannotContinueTimingRules: "poultry/claim/cannot-continue-timing-rules",
   checkAnswers: "poultry/claim/check-answers",
   dateOfReview: "poultry/claim/date-of-review",
   selectTheSite: "poultry/claim/select-the-site",

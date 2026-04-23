@@ -8,6 +8,16 @@ import {
 import Joi from "joi";
 import HttpStatus from "http-status-codes";
 
+const isLessThan10MonthsApart = (dateA, dateB) => {
+  const [firstDate, secondDate] =
+    new Date(dateA) < new Date(dateB)
+      ? [new Date(dateA), new Date(dateB)]
+      : [new Date(dateB), new Date(dateA)];
+  const firstDatePlus10Months = new Date(firstDate);
+  firstDatePlus10Months.setMonth(firstDatePlus10Months.getMonth() + 10);
+  return firstDatePlus10Months > secondDate;
+};
+
 const radioValueNewSite = "NEW_SITE";
 
 const formatDate = (date) =>
@@ -108,9 +118,26 @@ const postHandler = {
         return h.redirect(poultryClaimRoutes.enterSiteName);
       }
 
-      const { previousClaims } = getSessionData(request, sessionEntryKeys.poultryClaim);
+      const { previousClaims, dateOfReview } = getSessionData(
+        request,
+        sessionEntryKeys.poultryClaim,
+      );
       const sites = getUniqueSites(previousClaims);
       const selectedSite = sites.find((site) => site.id === siteSelected);
+
+      const previousClaimForSite = previousClaims?.find((claim) => claim.herd?.id === siteSelected);
+
+      if (
+        previousClaimForSite &&
+        isLessThan10MonthsApart(dateOfReview, previousClaimForSite.data.dateOfReview)
+      ) {
+        return h
+          .view(poultryClaimViews.cannotContinueTimingRules, {
+            backLink: poultryClaimRoutes.selectTheSite,
+            backToDateLink: poultryClaimRoutes.dateOfReview,
+          })
+          .code(HttpStatus.BAD_REQUEST);
+      }
 
       await setSessionData(
         request,

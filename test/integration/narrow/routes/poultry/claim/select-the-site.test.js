@@ -728,5 +728,155 @@ describe("/poultry/select-the-site", () => {
         { shouldEmitEvent: false },
       );
     });
+
+    test("shows timing rules exception when dateOfReview is within 10 months of previous claim for same site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          dateOfReview: new Date("2025-10-31"),
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2025-01-01",
+              },
+              createdAt: "2025-01-05",
+            },
+          ],
+        });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb, siteSelected: "herd-123" },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(400);
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text()).toContain("You cannot continue with your claim");
+      expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-the-site");
+    });
+
+    test("allows claim when dateOfReview is exactly 10 months after previous claim for same site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          dateOfReview: new Date("2025-11-01"),
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2025-01-01",
+              },
+              createdAt: "2025-01-05",
+            },
+          ],
+        });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb, siteSelected: "herd-123" },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+    });
+
+    test("allows claim when dateOfReview is more than 10 months after previous claim for same site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          dateOfReview: new Date("2025-12-01"),
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2025-01-01",
+              },
+              createdAt: "2025-01-05",
+            },
+          ],
+        });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb, siteSelected: "herd-123" },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+    });
+
+    test("does not apply timing rule when selecting a different site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          dateOfReview: new Date("2025-10-31"),
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: "Layers",
+                dateOfReview: "2025-01-01",
+              },
+              createdAt: "2025-01-05",
+            },
+            {
+              herd: {
+                id: "herd-456",
+                name: "Second Farm",
+                cph: "98/765/4321",
+              },
+              data: {
+                typesOfPoultry: "Broilers",
+                dateOfReview: "2024-01-01",
+              },
+              createdAt: "2024-01-05",
+            },
+          ],
+        });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb, siteSelected: "herd-456" },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+    });
   });
 });
