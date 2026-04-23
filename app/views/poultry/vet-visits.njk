@@ -60,8 +60,9 @@
 
   <hr class="govuk-section-break govuk-section-break--m">
 
-  <div class="govuk-grid-column-full govuk-!-padding-0">
+  <h2 class="govuk-heading-m govuk-!-static-margin-top-2">Your claims</h2>
 
+  <div class="govuk-grid-column-full govuk-!-padding-0">
     {% if rows | length %}
     <div>
       {{ govukTable({
@@ -76,8 +77,7 @@
     </div>
     {% endif %}
 
-  {% if not rows %}
-    <h2 class="govuk-heading-m govuk-!-static-margin-top-2">Your claims</h2>
+  {% if not rows.length %}
     <p class="govuk-caption-m">Your claims will appear here once you have submitted them.</p>
   {% endif %}
 
