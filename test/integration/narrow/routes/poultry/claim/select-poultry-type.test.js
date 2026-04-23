@@ -96,6 +96,22 @@ describe("/poultry/select-poultry-type", () => {
       const $ = cheerio.load(res.payload);
       expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
     });
+
+    test("shows back link to select-the-site when herds exist", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ typesOfPoultry: [], herds: [{ id: "1" }] });
+
+      const res = await server.inject({
+        method: "GET",
+        url,
+        auth,
+      });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($("#back").attr("href")).toEqual("/poultry/select-the-site");
+    });
   });
 
   describe("POST", () => {
@@ -238,6 +254,49 @@ describe("/poultry/select-poultry-type", () => {
         sessionKeys.poultryClaim.typesOfPoultry,
         expect.anything(),
       );
+    });
+
+    test("shows back link to select-the-site on validation error when herds exist", async () => {
+      getSessionData.mockReturnValue({
+        reference: "TEMP-6GSE-PIR8",
+        herds: [{ id: "1" }],
+      });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: {
+          crumb,
+        },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(400);
+      const $ = cheerio.load(res.payload);
+      expect($("#back").attr("href")).toEqual("/poultry/select-the-site");
+    });
+
+    test("shows back link to select-the-site on chicken sub-type error when herds exist", async () => {
+      getSessionData.mockReturnValue({
+        reference: "TEMP-6GSE-PIR8",
+        herds: [{ id: "1" }],
+      });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: {
+          crumb,
+          typesOfPoultry: "chickens",
+        },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(400);
+      const $ = cheerio.load(res.payload);
+      expect($("#back").attr("href")).toEqual("/poultry/select-the-site");
     });
   });
 });

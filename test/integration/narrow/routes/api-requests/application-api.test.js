@@ -60,8 +60,8 @@ describe("application api", () => {
     await testWreckApiFunction({
       fn: getSites,
       method: "get",
-      endpoint: `${config.applicationApiUri}/applications/IAHW-POULTRY-1234/herds`,
-      args: ["IAHW-POULTRY-1234"],
+      endpoint: `${config.applicationApiUri}/applications/POUL-POULTRY-1234/herds?species=poultry`,
+      args: ["POUL-POULTRY-1234"],
       outboundPayload: null,
       returnPayload: { herds: [{ id: "1", name: "Site 1" }] },
       logger: makeLogger(),

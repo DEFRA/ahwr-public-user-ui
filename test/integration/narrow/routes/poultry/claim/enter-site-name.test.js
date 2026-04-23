@@ -67,14 +67,14 @@ describe("/poultry/enter-site-name", () => {
   };
 
   describe("GET", () => {
-    test("returns 200 and displays page correctly with previous claims", async () => {
+    test("returns 200 and displays page correctly with other sites", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           reference: "TEMP-6GSE-PIR8",
-          previousClaims: [
+          herds: [
             {
-              herd: { id: "1", name: "Farm 1", cph: "12/345/6789" },
+              id: "1",
             },
           ],
         });
@@ -94,9 +94,9 @@ describe("/poultry/enter-site-name", () => {
         .mockReturnValue({
           reference: "TEMP-6GSE-PIR8",
           herdName: "Commercial Herd",
-          previousClaims: [
+          herds: [
             {
-              herd: { id: "1", name: "Farm 1", cph: "12/345/6789" },
+              id: "1",
             },
           ],
         });
@@ -112,12 +112,12 @@ describe("/poultry/enter-site-name", () => {
       expect($("#herdName").val()).toBe("Commercial Herd");
     });
 
-    test("returns 200 with back link to date of review when no previous claims", async () => {
+    test("returns 200 with back link to date of review when no other sites", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           reference: "TEMP-6GSE-PIR8",
-          previousClaims: [],
+          herds: [],
         });
 
       const res = await server.inject({ method: "GET", url, auth });
@@ -189,6 +189,7 @@ describe("/poultry/enter-site-name", () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
         previousClaims: [{ herd: { id: "1", name: "Farm 1", cph: "12/345/6789" } }],
+        herds: [{ id: "1" }],
       });
 
       const res = await server.inject({
@@ -213,6 +214,7 @@ describe("/poultry/enter-site-name", () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
         previousClaims: [{ herd: { id: "1", name: "Farm 1", cph: "12/345/6789" } }],
+        herds: [{ id: "1" }],
       });
 
       const res = await server.inject({
@@ -237,6 +239,7 @@ describe("/poultry/enter-site-name", () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
         previousClaims: [{ herd: { id: "1", name: "Farm 1", cph: "12/345/6789" } }],
+        herds: [{ id: "1" }],
       });
 
       const res = await server.inject({
@@ -261,6 +264,7 @@ describe("/poultry/enter-site-name", () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
         previousClaims: [{ herd: { id: "1", name: "Farm 1", cph: "12/345/6789" } }],
+        herds: [{ id: "1" }],
       });
 
       const res = await server.inject({
@@ -295,6 +299,7 @@ describe("/poultry/enter-site-name", () => {
             },
           },
         ],
+        herds: [{ id: "1" }],
       });
 
       const res = await server.inject({
