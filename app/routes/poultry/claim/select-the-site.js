@@ -7,6 +7,7 @@ import {
 } from "../../../session/index.js";
 import Joi from "joi";
 import HttpStatus from "http-status-codes";
+import { formatDate } from "../../../lib/display-helpers.js";
 
 const isLessThan10MonthsApart = (dateA, dateB) => {
   const [firstDate, secondDate] =
@@ -19,13 +20,6 @@ const isLessThan10MonthsApart = (dateA, dateB) => {
 };
 
 const radioValueNewSite = "NEW_SITE";
-
-const formatDate = (date) =>
-  new Date(date).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
 
 const getUniqueSites = (previousClaims) => {
   if (!previousClaims) {
