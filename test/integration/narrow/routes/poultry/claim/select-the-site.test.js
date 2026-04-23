@@ -798,8 +798,10 @@ describe("/poultry/select-the-site", () => {
         headers: { cookie: `crumb=${crumb}` },
       });
 
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.statusCode).toBe(400);
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text()).toContain("You cannot continue with your claim");
+      expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-the-site");
     });
 
     test("allows claim when dateOfReview is more than 10 months after previous claim for same site", async () => {

@@ -8,16 +8,7 @@ import {
 import Joi from "joi";
 import HttpStatus from "http-status-codes";
 import { formatDate } from "../../../lib/display-helpers.js";
-
-const isLessThan10MonthsApart = (dateA, dateB) => {
-  const [firstDate, secondDate] =
-    new Date(dateA) < new Date(dateB)
-      ? [new Date(dateA), new Date(dateB)]
-      : [new Date(dateB), new Date(dateA)];
-  const firstDatePlus10Months = new Date(firstDate);
-  firstDatePlus10Months.setMonth(firstDatePlus10Months.getMonth() + 10);
-  return firstDatePlus10Months > secondDate;
-};
+import { areDatesWithin10Months } from "../../../lib/utils.js";
 
 const radioValueNewSite = "NEW_SITE";
 
@@ -127,7 +118,7 @@ const postHandler = {
 
       if (
         previousClaimForSite &&
-        isLessThan10MonthsApart(dateOfReview, previousClaimForSite.data.dateOfReview)
+        areDatesWithin10Months(dateOfReview, previousClaimForSite.data.dateOfReview)
       ) {
         return h
           .view(poultryClaimViews.cannotContinueTimingRules, {
