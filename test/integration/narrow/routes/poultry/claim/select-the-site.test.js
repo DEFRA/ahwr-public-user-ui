@@ -9,6 +9,7 @@ import {
 } from "../../../../../../app/session/index.js";
 import { config } from "../../../../../../app/config/index.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
+import { axe } from "../../../../../helpers/axe-helper.js";
 
 const auth = { credentials: { reference: "1111", sbi: "111111111" }, strategy: "cookie" };
 const url = "/poultry/select-the-site";
@@ -76,6 +77,7 @@ describe("/poultry/select-the-site", () => {
       const res = await server.inject({ method: "GET", url, auth });
 
       expect(res.statusCode).toBe(200);
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-review");
       expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
@@ -148,6 +150,7 @@ describe("/poultry/select-the-site", () => {
       const res = await server.inject({ method: "GET", url, auth });
 
       expect(res.statusCode).toBe(200);
+      expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-review");
       expect($("title").text()).toContain("Select the site you are claiming for");
