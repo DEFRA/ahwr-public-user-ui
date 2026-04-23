@@ -30,7 +30,7 @@ const costOfChangesLabels = {
 
 export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
   const organisationNameRow = createImmutableRowObject(
-    "Business Name",
+    "Business name",
     upperFirstLetter(organisation.name),
   );
 
