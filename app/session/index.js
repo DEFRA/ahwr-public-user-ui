@@ -36,6 +36,7 @@ export const sessionKeys = {
     dateOfReview: "dateOfReview",
     herdName: "herdName",
     herdCph: "herdCph",
+    herdSame: "herdSame",
     herds: "herds",
     typesOfPoultry: "typesOfPoultry",
     herdReasons: "herdReasons",
