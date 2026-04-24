@@ -15,17 +15,22 @@ const chickenSubtypes = new Set([
   TYPE_OF_POULTRY.BREEDERS,
 ]);
 
+const getBackLink = (herds) =>
+  herds?.length ? poultryClaimRoutes.selectTheSite : poultryClaimRoutes.siteOthersOnSbi;
+
 const getHandler = {
   method: "GET",
   path: poultryClaimRoutes.selectPoultryType,
   options: {
     handler: async (request, h) => {
-      const storedTypes =
-        getSessionData(request, sessionEntryKeys.poultryClaim)?.typesOfPoultry ?? [];
+      const { typesOfPoultry: storedTypes = [], herds } = getSessionData(
+        request,
+        sessionEntryKeys.poultryClaim,
+      );
       const typesOfPoultry = storedTypes.filter((t) => !chickenSubtypes.has(t));
       const typesOfChicken = storedTypes.filter((t) => chickenSubtypes.has(t));
       return h.view(poultryClaimViews.selectPoultryType, {
-        backLink: poultryClaimRoutes.siteOthersOnSbi,
+        backLink: getBackLink(herds),
         typesOfPoultry,
         typesOfChicken,
       });
@@ -46,9 +51,10 @@ const postHandler = {
       }),
       failAction: async (request, h, error) => {
         request.logger.error({ error });
+        const { herds } = getSessionData(request, sessionEntryKeys.poultryClaim);
         return h
           .view(poultryClaimViews.selectPoultryType, {
-            backLink: poultryClaimRoutes.siteOthersOnSbi,
+            backLink: getBackLink(herds),
             errorMessageMain: errorMessage,
             errorMessage,
           })
@@ -58,12 +64,13 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typesOfPoultry, typesOfChicken } = request.payload;
+      const { herds } = getSessionData(request, sessionEntryKeys.poultryClaim);
       const hasChicken = typesOfPoultry.includes("chickens");
 
       if (hasChicken && typesOfChicken.length === 0) {
         return h
           .view(poultryClaimViews.selectPoultryType, {
-            backLink: poultryClaimRoutes.siteOthersOnSbi,
+            backLink: getBackLink(herds),
             errorMessageMain: errorMessage,
             errorMessageChicken: errorMessage,
             typesOfPoultry,
