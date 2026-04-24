@@ -482,7 +482,7 @@ describe("/poultry/select-the-site", () => {
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.tempSiteId,
+        sessionKeys.poultryClaim.herdId,
         null,
       );
       expect(setSessionData).toHaveBeenCalledWith(
@@ -559,7 +559,7 @@ describe("/poultry/select-the-site", () => {
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.tempSiteId,
+        sessionKeys.poultryClaim.herdId,
         null,
       );
       expect(setSessionData).toHaveBeenCalledWith(
@@ -710,7 +710,7 @@ describe("/poultry/select-the-site", () => {
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.tempSiteId,
+        sessionKeys.poultryClaim.herdId,
         "herd-123",
       );
       expect(setSessionData).toHaveBeenCalledWith(
@@ -794,7 +794,7 @@ describe("/poultry/select-the-site", () => {
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.tempSiteId,
+        sessionKeys.poultryClaim.herdId,
         "herd-456",
       );
       expect(setSessionData).toHaveBeenCalledWith(

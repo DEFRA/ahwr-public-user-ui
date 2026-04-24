@@ -148,7 +148,7 @@ async function setupSiteData(request, selectedSite) {
   await setSessionData(
     request,
     sessionEntryKeys.poultryClaim,
-    sessionKeys.poultryClaim.tempSiteId,
+    sessionKeys.poultryClaim.herdId,
     selectedSite.id,
   );
   await setSessionData(
@@ -183,7 +183,7 @@ async function cleanSiteData(request) {
   await setSessionData(
     request,
     sessionEntryKeys.poultryClaim,
-    sessionKeys.poultryClaim.tempSiteId,
+    sessionKeys.poultryClaim.herdId,
     null,
   );
   await setSessionData(

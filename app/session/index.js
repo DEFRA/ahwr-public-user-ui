@@ -49,7 +49,6 @@ export const sessionKeys = {
     previousClaims: "previousClaims",
     reference: "reference",
     siteSelected: "siteSelected",
-    tempSiteId: "tempSiteId",
     typesOfPoultry: "typesOfPoultry",
     vetRCVSNumber: "vetRCVSNumber",
     vetsName: "vetsName",

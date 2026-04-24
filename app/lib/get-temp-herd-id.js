@@ -17,7 +17,7 @@ export const getTempHerdId = async (request, tempHerdIdFromSession) => {
   return tempHerdId;
 };
 
-export const getTempSiteId = async (request) => {
+export const getNewSiteId = async (request) => {
   const tempSiteId = uuidv4();
   await setSessionData(
     request,

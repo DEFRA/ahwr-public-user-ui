@@ -118,7 +118,7 @@ export const buildPoultryClaimPayload = (poultryClaim) => {
     data: {
       dateOfReview: poultryClaim.dateOfReview,
       site: {
-        id: poultryClaim.herdId ?? poultryClaim.tempSiteId,
+        id: poultryClaim.herdId,
         version: 1, // We don't update sites, should have the single version
         name: poultryClaim.herdName,
         cph: poultryClaim.herdCph,
