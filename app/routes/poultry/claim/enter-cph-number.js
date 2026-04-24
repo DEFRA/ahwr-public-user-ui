@@ -7,8 +7,6 @@ import {
   emitHerdEvent,
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
-import { ONLY_HERD_ON_SBI } from "../../../constants/claim-constants.js";
-import { skipOtherHerdsOnSbiPage } from "../../../lib/context-helper.js";
 import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes.js";
 import { normalizeCphNumber } from "../../../lib/cph-normalization.js";
 import { getClaimsCount } from "../../../api-requests/claim-api.js";
@@ -63,10 +61,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdCph } = request.payload;
-      const { herds, isOnlyHerdOnSbi, herdId, herdVersion } = getSessionData(
-        request,
-        sessionEntryKeys.poultryClaim,
-      );
+      const { herds, herdId, herdVersion } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
       const response = await getClaimsCount(herdCph, herdId, request.logger);
 
@@ -99,18 +94,7 @@ const postHandler = {
         data: { herdId, herdVersion, herdCph },
       });
 
-      let nextPageUrl;
-
-      if (skipOtherHerdsOnSbiPage(herds, herdId)) {
-        nextPageUrl =
-          isOnlyHerdOnSbi === ONLY_HERD_ON_SBI.NO
-            ? poultryClaimRoutes.enterSiteDetails
-            : poultryClaimRoutes.checkSiteDetails;
-      } else {
-        nextPageUrl = poultryClaimRoutes.siteOthersOnSbi;
-      }
-
-      return h.redirect(nextPageUrl);
+      return h.redirect(poultryClaimRoutes.siteOthersOnSbi);
     },
   },
 };
