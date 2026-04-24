@@ -4,7 +4,7 @@ import {
   validateDateInputDay,
   validateDateInputMonth,
   validateDateInputYear,
-} from "../../../../app/lib/date-validations.js";
+} from "./date-validations.js";
 
 describe("isValidDate", () => {
   it("returns true for a valid date", () => {
