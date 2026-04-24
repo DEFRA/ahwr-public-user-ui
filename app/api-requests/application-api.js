@@ -64,7 +64,7 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
 };
 
 export const getSites = async (applicationReference, logger) => {
-  const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/herds`;
+  const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/herds?species=poultry`;
 
   try {
     const { payload } = await Wreck.get(endpoint, {
