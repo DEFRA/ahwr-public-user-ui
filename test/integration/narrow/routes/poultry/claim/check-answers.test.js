@@ -163,7 +163,7 @@ describe("Poultry check answers test", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       const orgRow = $(".govuk-summary-list__row").eq(0);
-      expect(orgRow.find(".govuk-summary-list__key").text().trim()).toBe("Business Name");
+      expect(orgRow.find(".govuk-summary-list__key").text().trim()).toBe("Business name");
       expect(orgRow.find(".govuk-summary-list__value").text().trim()).toBe("Test Business");
       expect(orgRow.find(".govuk-summary-list__actions a").length).toBe(0);
     });
