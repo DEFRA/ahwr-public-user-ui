@@ -22,7 +22,7 @@ import { poultryDeclarationRouteHandlers } from "../routes/poultry/apply/declara
 import { poultryNumbersRouteHandlers } from "../routes/poultry/apply/numbers.js";
 import { poultryTimingsRouteHandlers } from "../routes/poultry/apply/timings.js";
 import { poultryClaimMultipleRouteHandlers } from "../routes/poultry/apply/you-can-claim-multiple.js";
-import { poultryDateOfReviewHandlers } from "../routes/poultry/claim/date-of-review.js";
+import { poultryDateOfVisitHandlers } from "../routes/poultry/claim/date-of-visit.js";
 import { selectFundingRouteHandlers } from "../routes/select-funding.js";
 import { biosecurityHandlers } from "../routes/claim/biosecurity.js";
 import { checkAnswersHandlers } from "../routes/claim/check-answers.js";
@@ -144,7 +144,7 @@ const poultryRoutes = [
   poultryNumbersRouteHandlers,
   poultryTimingsRouteHandlers,
   poultryClaimMultipleRouteHandlers,
-  poultryDateOfReviewHandlers,
+  poultryDateOfVisitHandlers,
   poultryVetVisitsHandlers,
   poultrySelectTheSiteHandlers,
   poultryEnterSiteNameHandlers,

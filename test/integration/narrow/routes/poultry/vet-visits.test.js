@@ -143,7 +143,7 @@ describe("GET /vet-visits", () => {
 
     const startLink = $('a:contains("Start a new claim")');
     expect(startLink.length).toBeGreaterThan(0);
-    expect(startLink.attr("href")).toContain("/poultry/date-of-review");
+    expect(startLink.attr("href")).toContain("/poultry/date-of-visit");
 
     expect($("body").text()).toContain("Claim for a different agreement");
 
@@ -192,7 +192,7 @@ describe("GET /vet-visits", () => {
         createdAt: "2026-04-21T13:51:10.697Z",
         type: "REVIEW",
         data: {
-          dateOfReview: "2026-04-21T00:00:00.000Z",
+          dateOfVisit: "2026-04-21T00:00:00.000Z",
           typesOfPoultry: ["broilers", "laying-hens", "breeders", "ducks", "geese", "turkeys"],
           minimumNumberOfBirds: "yes",
           vetsName: "Vet 1",
@@ -219,7 +219,7 @@ describe("GET /vet-visits", () => {
         createdAt: "2026-06-05T13:51:10.697Z",
         type: "REVIEW",
         data: {
-          dateOfReview: "2026-06-04T00:00:00.000Z",
+          dateOfVisit: "2026-06-04T00:00:00.000Z",
           typesOfPoultry: ["broilers", "laying-hens"],
           minimumNumberOfBirds: "yes",
           vetsName: "Vet 1",
@@ -250,7 +250,7 @@ describe("GET /vet-visits", () => {
 
     const startLink = $('a:contains("Start a new claim")');
     expect(startLink.length).toBeGreaterThan(0);
-    expect(startLink.attr("href")).toContain("/poultry/date-of-review");
+    expect(startLink.attr("href")).toContain("/poultry/date-of-visit");
 
     const link = findLinkByText($, "Download agreement summary").first();
     expect(link.attr("href")).toContain(`/download-application/${sbi}/POUL-1LZ5-ELVQ`);

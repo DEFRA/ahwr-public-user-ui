@@ -31,25 +31,25 @@ jest.mock("../../../../../../app/logging/logger.js", () => ({
 config.poultry.enabled = true;
 
 const auth = { credentials: {}, strategy: "cookie" };
-const url = "/poultry/date-of-review";
+const url = "/poultry/date-of-visit";
 
 function expectPageContentOk($, previousPageUrl) {
   expect($("title").text()).toMatch(
-    "Date of review - Get funding to improve animal health and welfare",
+    "Date of visit - Get funding to improve animal health and welfare",
   );
-  expect($("h1").text().trim()).toMatch("Date of review");
+  expect($("h1").text().trim()).toMatch("Date of visit");
   expect($("p").text()).toMatch("This is the date the vet last visited the site for this review.");
-  expect($("#review-date-hint").text()).toMatch("For example, 27 3 2022");
-  expect($(`label[for=review-date-day]`).text()).toMatch("Day");
-  expect($(`label[for=review-date-month]`).text()).toMatch("Month");
-  expect($(`label[for=review-date-year]`).text()).toMatch("Year");
+  expect($("#visit-date-hint").text()).toMatch("For example, 27 3 2022");
+  expect($(`label[for=visit-date-day]`).text()).toMatch("Day");
+  expect($(`label[for=visit-date-month]`).text()).toMatch("Month");
+  expect($(`label[for=visit-date-year]`).text()).toMatch("Year");
   expect($(".govuk-button").text()).toMatch("Continue");
   const backLink = $(".govuk-back-link");
   expect(backLink.text()).toMatch("Back");
   expect(backLink.attr("href")).toMatch(previousPageUrl);
 }
 
-describe("GET /poultry/date-of-review", () => {
+describe("GET /poultry/date-of-visit", () => {
   let server;
 
   const mockOrganisation = { sbi: "123456789", name: "Test Farm" };
@@ -177,19 +177,19 @@ describe("GET /poultry/date-of-review", () => {
     const previousDate = new Date(2025, 2, 15);
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-      .mockReturnValue({ dateOfReview: previousDate });
+      .mockReturnValue({ dateOfVisit: previousDate });
 
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expect($("#review-date-day").val()).toBe("15");
-    expect($("#review-date-month").val()).toBe("3");
-    expect($("#review-date-year").val()).toBe("2025");
+    expect($("#visit-date-day").val()).toBe("15");
+    expect($("#visit-date-month").val()).toBe("3");
+    expect($("#visit-date-year").val()).toBe("2025");
   });
 });
 
-describe("POST /poultry/date-of-review", () => {
+describe("POST /poultry/date-of-visit", () => {
   let server;
   let crumb;
 
@@ -235,9 +235,9 @@ describe("POST /poultry/date-of-review", () => {
       url,
       payload: {
         crumb,
-        "review-date-day": "21",
-        "review-date-month": "01",
-        "review-date-year": "2025",
+        "visit-date-day": "21",
+        "visit-date-month": "01",
+        "visit-date-year": "2025",
       },
       auth,
       headers: { cookie: `crumb=${crumb}` },
@@ -249,7 +249,7 @@ describe("POST /poultry/date-of-review", () => {
     expect(setSessionData).toHaveBeenCalledWith(
       expect.anything(),
       sessionEntryKeys.poultryClaim,
-      sessionKeys.poultryClaim.dateOfReview,
+      sessionKeys.poultryClaim.dateOfVisit,
       new Date(2025, 0, 21),
     );
   });
@@ -262,9 +262,9 @@ describe("POST /poultry/date-of-review", () => {
       url,
       payload: {
         crumb,
-        "review-date-day": "21",
-        "review-date-month": "01",
-        "review-date-year": "2025",
+        "visit-date-day": "21",
+        "visit-date-month": "01",
+        "visit-date-year": "2025",
       },
       auth,
       headers: { cookie: `crumb=${crumb}` },
@@ -276,7 +276,7 @@ describe("POST /poultry/date-of-review", () => {
     expect(setSessionData).toHaveBeenCalledWith(
       expect.anything(),
       sessionEntryKeys.poultryClaim,
-      sessionKeys.poultryClaim.dateOfReview,
+      sessionKeys.poultryClaim.dateOfVisit,
       new Date(2025, 0, 21),
     );
   });
@@ -346,9 +346,9 @@ describe("POST /poultry/date-of-review", () => {
         url,
         payload: {
           crumb,
-          "review-date-day": day,
-          "review-date-month": month,
-          "review-date-year": year,
+          "visit-date-day": day,
+          "visit-date-month": month,
+          "visit-date-year": year,
         },
         auth,
         headers: { cookie: `crumb=${crumb}` },
@@ -358,7 +358,7 @@ describe("POST /poultry/date-of-review", () => {
       expect(res.statusCode).toBe(400);
 
       const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toBe("Date of review");
+      expect($("h1").text().trim()).toBe("Date of visit");
       expect($(".govuk-error-summary")).toHaveLength(1);
       expect($(".govuk-error-summary").text()).toContain(expectedError);
       expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
@@ -372,9 +372,9 @@ describe("POST /poultry/date-of-review", () => {
       url,
       payload: {
         crumb,
-        "review-date-day": "15",
-        "review-date-month": "06",
-        "review-date-year": String(futureYear),
+        "visit-date-day": "15",
+        "visit-date-month": "06",
+        "visit-date-year": String(futureYear),
       },
       auth,
       headers: { cookie: `crumb=${crumb}` },
@@ -384,7 +384,7 @@ describe("POST /poultry/date-of-review", () => {
     expect(res.statusCode).toBe(400);
 
     const $ = cheerio.load(res.payload);
-    expect($("h1").text().trim()).toBe("Date of review");
+    expect($("h1").text().trim()).toBe("Date of visit");
     expect($(".govuk-error-summary")).toHaveLength(1);
     expect($(".govuk-error-summary").text()).toContain(
       "The date of review must be today or in the past",
@@ -407,9 +407,9 @@ describe("POST /poultry/date-of-review", () => {
       url,
       payload: {
         crumb,
-        "review-date-day": "15",
-        "review-date-month": "01",
-        "review-date-year": "2025",
+        "visit-date-day": "15",
+        "visit-date-month": "01",
+        "visit-date-year": "2025",
       },
       auth,
       headers: { cookie: `crumb=${crumb}` },
@@ -425,7 +425,7 @@ describe("POST /poultry/date-of-review", () => {
     expect(sendInvalidDataPoultryEvent).toHaveBeenCalled();
 
     const $ = cheerio.load(res.payload);
-    expect($("h1").text().trim()).toBe("Date of review");
+    expect($("h1").text().trim()).toBe("Date of visit");
     expect($(".govuk-error-summary")).toHaveLength(1);
     expect($(".govuk-error-summary").text()).toContain(expectedError);
     expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
@@ -448,9 +448,9 @@ describe("POST /poultry/date-of-review", () => {
       url,
       payload: {
         crumb,
-        "review-date-day": "1",
-        "review-date-month": "03",
-        "review-date-year": "2025",
+        "visit-date-day": "1",
+        "visit-date-month": "03",
+        "visit-date-year": "2025",
       },
       auth,
       headers: { cookie: `crumb=${crumb}` },

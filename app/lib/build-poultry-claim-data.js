@@ -34,11 +34,11 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
     upperFirstLetter(organisation.name),
   );
 
-  const dateOfReviewRow = createdHerdRowObject(
-    "Date of review",
-    formatDate(poultryClaim.dateOfReview),
-    poultryClaimRoutes.dateOfReview,
-    "date of review",
+  const dateOfVisitRow = createdHerdRowObject(
+    "Date of visit",
+    formatDate(poultryClaim.dateOfVisit),
+    poultryClaimRoutes.dateOfVisit,
+    "date of visit",
   );
 
   const { siteNameRow, cphNumberRow, siteOthersRow } = createSiteInformationRows(
@@ -92,7 +92,7 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
 
   return [
     organisationNameRow,
-    dateOfReviewRow,
+    dateOfVisitRow,
     siteNameRow,
     cphNumberRow,
     siteOthersRow,
@@ -116,7 +116,7 @@ export const buildPoultryClaimPayload = (poultryClaim) => {
     type: "REVIEW",
     createdBy: "admin",
     data: {
-      dateOfReview: poultryClaim.dateOfReview,
+      dateOfVisit: poultryClaim.dateOfVisit,
       site: {
         id: poultryClaim.herdId ?? poultryClaim.tempSiteId,
         version: 1, // We don't update sites, should have the single version

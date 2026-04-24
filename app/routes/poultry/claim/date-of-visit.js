@@ -18,12 +18,12 @@ import { trackEvent } from "../../../logging/logger.js";
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 import { refreshApplications, resetPoultryClaimSession } from "../../../lib/context-helper.js";
 
-const INVALID_DATE_OF_REVIEW_EVENT = "claim-invalid-date-of-review";
+const INVALID_DATE_OF_VISIT_EVENT = "claim-invalid-date-of-visit";
 
 const { poultryClaim: poultryClaimEntry } = sessionEntryKeys;
 const {
   poultryClaim: {
-    dateOfReview: dateOfReviewKey,
+    dateOfVisit: dateOfVisitKey,
     latestPoultryApplication: latestPoultryApplicationKey,
   },
 } = sessionKeys;
@@ -42,7 +42,7 @@ const buildErrorSummary = ({ errorMessage, href, inputsInError }) => {
 
 const getHandler = {
   method: "GET",
-  path: poultryClaimRoutes.dateOfReview,
+  path: poultryClaimRoutes.dateOfVisit,
   options: {
     handler: async (request, h) => {
       const { journey } = request.query;
@@ -55,38 +55,38 @@ const getHandler = {
         await resetPoultryClaimSession(request, latestPoultryApplication.reference);
       }
 
-      const { dateOfReview: dateOfReviewRaw } = getSessionData(request, poultryClaimEntry);
+      const { dateOfVisit: dateOfVisitRaw } = getSessionData(request, poultryClaimEntry);
 
-      const dateOfReview = parseDateOfReview(dateOfReviewRaw);
+      const dateOfVisit = parseDateOfVisit(dateOfVisitRaw);
 
-      return h.view(poultryClaimViews.dateOfReview, {
-        dateOfReview,
+      return h.view(poultryClaimViews.dateOfVisit, {
+        dateOfVisit,
         backLink: dashboardRoutes.poultryManageYourClaims,
       });
     },
   },
 };
 
-const reviewDateDayAnchor = "#review-date-day";
+const visitDateDayAnchor = "#visit-date-day";
 
 const payloadSchema = joi.object({
   crumb: joi.any(),
-  "review-date-day": joi.number().min(1).max(MAX_POSSIBLE_DAY).required(),
-  "review-date-month": joi.number().min(1).max(MAX_POSSIBLE_MONTH).required(),
-  "review-date-year": joi.number().required(),
+  "visit-date-day": joi.number().min(1).max(MAX_POSSIBLE_DAY).required(),
+  "visit-date-month": joi.number().min(1).max(MAX_POSSIBLE_MONTH).required(),
+  "visit-date-year": joi.number().required(),
 });
 
 const getInputsInError = (error) => {
   const inputsInError = { day: false, month: false, year: false };
   const errorKeys = error?.details?.map(({ context }) => context.key) || [];
 
-  if (errorKeys.includes("review-date-day")) {
+  if (errorKeys.includes("visit-date-day")) {
     inputsInError.day = true;
   }
-  if (errorKeys.includes("review-date-month")) {
+  if (errorKeys.includes("visit-date-month")) {
     inputsInError.month = true;
   }
-  if (errorKeys.includes("review-date-year")) {
+  if (errorKeys.includes("visit-date-year")) {
     inputsInError.year = true;
   }
 
@@ -95,26 +95,26 @@ const getInputsInError = (error) => {
 
 const postHandler = {
   method: "POST",
-  path: poultryClaimRoutes.dateOfReview,
+  path: poultryClaimRoutes.dateOfVisit,
   options: {
     validate: {
       payload: payloadSchema,
       failAction: async (request, h, error) => {
         request.logger.error({ error });
         const {
-          "review-date-day": day,
-          "review-date-month": month,
-          "review-date-year": year,
+          "visit-date-day": day,
+          "visit-date-month": month,
+          "visit-date-year": year,
         } = request.payload;
         const date = { day, month, year };
         const errorMessage = "Enter a date in the boxes below";
         const inputsInError = getInputsInError(error);
 
         return h
-          .view(poultryClaimViews.dateOfReview, {
-            errorSummary: [{ text: errorMessage, href: reviewDateDayAnchor }],
+          .view(poultryClaimViews.dateOfVisit, {
+            errorSummary: [{ text: errorMessage, href: visitDateDayAnchor }],
             inputsInError,
-            dateOfReview: {
+            dateOfVisit: {
               day: date.day || "",
               month: date.month || "",
               year: date.year || "",
@@ -128,27 +128,27 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const {
-        "review-date-day": day,
-        "review-date-month": month,
-        "review-date-year": year,
+        "visit-date-day": day,
+        "visit-date-month": month,
+        "visit-date-year": year,
       } = request.payload;
       const date = { day, month, year };
 
       if (!isValidDate(year, month, day)) {
         const validationError = buildErrorSummary({
           errorMessage: "The date of review must be a real date",
-          href: reviewDateDayAnchor,
+          href: visitDateDayAnchor,
           inputsInError: { day: true, month: true, year: true },
         });
         return handleValidationError(request, validationError, h, date);
       }
 
-      const dateOfReview = new Date(year, month - 1, day);
+      const dateOfVisit = new Date(year, month - 1, day);
 
-      if (dateIsInFuture(dateOfReview)) {
+      if (dateIsInFuture(dateOfVisit)) {
         const validationError = buildErrorSummary({
           errorMessage: "The date of review must be today or in the past",
-          href: reviewDateDayAnchor,
+          href: visitDateDayAnchor,
           inputsInError: { day: true, month: true, year: true },
         });
         return handleValidationError(request, validationError, h, date);
@@ -163,12 +163,12 @@ const postHandler = {
       const applicationCreatedAt = new Date(latestPoultryApplication.createdAt);
       applicationCreatedAt.setHours(0, 0, 0, 0);
 
-      if (dateOfReview < applicationCreatedAt) {
+      if (dateOfVisit < applicationCreatedAt) {
         const { reference: tempClaimReference } = getSessionData(request, poultryClaimEntry);
         return handleTimingException(request, h, date, applicationCreatedAt, tempClaimReference);
       }
 
-      await setSessionData(request, poultryClaimEntry, dateOfReviewKey, dateOfReview);
+      await setSessionData(request, poultryClaimEntry, dateOfVisitKey, dateOfVisit);
 
       const { herds } = await getSites(latestPoultryApplication.reference, request.logger);
 
@@ -181,19 +181,19 @@ const postHandler = {
   },
 };
 
-function dateIsInFuture(dateOfReview) {
+function dateIsInFuture(dateOfVisit) {
   const now = new Date();
 
-  return dateOfReview > now;
+  return dateOfVisit > now;
 }
 
-function parseDateOfReview(dateOfReviewRaw) {
-  if (dateOfReviewRaw) {
-    const dateOfReview = new Date(dateOfReviewRaw);
+function parseDateOfVisit(dateOfVisitRaw) {
+  if (dateOfVisitRaw) {
+    const dateOfVisit = new Date(dateOfVisitRaw);
     return {
-      day: dateOfReview.getDate(),
-      month: dateOfReview.getMonth() + 1,
-      year: dateOfReview.getFullYear(),
+      day: dateOfVisit.getDate(),
+      month: dateOfVisit.getMonth() + 1,
+      year: dateOfVisit.getFullYear(),
     };
   } else {
     return {
@@ -212,7 +212,7 @@ async function handleTimingException(request, h, date, agreementDate, tempClaimR
   });
   const errorMessage = `The date the biosecurity review happened must be on or after ${formattedDate}, the date your agreement started`;
 
-  trackEvent(request.logger, INVALID_DATE_OF_REVIEW_EVENT, "review", {
+  trackEvent(request.logger, INVALID_DATE_OF_VISIT_EVENT, "review", {
     reference: tempClaimReference,
     kind: `dateEntered: ${date.year}-${date.month}-${date.day}, dateOfAgreement: ${formattedDate}`,
     reason: errorMessage,
@@ -225,10 +225,10 @@ async function handleTimingException(request, h, date, agreementDate, tempClaimR
   });
 
   return h
-    .view(poultryClaimViews.dateOfReview, {
-      errorSummary: [{ text: errorMessage, href: reviewDateDayAnchor }],
+    .view(poultryClaimViews.dateOfVisit, {
+      errorSummary: [{ text: errorMessage, href: visitDateDayAnchor }],
       inputsInError: { day: true, month: true, year: true },
-      dateOfReview: {
+      dateOfVisit: {
         day: date.day,
         month: date.month,
         year: date.year,
@@ -242,9 +242,9 @@ async function handleTimingException(request, h, date, agreementDate, tempClaimR
 async function handleValidationError(request, validationError, h, date) {
   request.logger.error({ validationError });
   return h
-    .view(poultryClaimViews.dateOfReview, {
+    .view(poultryClaimViews.dateOfVisit, {
       ...validationError,
-      dateOfReview: {
+      dateOfVisit: {
         day: date.day || "",
         month: date.month || "",
         year: date.year || "",
@@ -255,4 +255,4 @@ async function handleValidationError(request, validationError, h, date) {
     .code(HttpStatus.BAD_REQUEST);
 }
 
-export const poultryDateOfReviewHandlers = [getHandler, postHandler];
+export const poultryDateOfVisitHandlers = [getHandler, postHandler];

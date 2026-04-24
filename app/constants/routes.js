@@ -193,7 +193,7 @@ export const poultryClaimRoutes = {
   biosecurityUsefulness: "/poultry/biosecurity-usefulness",
   checkAnswers: "/poultry/check-answers",
   confirmation: "/poultry/confirmation",
-  dateOfReview: "/poultry/date-of-review",
+  dateOfVisit: "/poultry/date-of-visit",
   selectTheSite: "/poultry/select-the-site",
   enterSiteName: "/poultry/enter-site-name",
   enterCphNumber: "/poultry/enter-cph-number",
@@ -211,7 +211,7 @@ export const poultryClaimRoutes = {
 
 export const poultryClaimViews = {
   checkAnswers: "poultry/claim/check-answers",
-  dateOfReview: "poultry/claim/date-of-review",
+  dateOfVisit: "poultry/claim/date-of-visit",
   selectTheSite: "poultry/claim/select-the-site",
   enterSiteName: "poultry/claim/enter-site-name",
   enterCphNumber: "poultry/claim/enter-cph-number",

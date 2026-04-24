@@ -125,7 +125,7 @@ describe("/poultry/enter-site-name", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-review");
+      expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-visit");
       expectSiteText($);
     });
   });
@@ -334,7 +334,7 @@ describe("/poultry/enter-site-name", () => {
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
       expect($('a[href="#herdName"]').text()).toContain("Enter the site name");
-      expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-review");
+      expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-visit");
       expectSiteText($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });

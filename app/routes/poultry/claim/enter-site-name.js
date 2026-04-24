@@ -11,7 +11,7 @@ import HttpStatus from "http-status-codes";
 import { getTempSiteId } from "../../../lib/get-temp-herd-id.js";
 
 const getBackLink = (herds) =>
-  herds?.length ? poultryClaimRoutes.selectTheSite : poultryClaimRoutes.dateOfReview;
+  herds?.length ? poultryClaimRoutes.selectTheSite : poultryClaimRoutes.dateOfVisit;
 
 const getHandler = {
   method: "GET",
