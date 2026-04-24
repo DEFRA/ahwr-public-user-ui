@@ -502,6 +502,7 @@ describe("/poultry/select-the-site", () => {
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.herdSame,
         "no",
+        { shouldEmitEvent: false },
       );
     });
 
@@ -578,6 +579,7 @@ describe("/poultry/select-the-site", () => {
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.herdSame,
         "no",
+        { shouldEmitEvent: false },
       );
     });
 
@@ -728,6 +730,7 @@ describe("/poultry/select-the-site", () => {
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.herdSame,
         "yes",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
@@ -811,6 +814,7 @@ describe("/poultry/select-the-site", () => {
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.herdSame,
         "yes",
+        { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),

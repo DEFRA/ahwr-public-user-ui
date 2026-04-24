@@ -168,6 +168,7 @@ async function setupSiteData(request, selectedSite) {
     sessionEntryKeys.poultryClaim,
     sessionKeys.poultryClaim.herdSame,
     "yes",
+    { shouldEmitEvent: false },
   );
   await setSessionData(
     request,
@@ -202,5 +203,6 @@ async function cleanSiteData(request) {
     sessionEntryKeys.poultryClaim,
     sessionKeys.poultryClaim.herdSame,
     "no",
+    { shouldEmitEvent: false },
   );
 }
