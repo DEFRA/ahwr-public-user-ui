@@ -36,6 +36,7 @@ export const sessionKeys = {
     dateOfVisit: "dateOfVisit",
     herdName: "herdName",
     herdCph: "herdCph",
+    herds: "herds",
     typesOfPoultry: "typesOfPoultry",
     herdReasons: "herdReasons",
     isOnlyHerdOnSbi: "isOnlyHerdOnSbi",
