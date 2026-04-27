@@ -33,7 +33,7 @@ export const sessionKeys = {
   poultryClaim: {
     amount: "amount",
     latestPoultryApplication: "latestPoultryApplication",
-    dateOfReview: "dateOfReview",
+    dateOfVisit: "dateOfVisit",
     herdName: "herdName",
     herdCph: "herdCph",
     typesOfPoultry: "typesOfPoultry",

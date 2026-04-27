@@ -15,7 +15,7 @@ const createRowsForTable = (claims) => {
   const env = nunjucks.configure(["app/views/snippets", "node_modules/govuk-frontend/dist"]);
 
   return claims.map((claim) => {
-    const dateOfVisit = new Date(claim.data.dateOfReview);
+    const dateOfVisit = new Date(claim.data.dateOfVisit);
     const formattedDateOfVisit = dateOfVisit.toLocaleString("en-gb", {
       day: "numeric",
       month: "long",
@@ -136,7 +136,7 @@ export const poultryVetVisitsHandlers = [
 
         return h.view("poultry/vet-visits", {
           attachedToMultipleBusinesses,
-          claimJourneyStartPointUri: poultryClaimRoutes.dateOfReview + "?journey=new",
+          claimJourneyStartPointUri: poultryClaimRoutes.dateOfVisit + "?journey=new",
           ...organisation,
           reference: application.reference,
           downloadedDocument,

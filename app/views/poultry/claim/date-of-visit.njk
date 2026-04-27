@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorSummary.length %}Error: {% endif %}Date of review - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorSummary.length %}Error: {% endif %}Date of visit - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -23,62 +23,62 @@
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
-        <div id="when-was-the-vet-review" class="govuk-form-group {% if dateOfReview.errorMessage %}govuk-form-group--error{% endif %}">
-          <fieldset class="govuk-fieldset" aria-describedby="date-of-review-hint">
+        <div id="when-was-the-vet-review" class="govuk-form-group {% if dateOfVisit.errorMessage %}govuk-form-group--error{% endif %}">
+          <fieldset class="govuk-fieldset" aria-describedby="date-of-visit-hint">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-              <h1 class="govuk-fieldset__heading">Date of review</h1>
+              <h1 class="govuk-fieldset__heading">Date of visit</h1>
             </legend>
-            <p id="date-of-review-hint" class="govuk-hint">This is the date the vet last visited the site for this review.You can find it on the summary the vet gave you.</p>
+            <p id="date-of-visit-hint" class="govuk-hint">This is the date the vet last visited the site for this review.You can find it on the summary the vet gave you.</p>
                 {% if inputsInError.day %}
-                    {% set dateOfReviewDay = {
+                    {% set dateOfVisitDay = {
                         name: 'day',
-                        value: dateOfReview.day,
+                        value: dateOfVisit.day,
                         classes: 'govuk-input--width-2 govuk-input--error'
                     } %}
                 {% else %}
-                    {% set dateOfReviewDay = {
+                    {% set dateOfVisitDay = {
                         name: 'day',
-                        value: dateOfReview.day,
+                        value: dateOfVisit.day,
                         classes: 'govuk-input--width-2'
                     } %}
                 {% endif %}
 
                 {% if inputsInError.month %}
-                    {% set dateOfReviewMonth = {
+                    {% set dateOfVisitMonth = {
                         name: 'month',
-                        value: dateOfReview.month,
+                        value: dateOfVisit.month,
                         classes: 'govuk-input--width-2 govuk-input--error'
                     } %}
                 {% else %}
-                    {% set dateOfReviewMonth = {
+                    {% set dateOfVisitMonth = {
                         name: 'month',
-                        value: dateOfReview.month,
+                        value: dateOfVisit.month,
                         classes: 'govuk-input--width-2'
                     } %}
                 {% endif %}
 
                 {% if inputsInError.year %}
-                    {% set dateOfReviewYear = {
+                    {% set dateOfVisitYear = {
                         name: 'year',
-                        value: dateOfReview.year,
+                        value: dateOfVisit.year,
                         classes: 'govuk-input--width-4 govuk-input--error'
                     } %}
                 {% else %}
-                {% set dateOfReviewYear = {
+                {% set dateOfVisitYear = {
                     name: 'year',
-                    value: dateOfReview.year,
+                    value: dateOfVisit.year,
                     classes: 'govuk-input--width-4'
                 } %}
                 {% endif %}
             {{ govukDateInput({
-            id: "review-date",
-            namePrefix: "review-date",
+            id: "visit-date",
+            namePrefix: "visit-date",
             hint: {
               html: "For example, 27 3 2022",
-              id: "date-of-review-hint"
+              id: "date-of-visit-hint"
             },
-            errorMessage: dateOfReview.errorMessage,
-            items: [dateOfReviewDay, dateOfReviewMonth, dateOfReviewYear]
+            errorMessage: dateOfVisit.errorMessage,
+            items: [dateOfVisitDay, dateOfVisitMonth, dateOfVisitYear]
           }) }}
           </fieldset>
         </div>

@@ -48,7 +48,7 @@ describe("Poultry check answers test", () => {
       .mockReturnValue({
         latestPoultryApplication: { reference: "POUL-1234-5678" },
         reference: "TEMP-CLAIM-REF-123",
-        dateOfReview: "2024-01-15T10:30:00.000Z",
+        dateOfVisit: "2024-01-15T10:30:00.000Z",
         herdId: "site-uuid-1234",
         herdName: "North Farm Site",
         herdCph: "12/345/6789",
@@ -180,10 +180,10 @@ describe("Poultry check answers test", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       const dateRow = $(".govuk-summary-list__row").eq(1);
-      expect(dateRow.find(".govuk-summary-list__key").text().trim()).toBe("Date of review");
+      expect(dateRow.find(".govuk-summary-list__key").text().trim()).toBe("Date of visit");
       expect(dateRow.find(".govuk-summary-list__value").text().trim()).toBe("15 January 2024");
       expect(dateRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/date-of-review",
+        "/poultry/date-of-visit",
       );
     });
 
@@ -212,7 +212,7 @@ describe("Poultry check answers test", () => {
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
           reference: "TEMP-CLAIM-REF-123",
-          dateOfReview: "2024-01-15T10:30:00.000Z",
+          dateOfVisit: "2024-01-15T10:30:00.000Z",
           herdId: "site-uuid-1234",
           herdName: "Existing Farm Site",
           herdCph: "12/345/6789",
@@ -273,7 +273,7 @@ describe("Poultry check answers test", () => {
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
           reference: "TEMP-CLAIM-REF-123",
-          dateOfReview: "2024-01-15T10:30:00.000Z",
+          dateOfVisit: "2024-01-15T10:30:00.000Z",
           herdId: "site-uuid-1234",
           herdName: "Existing Farm Site",
           herdCph: "98/765/4321",
@@ -334,7 +334,7 @@ describe("Poultry check answers test", () => {
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
           reference: "TEMP-CLAIM-REF-123",
-          dateOfReview: "2024-01-15T10:30:00.000Z",
+          dateOfVisit: "2024-01-15T10:30:00.000Z",
           herdId: "site-uuid-1234",
           herdName: "Existing Farm Site",
           herdCph: "12/345/6789",
@@ -395,7 +395,7 @@ describe("Poultry check answers test", () => {
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
           reference: "TEMP-CLAIM-REF-123",
-          dateOfReview: "2024-01-15T10:30:00.000Z",
+          dateOfVisit: "2024-01-15T10:30:00.000Z",
           herdId: "site-uuid-1234",
           herdName: "North Farm Site",
           herdCph: "12/345/6789",
@@ -433,7 +433,7 @@ describe("Poultry check answers test", () => {
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
           reference: "TEMP-CLAIM-REF-123",
-          dateOfReview: "2024-01-15T10:30:00.000Z",
+          dateOfVisit: "2024-01-15T10:30:00.000Z",
           herdId: "site-uuid-1234",
           herdName: "North Farm Site",
           herdCph: "12/345/6789",
@@ -693,7 +693,7 @@ describe("Poultry check answers test", () => {
             type: "REVIEW",
             createdBy: "admin",
             data: {
-              dateOfReview: "2024-01-15T10:30:00.000Z",
+              dateOfVisit: "2024-01-15T10:30:00.000Z",
               site: {
                 id: "site-uuid-1234",
                 version: 1,
@@ -722,7 +722,7 @@ describe("Poultry check answers test", () => {
         .mockReturnValue({
           latestPoultryApplication: { reference: "POUL-1234-5678" },
           reference: "TEMP-CLAIM-REF-123",
-          dateOfReview: "2024-01-15T10:30:00.000Z",
+          dateOfVisit: "2024-01-15T10:30:00.000Z",
           herdId: "site-uuid-1234",
           herdName: "North Farm Site",
           herdCph: "12/345/6789",
