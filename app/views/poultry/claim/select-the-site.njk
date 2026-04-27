@@ -25,9 +25,9 @@
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
-        {% if herds.length == 1 %}
+        {% if sites.length == 1 %}
           <h1 class="govuk-heading-l govuk-!-margin-bottom-2">{{ pageTitleText }}</h1>
-          <p class="govuk-hint govuk-!-margin-bottom-7">You can now have reviews and follow-ups on more than one {{herdOrFlock}}.</p>
+          <p class="govuk-hint govuk-!-margin-bottom-7">You can now have reviews and follow-ups on more than one site.</p>
           <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Your last claim for this species:</p>
           {{ 
             govukSummaryList({
@@ -37,23 +37,23 @@
                     text: "Species"
                   },
                   value: {
-                    text: species | title 
+                    text: species 
                   }
                 },
                 {
                   key: {
-                    text: herdOrFlock | title + " name"
+                    text: "Site name"
                   },
                   value: {
-                    text: herds[0].name
+                    text: name
                   }
                 },
                 {
                   key: {
-                    text: "Type"
+                    text: "CPH number for site"
                   },
                   value: {
-                    text: claimType
+                    text: cphNumber
                   }
                 },
                 {
@@ -77,34 +77,34 @@
           }}
           {{ 
             govukRadios({
-              id: "herdSelected",
-              name: "herdSelected",
+              id: "siteSelected",
+              name: "siteSelected",
               errorMessage: errorMessage,
               items: [
                 {
-                  value: herds[0].id,
+                  value: siteId,
                   text: "Yes, it's the same",
-                  checked: herdSelected == herds[0].id
+                  checked: siteSelected == siteId
                 },
                 {
-                  value: radioValueNewHerd,
-                  text: "No, it's a different " + herdOrFlock,
-                  checked: herdSelected == radioValueNewHerd
+                  value: radioValueNewSite,
+                  text: "No, it's a different site",
+                  checked: siteSelected == radioValueNewSite
                 }
               ]
             })
           }}
         {% else %}
-          {% set herdOrFlockItems = [] %}
-          {% for item in herds %}
-            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item.id, text: item.name, checked: herdSelected == item.id }]) %}
+          {% set siteItems = [] %}
+          {% for item in sites %}
+            {% set siteItems = siteItems.concat([{ value: item.id, text: item.name, hint: {text: "CPH: " ~ item.cph}, checked: siteSelected == item.id }]) %}
           {% endfor %}
-          {% set herdOrFlockItems = herdOrFlockItems.concat([{ divider: "or" }]) %}
-          {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: radioValueNewHerd, text: "I am claiming for a different " + herdOrFlock, checked: herdSelected === radioValueNewHerd }]) %}
+          {% set siteItems = siteItems.concat([{ divider: "or" }]) %}
+          {% set siteItems = siteItems.concat([{ value: radioValueNewSite, text: "I am claiming for a different site", checked: siteSelected == radioValueNewSite }]) %}
           {{ 
             govukRadios({
-              id: "herdSelected",
-              name: "herdSelected",
+              id: "siteSelected",
+              name: "siteSelected",
               fieldset: {
                 legend: {
                   isPageHeading: true,
@@ -113,10 +113,10 @@
                 }
               }, 
               hint: {
-                text: "You can also choose to claim for a different " + herdOrFlock
+                text: "You can also choose to claim for a different site"
               }, 
               errorMessage: errorMessage,
-              items: herdOrFlockItems
+              items: siteItems
             })
           }}
         {% endif %}
