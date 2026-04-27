@@ -24,6 +24,7 @@ const { poultryClaim: poultryClaimEntry } = sessionEntryKeys;
 const {
   poultryClaim: {
     dateOfVisit: dateOfVisitKey,
+    herds: herdsKey,
     latestPoultryApplication: latestPoultryApplicationKey,
   },
 } = sessionKeys;
@@ -171,6 +172,10 @@ const postHandler = {
       await setSessionData(request, poultryClaimEntry, dateOfVisitKey, dateOfVisit);
 
       const { herds } = await getSites(latestPoultryApplication.reference, request.logger);
+
+      await setSessionData(request, poultryClaimEntry, herdsKey, herds, {
+        shouldEmitEvent: false,
+      });
 
       if (herds.length) {
         return h.redirect(poultryClaimRoutes.selectTheSite);
