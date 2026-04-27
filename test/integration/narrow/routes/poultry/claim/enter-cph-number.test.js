@@ -153,48 +153,6 @@ describe("/enter-cph-number tests", () => {
       expect(emitHerdEvent).toHaveBeenCalled();
     });
 
-    test("navigates to check site details when there are previous herds and othersOnSbi is yes", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: "herd one" }],
-        isOnlyHerdOnSbi: "yes",
-      });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, herdCph: "22/333/4444" },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/check-site-details");
-      expect(setSessionData).toHaveBeenCalled();
-      expect(emitHerdEvent).toHaveBeenCalled();
-    });
-
-    test("navigates to enter site details when there are previous herds and othersOnSbi is no", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: "herd one" }],
-        isOnlyHerdOnSbi: "no",
-      });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, herdCph: "22/333/4444" },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/enter-site-details");
-      expect(setSessionData).toHaveBeenCalled();
-      expect(emitHerdEvent).toHaveBeenCalled();
-    });
-
     describe("cph number validation", () => {
       test("display errors when cph number is missing", async () => {
         getSessionData.mockReturnValue({
@@ -266,7 +224,7 @@ describe("/enter-cph-number tests", () => {
         });
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toEqual("/poultry/enter-site-details");
+        expect(res.headers.location).toEqual("/poultry/site-others-on-sbi");
         expect(setSessionData).toHaveBeenCalled();
         expect(emitHerdEvent).toHaveBeenCalled();
       });
