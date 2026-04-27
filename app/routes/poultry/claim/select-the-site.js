@@ -33,7 +33,7 @@ const getUniqueSites = (previousClaims) => {
       name: claim.herd.name,
       cph: claim.herd.cph,
       species: claim.data?.typesOfPoultry,
-      lastVisitDate: claim.data?.dateOfReview ? formatDate(claim.data.dateOfReview) : undefined,
+      lastVisitDate: claim.data?.dateOfVisit ? formatDate(claim.data.dateOfVisit) : undefined,
       claimDate: claim.createdAt ? formatDate(claim.createdAt) : undefined,
     }));
 };
@@ -115,7 +115,7 @@ const postHandler = {
         return h.redirect(poultryClaimRoutes.enterSiteName);
       }
 
-      const { previousClaims, dateOfReview } = getSessionData(
+      const { previousClaims, dateOfVisit } = getSessionData(
         request,
         sessionEntryKeys.poultryClaim,
       );
@@ -126,7 +126,7 @@ const postHandler = {
 
       if (
         previousClaimForSite &&
-        areDatesWithin10Months(dateOfReview, previousClaimForSite.data.dateOfReview)
+        areDatesWithin10Months(dateOfVisit, previousClaimForSite.data.dateOfVisit)
       ) {
         return h
           .view(poultryClaimViews.cannotContinueTimingRules, {
