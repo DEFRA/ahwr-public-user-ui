@@ -67,7 +67,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -97,7 +97,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -128,7 +128,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -140,7 +140,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Broilers",
-                dateOfReview: "2024-02-10",
+                dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
             },
@@ -170,7 +170,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -182,7 +182,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Broilers",
-                dateOfReview: "2024-02-10",
+                dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
             },
@@ -238,7 +238,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -275,7 +275,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -312,7 +312,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -324,7 +324,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-01-10",
+                dateOfVisit: "2024-01-10",
               },
               createdAt: "2024-01-15",
             },
@@ -336,7 +336,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Broilers",
-                dateOfReview: "2024-02-10",
+                dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
             },
@@ -364,7 +364,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -395,7 +395,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -454,7 +454,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -523,7 +523,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -535,7 +535,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Broilers",
-                dateOfReview: "2024-02-10",
+                dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
             },
@@ -603,7 +603,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -640,7 +640,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -652,7 +652,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Broilers",
-                dateOfReview: "2024-02-10",
+                dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
             },
@@ -689,7 +689,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -764,7 +764,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2024-03-15",
+                dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
@@ -776,7 +776,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Broilers",
-                dateOfReview: "2024-02-10",
+                dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
             },
@@ -837,12 +837,12 @@ describe("/poultry/select-the-site", () => {
       );
     });
 
-    test("shows timing rules exception when dateOfReview is within 10 months of previous claim for same site", async () => {
+    test("shows timing rules exception when dateOfVisit is within 10 months of previous claim for same site", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           siteSelected: null,
-          dateOfReview: new Date("2025-10-31"),
+          dateOfVisit: new Date("2025-10-31"),
           previousClaims: [
             {
               herd: {
@@ -852,7 +852,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2025-01-01",
+                dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
             },
@@ -873,12 +873,12 @@ describe("/poultry/select-the-site", () => {
       expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-the-site");
     });
 
-    test("allows claim when dateOfReview is exactly 10 months after previous claim for same site", async () => {
+    test("allows claim when dateOfVisit is exactly 10 months after previous claim for same site", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           siteSelected: null,
-          dateOfReview: new Date("2025-11-01"),
+          dateOfVisit: new Date("2025-11-01"),
           previousClaims: [
             {
               herd: {
@@ -888,7 +888,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2025-01-01",
+                dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
             },
@@ -909,12 +909,12 @@ describe("/poultry/select-the-site", () => {
       expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-the-site");
     });
 
-    test("allows claim when dateOfReview is more than 10 months after previous claim for same site", async () => {
+    test("allows claim when dateOfVisit is more than 10 months after previous claim for same site", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           siteSelected: null,
-          dateOfReview: new Date("2025-12-01"),
+          dateOfVisit: new Date("2025-12-01"),
           previousClaims: [
             {
               herd: {
@@ -924,7 +924,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2025-01-01",
+                dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
             },
@@ -948,7 +948,7 @@ describe("/poultry/select-the-site", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           siteSelected: null,
-          dateOfReview: new Date("2025-10-31"),
+          dateOfVisit: new Date("2025-10-31"),
           previousClaims: [
             {
               herd: {
@@ -958,7 +958,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Layers",
-                dateOfReview: "2025-01-01",
+                dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
             },
@@ -970,7 +970,7 @@ describe("/poultry/select-the-site", () => {
               },
               data: {
                 typesOfPoultry: "Broilers",
-                dateOfReview: "2024-01-01",
+                dateOfVisit: "2024-01-01",
               },
               createdAt: "2024-01-05",
             },

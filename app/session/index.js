@@ -48,6 +48,7 @@ export const sessionKeys = {
     latestPoultryApplication: "latestPoultryApplication",
     minimumNumberOfBirds: "minimumNumberOfBirds",
     previousClaims: "previousClaims",
+    siteSelected: "siteSelected",
     reference: "reference",
     tempSiteId: "tempSiteId",
     typesOfPoultry: "typesOfPoultry",
