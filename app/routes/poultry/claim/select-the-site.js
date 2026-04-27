@@ -19,6 +19,7 @@ const getUniqueSites = (previousClaims) => {
 
   const seen = new Set();
   return previousClaims
+    .filter((claim) => claim.herd?.name && claim.herd?.cph)
     .filter((claim) => {
       const key = `${claim.herd.name}|${claim.herd.cph}`;
       if (seen.has(key)) {
@@ -57,7 +58,7 @@ const buildViewData = (previousClaims) => {
 
   if (previousSites.length > 1) {
     return {
-      backLink: poultryClaimRoutes.dateOfReview,
+      backLink: poultryClaimRoutes.dateOfVisit,
       pageTitleText: "Select the site you are claiming for",
       sites: previousSites,
       radioValueNewSite,
@@ -66,7 +67,7 @@ const buildViewData = (previousClaims) => {
 
   const site = previousSites[0];
   return {
-    backLink: poultryClaimRoutes.dateOfReview,
+    backLink: poultryClaimRoutes.dateOfVisit,
     pageTitleText: "Is this the same site you have previously claimed for?",
     siteId: site?.id,
     name: site?.name,
@@ -130,7 +131,7 @@ const postHandler = {
         return h
           .view(poultryClaimViews.cannotContinueTimingRules, {
             backLink: poultryClaimRoutes.selectTheSite,
-            backToDateLink: poultryClaimRoutes.dateOfReview,
+            backToDateLink: poultryClaimRoutes.dateOfVisit,
           })
           .code(HttpStatus.BAD_REQUEST);
       }
