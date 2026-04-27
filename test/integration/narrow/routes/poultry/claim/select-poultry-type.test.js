@@ -114,6 +114,20 @@ describe("/poultry/select-poultry-type", () => {
       const $ = cheerio.load(res.payload);
       expect($("#back").attr("href")).toEqual("/poultry/select-the-site");
     });
+
+    test("handles undefined typesOfPoultry in session", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({});
+
+      const res = await server.inject({
+        method: "GET",
+        url,
+        auth,
+      });
+
+      expect(res.statusCode).toBe(200);
+    });
   });
 
   describe("POST", () => {
