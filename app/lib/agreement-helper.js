@@ -2,7 +2,7 @@ import { APPLICATION_REFERENCE_PREFIX_POULTRY } from "ffc-ahwr-common-library";
 
 import { config } from "../config/index.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { dashboardRoutes } from "../constants/routes.js";
+import { dashboardRoutes, poultryApplyRoutes, poultryClaimRoutes } from "../constants/routes.js";
 
 export const checkIfPoultryAgreement = (latestEndemicsApplication) => {
   return (
@@ -20,11 +20,31 @@ const userHasLivestockAgreement = (request) => {
   return latestEndemicsApplication?.status === "AGREED";
 };
 
+const userHasPoultryAgreement = (request) => {
+  const latestPoultryApplication = getSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.latestPoultryApplication,
+  );
+  console.log({ status: latestPoultryApplication?.status });
+  return latestPoultryApplication?.status === "AGREED";
+};
+
 export const shouldShowManageYourClaims = (request) => {
   const hiddenPaths = [dashboardRoutes.checkDetails, dashboardRoutes.selectFunding];
+  const poultryRoutes = [
+    poultryApplyRoutes.confirmation,
+    dashboardRoutes.poultryManageYourClaims,
+    ...Object.values(poultryClaimRoutes),
+  ];
 
   if (hiddenPaths.includes(request.path)) {
     return false;
+  }
+
+  console.log({ path: request.path });
+  if (poultryRoutes.includes(request.path)) {
+    return userHasPoultryAgreement(request);
   }
 
   return userHasLivestockAgreement(request);
