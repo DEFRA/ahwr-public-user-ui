@@ -11,7 +11,7 @@ export const checkIfPoultryAgreement = (latestEndemicsApplication) => {
   );
 };
 
-const getUserHasAgreement = (request) => {
+const userHasLivestockAgreement = (request) => {
   const latestEndemicsApplication = getSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
@@ -27,5 +27,5 @@ export const shouldShowManageYourClaims = (request) => {
     return false;
   }
 
-  return getUserHasAgreement(request);
+  return userHasLivestockAgreement(request);
 };
