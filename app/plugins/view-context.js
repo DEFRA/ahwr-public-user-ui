@@ -1,11 +1,10 @@
 import { config } from "../config/index.js";
 import { POULTRY_SCHEME, RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
-import { applyRoutes, dashboardRoutes } from "../constants/routes.js";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { getScheme } from "../lib/context-helper.js";
+import { dashboardRoutes } from "../constants/routes.js";
+import { getScheme, getSurveyUri } from "../lib/context-helper.js";
 import { shouldShowManageYourClaims } from "../lib/agreement-helper.js";
 
-const { serviceName, serviceUri, customerSurvey } = config;
+const { serviceName, serviceUri } = config;
 
 export const viewContextPlugin = {
   plugin: {
@@ -46,16 +45,3 @@ export const viewContextPlugin = {
     },
   },
 };
-
-function getSurveyUri(request, currentPath, currentMethod) {
-  if (currentPath === applyRoutes.declaration && currentMethod === "post") {
-    return customerSurvey.applyUri;
-  }
-  return getSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-    sessionKeys.endemicsClaim.latestEndemicsApplication,
-  )
-    ? customerSurvey.claimUri
-    : customerSurvey.applyUri;
-}
