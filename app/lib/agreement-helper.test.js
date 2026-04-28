@@ -1,6 +1,7 @@
+import { when } from "jest-when";
 import { config } from "../config/index.js";
 import { checkIfPoultryAgreement, shouldShowManageYourClaims } from "./agreement-helper.js";
-import { getSessionData } from "../session/index.js";
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { dashboardRoutes } from "../constants/routes.js";
 
 jest.mock("../session/index.js");
@@ -81,9 +82,19 @@ describe("shouldShowManageYourClaims", () => {
   });
 
   describe("livestock urls", () => {
+    const mockEndemicsSessionData = (request, returnValue) => {
+      when(getSessionData)
+        .calledWith(
+          request,
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue(returnValue);
+    };
+
     test("returns false when latestEndemicsApplication is null", () => {
-      getSessionData.mockReturnValue(null);
       const request = { path: "/vet-visits" };
+      mockEndemicsSessionData(request, null);
 
       const actual = shouldShowManageYourClaims(request);
 
@@ -91,8 +102,8 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("returns false when latestEndemicsApplication is undefined", () => {
-      getSessionData.mockReturnValue(undefined);
       const request = { path: "/vet-visits" };
+      mockEndemicsSessionData(request, undefined);
 
       const actual = shouldShowManageYourClaims(request);
 
@@ -100,8 +111,8 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("returns false when latestEndemicsApplication has no status", () => {
-      getSessionData.mockReturnValue({});
       const request = { path: "/vet-visits" };
+      mockEndemicsSessionData(request, {});
 
       const actual = shouldShowManageYourClaims(request);
 
@@ -109,8 +120,8 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("returns false when status is not AGREED", () => {
-      getSessionData.mockReturnValue({ status: "PENDING" });
       const request = { path: "/vet-visits" };
+      mockEndemicsSessionData(request, { status: "PENDING" });
 
       const actual = shouldShowManageYourClaims(request);
 
@@ -118,8 +129,8 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("returns true when status is AGREED", () => {
-      getSessionData.mockReturnValue({ status: "AGREED" });
       const request = { path: "/vet-visits" };
+      mockEndemicsSessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
 
@@ -127,8 +138,8 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("returns true when status is AGREED on a claim route", () => {
-      getSessionData.mockReturnValue({ status: "AGREED" });
       const request = { path: "/date-of-visit" };
+      mockEndemicsSessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
 
@@ -136,8 +147,8 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("returns true when status is AGREED on apply confirmation", () => {
-      getSessionData.mockReturnValue({ status: "AGREED" });
       const request = { path: "/confirmation" };
+      mockEndemicsSessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
 
