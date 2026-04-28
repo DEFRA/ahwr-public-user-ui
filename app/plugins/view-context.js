@@ -3,6 +3,7 @@ import { POULTRY_SCHEME, RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 import { applyRoutes, dashboardRoutes } from "../constants/routes.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { getScheme } from "../lib/context-helper.js";
+import { shouldShowManageYourClaims } from "../lib/agreement-helper.js";
 
 const { serviceName, serviceUri, customerSurvey } = config;
 
@@ -58,22 +59,3 @@ function getSurveyUri(request, currentPath, currentMethod) {
     ? customerSurvey.claimUri
     : customerSurvey.applyUri;
 }
-
-const getUserHasAgreement = (request) => {
-  const latestEndemicsApplication = getSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-    sessionKeys.endemicsClaim.latestEndemicsApplication,
-  );
-  return latestEndemicsApplication?.status === "AGREED";
-};
-
-const shouldShowManageYourClaims = (request) => {
-  const hiddenPaths = [dashboardRoutes.checkDetails, dashboardRoutes.selectFunding];
-
-  if (hiddenPaths.includes(request.path)) {
-    return false;
-  }
-
-  return getUserHasAgreement(request);
-};
