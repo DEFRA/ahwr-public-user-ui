@@ -26,7 +26,6 @@ const userHasPoultryAgreement = (request) => {
     sessionEntryKeys.poultryClaim,
     sessionKeys.poultryClaim.latestPoultryApplication,
   );
-  console.log({ status: latestPoultryApplication?.status });
   return latestPoultryApplication?.status === "AGREED";
 };
 
@@ -42,7 +41,6 @@ export const shouldShowManageYourClaims = (request) => {
     return false;
   }
 
-  console.log({ path: request.path });
   if (poultryRoutes.includes(request.path)) {
     return userHasPoultryAgreement(request);
   }
