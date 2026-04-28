@@ -11,6 +11,7 @@ import {
   skipOtherHerdsOnSbiPage,
   skipSameHerdPage,
 } from "./context-helper.js";
+import { when } from "jest-when";
 import {
   ONLY_HERD,
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
@@ -525,48 +526,55 @@ describe("context-helper", () => {
       jest.clearAllMocks();
     });
 
-    it("returns applyUri when path is /declaration and method is post", () => {
-      const result = getSurveyUri(mockRequest, applyRoutes.declaration, "post");
+    const mockEndemicsSessionData = (request, returnValue) => {
+      when(getSessionData)
+        .calledWith(
+          request,
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue(returnValue);
+    };
 
-      expect(result).toBe(config.customerSurvey.applyUri);
-      expect(getSessionData).not.toHaveBeenCalled();
-    });
+    describe("livestock urls", () => {
+      it("returns applyUri when path is /declaration and method is post", () => {
+        const result = getSurveyUri(mockRequest, applyRoutes.declaration, "post");
 
-    it("returns claimUri when latestEndemicsApplication exists", () => {
-      getSessionData.mockReturnValue({ reference: "IAHW-1111-2222" });
+        expect(result).toBe(config.customerSurvey.applyUri);
+        expect(getSessionData).not.toHaveBeenCalled();
+      });
 
-      const result = getSurveyUri(mockRequest, "/vet-visits", "get");
+      it("returns claimUri when latestEndemicsApplication exists", () => {
+        mockEndemicsSessionData(mockRequest, { reference: "IAHW-1111-2222" });
 
-      expect(getSessionData).toHaveBeenCalledWith(
-        mockRequest,
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.latestEndemicsApplication,
-      );
-      expect(result).toBe(config.customerSurvey.claimUri);
-    });
+        const result = getSurveyUri(mockRequest, "/vet-visits", "get");
 
-    it("returns applyUri when latestEndemicsApplication is null", () => {
-      getSessionData.mockReturnValue(null);
+        expect(result).toBe(config.customerSurvey.claimUri);
+      });
 
-      const result = getSurveyUri(mockRequest, "/vet-visits", "get");
+      it("returns applyUri when latestEndemicsApplication is null", () => {
+        mockEndemicsSessionData(mockRequest, null);
 
-      expect(result).toBe(config.customerSurvey.applyUri);
-    });
+        const result = getSurveyUri(mockRequest, "/vet-visits", "get");
 
-    it("returns applyUri when latestEndemicsApplication is undefined", () => {
-      getSessionData.mockReturnValue(undefined);
+        expect(result).toBe(config.customerSurvey.applyUri);
+      });
 
-      const result = getSurveyUri(mockRequest, "/vet-visits", "get");
+      it("returns applyUri when latestEndemicsApplication is undefined", () => {
+        mockEndemicsSessionData(mockRequest, undefined);
 
-      expect(result).toBe(config.customerSurvey.applyUri);
-    });
+        const result = getSurveyUri(mockRequest, "/vet-visits", "get");
 
-    it("returns claimUri when path is /declaration but method is get and latestEndemicsApplication exists", () => {
-      getSessionData.mockReturnValue({ reference: "IAHW-1111-2222" });
+        expect(result).toBe(config.customerSurvey.applyUri);
+      });
 
-      const result = getSurveyUri(mockRequest, applyRoutes.declaration, "get");
+      it("returns claimUri when path is /declaration but method is get and latestEndemicsApplication exists", () => {
+        mockEndemicsSessionData(mockRequest, { reference: "IAHW-1111-2222" });
 
-      expect(result).toBe(config.customerSurvey.claimUri);
+        const result = getSurveyUri(mockRequest, applyRoutes.declaration, "get");
+
+        expect(result).toBe(config.customerSurvey.claimUri);
+      });
     });
   });
 });
