@@ -64,8 +64,6 @@ const configSchema = joi.object({
   customerSurvey: {
     claimUri: joi.string().uri().required(),
     applyUri: joi.string().uri().required(),
-    poultryClaimUri: joi.string().uri().required(),
-    poultryApplyUri: joi.string().uri().required(),
   },
   applicationApi: applicationApiConfigSchema,
   wreckHttp: {
@@ -157,10 +155,6 @@ export const getConfig = () => {
     customerSurvey: {
       claimUri: process.env.CUSTOMER_SURVEY_CLAIM_URI ?? "https://forms.office.com/e/SLKqfJQ499",
       applyUri: process.env.CUSTOMER_SURVEY_APPLY_URI ?? "https://forms.office.com/e/4frXv6SqvR",
-      poultryClaimUri:
-        process.env.CUSTOMER_POULTRY_SURVEY_CLAIM_URI ?? "https://forms.office.com/e/gvmtppCgXv",
-      poultryApplyUri:
-        process.env.CUSTOMER_POULTRY_SURVEY_APPLY_URI ?? "https://forms.office.com/e/FNjYE5pKJc",
     },
     applicationApi: applicationApiConfig,
     wreckHttp: {

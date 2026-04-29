@@ -250,7 +250,7 @@ export function getSurveyUri(request, currentPath, currentMethod) {
 
 function getPoultrySurveyUri(request, currentPath, currentMethod) {
   if (currentPath === poultryApplyRoutes.declaration && currentMethod === "post") {
-    return customerSurvey.poultryApplyUri;
+    return customerSurvey.applyUri;
   }
 
   return getSessionData(
@@ -258,8 +258,8 @@ function getPoultrySurveyUri(request, currentPath, currentMethod) {
     sessionEntryKeys.poultryClaim,
     sessionKeys.poultryClaim.latestPoultryApplication,
   )
-    ? customerSurvey.poultryClaimUri
-    : customerSurvey.poultryApplyUri;
+    ? customerSurvey.claimUri
+    : customerSurvey.applyUri;
 }
 
 function getEndemicsSurveyUri(request, currentPath, currentMethod) {

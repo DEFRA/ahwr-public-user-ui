@@ -591,7 +591,7 @@ describe("context-helper", () => {
       it("returns applyUri when path is /declaration and method is post", () => {
         const result = getSurveyUri(mockRequest, poultryApplyRoutes.declaration, "post");
 
-        expect(result).toBe(config.customerSurvey.poultryApplyUri);
+        expect(result).toBe(config.customerSurvey.applyUri);
         expect(getSessionData).not.toHaveBeenCalled();
       });
 
@@ -600,7 +600,7 @@ describe("context-helper", () => {
 
         const result = getSurveyUri(mockRequest, "/poultry/vet-visits", "get");
 
-        expect(result).toBe(config.customerSurvey.poultryClaimUri);
+        expect(result).toBe(config.customerSurvey.claimUri);
       });
 
       it("returns applyUri when latestPoultryApplication is null", () => {
@@ -608,7 +608,7 @@ describe("context-helper", () => {
 
         const result = getSurveyUri(mockRequest, "/poultry/vet-visits", "get");
 
-        expect(result).toBe(config.customerSurvey.poultryApplyUri);
+        expect(result).toBe(config.customerSurvey.applyUri);
       });
 
       it("returns applyUri when latestPoultryApplication is undefined", () => {
@@ -616,7 +616,7 @@ describe("context-helper", () => {
 
         const result = getSurveyUri(mockRequest, "/poultry/vet-visits", "get");
 
-        expect(result).toBe(config.customerSurvey.poultryApplyUri);
+        expect(result).toBe(config.customerSurvey.applyUri);
       });
 
       it("returns claimUri when path is /declaration but method is get and latestPoultryApplication exists", () => {
@@ -624,7 +624,7 @@ describe("context-helper", () => {
 
         const result = getSurveyUri(mockRequest, poultryApplyRoutes.declaration, "get");
 
-        expect(result).toBe(config.customerSurvey.poultryClaimUri);
+        expect(result).toBe(config.customerSurvey.claimUri);
       });
     });
   });
