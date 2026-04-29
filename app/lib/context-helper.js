@@ -17,7 +17,13 @@ import {
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
   PIGS_AND_PAYMENTS_RELEASE_DATE,
 } from "../constants/claim-constants.js";
-import { applyRoutes, claimRoutes } from "../constants/routes.js";
+import {
+  applyRoutes,
+  claimRoutes,
+  dashboardRoutes,
+  poultryApplyRoutes,
+  poultryClaimRoutes,
+} from "../constants/routes.js";
 import {
   AHWR_SCHEME,
   APPLICATION_REFERENCE_PREFIX_NEW_WORLD,
@@ -229,9 +235,30 @@ export const getScheme = (request) => {
 };
 
 export function getSurveyUri(request, currentPath, currentMethod) {
+  const poultryRoutes = [
+    poultryApplyRoutes.declaration,
+    dashboardRoutes.poultryManageYourClaims,
+    ...Object.values(poultryClaimRoutes),
+  ];
+
+  if (poultryRoutes.includes(currentPath)) {
+    if (currentPath === poultryApplyRoutes.declaration && currentMethod === "post") {
+      return customerSurvey.poultryApplyUri;
+    }
+
+    return getSessionData(
+      request,
+      sessionEntryKeys.poultryClaim,
+      sessionKeys.poultryClaim.latestPoultryApplication,
+    )
+      ? customerSurvey.poultryClaimUri
+      : customerSurvey.poultryApplyUri;
+  }
+
   if (currentPath === applyRoutes.declaration && currentMethod === "post") {
     return customerSurvey.applyUri;
   }
+
   return getSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
