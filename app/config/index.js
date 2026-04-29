@@ -158,9 +158,9 @@ export const getConfig = () => {
       claimUri: process.env.CUSTOMER_SURVEY_CLAIM_URI ?? "https://forms.office.com/e/SLKqfJQ499",
       applyUri: process.env.CUSTOMER_SURVEY_APPLY_URI ?? "https://forms.office.com/e/4frXv6SqvR",
       poultryClaimUri:
-        process.env.CUSTOMER_SURVEY_CLAIM_URI ?? "https://forms.office.com/e/SLKqfJQ498",
+        process.env.CUSTOMER_POULTRY_SURVEY_CLAIM_URI ?? "https://forms.office.com/e/gvmtppCgXv",
       poultryApplyUri:
-        process.env.CUSTOMER_SURVEY_APPLY_URI ?? "https://forms.office.com/e/4frXv6Sqv8",
+        process.env.CUSTOMER_POULTRY_SURVEY_APPLY_URI ?? "https://forms.office.com/e/FNjYE5pKJc",
     },
     applicationApi: applicationApiConfig,
     wreckHttp: {
