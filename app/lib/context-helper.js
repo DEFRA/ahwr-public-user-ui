@@ -242,19 +242,27 @@ export function getSurveyUri(request, currentPath, currentMethod) {
   ];
 
   if (poultryRoutes.includes(currentPath)) {
-    if (currentPath === poultryApplyRoutes.declaration && currentMethod === "post") {
-      return customerSurvey.poultryApplyUri;
-    }
-
-    return getSessionData(
-      request,
-      sessionEntryKeys.poultryClaim,
-      sessionKeys.poultryClaim.latestPoultryApplication,
-    )
-      ? customerSurvey.poultryClaimUri
-      : customerSurvey.poultryApplyUri;
+    return getPoultrySurveyUri(request, currentPath, currentMethod);
   }
 
+  return getEndemicsSurveyUri(request, currentPath, currentMethod);
+}
+
+function getPoultrySurveyUri(request, currentPath, currentMethod) {
+  if (currentPath === poultryApplyRoutes.declaration && currentMethod === "post") {
+    return customerSurvey.poultryApplyUri;
+  }
+
+  return getSessionData(
+    request,
+    sessionEntryKeys.poultryClaim,
+    sessionKeys.poultryClaim.latestPoultryApplication,
+  )
+    ? customerSurvey.poultryClaimUri
+    : customerSurvey.poultryApplyUri;
+}
+
+function getEndemicsSurveyUri(request, currentPath, currentMethod) {
   if (currentPath === applyRoutes.declaration && currentMethod === "post") {
     return customerSurvey.applyUri;
   }
