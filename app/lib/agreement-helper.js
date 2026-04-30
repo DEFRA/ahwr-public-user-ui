@@ -17,7 +17,7 @@ export const checkIfPoultryAgreement = (latestEndemicsApplication) => {
 };
 
 const userHasLivestockAgreement = (request) => {
-  // Technically, this should never happen.
+  // Technically, this should never happen, because of redirection plugin.
   if (request.path === applyRoutes.declaration && request.method === "get") {
     return false;
   }
@@ -31,7 +31,7 @@ const userHasLivestockAgreement = (request) => {
 };
 
 const userHasPoultryAgreement = (request) => {
-  // Technically, this should never happen.
+  // Technically, this should never happen, because of redirection plugin.
   if (request.path === poultryApplyRoutes.declaration && request.method === "get") {
     return false;
   }
