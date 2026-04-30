@@ -2,7 +2,7 @@ import { when } from "jest-when";
 import { config } from "../config/index.js";
 import { checkIfPoultryAgreement, shouldShowManageYourClaims } from "./agreement-helper.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { dashboardRoutes } from "../constants/routes.js";
+import { applyRoutes, dashboardRoutes, poultryApplyRoutes } from "../constants/routes.js";
 
 jest.mock("../session/index.js");
 
@@ -183,6 +183,15 @@ describe("shouldShowManageYourClaims", () => {
 
       expect(actual).toBe(false);
     });
+
+    test("false when no status in livestock but agreed on poultry on endemics apply route", () => {
+      const request = { path: applyRoutes.timings };
+      mockPoultrySessionData(request, { status: "AGREED" });
+
+      const actual = shouldShowManageYourClaims(request);
+
+      expect(actual).toBe(false);
+    });
   });
 
   describe("poultry urls", () => {
@@ -195,7 +204,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("false when latestEndemicsApplication is undefined", () => {
+    test("false when latestPoultryApplication is undefined", () => {
       const request = { path: "/poultry/vet-visits" };
       mockPoultrySessionData(request, undefined);
 
@@ -204,7 +213,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("false when latestEndemicsApplication has no status", () => {
+    test("false when latestPoultryApplication has no status", () => {
       const request = { path: "/poultry/vet-visits" };
       mockPoultrySessionData(request, {});
 
@@ -271,6 +280,15 @@ describe("shouldShowManageYourClaims", () => {
     test("false on get declaration (before confirmation)", () => {
       const request = { path: "/poultry/declaration", method: "get" };
       mockPoultrySessionData(request, { status: "AGREED" });
+
+      const actual = shouldShowManageYourClaims(request);
+
+      expect(actual).toBe(false);
+    });
+
+    test("false when no status in poultry but agreed on endemics on poultry apply route", () => {
+      const request = { path: poultryApplyRoutes.timings };
+      mockEndemicsSessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
 

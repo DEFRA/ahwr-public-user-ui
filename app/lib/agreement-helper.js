@@ -48,7 +48,7 @@ export const shouldShowManageYourClaims = (request) => {
   const hiddenPaths = [dashboardRoutes.checkDetails, dashboardRoutes.selectFunding];
 
   const poultryRoutes = [
-    poultryApplyRoutes.declaration,
+    ...Object.values(poultryApplyRoutes),
     dashboardRoutes.poultryManageYourClaims,
     ...Object.values(poultryClaimRoutes),
   ];
