@@ -16,18 +16,16 @@ export const viewContextPlugin = {
         if (response.variety === "view") {
           const ctx = response.source.context || {};
 
-          const { path, method } = request;
-
           let serviceUrl = "/";
 
-          if (path.startsWith("/cookies")) {
+          if (request.path.startsWith("/cookies")) {
             serviceUrl = "/cookies";
           }
 
           ctx.serviceName = serviceName;
           ctx.serviceUrl = serviceUrl;
           ctx.serviceUri = serviceUri;
-          ctx.customerSurveyUri = getSurveyUri(request, path, method);
+          ctx.customerSurveyUri = getSurveyUri(request);
           ctx.userIsSignedIn = request.auth.isAuthenticated;
           ctx.showManageYourClaims = shouldShowManageYourClaims(request);
           ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS;

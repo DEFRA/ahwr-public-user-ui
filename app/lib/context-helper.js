@@ -233,16 +233,16 @@ export const getScheme = (request) => {
   return fundingSelectionType === "POUL" ? POULTRY_SCHEME : AHWR_SCHEME;
 };
 
-export function getSurveyUri(request, currentPath, currentMethod) {
-  if (allPoultryRoutes.includes(currentPath)) {
-    return getPoultrySurveyUri(request, currentPath, currentMethod);
+export function getSurveyUri(request) {
+  if (allPoultryRoutes.includes(request.path)) {
+    return getPoultrySurveyUri(request);
   }
 
-  return getEndemicsSurveyUri(request, currentPath, currentMethod);
+  return getEndemicsSurveyUri(request);
 }
 
-function getPoultrySurveyUri(request, currentPath, currentMethod) {
-  if (currentPath === poultryApplyRoutes.declaration && currentMethod === "post") {
+function getPoultrySurveyUri(request) {
+  if (request.path === poultryApplyRoutes.declaration && request.method === "post") {
     return customerSurvey.applyUri;
   }
 
@@ -255,8 +255,8 @@ function getPoultrySurveyUri(request, currentPath, currentMethod) {
     : customerSurvey.applyUri;
 }
 
-function getEndemicsSurveyUri(request, currentPath, currentMethod) {
-  if (currentPath === applyRoutes.declaration && currentMethod === "post") {
+function getEndemicsSurveyUri(request) {
+  if (request.path === applyRoutes.declaration && request.method === "post") {
     return customerSurvey.applyUri;
   }
 
