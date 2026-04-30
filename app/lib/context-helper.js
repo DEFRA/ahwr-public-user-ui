@@ -22,6 +22,7 @@ import {
   applyRoutes,
   claimRoutes,
   poultryApplyRoutes,
+  poultryClaimRoutes,
 } from "../constants/routes.js";
 import {
   AHWR_SCHEME,
@@ -242,17 +243,16 @@ export function getSurveyUri(request) {
 }
 
 function getPoultrySurveyUri(request) {
-  if (request.path === poultryApplyRoutes.declaration && request.method === "post") {
+  if ([...Object.values(poultryApplyRoutes)].includes(request.path)) {
     return customerSurvey.applyUri;
   }
 
-  return getSessionData(
-    request,
-    sessionEntryKeys.poultryClaim,
-    sessionKeys.poultryClaim.latestPoultryApplication,
-  )
-    ? customerSurvey.claimUri
-    : customerSurvey.applyUri;
+  if ([...Object.values(poultryClaimRoutes)].includes(request.path)) {
+    return customerSurvey.claimUri;
+  }
+
+  // The only one left is the manage your claim url
+  return customerSurvey.claimUri;
 }
 
 function getEndemicsSurveyUri(request) {

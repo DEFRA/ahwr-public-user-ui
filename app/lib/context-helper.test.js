@@ -29,7 +29,12 @@ import {
 import { createTempReference } from "./create-temp-ref.js";
 import { AHWR_SCHEME, POULTRY_SCHEME } from "ffc-ahwr-common-library";
 import { config } from "../config/index.js";
-import { applyRoutes, dashboardRoutes, poultryApplyRoutes } from "../constants/routes.js";
+import {
+  applyRoutes,
+  dashboardRoutes,
+  poultryApplyRoutes,
+  poultryClaimRoutes,
+} from "../constants/routes.js";
 
 jest.mock("../api-requests/application-api.js");
 jest.mock("../api-requests/claim-api.js");
@@ -591,7 +596,7 @@ describe("context-helper", () => {
     });
 
     describe("poultry urls", () => {
-      it("returns applyUri when path is /declaration and method is post", () => {
+      it.each([...Object.values(poultryApplyRoutes)])("returns applyUri on %s route", (url) => {
         const mockRequest = { path: poultryApplyRoutes.declaration, method: "post" };
         const result = getSurveyUri(mockRequest);
 
@@ -599,8 +604,8 @@ describe("context-helper", () => {
         expect(getSessionData).not.toHaveBeenCalled();
       });
 
-      it("returns claimUri when latestPoultryApplication exists", () => {
-        const mockRequest = { path: dashboardRoutes.poultryManageYourClaims, method: "get" };
+      it.each([...Object.values(poultryClaimRoutes)])("returns claimUri on %s route", (url) => {
+        const mockRequest = { path: url, method: "get" };
         mockPoultrySessionData(mockRequest, { reference: "POUL-1111-2222" });
 
         const result = getSurveyUri(mockRequest);
@@ -608,27 +613,9 @@ describe("context-helper", () => {
         expect(result).toBe(config.customerSurvey.claimUri);
       });
 
-      it("returns applyUri when latestPoultryApplication is null", () => {
+      it("returns claim routes on Manage your claims", () => {
         const mockRequest = { path: dashboardRoutes.poultryManageYourClaims, method: "get" };
         mockPoultrySessionData(mockRequest, null);
-
-        const result = getSurveyUri(mockRequest);
-
-        expect(result).toBe(config.customerSurvey.applyUri);
-      });
-
-      it("returns applyUri when latestPoultryApplication is undefined", () => {
-        const mockRequest = { path: dashboardRoutes.poultryManageYourClaims, method: "get" };
-        mockPoultrySessionData(mockRequest, undefined);
-
-        const result = getSurveyUri(mockRequest);
-
-        expect(result).toBe(config.customerSurvey.applyUri);
-      });
-
-      it("returns claimUri when path is /declaration but method is get and latestPoultryApplication exists", () => {
-        const mockRequest = { path: poultryApplyRoutes.declaration, method: "get" };
-        mockPoultrySessionData(mockRequest, { reference: "POUL1-1111-2222" });
 
         const result = getSurveyUri(mockRequest);
 
