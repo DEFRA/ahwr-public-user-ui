@@ -1,11 +1,10 @@
 import { config } from "../config/index.js";
 import { POULTRY_SCHEME, RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
-import { applyRoutes, dashboardRoutes } from "../constants/routes.js";
-import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { getScheme } from "../lib/context-helper.js";
+import { dashboardRoutes } from "../constants/routes.js";
+import { getScheme, getSurveyUri } from "../lib/context-helper.js";
 import { shouldShowManageYourClaims } from "../lib/agreement-helper.js";
 
-const { serviceName, serviceUri, customerSurvey } = config;
+const { serviceName, serviceUri } = config;
 
 export const viewContextPlugin = {
   plugin: {
@@ -17,18 +16,16 @@ export const viewContextPlugin = {
         if (response.variety === "view") {
           const ctx = response.source.context || {};
 
-          const { path, method } = request;
-
           let serviceUrl = "/";
 
-          if (path.startsWith("/cookies")) {
+          if (request.path.startsWith("/cookies")) {
             serviceUrl = "/cookies";
           }
 
           ctx.serviceName = serviceName;
           ctx.serviceUrl = serviceUrl;
           ctx.serviceUri = serviceUri;
-          ctx.customerSurveyUri = getSurveyUri(request, path, method);
+          ctx.customerSurveyUri = getSurveyUri(request);
           ctx.userIsSignedIn = request.auth.isAuthenticated;
           ctx.showManageYourClaims = shouldShowManageYourClaims(request);
           ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS;
@@ -46,16 +43,3 @@ export const viewContextPlugin = {
     },
   },
 };
-
-function getSurveyUri(request, currentPath, currentMethod) {
-  if (currentPath === applyRoutes.declaration && currentMethod === "post") {
-    return customerSurvey.applyUri;
-  }
-  return getSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-    sessionKeys.endemicsClaim.latestEndemicsApplication,
-  )
-    ? customerSurvey.claimUri
-    : customerSurvey.applyUri;
-}
