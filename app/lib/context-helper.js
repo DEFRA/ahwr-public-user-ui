@@ -1,3 +1,4 @@
+import { config } from "../config/index.js";
 import {
   getSessionData,
   setSessionData,
@@ -16,7 +17,13 @@ import {
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
   PIGS_AND_PAYMENTS_RELEASE_DATE,
 } from "../constants/claim-constants.js";
-import { claimRoutes } from "../constants/routes.js";
+import {
+  allPoultryRoutes,
+  applyRoutes,
+  claimRoutes,
+  poultryApplyUrls,
+  poultryClaimUrls,
+} from "../constants/routes.js";
 import {
   AHWR_SCHEME,
   APPLICATION_REFERENCE_PREFIX_NEW_WORLD,
@@ -25,6 +32,8 @@ import {
   claimType,
   POULTRY_SCHEME,
 } from "ffc-ahwr-common-library";
+
+const { customerSurvey } = config;
 
 export async function refreshApplications(sbi, request) {
   const applications = await getApplicationsBySbi(sbi, request.logger);
@@ -224,3 +233,38 @@ export const getScheme = (request) => {
 
   return fundingSelectionType === "POUL" ? POULTRY_SCHEME : AHWR_SCHEME;
 };
+
+export function getSurveyUri(request) {
+  if (allPoultryRoutes.includes(request.path)) {
+    return getPoultrySurveyUri(request);
+  }
+
+  return getEndemicsSurveyUri(request);
+}
+
+function getPoultrySurveyUri(request) {
+  if (poultryApplyUrls.includes(request.path)) {
+    return customerSurvey.applyUri;
+  }
+
+  if (poultryClaimUrls.includes(request.path)) {
+    return customerSurvey.claimUri;
+  }
+
+  // The only one left is the manage your claim url
+  return customerSurvey.claimUri;
+}
+
+function getEndemicsSurveyUri(request) {
+  if (request.path === applyRoutes.declaration && request.method === "post") {
+    return customerSurvey.applyUri;
+  }
+
+  return getSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+    sessionKeys.endemicsClaim.latestEndemicsApplication,
+  )
+    ? customerSurvey.claimUri
+    : customerSurvey.applyUri;
+}
