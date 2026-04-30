@@ -229,8 +229,8 @@ export const poultryClaimViews = {
   vetName: "poultry/claim/vet-name",
 };
 
-export const poultryApplyUrls = [...Object.values(poultryApplyRoutes)];
-export const poultryClaimUrls = [...Object.values(poultryClaimRoutes)];
+export const poultryApplyUrls = Object.values(poultryApplyRoutes);
+export const poultryClaimUrls = Object.values(poultryClaimRoutes);
 export const allPoultryRoutes = [
   ...poultryApplyUrls,
   dashboardRoutes.poultryManageYourClaims,
