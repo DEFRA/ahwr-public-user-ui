@@ -18,11 +18,10 @@ import {
   PIGS_AND_PAYMENTS_RELEASE_DATE,
 } from "../constants/claim-constants.js";
 import {
+  allPoultryRoutes,
   applyRoutes,
   claimRoutes,
-  dashboardRoutes,
   poultryApplyRoutes,
-  poultryClaimRoutes,
 } from "../constants/routes.js";
 import {
   AHWR_SCHEME,
@@ -235,13 +234,7 @@ export const getScheme = (request) => {
 };
 
 export function getSurveyUri(request, currentPath, currentMethod) {
-  const poultryRoutes = [
-    ...Object.values(poultryApplyRoutes),
-    dashboardRoutes.poultryManageYourClaims,
-    ...Object.values(poultryClaimRoutes),
-  ];
-
-  if (poultryRoutes.includes(currentPath)) {
+  if (allPoultryRoutes.includes(currentPath)) {
     return getPoultrySurveyUri(request, currentPath, currentMethod);
   }
 

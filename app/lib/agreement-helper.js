@@ -3,10 +3,10 @@ import { APPLICATION_REFERENCE_PREFIX_POULTRY } from "ffc-ahwr-common-library";
 import { config } from "../config/index.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import {
+  allPoultryRoutes,
   applyRoutes,
   dashboardRoutes,
   poultryApplyRoutes,
-  poultryClaimRoutes,
 } from "../constants/routes.js";
 
 export const checkIfPoultryAgreement = (latestEndemicsApplication) => {
@@ -47,17 +47,11 @@ const userHasPoultryAgreement = (request) => {
 export const shouldShowManageYourClaims = (request) => {
   const hiddenPaths = [dashboardRoutes.checkDetails, dashboardRoutes.selectFunding];
 
-  const poultryRoutes = [
-    ...Object.values(poultryApplyRoutes),
-    dashboardRoutes.poultryManageYourClaims,
-    ...Object.values(poultryClaimRoutes),
-  ];
-
   if (hiddenPaths.includes(request.path)) {
     return false;
   }
 
-  if (poultryRoutes.includes(request.path)) {
+  if (allPoultryRoutes.includes(request.path)) {
     return userHasPoultryAgreement(request);
   }
 
