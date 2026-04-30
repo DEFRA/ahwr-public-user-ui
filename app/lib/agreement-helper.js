@@ -2,7 +2,12 @@ import { APPLICATION_REFERENCE_PREFIX_POULTRY } from "ffc-ahwr-common-library";
 
 import { config } from "../config/index.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { dashboardRoutes, poultryApplyRoutes, poultryClaimRoutes } from "../constants/routes.js";
+import {
+  applyRoutes,
+  dashboardRoutes,
+  poultryApplyRoutes,
+  poultryClaimRoutes,
+} from "../constants/routes.js";
 
 export const checkIfPoultryAgreement = (latestEndemicsApplication) => {
   return (
@@ -12,6 +17,11 @@ export const checkIfPoultryAgreement = (latestEndemicsApplication) => {
 };
 
 const userHasLivestockAgreement = (request) => {
+  // Technically, this should never happen.
+  if (request.path === applyRoutes.declaration && request.method === "get") {
+    return false;
+  }
+
   const latestEndemicsApplication = getSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
@@ -21,6 +31,11 @@ const userHasLivestockAgreement = (request) => {
 };
 
 const userHasPoultryAgreement = (request) => {
+  // Technically, this should never happen.
+  if (request.path === poultryApplyRoutes.declaration && request.method === "get") {
+    return false;
+  }
+
   const latestPoultryApplication = getSessionData(
     request,
     sessionEntryKeys.poultryClaim,
@@ -31,8 +46,9 @@ const userHasPoultryAgreement = (request) => {
 
 export const shouldShowManageYourClaims = (request) => {
   const hiddenPaths = [dashboardRoutes.checkDetails, dashboardRoutes.selectFunding];
+
   const poultryRoutes = [
-    poultryApplyRoutes.confirmation,
+    poultryApplyRoutes.declaration,
     dashboardRoutes.poultryManageYourClaims,
     ...Object.values(poultryClaimRoutes),
   ];

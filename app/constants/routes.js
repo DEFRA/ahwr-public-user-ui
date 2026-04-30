@@ -33,7 +33,6 @@ export const applyRoutes = {
   numbers: "/numbers",
   declaration: "/declaration",
   offerRejected: "/offer-rejected",
-  confirmation: "/confirmation",
 };
 
 export const poultryApplyRoutes = {
@@ -42,7 +41,6 @@ export const poultryApplyRoutes = {
   numbers: "/poultry/numbers",
   declaration: "/poultry/declaration",
   offerRejected: "/poultry/offer-rejected",
-  confirmation: "/poultry/confirmation",
 };
 
 export const applyViews = {

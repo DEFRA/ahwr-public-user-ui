@@ -166,13 +166,22 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(true);
     });
 
-    test("returns true when status is AGREED on apply confirmation", () => {
-      const request = { path: "/confirmation" };
+    test("true on post declaration (confirmation)", () => {
+      const request = { path: "/declaration", method: "post" };
       mockEndemicsSessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
 
       expect(actual).toBe(true);
+    });
+
+    test("false on get declaration (before confirmation)", () => {
+      const request = { path: "/declaration", method: "get" };
+      mockEndemicsSessionData(request, { status: "AGREED" });
+
+      const actual = shouldShowManageYourClaims(request);
+
+      expect(actual).toBe(false);
     });
   });
 
@@ -248,6 +257,24 @@ describe("shouldShowManageYourClaims", () => {
       const actual = shouldShowManageYourClaims(request);
 
       expect(actual).toBe(true);
+    });
+
+    test("true on post declaration post (confirmation)", () => {
+      const request = { path: "/poultry/declaration", method: "post" };
+      mockPoultrySessionData(request, { status: "AGREED" });
+
+      const actual = shouldShowManageYourClaims(request);
+
+      expect(actual).toBe(true);
+    });
+
+    test("false on get declaration (before confirmation)", () => {
+      const request = { path: "/poultry/declaration", method: "get" };
+      mockPoultrySessionData(request, { status: "AGREED" });
+
+      const actual = shouldShowManageYourClaims(request);
+
+      expect(actual).toBe(false);
     });
   });
 });
