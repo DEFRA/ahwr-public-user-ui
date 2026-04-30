@@ -236,7 +236,7 @@ export const getScheme = (request) => {
 
 export function getSurveyUri(request, currentPath, currentMethod) {
   const poultryRoutes = [
-    poultryApplyRoutes.declaration,
+    ...Object.values(poultryApplyRoutes),
     dashboardRoutes.poultryManageYourClaims,
     ...Object.values(poultryClaimRoutes),
   ];
