@@ -21,8 +21,8 @@ import {
   allPoultryRoutes,
   applyRoutes,
   claimRoutes,
-  poultryApplyRoutes,
-  poultryClaimRoutes,
+  poultryApplyUrls,
+  poultryClaimUrls,
 } from "../constants/routes.js";
 import {
   AHWR_SCHEME,
@@ -243,11 +243,11 @@ export function getSurveyUri(request) {
 }
 
 function getPoultrySurveyUri(request) {
-  if ([...Object.values(poultryApplyRoutes)].includes(request.path)) {
+  if (poultryApplyUrls.includes(request.path)) {
     return customerSurvey.applyUri;
   }
 
-  if ([...Object.values(poultryClaimRoutes)].includes(request.path)) {
+  if (poultryClaimUrls.includes(request.path)) {
     return customerSurvey.claimUri;
   }
 
