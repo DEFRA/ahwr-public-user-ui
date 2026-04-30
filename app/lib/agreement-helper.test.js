@@ -2,7 +2,7 @@ import { when } from "jest-when";
 import { config } from "../config/index.js";
 import { checkIfPoultryAgreement, shouldShowManageYourClaims } from "./agreement-helper.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { dashboardRoutes } from "../constants/routes.js";
+import { applyRoutes, dashboardRoutes, poultryApplyRoutes } from "../constants/routes.js";
 
 jest.mock("../session/index.js");
 
@@ -102,7 +102,7 @@ describe("shouldShowManageYourClaims", () => {
   };
 
   describe("livestock urls", () => {
-    test("returns false when latestEndemicsApplication is null", () => {
+    test("false when latestEndemicsApplication is null", () => {
       const request = { path: "/vet-visits" };
       mockEndemicsSessionData(request, null);
 
@@ -111,7 +111,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("returns false when latestEndemicsApplication is undefined", () => {
+    test("false when latestEndemicsApplication is undefined", () => {
       const request = { path: "/vet-visits" };
       mockEndemicsSessionData(request, undefined);
 
@@ -120,7 +120,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("returns false when latestEndemicsApplication has no status", () => {
+    test("false when latestEndemicsApplication has no status", () => {
       const request = { path: "/vet-visits" };
       mockEndemicsSessionData(request, {});
 
@@ -129,7 +129,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("returns false when status is not AGREED", () => {
+    test("false when status is not AGREED", () => {
       const request = { path: "/vet-visits" };
       mockEndemicsSessionData(request, { status: "PENDING" });
 
@@ -138,7 +138,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("returns false when status is not AGREED in endemics but agreed on poultry", () => {
+    test("false when status is not AGREED in endemics but agreed on poultry", () => {
       const request = { path: "/vet-visits" };
       mockEndemicsSessionData(request, { status: "PENDING" });
       mockPoultrySessionData(request, { status: "AGREED" });
@@ -148,7 +148,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("returns true when status is AGREED", () => {
+    test("true when status is AGREED", () => {
       const request = { path: "/vet-visits" };
       mockEndemicsSessionData(request, { status: "AGREED" });
 
@@ -157,7 +157,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(true);
     });
 
-    test("returns true when status is AGREED on a claim route", () => {
+    test("true when status is AGREED on a claim route", () => {
       const request = { path: "/date-of-visit" };
       mockEndemicsSessionData(request, { status: "AGREED" });
 
@@ -166,18 +166,36 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(true);
     });
 
-    test("returns true when status is AGREED on apply confirmation", () => {
-      const request = { path: "/confirmation" };
+    test("true on post declaration (confirmation)", () => {
+      const request = { path: "/declaration", method: "post" };
       mockEndemicsSessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
 
       expect(actual).toBe(true);
     });
+
+    test("false on get declaration (before confirmation)", () => {
+      const request = { path: "/declaration", method: "get" };
+      mockEndemicsSessionData(request, { status: "AGREED" });
+
+      const actual = shouldShowManageYourClaims(request);
+
+      expect(actual).toBe(false);
+    });
+
+    test("false when no status in livestock but agreed on poultry on endemics apply route", () => {
+      const request = { path: applyRoutes.timings };
+      mockPoultrySessionData(request, { status: "AGREED" });
+
+      const actual = shouldShowManageYourClaims(request);
+
+      expect(actual).toBe(false);
+    });
   });
 
   describe("poultry urls", () => {
-    test("returns false when latestPoultryApplication is null", () => {
+    test("false when latestPoultryApplication is null", () => {
       const request = { path: "/poultry/vet-visits" };
       mockPoultrySessionData(request, null);
 
@@ -186,7 +204,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("returns false when latestEndemicsApplication is undefined", () => {
+    test("false when latestPoultryApplication is undefined", () => {
       const request = { path: "/poultry/vet-visits" };
       mockPoultrySessionData(request, undefined);
 
@@ -195,7 +213,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("returns false when latestEndemicsApplication has no status", () => {
+    test("false when latestPoultryApplication has no status", () => {
       const request = { path: "/poultry/vet-visits" };
       mockPoultrySessionData(request, {});
 
@@ -204,7 +222,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("returns false when status is not AGREED", () => {
+    test("false when status is not AGREED", () => {
       const request = { path: "/poultry/vet-visits" };
       mockPoultrySessionData(request, { status: "PENDING" });
 
@@ -213,7 +231,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("returns false when status is not AGREED in poultry but agreed on endemics", () => {
+    test("false when status is not AGREED in poultry but agreed on endemics", () => {
       const request = { path: "/poultry/vet-visits" };
       mockPoultrySessionData(request, { status: "PENDING" });
       mockEndemicsSessionData(request, { status: "AGREED" });
@@ -223,7 +241,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(false);
     });
 
-    test("returns true when status is AGREED", () => {
+    test("true when status is AGREED", () => {
       const request = { path: "/poultry/vet-visits" };
       mockPoultrySessionData(request, { status: "AGREED" });
 
@@ -232,7 +250,7 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(true);
     });
 
-    test("returns true when status is AGREED on a claim route", () => {
+    test("true when status is AGREED on a claim route", () => {
       const request = { path: "/poultry/date-of-visit" };
       mockPoultrySessionData(request, { status: "AGREED" });
 
@@ -241,13 +259,40 @@ describe("shouldShowManageYourClaims", () => {
       expect(actual).toBe(true);
     });
 
-    test("returns true when status is AGREED on apply confirmation", () => {
+    test("true when status is AGREED on apply confirmation", () => {
       const request = { path: "/poultry/confirmation" };
       mockPoultrySessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
 
       expect(actual).toBe(true);
+    });
+
+    test("true on post declaration post (confirmation)", () => {
+      const request = { path: "/poultry/declaration", method: "post" };
+      mockPoultrySessionData(request, { status: "AGREED" });
+
+      const actual = shouldShowManageYourClaims(request);
+
+      expect(actual).toBe(true);
+    });
+
+    test("false on get declaration (before confirmation)", () => {
+      const request = { path: "/poultry/declaration", method: "get" };
+      mockPoultrySessionData(request, { status: "AGREED" });
+
+      const actual = shouldShowManageYourClaims(request);
+
+      expect(actual).toBe(false);
+    });
+
+    test("false when no status in poultry but agreed on endemics on poultry apply route", () => {
+      const request = { path: poultryApplyRoutes.timings };
+      mockEndemicsSessionData(request, { status: "AGREED" });
+
+      const actual = shouldShowManageYourClaims(request);
+
+      expect(actual).toBe(false);
     });
   });
 });
