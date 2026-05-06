@@ -6,8 +6,12 @@ import {
   setSessionEntry,
   setSessionData,
   sessionKeys,
+  emitHerdEvent,
 } from "../../../../app/session/index.js";
-import { sendSessionEvent } from "../../../../app/messaging/session-event-emission.js";
+import {
+  sendHerdEvent,
+  sendSessionEvent,
+} from "../../../../app/messaging/session-event-emission.js";
 
 jest.mock("../../../../app/messaging/session-event-emission.js");
 
@@ -504,6 +508,45 @@ describe("session", () => {
         sbi: "123456789",
         sessionKey: "biosecurityUsefulness",
         value: "not-very-useful",
+      });
+    });
+  });
+
+  describe("emitHerdEvent", () => {
+    const organisation = {
+      name: "Fake org name",
+      farmerName: "Fake farmer name",
+      email: "fake.farmer.email@example.com.test",
+      sbi: "123456789",
+      address: "1 fake street,fake town,United Kingdom",
+      orgEmail: "fake.org.email@example.com.test",
+    };
+
+    test("calls sendHerdEvent with correct data", async () => {
+      const request = { yar: yarMock };
+      yarMock.get.mockImplementation(() => organisation);
+
+      await emitHerdEvent({
+        request,
+        type: "herd-name",
+        message: "Herd name collected from user",
+        data: {
+          herdId: "12345678",
+          herdVersion: 1,
+          herdName: "Herd one",
+        },
+      });
+      expect(sendHerdEvent).toHaveBeenCalledWith({
+        sbi: "123456789",
+        email: "fake.farmer.email@example.com.test",
+        sessionId: 1,
+        type: "herd-name",
+        message: "Herd name collected from user",
+        data: {
+          herdId: "12345678",
+          herdVersion: 1,
+          herdName: "Herd one",
+        },
       });
     });
   });

@@ -221,6 +221,25 @@ describe("Send event on session set", () => {
           },
         });
       });
+
+      test("removes chickens from typesOfPoultry", async () => {
+        await sendSessionEvent({
+          ...event,
+          sessionKey: "typesOfPoultry",
+          value: ["chickens", "broilers", "laying-hens"],
+        });
+
+        expect(mockPublishEvent).toHaveBeenCalledWith({
+          ...publishedEvent,
+          type: `claim-typesOfPoultry`,
+          message: `Session set for claim and typesOfPoultry.`,
+          data: {
+            reference: publishedEvent.data.reference,
+            applicationReference: publishedEvent.data.applicationReference,
+            typesOfPoultry: "broilers laying-hens",
+          },
+        });
+      });
     });
   });
 
