@@ -240,6 +240,25 @@ describe("Send event on session set", () => {
           },
         });
       });
+
+      test("handles empty value for typesOfPoultry", async () => {
+        await sendSessionEvent({
+          ...event,
+          sessionKey: "typesOfPoultry",
+          value: [],
+        });
+
+        expect(mockPublishEvent).toHaveBeenCalledWith({
+          ...publishedEvent,
+          type: `claim-typesOfPoultry`,
+          message: `Session set for claim and typesOfPoultry.`,
+          data: {
+            reference: publishedEvent.data.reference,
+            applicationReference: publishedEvent.data.applicationReference,
+            typesOfPoultry: "",
+          },
+        });
+      });
     });
   });
 

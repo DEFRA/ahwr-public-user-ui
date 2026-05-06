@@ -24,7 +24,7 @@ const REVIEW_TYPE_MAP = {
 const NORMALIZE_VALUE_BY_SESSION_KEY = {
   typeOfReview: (value) => REVIEW_TYPE_MAP[value] ?? value,
   typesOfPoultry: (value) =>
-    value?.length ? value.filter((type) => type !== "chickens").join(" ") : value,
+    value?.length ? value.filter((type) => type !== "chickens").join(" ") : "",
   schemeType: (value) => (value === "POUL" ? "poultry" : "livestock"),
 };
 

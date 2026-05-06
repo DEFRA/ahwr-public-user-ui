@@ -546,6 +546,32 @@ describe("session", () => {
         value: true,
       });
     });
+
+    test("emits event when organisation and scheme is livestock", async () => {
+      const request = { yar: yarMock };
+      yarMock.get.mockImplementation((entryKey) => {
+        if (entryKey === sessionEntryKeys.organisation) {
+          return organisation;
+        }
+        if (entryKey === sessionEntryKeys.fundingSelection) {
+          return {
+            selectedFunding: "IAHW",
+          };
+        }
+        return undefined;
+      });
+
+      await setSessionEntry(request, sessionEntryKeys.organisation, organisation);
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "claim",
+        sbi: "123456789",
+        sessionKey: "organisation",
+        value: organisation,
+      });
+    });
   });
 
   describe("emitHerdEvent", () => {
