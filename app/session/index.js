@@ -331,16 +331,7 @@ export function removeSessionDataForSameHerdChange(request) {
   request.yar.set(sessionEntryKeys.endemicsClaim, furtherRemadeSession);
 }
 
-const isClaimJourney = (entryKey, journey) =>
-  entryKey === sessionEntryKeys.endemicsClaim ||
-  entryKey === sessionEntryKeys.poultryClaim ||
-  journey === JOURNEY.CLAIM;
-
 export const emitSessionEvent = async ({ request, entryKey, key, value, journey }) => {
-  const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
-  const poultryApplyData = getSessionData(request, sessionEntryKeys.poultryApplyData);
-  const claimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
-  const poultryClaimData = getSessionData(request, sessionEntryKeys.poultryClaim);
   const organisation = getSessionData(request, sessionEntryKeys.organisation);
   const scheme = getScheme(request);
   const isPoultry = scheme === POULTRY_SCHEME;
@@ -351,12 +342,45 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
     return;
   }
 
-  const isPoultryApply =
-    entryKey === sessionEntryKeys.poultryApplyData || journey === JOURNEY.POULTRY_APPLY;
+  if (isPoultry) {
+    await emitPoultrySessionEvent({
+      request,
+      entryKey,
+      key,
+      value,
+      journey,
+      organisation,
+      sessionId,
+    });
+  } else {
+    await emitLivestockSessionEvent({
+      request,
+      entryKey,
+      key,
+      value,
+      journey,
+      organisation,
+      sessionId,
+    });
+  }
+};
+
+const emitLivestockSessionEvent = async ({
+  request,
+  entryKey,
+  key,
+  value,
+  journey,
+  organisation,
+  sessionId,
+}) => {
+  const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
+  const claimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
+
   const isLivestockApply =
     entryKey === sessionEntryKeys.farmerApplyData || journey === JOURNEY.APPLY;
 
-  if (isLivestockApply || isPoultryApply) {
+  if (isLivestockApply) {
     const journeyValue =
       entryKey === "application" || entryKey === "tempReference" ? entryKey : "farmerApplyData";
 
@@ -367,19 +391,17 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
       journey: journeyValue,
       sessionKey: key,
       value,
-      applicationReference: isPoultryApply ? poultryClaimData.reference : claimData?.reference,
-      reference: isPoultryApply ? poultryApplyData?.reference : farmerApplyData?.reference,
+      applicationReference: claimData?.reference,
+      reference: farmerApplyData?.reference,
     });
 
     return;
   }
 
-  if (isClaimJourney(entryKey, journey)) {
+  if (entryKey === sessionEntryKeys.endemicsClaim || journey === JOURNEY.CLAIM) {
     const journeyValue = entryKey === "tempClaimReference" ? entryKey : "claim";
-    const reference = isPoultry ? poultryClaimData?.reference : claimData?.reference;
-    const applicationReference = isPoultry
-      ? poultryClaimData?.latestPoultryApplication?.reference
-      : claimData?.latestEndemicsApplication?.reference;
+    const reference = claimData?.reference;
+    const applicationReference = claimData?.latestEndemicsApplication?.reference;
 
     await sendSessionEvent({
       id: sessionId,
@@ -403,8 +425,70 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
     journey: entryKey === "organisation" ? "claim" : entryKey,
     sessionKey: key ?? entryKey,
     value,
-    reference: isPoultry ? poultryClaimData?.reference : claimData?.reference,
-    applicationReference: isPoultry ? poultryApplyData?.reference : farmerApplyData?.reference,
+    reference: claimData?.reference,
+    applicationReference: farmerApplyData?.reference,
+  });
+};
+
+const emitPoultrySessionEvent = async ({
+  request,
+  entryKey,
+  key,
+  value,
+  journey,
+  organisation,
+  sessionId,
+}) => {
+  const poultryApplyData = getSessionData(request, sessionEntryKeys.poultryApplyData);
+  const poultryClaimData = getSessionData(request, sessionEntryKeys.poultryClaim);
+
+  if (entryKey === sessionEntryKeys.poultryApplyData || journey === JOURNEY.POULTRY_APPLY) {
+    const journeyValue =
+      entryKey === "application" || entryKey === "tempReference" ? entryKey : "farmerApplyData";
+
+    await sendSessionEvent({
+      id: sessionId,
+      sbi: organisation.sbi,
+      email: organisation.email,
+      journey: journeyValue,
+      sessionKey: key,
+      value,
+      applicationReference: poultryClaimData.reference,
+      reference: poultryApplyData?.reference,
+    });
+
+    return;
+  }
+
+  if (entryKey === sessionEntryKeys.poultryClaim || journey === JOURNEY.CLAIM) {
+    const journeyValue = entryKey === "tempClaimReference" ? entryKey : "claim";
+    const reference = poultryClaimData?.reference;
+    const applicationReference = poultryClaimData?.latestPoultryApplication?.reference;
+
+    await sendSessionEvent({
+      id: sessionId,
+      sbi: organisation.sbi,
+      email: organisation.email,
+      journey: journeyValue,
+      sessionKey: key,
+      value,
+      reference,
+      applicationReference,
+    });
+
+    return;
+  }
+
+  // user is logging in
+  await sendSessionEvent({
+    id: sessionId,
+    sbi: organisation.sbi,
+    email: organisation.email,
+    journey: entryKey === "organisation" ? "claim" : entryKey,
+    sessionKey: key ?? entryKey,
+    value,
+    reference: poultryClaimData?.reference,
+    applicationReference: poultryApplyData?.reference,
   });
 };
 

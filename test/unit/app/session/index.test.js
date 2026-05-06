@@ -248,6 +248,11 @@ describe("session", () => {
         if (entryKey === sessionEntryKeys.poultryApplyData) {
           return poultryApplyData;
         }
+        if (entryKey === sessionEntryKeys.fundingSelection) {
+          return {
+            selectedFunding: "POUL",
+          };
+        }
         return undefined;
       });
 
