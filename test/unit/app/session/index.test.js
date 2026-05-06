@@ -510,6 +510,42 @@ describe("session", () => {
         value: "not-very-useful",
       });
     });
+
+    test("emits event when user is signing in", async () => {
+      const request = { yar: yarMock };
+      yarMock.get.mockImplementation((entryKey) => {
+        if (entryKey === sessionEntryKeys.poultryClaim) {
+          return { ...poultryClaim, reference: "POUL-G3CL-V59P" };
+        }
+        if (entryKey === sessionEntryKeys.organisation) {
+          return organisation;
+        }
+        if (entryKey === sessionEntryKeys.poultryApplyData) {
+          return {
+            reference: "POUL-G3CL-V59P",
+          };
+        }
+        if (entryKey === sessionEntryKeys.fundingSelection) {
+          return {
+            selectedFunding: "POUL",
+          };
+        }
+        return undefined;
+      });
+
+      await setSessionEntry(request, sessionEntryKeys.signInRedirect, true);
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        applicationReference: "POUL-G3CL-V59P",
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "signInRedirect",
+        reference: "POUL-G3CL-V59P",
+        sbi: "123456789",
+        sessionKey: "signInRedirect",
+        value: true,
+      });
+    });
   });
 
   describe("emitHerdEvent", () => {

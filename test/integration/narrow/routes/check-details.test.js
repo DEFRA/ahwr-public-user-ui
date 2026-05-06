@@ -144,7 +144,7 @@ describe("/check-details", () => {
 
   test("POST /check-details with confirmCheckDetails = yes in payload, and redirects to apply", async () => {
     when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.signInRedirect, sessionKeys.signInRedirect)
+      .calledWith(expect.anything(), sessionEntryKeys.signInRedirect)
       .mockReturnValue(true);
 
     const res = await server.inject({
