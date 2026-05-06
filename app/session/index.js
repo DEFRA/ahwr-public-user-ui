@@ -333,16 +333,14 @@ export function removeSessionDataForSameHerdChange(request) {
 
 export const emitSessionEvent = async ({ request, entryKey, key, value, journey }) => {
   const organisation = getSessionData(request, sessionEntryKeys.organisation);
-  const scheme = getScheme(request);
-  const isPoultry = scheme === POULTRY_SCHEME;
-
-  const sessionId = request.yar.id;
-
   if (!organisation) {
     return;
   }
 
-  if (isPoultry) {
+  const scheme = getScheme(request);
+  const sessionId = request.yar.id;
+
+  if (scheme === POULTRY_SCHEME) {
     await emitPoultrySessionEvent({
       request,
       entryKey,
@@ -377,10 +375,7 @@ const emitLivestockSessionEvent = async ({
   const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
   const claimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-  const isLivestockApply =
-    entryKey === sessionEntryKeys.farmerApplyData || journey === JOURNEY.APPLY;
-
-  if (isLivestockApply) {
+  if (entryKey === sessionEntryKeys.farmerApplyData || journey === JOURNEY.APPLY) {
     const journeyValue =
       entryKey === "application" || entryKey === "tempReference" ? entryKey : "farmerApplyData";
 
@@ -400,8 +395,6 @@ const emitLivestockSessionEvent = async ({
 
   if (entryKey === sessionEntryKeys.endemicsClaim || journey === JOURNEY.CLAIM) {
     const journeyValue = entryKey === "tempClaimReference" ? entryKey : "claim";
-    const reference = claimData?.reference;
-    const applicationReference = claimData?.latestEndemicsApplication?.reference;
 
     await sendSessionEvent({
       id: sessionId,
@@ -410,8 +403,8 @@ const emitLivestockSessionEvent = async ({
       journey: journeyValue,
       sessionKey: key,
       value,
-      reference,
-      applicationReference,
+      reference: claimData?.reference,
+      applicationReference: claimData?.latestEndemicsApplication?.reference,
     });
 
     return;
@@ -462,8 +455,6 @@ const emitPoultrySessionEvent = async ({
 
   if (entryKey === sessionEntryKeys.poultryClaim || journey === JOURNEY.CLAIM) {
     const journeyValue = entryKey === "tempClaimReference" ? entryKey : "claim";
-    const reference = poultryClaimData?.reference;
-    const applicationReference = poultryClaimData?.latestPoultryApplication?.reference;
 
     await sendSessionEvent({
       id: sessionId,
@@ -472,8 +463,8 @@ const emitPoultrySessionEvent = async ({
       journey: journeyValue,
       sessionKey: key,
       value,
-      reference,
-      applicationReference,
+      reference: poultryClaimData?.reference,
+      applicationReference: poultryClaimData?.latestPoultryApplication?.reference,
     });
 
     return;
