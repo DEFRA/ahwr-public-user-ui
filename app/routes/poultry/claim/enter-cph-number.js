@@ -61,7 +61,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdCph } = request.payload;
-      const { herds, herdId, herdVersion } = getSessionData(request, sessionEntryKeys.poultryClaim);
+      const { herds, herdId } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
       const response = await getClaimsCount(herdCph, herdId, request.logger);
 
@@ -91,7 +91,7 @@ const postHandler = {
         request,
         type: "herd-cph",
         message: "Herd CPH collected from user",
-        data: { herdId, herdVersion, herdCph },
+        data: { herdId, herdVersion: 1, herdCph },
       });
 
       return h.redirect(poultryClaimRoutes.siteOthersOnSbi);

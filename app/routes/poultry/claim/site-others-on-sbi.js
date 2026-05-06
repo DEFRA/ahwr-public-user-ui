@@ -4,6 +4,7 @@ import {
   setSessionData,
   sessionEntryKeys,
   sessionKeys,
+  emitHerdEvent,
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes.js";
@@ -56,6 +57,25 @@ const postHandler = {
         isOnlyHerdOnSbi,
         { shouldEmitEvent: false },
       );
+
+      const { herdId } = getSessionData(request, sessionEntryKeys.poultryClaim);
+
+      await emitHerdEvent({
+        request,
+        type: "herd-reasons",
+        message: "Only herd for user",
+        data: {
+          herdId,
+          herdVersion: 1,
+          herdReasonManagementNeeds: false,
+          herdReasonUniqueHealth: false,
+          herdReasonDifferentBreed: false,
+          herdReasonOtherPurpose: false,
+          herdReasonKeptSeparate: false,
+          herdReasonOnlyHerd: true,
+          herdReasonOther: false,
+        },
+      });
 
       return h.redirect(poultryClaimRoutes.selectPoultryType);
     },

@@ -1,12 +1,7 @@
 import { getOrganisationModel } from "./models/organisation.js";
 import joi from "joi";
 import { StatusCodes } from "http-status-codes";
-import {
-  getSessionData,
-  sessionEntryKeys,
-  sessionKeys,
-  setSessionEntry,
-} from "../session/index.js";
+import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
 import { config } from "../config/index.js";
 import { applyRoutes, dashboardRoutes } from "../constants/routes.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
@@ -69,11 +64,7 @@ export const checkDetailsHandlers = [
         );
 
         if (confirmCheckDetails === "yes") {
-          const redirectToApply = getSessionData(
-            request,
-            sessionEntryKeys.signInRedirect,
-            sessionKeys.signInRedirect,
-          );
+          const redirectToApply = getSessionData(request, sessionEntryKeys.signInRedirect);
 
           if (config.poultry.enabled) {
             return h.redirect(dashboardRoutes.selectFunding);

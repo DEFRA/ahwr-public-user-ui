@@ -7,15 +7,7 @@ import { setSessionForErrorPage } from "../../../../app/routes/utils/check-login
 import { requestAuthorizationCodeUrl } from "../../../../app/auth/auth-code-grant/request-authorization-code-url.js";
 import { config } from "../../../../app/config/index.js";
 
-jest.mock("../../../../app/session", () => {
-  const actual = jest.requireActual("../../../../app/session");
-  // Mocking everything apart from sessionKeys and sessionEntryKeys
-  return Object.keys(actual).reduce((acc, key) => {
-    acc[key] = key === "sessionKeys" || key === "sessionEntryKeys" ? actual[key] : jest.fn();
-    return acc;
-  }, {});
-});
-
+jest.mock("../../../../app/session/index.js");
 jest.mock("../../../../app/auth/cookie-auth/cookie-auth.js");
 jest.mock("../../../../app/routes/sign-out.js");
 jest.mock("../../../../app/routes/utils/check-login-valid.js");

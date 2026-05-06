@@ -155,7 +155,6 @@ describe("/poultry/minimum-number-of-birds tests", () => {
         "poultryClaim",
         "minimumNumberOfBirds",
         "yes",
-        { shouldEmitEvent: false },
       );
     });
 
@@ -179,7 +178,6 @@ describe("/poultry/minimum-number-of-birds tests", () => {
         "poultryClaim",
         "minimumNumberOfBirds",
         "no",
-        { shouldEmitEvent: false },
       );
       expect(sendInvalidDataPoultryEvent).toHaveBeenCalled();
     });

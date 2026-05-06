@@ -1,5 +1,7 @@
 import { sendHerdEvent, sendSessionEvent } from "../messaging/session-event-emission.js";
 import { JOURNEY } from "../constants/constants.js";
+import { getScheme } from "../lib/context-helper.js";
+import { POULTRY_SCHEME } from "ffc-ahwr-common-library";
 
 export const sessionKeys = {
   tempReference: "tempReference",
@@ -37,6 +39,7 @@ export const sessionKeys = {
     changesInBiosecurity: "changesInBiosecurity",
     costOfChanges: "costOfChanges",
     dateOfVisit: "dateOfVisit",
+    tempHerdId: "tempHerdId",
     herdId: "herdId",
     herdName: "herdName",
     herdCph: "herdCph",
@@ -50,7 +53,6 @@ export const sessionKeys = {
     previousClaims: "previousClaims",
     siteSelected: "siteSelected",
     reference: "reference",
-    tempSiteId: "tempSiteId",
     typesOfPoultry: "typesOfPoultry",
     vetRCVSNumber: "vetRCVSNumber",
     vetsName: "vetsName",
@@ -330,24 +332,50 @@ export function removeSessionDataForSameHerdChange(request) {
 }
 
 export const emitSessionEvent = async ({ request, entryKey, key, value, journey }) => {
-  const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
-  const poultryApplyData = getSessionData(request, sessionEntryKeys.poultryApplyData);
-  const claimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
   const organisation = getSessionData(request, sessionEntryKeys.organisation);
-  const sessionId = request.yar.id;
-
   if (!organisation) {
     return;
   }
 
-  const isPoultryApply =
-    entryKey === sessionEntryKeys.poultryApplyData || journey === JOURNEY.POULTRY_APPLY;
+  const scheme = getScheme(request);
+  const sessionId = request.yar.id;
 
-  if (
-    entryKey === sessionEntryKeys.farmerApplyData ||
-    journey === JOURNEY.APPLY ||
-    isPoultryApply
-  ) {
+  if (scheme === POULTRY_SCHEME) {
+    await emitPoultrySessionEvent({
+      request,
+      entryKey,
+      key,
+      value,
+      journey,
+      organisation,
+      sessionId,
+    });
+  } else {
+    await emitLivestockSessionEvent({
+      request,
+      entryKey,
+      key,
+      value,
+      journey,
+      organisation,
+      sessionId,
+    });
+  }
+};
+
+const emitLivestockSessionEvent = async ({
+  request,
+  entryKey,
+  key,
+  value,
+  journey,
+  organisation,
+  sessionId,
+}) => {
+  const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
+  const claimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
+
+  if (entryKey === sessionEntryKeys.farmerApplyData || journey === JOURNEY.APPLY) {
     const journeyValue =
       entryKey === "application" || entryKey === "tempReference" ? entryKey : "farmerApplyData";
 
@@ -359,7 +387,7 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
       sessionKey: key,
       value,
       applicationReference: claimData?.reference,
-      reference: isPoultryApply ? poultryApplyData?.reference : farmerApplyData?.reference,
+      reference: farmerApplyData?.reference,
     });
 
     return;
@@ -392,6 +420,66 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
     value,
     reference: claimData?.reference,
     applicationReference: farmerApplyData?.reference,
+  });
+};
+
+const emitPoultrySessionEvent = async ({
+  request,
+  entryKey,
+  key,
+  value,
+  journey,
+  organisation,
+  sessionId,
+}) => {
+  const poultryApplyData = getSessionData(request, sessionEntryKeys.poultryApplyData);
+  const poultryClaimData = getSessionData(request, sessionEntryKeys.poultryClaim);
+
+  if (entryKey === sessionEntryKeys.poultryApplyData || journey === JOURNEY.POULTRY_APPLY) {
+    const journeyValue =
+      entryKey === "application" || entryKey === "tempReference" ? entryKey : "farmerApplyData";
+
+    await sendSessionEvent({
+      id: sessionId,
+      sbi: organisation.sbi,
+      email: organisation.email,
+      journey: journeyValue,
+      sessionKey: key,
+      value,
+      applicationReference: poultryClaimData.reference,
+      reference: poultryApplyData?.reference,
+    });
+
+    return;
+  }
+
+  if (entryKey === sessionEntryKeys.poultryClaim || journey === JOURNEY.CLAIM) {
+    const journeyValue = entryKey === "tempClaimReference" ? entryKey : "claim";
+
+    await sendSessionEvent({
+      id: sessionId,
+      sbi: organisation.sbi,
+      email: organisation.email,
+      journey: journeyValue,
+      sessionKey: key,
+      value,
+      reference: poultryClaimData?.reference,
+      applicationReference: poultryClaimData?.latestPoultryApplication?.reference,
+    });
+
+    return;
+  }
+
+  // user is logging in
+  await sendSessionEvent({
+    id: sessionId,
+    sbi: organisation.sbi,
+    email: organisation.email,
+    journey: entryKey === "organisation" ? "claim" : entryKey,
+    sessionKey: key ?? entryKey,
+    value,
+    reference: poultryClaimData?.reference,
+    applicationReference: poultryApplyData?.reference,
   });
 };
 

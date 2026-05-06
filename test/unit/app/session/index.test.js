@@ -6,8 +6,12 @@ import {
   setSessionEntry,
   setSessionData,
   sessionKeys,
+  emitHerdEvent,
 } from "../../../../app/session/index.js";
-import { sendSessionEvent } from "../../../../app/messaging/session-event-emission.js";
+import {
+  sendHerdEvent,
+  sendSessionEvent,
+} from "../../../../app/messaging/session-event-emission.js";
 
 jest.mock("../../../../app/messaging/session-event-emission.js");
 
@@ -140,6 +144,23 @@ describe("session", () => {
       piHuntRecommended: "yes",
       reviewTestResults: "negative",
     };
+    const poultryClaim = {
+      latestVetVisitApplication: { a: 1 },
+      latestEndemicsApplication: { b: 2 },
+      latestPoultryApplication: { c: 2, reference: "POUL-G3CL-V59P" },
+      previousClaims: [{ id: 1 }, { id: 2 }],
+      reference: "POUL-G3CL-V59P",
+      typeOfLivestock: "beef",
+      typeOfReview: "beef",
+      dateOfVisit: "2025-08-15T00:00:00Z",
+      tempHerdId: "04f55ea-ed42-4139-9c46-c75ba63eb0742",
+      herds: [{ id: "herd1" }, { id: "herd2" }],
+      vetVisitsReviewTestResults: "negative",
+      biosecurity: "yes",
+      piHuntAllAnimals: "yes",
+      piHuntRecommended: "yes",
+      reviewTestResults: "negative",
+    };
     const organisation = {
       name: "Fake org name",
       farmerName: "Fake farmer name",
@@ -169,6 +190,9 @@ describe("session", () => {
         }
         if (entryKey === sessionEntryKeys.poultryApplyData) {
           return poultryApplyData;
+        }
+        if (entryKey === sessionEntryKeys.poultryClaim) {
+          return poultryClaim;
         }
         return undefined;
       });
@@ -219,14 +243,19 @@ describe("session", () => {
     test("emits event and sets journey to application when entryKey is application and journey is poultryApply", async () => {
       const request = { yar: yarMock };
       yarMock.get.mockImplementation((entryKey) => {
-        if (entryKey === sessionEntryKeys.endemicsClaim) {
-          return { ...endemicsClaim, reference: "POUL-G3CL-V59P" };
+        if (entryKey === sessionEntryKeys.poultryClaim) {
+          return { ...poultryClaim, reference: "POUL-G3CL-V59P" };
         }
         if (entryKey === sessionEntryKeys.organisation) {
           return organisation;
         }
         if (entryKey === sessionEntryKeys.poultryApplyData) {
           return poultryApplyData;
+        }
+        if (entryKey === sessionEntryKeys.fundingSelection) {
+          return {
+            selectedFunding: "POUL",
+          };
         }
         return undefined;
       });
@@ -313,6 +342,9 @@ describe("session", () => {
         if (entryKey === sessionEntryKeys.organisation) {
           return organisation;
         }
+        if (entryKey === sessionEntryKeys.poultryClaim) {
+          return poultryClaim;
+        }
         return undefined;
       });
     });
@@ -322,6 +354,23 @@ describe("session", () => {
       latestEndemicsApplication: { b: 2 },
       previousClaims: [{ id: 1 }, { id: 2 }],
       reference: "IAHW-G3CL-V59P",
+      typeOfLivestock: "beef",
+      typeOfReview: "beef",
+      dateOfVisit: "2025-08-15T00:00:00Z",
+      tempHerdId: "04f55ea-ed42-4139-9c46-c75ba63eb0742",
+      herds: [{ id: "herd1" }, { id: "herd2" }],
+      vetVisitsReviewTestResults: "negative",
+      biosecurity: "yes",
+      piHuntAllAnimals: "yes",
+      piHuntRecommended: "yes",
+      reviewTestResults: "negative",
+    };
+    const poultryClaim = {
+      latestVetVisitApplication: { a: 1 },
+      latestEndemicsApplication: { b: 2 },
+      latestPoultryApplication: { c: 2, reference: "POUL-G3CL-V59P" },
+      previousClaims: [{ id: 1 }, { id: 2 }],
+      reference: "POUL-G3CL-V59P",
       typeOfLivestock: "beef",
       typeOfReview: "beef",
       dateOfVisit: "2025-08-15T00:00:00Z",
@@ -383,8 +432,8 @@ describe("session", () => {
     test("emits event when entryKey is poultryApplyData", async () => {
       const request = { yar: yarMock };
       yarMock.get.mockImplementation((entryKey) => {
-        if (entryKey === sessionEntryKeys.endemicsClaim) {
-          return { ...endemicsClaim, reference: "POUL-G3CL-V59P" };
+        if (entryKey === sessionEntryKeys.poultryClaim) {
+          return { ...poultryClaim, reference: "POUL-G3CL-V59P" };
         }
         if (entryKey === sessionEntryKeys.organisation) {
           return organisation;
@@ -392,6 +441,11 @@ describe("session", () => {
         if (entryKey === sessionEntryKeys.poultryApplyData) {
           return {
             reference: "POUL-G3CL-V59P",
+          };
+        }
+        if (entryKey === sessionEntryKeys.fundingSelection) {
+          return {
+            selectedFunding: "POUL",
           };
         }
         return undefined;
@@ -413,6 +467,148 @@ describe("session", () => {
         sbi: "123456789",
         sessionKey: "agreeMultipleSpecies",
         value: "yes",
+      });
+    });
+
+    test("emits event when entryKey is poultryClaim", async () => {
+      const request = { yar: yarMock };
+      yarMock.get.mockImplementation((entryKey) => {
+        if (entryKey === sessionEntryKeys.poultryClaim) {
+          return { ...poultryClaim, reference: "POUL-G3CL-V59P" };
+        }
+        if (entryKey === sessionEntryKeys.organisation) {
+          return organisation;
+        }
+        if (entryKey === sessionEntryKeys.poultryApplyData) {
+          return {
+            reference: "POUL-G3CL-V59P",
+          };
+        }
+        if (entryKey === sessionEntryKeys.fundingSelection) {
+          return {
+            selectedFunding: "POUL",
+          };
+        }
+        return undefined;
+      });
+
+      await setSessionData(
+        request,
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.biosecurityUsefulness,
+        "not-very-useful",
+      );
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        applicationReference: "POUL-G3CL-V59P",
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "claim",
+        reference: "POUL-G3CL-V59P",
+        sbi: "123456789",
+        sessionKey: "biosecurityUsefulness",
+        value: "not-very-useful",
+      });
+    });
+
+    test("emits event when user is signing in", async () => {
+      const request = { yar: yarMock };
+      yarMock.get.mockImplementation((entryKey) => {
+        if (entryKey === sessionEntryKeys.poultryClaim) {
+          return { ...poultryClaim, reference: "POUL-G3CL-V59P" };
+        }
+        if (entryKey === sessionEntryKeys.organisation) {
+          return organisation;
+        }
+        if (entryKey === sessionEntryKeys.poultryApplyData) {
+          return {
+            reference: "POUL-G3CL-V59P",
+          };
+        }
+        if (entryKey === sessionEntryKeys.fundingSelection) {
+          return {
+            selectedFunding: "POUL",
+          };
+        }
+        return undefined;
+      });
+
+      await setSessionEntry(request, sessionEntryKeys.signInRedirect, true);
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        applicationReference: "POUL-G3CL-V59P",
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "signInRedirect",
+        reference: "POUL-G3CL-V59P",
+        sbi: "123456789",
+        sessionKey: "signInRedirect",
+        value: true,
+      });
+    });
+
+    test("emits event when organisation and scheme is livestock", async () => {
+      const request = { yar: yarMock };
+      yarMock.get.mockImplementation((entryKey) => {
+        if (entryKey === sessionEntryKeys.organisation) {
+          return organisation;
+        }
+        if (entryKey === sessionEntryKeys.fundingSelection) {
+          return {
+            selectedFunding: "IAHW",
+          };
+        }
+        return undefined;
+      });
+
+      await setSessionEntry(request, sessionEntryKeys.organisation, organisation);
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "claim",
+        sbi: "123456789",
+        sessionKey: "organisation",
+        value: organisation,
+      });
+    });
+  });
+
+  describe("emitHerdEvent", () => {
+    const organisation = {
+      name: "Fake org name",
+      farmerName: "Fake farmer name",
+      email: "fake.farmer.email@example.com.test",
+      sbi: "123456789",
+      address: "1 fake street,fake town,United Kingdom",
+      orgEmail: "fake.org.email@example.com.test",
+    };
+
+    test("calls sendHerdEvent with correct data", async () => {
+      const request = { yar: yarMock };
+      yarMock.get.mockImplementation(() => organisation);
+
+      await emitHerdEvent({
+        request,
+        type: "herd-name",
+        message: "Herd name collected from user",
+        data: {
+          herdId: "12345678",
+          herdVersion: 1,
+          herdName: "Herd one",
+        },
+      });
+      expect(sendHerdEvent).toHaveBeenCalledWith({
+        sbi: "123456789",
+        email: "fake.farmer.email@example.com.test",
+        sessionId: 1,
+        type: "herd-name",
+        message: "Herd name collected from user",
+        data: {
+          herdId: "12345678",
+          herdVersion: 1,
+          herdName: "Herd one",
+        },
       });
     });
   });

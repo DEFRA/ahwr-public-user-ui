@@ -102,6 +102,11 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { siteSelected } = request.payload;
+      const { previousClaims, dateOfVisit, tempHerdId } = getSessionData(
+        request,
+        sessionEntryKeys.poultryClaim,
+      );
+
       await setSessionData(
         request,
         sessionEntryKeys.poultryClaim,
@@ -111,14 +116,10 @@ const postHandler = {
       );
 
       if (siteSelected === radioValueNewSite) {
-        await cleanSiteData(request);
+        await cleanSiteData(request, tempHerdId);
         return h.redirect(poultryClaimRoutes.enterSiteName);
       }
 
-      const { previousClaims, dateOfVisit } = getSessionData(
-        request,
-        sessionEntryKeys.poultryClaim,
-      );
       const sites = getUniqueSites(previousClaims);
       const selectedSite = sites.find((site) => site.id === siteSelected);
 
@@ -181,12 +182,12 @@ async function setupSiteData(request, selectedSite) {
   );
 }
 
-async function cleanSiteData(request) {
+async function cleanSiteData(request, tempHerdId) {
   await setSessionData(
     request,
     sessionEntryKeys.poultryClaim,
     sessionKeys.poultryClaim.herdId,
-    null,
+    tempHerdId,
     { shouldEmitEvent: false },
   );
   await setSessionData(

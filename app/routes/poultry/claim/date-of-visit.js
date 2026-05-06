@@ -17,6 +17,7 @@ import { getSites } from "../../../api-requests/application-api.js";
 import { trackEvent } from "../../../logging/logger.js";
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 import { refreshApplications, resetPoultryClaimSession } from "../../../lib/context-helper.js";
+import { getTempHerdId } from "../../../lib/get-temp-herd-id.js";
 
 const INVALID_DATE_OF_VISIT_EVENT = "claim-invalid-date-of-visit";
 
@@ -26,6 +27,8 @@ const {
     dateOfVisit: dateOfVisitKey,
     herds: herdsKey,
     latestPoultryApplication: latestPoultryApplicationKey,
+    tempHerdId: tempHerdIdKey,
+    herdId: herdIdKey,
   },
 } = sessionKeys;
 
@@ -164,13 +167,21 @@ const postHandler = {
       const applicationCreatedAt = new Date(latestPoultryApplication.createdAt);
       applicationCreatedAt.setHours(0, 0, 0, 0);
 
+      const { reference: tempClaimReference, tempHerdId: tempHerdIdFromSession } = getSessionData(
+        request,
+        poultryClaimEntry,
+      );
+
       if (dateOfVisit < applicationCreatedAt) {
-        const { reference: tempClaimReference } = getSessionData(request, poultryClaimEntry);
         return handleTimingException(request, h, date, applicationCreatedAt, tempClaimReference);
       }
 
       await setSessionData(request, poultryClaimEntry, dateOfVisitKey, dateOfVisit);
 
+      const tempHerdId = await getTempHerdId(request, tempHerdIdFromSession);
+      await setSessionData(request, poultryClaimEntry, tempHerdIdKey, tempHerdId, {
+        shouldEmitEvent: false,
+      });
       const { herds } = await getSites(latestPoultryApplication.reference, request.logger);
 
       await setSessionData(request, poultryClaimEntry, herdsKey, herds, {
@@ -180,6 +191,9 @@ const postHandler = {
       if (herds.length) {
         return h.redirect(poultryClaimRoutes.selectTheSite);
       } else {
+        await setSessionData(request, poultryClaimEntry, herdIdKey, tempHerdId, {
+          shouldEmitEvent: false,
+        });
         return h.redirect(poultryClaimRoutes.enterSiteName);
       }
     },

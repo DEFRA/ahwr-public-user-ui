@@ -9,6 +9,11 @@ const EVENT_KEY_BY_SESSION_KEY = {
   vetRCVSNumber: "vetRcvs",
   dateOfVisit: "visitDate",
   numberAnimalsTested: "animalsTested",
+  selectedFunding: "schemeType",
+  minimumNumberOfBirds: "speciesNumbers",
+  changesInBiosecurity: "biosecurityChanges",
+  costOfChanges: "biosecurityChangesCost",
+  interview: "schemeExperienceInterview",
 };
 
 const REVIEW_TYPE_MAP = {
@@ -18,6 +23,13 @@ const REVIEW_TYPE_MAP = {
 
 const NORMALIZE_VALUE_BY_SESSION_KEY = {
   typeOfReview: (value) => REVIEW_TYPE_MAP[value] ?? value,
+  typesOfPoultry: (value) =>
+    value?.length ? value.filter((type) => type !== "chickens").join(" ") : "",
+  schemeType: (value) => (value === "POUL" ? "poultry" : "livestock"),
+};
+
+const NORMALIZE_JOURNEY_BY_JOURNEY = {
+  fundingSelection: "scheme",
 };
 
 export const sendSessionEvent = async ({
@@ -33,6 +45,7 @@ export const sendSessionEvent = async ({
   const { publishEvent } = getEventPublisher();
   const eventKey = EVENT_KEY_BY_SESSION_KEY[sessionKey] ?? sessionKey;
   const eventValue = NORMALIZE_VALUE_BY_SESSION_KEY[sessionKey]?.(value) ?? value;
+  const journeyValue = NORMALIZE_JOURNEY_BY_JOURNEY[journey] ?? journey;
 
   const payload = {
     name: SEND_SESSION_EVENT,
@@ -41,8 +54,8 @@ export const sendSessionEvent = async ({
     cph: "n/a",
     checkpoint: config.serviceName,
     status: "success",
-    type: `${journey}-${eventKey}`, // e.g. claim-vetsName or farmerApplyData-agreeMultipleSpecies
-    message: `Session set for ${journey} and ${eventKey}.`,
+    type: `${journeyValue}-${eventKey}`, // e.g. claim-vetsName or farmerApplyData-agreeMultipleSpecies
+    message: `Session set for ${journeyValue} and ${eventKey}.`,
     data: { reference, applicationReference, [eventKey]: eventValue },
     raisedBy: email,
     raisedOn: new Date().toISOString(),
