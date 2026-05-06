@@ -18,13 +18,13 @@ export const getTempHerdId = async (request, tempHerdIdFromSession) => {
 };
 
 export const getTempSiteId = async (request) => {
-  const tempHerdIdId = uuidv4();
+  const tempHerdId = uuidv4();
   await setSessionData(
     request,
     sessionEntryKeys.poultryClaim,
     sessionKeys.poultryClaim.tempHerdId,
-    tempHerdIdId,
+    tempHerdId,
     { shouldEmitEvent: false },
   );
-  return tempHerdIdId;
+  return tempHerdId;
 };
