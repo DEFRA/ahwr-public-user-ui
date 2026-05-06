@@ -11,11 +11,6 @@ import { trackError, trackEvent } from "../../../../app/logging/logger.js";
 import { metricsCounter } from "../../../../app/lib/metrics.js";
 
 jest.mock("../../../../app/messaging/ineligibility-event-emission");
-
-jest.mock("../../../../app/session/index.js", () => ({
-  ...jest.requireActual("../../../../app/session/index.js"),
-  setFarmerApplyData: jest.fn(),
-}));
 jest.mock("../../../../app/logging/logger.js", () => ({
   ...jest.requireActual("../../../../app/logging/logger.js"),
   trackEvent: jest.fn(),

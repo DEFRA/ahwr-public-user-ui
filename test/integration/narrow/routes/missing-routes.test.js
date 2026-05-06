@@ -9,15 +9,7 @@ import { getByRole } from "@testing-library/dom";
 import { config } from "../../../../app/config/index.js";
 import { when } from "jest-when";
 
-jest.mock("../../../../app/session", () => {
-  const actual = jest.requireActual("../../../../app/session");
-  // Mocking everything apart from sessionKeys and sessionEntryKeys
-  const mocked = Object.keys(actual).reduce((acc, key) => {
-    acc[key] = key === "sessionKeys" || key === "sessionEntryKeys" ? actual[key] : jest.fn();
-    return acc;
-  }, {});
-  return mocked;
-});
+jest.mock("../../../../app/session");
 
 describe("Missing routes", () => {
   let server;

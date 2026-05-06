@@ -1,5 +1,7 @@
 import { sendHerdEvent, sendSessionEvent } from "../messaging/session-event-emission.js";
 import { JOURNEY } from "../constants/constants.js";
+import { getScheme } from "../lib/context-helper.js";
+import { POULTRY_SCHEME } from "ffc-ahwr-common-library";
 
 export const sessionKeys = {
   tempReference: "tempReference",
@@ -333,7 +335,11 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
   const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
   const poultryApplyData = getSessionData(request, sessionEntryKeys.poultryApplyData);
   const claimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
+  const poultryClaimData = getSessionData(request, sessionEntryKeys.poultryClaim);
   const organisation = getSessionData(request, sessionEntryKeys.organisation);
+  const scheme = getScheme(request);
+  const isPoultry = scheme === POULTRY_SCHEME;
+
   const sessionId = request.yar.id;
 
   if (!organisation) {
@@ -342,12 +348,10 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
 
   const isPoultryApply =
     entryKey === sessionEntryKeys.poultryApplyData || journey === JOURNEY.POULTRY_APPLY;
+  const isLivestockApply =
+    entryKey === sessionEntryKeys.farmerApplyData || journey === JOURNEY.APPLY;
 
-  if (
-    entryKey === sessionEntryKeys.farmerApplyData ||
-    journey === JOURNEY.APPLY ||
-    isPoultryApply
-  ) {
+  if (isLivestockApply || isPoultryApply) {
     const journeyValue =
       entryKey === "application" || entryKey === "tempReference" ? entryKey : "farmerApplyData";
 
@@ -358,15 +362,23 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
       journey: journeyValue,
       sessionKey: key,
       value,
-      applicationReference: claimData?.reference,
+      applicationReference: isPoultryApply ? poultryClaimData.reference : claimData?.reference,
       reference: isPoultryApply ? poultryApplyData?.reference : farmerApplyData?.reference,
     });
 
     return;
   }
 
-  if (entryKey === sessionEntryKeys.endemicsClaim || journey === JOURNEY.CLAIM) {
+  if (
+    entryKey === sessionEntryKeys.endemicsClaim ||
+    entryKey === sessionEntryKeys.poultryClaim ||
+    journey === JOURNEY.CLAIM
+  ) {
     const journeyValue = entryKey === "tempClaimReference" ? entryKey : "claim";
+    const reference = isPoultry ? poultryClaimData?.reference : claimData?.reference;
+    const applicationReference = isPoultry
+      ? poultryClaimData?.latestPoultryApplication?.reference
+      : claimData?.latestEndemicsApplication?.reference;
 
     await sendSessionEvent({
       id: sessionId,
@@ -375,8 +387,8 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
       journey: journeyValue,
       sessionKey: key,
       value,
-      reference: claimData?.reference,
-      applicationReference: claimData?.latestEndemicsApplication?.reference,
+      reference,
+      applicationReference,
     });
 
     return;
@@ -390,8 +402,8 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
     journey: entryKey === "organisation" ? "claim" : entryKey,
     sessionKey: key ?? entryKey,
     value,
-    reference: claimData?.reference,
-    applicationReference: farmerApplyData?.reference,
+    reference: isPoultry ? poultryClaimData?.reference : claimData?.reference,
+    applicationReference: isPoultry ? poultryApplyData?.reference : farmerApplyData?.reference,
   });
 };
 

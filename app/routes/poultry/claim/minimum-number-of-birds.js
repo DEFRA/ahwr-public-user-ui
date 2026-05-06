@@ -58,7 +58,6 @@ const postHandler = {
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.minimumNumberOfBirds,
         minimumNumberOfBirds,
-        { shouldEmitEvent: false },
       );
 
       if (minimumNumberOfBirds === "yes") {
@@ -66,7 +65,7 @@ const postHandler = {
       } else {
         await sendInvalidDataPoultryEvent({
           request,
-          sessionKey: sessionKeys.poultryClaim.minimumNumberOfBirds,
+          sessionKey: sessionKeys.endemicsClaim.speciesNumbers, // reusing existing event type for minimumNumberOfBirds
           exception: `Value ${minimumNumberOfBirds} is not equal to required value yes`,
         });
         return h.view(poultryClaimViews.minimumNumberOfBirdsException, {

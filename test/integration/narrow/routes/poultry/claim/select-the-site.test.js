@@ -445,6 +445,7 @@ describe("/poultry/select-the-site", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           siteSelected: null,
+          tempHerdId: "4e2f6b81-a9c3-4074-b51d-d9e2a8f7c6b5",
           previousClaims: [
             {
               herd: {
@@ -483,7 +484,7 @@ describe("/poultry/select-the-site", () => {
         expect.anything(),
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.herdId,
-        null,
+        "4e2f6b81-a9c3-4074-b51d-d9e2a8f7c6b5",
         { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(
@@ -514,6 +515,7 @@ describe("/poultry/select-the-site", () => {
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           siteSelected: null,
+          tempHerdId: "4e2f6b81-a9c3-4074-b51d-d9e2a8f7c6b5",
           previousClaims: [
             {
               herd: {
@@ -563,7 +565,7 @@ describe("/poultry/select-the-site", () => {
         expect.anything(),
         sessionEntryKeys.poultryClaim,
         sessionKeys.poultryClaim.herdId,
-        null,
+        "4e2f6b81-a9c3-4074-b51d-d9e2a8f7c6b5",
         { shouldEmitEvent: false },
       );
       expect(setSessionData).toHaveBeenCalledWith(

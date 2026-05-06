@@ -255,6 +255,7 @@ describe("select-funding", () => {
         sessionEntryKeys.fundingSelection,
         sessionKeys.fundingSelection.agreement,
         undefined,
+        { shouldEmitEvent: false },
       );
     });
 
@@ -291,6 +292,7 @@ describe("select-funding", () => {
         sessionEntryKeys.fundingSelection,
         sessionKeys.fundingSelection.agreement,
         livestockAgreement,
+        { shouldEmitEvent: false },
       );
     });
 
@@ -327,6 +329,7 @@ describe("select-funding", () => {
         sessionEntryKeys.fundingSelection,
         sessionKeys.fundingSelection.agreement,
         undefined,
+        { shouldEmitEvent: false },
       );
     });
 
@@ -363,6 +366,7 @@ describe("select-funding", () => {
         sessionEntryKeys.fundingSelection,
         sessionKeys.fundingSelection.agreement,
         poultryAgreement,
+        { shouldEmitEvent: false },
       );
     });
 

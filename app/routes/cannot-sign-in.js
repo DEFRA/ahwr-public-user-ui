@@ -23,7 +23,6 @@ export const cannotSignInExceptionHandlers = [
       },
       handler: async (request, h) => {
         const cannotSignInDetails = getSessionData(request, sessionEntryKeys.cannotSignInDetails);
-
         const { error, hasMultipleBusinesses, organisation } = cannotSignInDetails || {};
 
         if (
@@ -32,18 +31,15 @@ export const cannotSignInExceptionHandlers = [
         ) {
           throw new Error("Cannot render cannot sign in page as props are missing");
         }
-
         const token = getSessionData(
           request,
           sessionEntryKeys.tokens,
           sessionKeys.tokens.accessToken,
         );
         const signOutLink = getSignOutUrl(token);
-
         // log them out on our end, not defra id
         await clearAllOfSession(request);
         clearAuthCookie(request);
-
         // we need the backlink now, if hasMultipleBusinesses is true
         const backLink = hasMultipleBusinesses ? await requestAuthorizationCodeUrl(request) : null;
         // we need to re-set these values into session, in case user refreshes the page
@@ -59,7 +55,6 @@ export const cannotSignInExceptionHandlers = [
           sessionKeys.tokens.accessToken,
           token,
         );
-
         return h.view("cannot-sign-in-exception", {
           error,
           ruralPaymentsAgency: RPA_CONTACT_DETAILS,

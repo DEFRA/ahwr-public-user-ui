@@ -82,12 +82,12 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdName } = request.payload;
-      const { herdId, herdVersion, previousClaims, herds } = getSessionData(
+      const { herdId, previousClaims, herds } = getSessionData(
         request,
         sessionEntryKeys.poultryClaim,
       );
 
-      const siteId = herdId ?? getTempSiteId(request);
+      const siteId = herdId ?? (await getTempSiteId(request));
 
       if (previousClaims?.some((claim) => claim.herd?.name === herdName.trim())) {
         return h
@@ -117,7 +117,7 @@ const postHandler = {
         message: "Herd name collected from user",
         data: {
           herdId: siteId,
-          herdVersion,
+          herdVersion: 1,
           herdName,
         },
       });

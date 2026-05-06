@@ -109,6 +109,7 @@ export const selectFundingRouteHandlers = [
             sessionEntryKeys.fundingSelection,
             sessionKeys.fundingSelection.agreement,
             latestEndemicsApplication?.reference,
+            { shouldEmitEvent: false },
           );
           return h.redirect(
             latestEndemicsApplication
@@ -128,6 +129,7 @@ export const selectFundingRouteHandlers = [
             sessionEntryKeys.fundingSelection,
             sessionKeys.fundingSelection.agreement,
             latestPoultryApplication?.reference,
+            { shouldEmitEvent: false },
           );
           return h.redirect(
             latestPoultryApplication
