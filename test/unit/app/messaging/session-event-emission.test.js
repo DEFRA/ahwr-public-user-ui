@@ -161,6 +161,66 @@ describe("Send event on session set", () => {
           },
         });
       });
+
+      test("should call publishEvent with normalized fundingSelection when poultry", async () => {
+        await sendSessionEvent({
+          ...event,
+          sessionKey: "schemeType",
+          journey: "fundingSelection",
+          value: "POUL",
+          applicationReference: undefined,
+          reference: undefined,
+        });
+
+        expect(mockPublishEvent).toHaveBeenCalledWith({
+          ...publishedEvent,
+          type: "scheme-schemeType",
+          message: "Session set for scheme and schemeType.",
+          data: {
+            schemeType: "poultry",
+          },
+        });
+      });
+
+      test("should call publishEvent with normalized fundingSelection when livestock", async () => {
+        await sendSessionEvent({
+          ...event,
+          sessionKey: "schemeType",
+          journey: "fundingSelection",
+          value: "IAHW",
+          applicationReference: undefined,
+          reference: undefined,
+        });
+
+        expect(mockPublishEvent).toHaveBeenCalledWith({
+          ...publishedEvent,
+          type: "scheme-schemeType",
+          message: "Session set for scheme and schemeType.",
+          data: {
+            schemeType: "livestock",
+          },
+        });
+      });
+
+      test.each([
+        ["minimumNumberOfBirds", "speciesNumbers"],
+        ["changesInBiosecurity", "biosecurityChanges"],
+        ["costOfChanges", "biosecurityChangesCost"],
+        ["interview", "schemeExperienceInterview"],
+      ])("renames $before to $after", async (before, after) => {
+        await sendSessionEvent({ ...event, sessionKey: before, value: "10" });
+
+        expect(mockPublishEvent).toHaveBeenCalledWith({
+          ...publishedEvent,
+          type: `claim-${after}`,
+          message: `Session set for claim and ${after}.`,
+          data: {
+            reference: publishedEvent.data.reference,
+            applicationReference: publishedEvent.data.applicationReference,
+            [after]: "10",
+          },
+        });
+      });
     });
   });
 

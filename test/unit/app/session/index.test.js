@@ -434,6 +434,11 @@ describe("session", () => {
             reference: "POUL-G3CL-V59P",
           };
         }
+        if (entryKey === sessionEntryKeys.fundingSelection) {
+          return {
+            selectedFunding: "POUL",
+          };
+        }
         return undefined;
       });
 
@@ -453,6 +458,47 @@ describe("session", () => {
         sbi: "123456789",
         sessionKey: "agreeMultipleSpecies",
         value: "yes",
+      });
+    });
+
+    test("emits event when entryKey is poultryClaim", async () => {
+      const request = { yar: yarMock };
+      yarMock.get.mockImplementation((entryKey) => {
+        if (entryKey === sessionEntryKeys.poultryClaim) {
+          return { ...poultryClaim, reference: "POUL-G3CL-V59P" };
+        }
+        if (entryKey === sessionEntryKeys.organisation) {
+          return organisation;
+        }
+        if (entryKey === sessionEntryKeys.poultryApplyData) {
+          return {
+            reference: "POUL-G3CL-V59P",
+          };
+        }
+        if (entryKey === sessionEntryKeys.fundingSelection) {
+          return {
+            selectedFunding: "POUL",
+          };
+        }
+        return undefined;
+      });
+
+      await setSessionData(
+        request,
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.biosecurityUsefulness,
+        "not-very-useful",
+      );
+
+      expect(sendSessionEvent).toHaveBeenCalledWith({
+        applicationReference: "POUL-G3CL-V59P",
+        email: "fake.farmer.email@example.com.test",
+        id: 1,
+        journey: "claim",
+        reference: "POUL-G3CL-V59P",
+        sbi: "123456789",
+        sessionKey: "biosecurityUsefulness",
+        value: "not-very-useful",
       });
     });
   });

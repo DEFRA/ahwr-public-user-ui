@@ -331,6 +331,11 @@ export function removeSessionDataForSameHerdChange(request) {
   request.yar.set(sessionEntryKeys.endemicsClaim, furtherRemadeSession);
 }
 
+const isClaimJourney = (entryKey, journey) =>
+  entryKey === sessionEntryKeys.endemicsClaim ||
+  entryKey === sessionEntryKeys.poultryClaim ||
+  journey === JOURNEY.CLAIM;
+
 export const emitSessionEvent = async ({ request, entryKey, key, value, journey }) => {
   const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
   const poultryApplyData = getSessionData(request, sessionEntryKeys.poultryApplyData);
@@ -369,11 +374,7 @@ export const emitSessionEvent = async ({ request, entryKey, key, value, journey 
     return;
   }
 
-  if (
-    entryKey === sessionEntryKeys.endemicsClaim ||
-    entryKey === sessionEntryKeys.poultryClaim ||
-    journey === JOURNEY.CLAIM
-  ) {
+  if (isClaimJourney(entryKey, journey)) {
     const journeyValue = entryKey === "tempClaimReference" ? entryKey : "claim";
     const reference = isPoultry ? poultryClaimData?.reference : claimData?.reference;
     const applicationReference = isPoultry

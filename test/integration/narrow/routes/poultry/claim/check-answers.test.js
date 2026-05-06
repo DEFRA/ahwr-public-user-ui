@@ -673,7 +673,28 @@ describe("Poultry check answers test", () => {
       expect(Wreck.post).toHaveBeenCalledTimes(1);
     });
 
-    test("submits claim with correct payload structure", async () => {
+    test("submits claim with correct payload structure for new site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          latestPoultryApplication: { reference: "POUL-1234-5678" },
+          reference: "TEMP-CLAIM-REF-123",
+          dateOfVisit: "2024-01-15T10:30:00.000Z",
+          tempHerdId: "site-uuid-1234",
+          herdName: "North Farm Site",
+          herdCph: "12/345/6789",
+          isOnlyHerdOnSbi: "yes",
+          typesOfPoultry: ["laying hens"],
+          minimumNumberOfBirds: "yes",
+          vetsName: "John Smith",
+          vetRCVSNumber: "1234567",
+          biosecurity: "yes",
+          biosecurityUsefulness: "very-useful",
+          changesInBiosecurity: "infra-and-control",
+          costOfChanges: "0-1500",
+          interview: "yes",
+        });
+
       const options = {
         method: "POST",
         url,
