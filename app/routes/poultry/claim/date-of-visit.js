@@ -27,7 +27,7 @@ const {
     dateOfVisit: dateOfVisitKey,
     herds: herdsKey,
     latestPoultryApplication: latestPoultryApplicationKey,
-    tempSiteId: tempSiteIdKey,
+    tempHerdId: tempHerdIdKey,
     herdId: herdIdKey,
   },
 } = sessionKeys;
@@ -179,7 +179,7 @@ const postHandler = {
       await setSessionData(request, poultryClaimEntry, dateOfVisitKey, dateOfVisit);
 
       const tempHerdId = await getTempHerdId(request, tempHerdIdFromSession);
-      await setSessionData(request, poultryClaimEntry, tempSiteIdKey, tempHerdId, {
+      await setSessionData(request, poultryClaimEntry, tempHerdIdKey, tempHerdId, {
         shouldEmitEvent: false,
       });
       const { herds } = await getSites(latestPoultryApplication.reference, request.logger);
