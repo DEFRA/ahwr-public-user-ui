@@ -220,10 +220,18 @@ export const getSessionData = (request, entryKey, key) => {
       );
     }
 
-    return request.yar.get(entryKey)?.[key];
+    try {
+      return request.yar.get(entryKey)?.[key];
+    } catch {
+      return undefined;
+    }
   }
 
-  return request.yar.get(entryKey);
+  try {
+    return request.yar.get(entryKey);
+  } catch {
+    return undefined;
+  }
 };
 
 export async function clearAllOfSession(request) {
