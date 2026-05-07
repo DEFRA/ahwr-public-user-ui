@@ -15,4 +15,4 @@ By default, a commit into the trunk will cause a `minor` version increment. If y
 
 ## Integration Tests
 
-- Validate the HTML is WCAG compliant the using the assertion `toHaveNoViolations`
+- Validate the HTML is WCAG compliant using the assertion `toHaveNoViolations`

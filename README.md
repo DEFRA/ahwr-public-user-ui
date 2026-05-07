@@ -23,8 +23,7 @@ and on return the authorisation is swapped out for a token that is used to retri
 
 In development environments, a dev login access point is provided that allows the use of a fixed set of details
 to simulate the authentication process without needing to interact with DefraID, meaning the UI can be developed
-and tested without relying on an external service
-.
+and tested without relying on an external service.
 
 ## Prerequisites
 
