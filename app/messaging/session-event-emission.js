@@ -30,6 +30,8 @@ const NORMALIZE_VALUE_BY_SESSION_KEY = {
 
 const NORMALIZE_JOURNEY_BY_JOURNEY = {
   fundingSelection: "scheme",
+  poultryClaim: "claim",
+  endemicsClaim: "claim",
 };
 
 export const sendSessionEvent = async ({

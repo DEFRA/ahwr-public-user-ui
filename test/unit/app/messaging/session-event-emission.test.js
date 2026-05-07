@@ -259,6 +259,25 @@ describe("Send event on session set", () => {
           },
         });
       });
+
+      test.each([
+        ["fundingSelection", "scheme"],
+        ["poultryClaim", "claim"],
+        ["endemicsClaim", "claim"],
+      ])("normalizes journey from $before to $after", async (before, after) => {
+        await sendSessionEvent({ ...event, journey: before });
+
+        expect(mockPublishEvent).toHaveBeenCalledWith({
+          ...publishedEvent,
+          type: `${after}-agreeMultipleSpecies`,
+          message: `Session set for ${after} and agreeMultipleSpecies.`,
+          data: {
+            reference: publishedEvent.data.reference,
+            applicationReference: publishedEvent.data.applicationReference,
+            agreeMultipleSpecies: "yes",
+          },
+        });
+      });
     });
   });
 
