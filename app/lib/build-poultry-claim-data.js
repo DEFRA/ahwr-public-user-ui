@@ -122,8 +122,9 @@ export const buildPoultryClaimPayload = (poultryClaim) => {
         version: 1, // We don't update sites, should have the single version
         name: poultryClaim.herdName,
         cph: poultryClaim.herdCph,
-        same: poultryClaim.isOnlyHerdOnSbi,
+        same: poultryClaim.herdSame,
       },
+      isOnlyHerdOnSbi: poultryClaim.isOnlyHerdOnSbi,
       typesOfPoultry: poultryClaim.typesOfPoultry.filter((type) => type !== "chickens"),
       minimumNumberOfBirds: poultryClaim.minimumNumberOfBirds,
       vetsName: poultryClaim.vetsName,
