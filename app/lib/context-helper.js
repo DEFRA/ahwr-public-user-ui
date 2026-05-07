@@ -21,6 +21,7 @@ import {
   allPoultryRoutes,
   applyRoutes,
   claimRoutes,
+  dashboardRoutes,
   poultryApplyUrls,
   poultryClaimUrls,
 } from "../constants/routes.js";
@@ -235,6 +236,13 @@ export const getScheme = (request) => {
 };
 
 export function getSurveyUri(request) {
+  if (
+    request.path === dashboardRoutes.checkDetails ||
+    request.path === dashboardRoutes.selectFunding
+  ) {
+    return customerSurvey.applyUri;
+  }
+
   if (allPoultryRoutes.includes(request.path)) {
     return getPoultrySurveyUri(request);
   }
