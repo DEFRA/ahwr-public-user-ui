@@ -472,32 +472,6 @@ describe("session", () => {
 
       expect(result).toBe("customValue");
     });
-
-    test("returns undefined when yar.get throws an error (no key)", () => {
-      yarMock.get.mockImplementation(() => {
-        throw new Error("Session store is null");
-      });
-
-      const request = { yar: yarMock };
-      const result = getSessionData(request, sessionEntryKeys.endemicsClaim);
-
-      expect(result).toBeUndefined();
-    });
-
-    test("returns undefined when yar.get throws an error (with key)", () => {
-      yarMock.get.mockImplementation(() => {
-        throw new Error("Session store is null");
-      });
-
-      const request = { yar: yarMock };
-      const result = getSessionData(
-        request,
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.reference,
-      );
-
-      expect(result).toBeUndefined();
-    });
   });
 
   describe("setSessionEntry", () => {

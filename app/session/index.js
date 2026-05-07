@@ -220,18 +220,12 @@ export const getSessionData = (request, entryKey, key) => {
       );
     }
 
-    try {
-      return request.yar.get(entryKey)?.[key];
-    } catch {
-      return undefined;
-    }
+    // If the session has expired this will throw an error
+    return request.yar.get(entryKey)?.[key];
   }
 
-  try {
-    return request.yar.get(entryKey);
-  } catch {
-    return undefined;
-  }
+  // If the session has expired this will throw an error
+  return request.yar.get(entryKey);
 };
 
 export async function clearAllOfSession(request) {
