@@ -549,8 +549,26 @@ describe("context-helper", () => {
         .mockReturnValue(returnValue);
     };
 
+    describe("dashboard urls", () => {
+      it("returns the agreement survey uri when path is /check-details", () => {
+        const mockRequest = { path: dashboardRoutes.checkDetails, method: "get" };
+        const result = getSurveyUri(mockRequest);
+
+        expect(result).toBe(config.customerSurvey.applyUri);
+        expect(getSessionData).not.toHaveBeenCalled();
+      });
+
+      it("returns the agreement survey uri when path is /select-funding", () => {
+        const mockRequest = { path: dashboardRoutes.selectFunding, method: "get" };
+        const result = getSurveyUri(mockRequest);
+
+        expect(result).toBe(config.customerSurvey.applyUri);
+        expect(getSessionData).not.toHaveBeenCalled();
+      });
+    });
+
     describe("livestock urls", () => {
-      it("returns applyUri when path is /declaration and method is post", () => {
+      it("returns the agreement survey uri when path is /declaration and method is post", () => {
         const mockRequest = { path: applyRoutes.declaration, method: "post" };
         const result = getSurveyUri(mockRequest);
 
@@ -558,7 +576,7 @@ describe("context-helper", () => {
         expect(getSessionData).not.toHaveBeenCalled();
       });
 
-      it("returns claimUri when latestEndemicsApplication exists", () => {
+      it("returns the claim survey uri when latestEndemicsApplication exists", () => {
         const mockRequest = { path: dashboardRoutes.manageYourClaims, method: "get" };
         mockEndemicsSessionData(mockRequest, { reference: "IAHW-1111-2222" });
 
@@ -567,7 +585,7 @@ describe("context-helper", () => {
         expect(result).toBe(config.customerSurvey.claimUri);
       });
 
-      it("returns applyUri when latestEndemicsApplication is null", () => {
+      it("returns the agreement survey uri when latestEndemicsApplication is null", () => {
         const mockRequest = { path: dashboardRoutes.manageYourClaims, method: "get" };
         mockEndemicsSessionData(mockRequest, null);
 
@@ -576,7 +594,7 @@ describe("context-helper", () => {
         expect(result).toBe(config.customerSurvey.applyUri);
       });
 
-      it("returns applyUri when latestEndemicsApplication is undefined", () => {
+      it("returns the agreement survey uri when latestEndemicsApplication is undefined", () => {
         const mockRequest = { path: dashboardRoutes.manageYourClaims, method: "get" };
         mockEndemicsSessionData(mockRequest, undefined);
 
@@ -596,22 +614,28 @@ describe("context-helper", () => {
     });
 
     describe("poultry urls", () => {
-      it.each([...Object.values(poultryApplyRoutes)])("returns applyUri on %s route", (url) => {
-        const mockRequest = { path: poultryApplyRoutes.declaration, method: "post" };
-        const result = getSurveyUri(mockRequest);
+      it.each([...Object.values(poultryApplyRoutes)])(
+        "returns the agreement survey uri on %s route",
+        (url) => {
+          const mockRequest = { path: poultryApplyRoutes.declaration, method: "post" };
+          const result = getSurveyUri(mockRequest);
 
-        expect(result).toBe(config.customerSurvey.applyUri);
-        expect(getSessionData).not.toHaveBeenCalled();
-      });
+          expect(result).toBe(config.customerSurvey.applyUri);
+          expect(getSessionData).not.toHaveBeenCalled();
+        },
+      );
 
-      it.each([...Object.values(poultryClaimRoutes)])("returns claimUri on %s route", (url) => {
-        const mockRequest = { path: url, method: "get" };
-        mockPoultrySessionData(mockRequest, { reference: "POUL-1111-2222" });
+      it.each([...Object.values(poultryClaimRoutes)])(
+        "returns the claim survey uri on %s route",
+        (url) => {
+          const mockRequest = { path: url, method: "get" };
+          mockPoultrySessionData(mockRequest, { reference: "POUL-1111-2222" });
 
-        const result = getSurveyUri(mockRequest);
+          const result = getSurveyUri(mockRequest);
 
-        expect(result).toBe(config.customerSurvey.claimUri);
-      });
+          expect(result).toBe(config.customerSurvey.claimUri);
+        },
+      );
 
       it("returns claim routes on Manage your claims", () => {
         const mockRequest = { path: dashboardRoutes.poultryManageYourClaims, method: "get" };
