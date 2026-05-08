@@ -50,7 +50,7 @@ const postHandler = {
           .view(poultryClaimViews.enterCphNumber, {
             ...request.payload,
             errorMessage: {
-              text: "Enter the CPH for this site in the format should be 12/345/6789",
+              text: "Enter the CPH for this site in the format 12/345/6789",
               href: "#herdCph",
             },
             backLink: getBackLink(herdVersion),
