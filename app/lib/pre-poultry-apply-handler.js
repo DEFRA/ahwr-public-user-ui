@@ -15,7 +15,7 @@ export const prePoultryApplyHandler = async (request, h) => {
 
     let application = getSessionData(request, sessionEntryKeys.application);
 
-    if (!application || !application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY)) {
+    if (!application?.reference?.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY)) {
       const latestApplications = await getApplicationsBySbi(organisation.sbi);
       const poultryApplications = latestApplications.filter((app) =>
         app.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY),
