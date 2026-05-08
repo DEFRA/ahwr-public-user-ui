@@ -14,7 +14,7 @@ import { config } from "../../../../../../app/config/index.js";
 
 const errorMessages = {
   enterName: "Enter the vet's name",
-  nameLength: "The vet's name must be 50 characters or fewer",
+  nameLength: "The vet's name must be 50 characters or less",
   namePattern:
     "The vet's name must only include letters a to z, numbers and special characters such as hyphens, spaces, apostrophes, ampersands, commas, brackets or a forward slash",
 };
