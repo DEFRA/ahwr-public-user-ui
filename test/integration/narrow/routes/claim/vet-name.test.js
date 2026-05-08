@@ -12,9 +12,9 @@ import { when } from "jest-when";
 
 const errorMessages = {
   enterName: "Enter the vet's name",
-  nameLength: "Vet's name must be 50 characters or fewer",
+  nameLength: "The vet's name must be 50 characters or fewer",
   namePattern:
-    "Vet's name must only include letters a to z, numbers and special characters such as hyphens, spaces, apostrophes, ampersands, commas, brackets or a forward slash",
+    "The vet's name must only include letters a to z, numbers and special characters such as hyphens, spaces, apostrophes, ampersands, commas, brackets or a forward slash",
 };
 
 jest.mock("../../../../../app/session/index.js");
