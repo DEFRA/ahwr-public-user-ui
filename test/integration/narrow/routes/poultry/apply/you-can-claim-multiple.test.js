@@ -39,8 +39,8 @@ const applications = [{ organisation, reference: "TEMP-PJ7E-WSI8" }];
 getApplicationsBySbi.mockReturnValue(applications);
 
 when(getSessionData)
-  .calledWith(expect.anything(), sessionEntryKeys.application)
-  .mockReturnValue({ reference: "IAHW-1234-ABCD" });
+  .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
+  .mockReturnValue({ reference: "POUL-1234-ABCD" });
 
 when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.organisation)

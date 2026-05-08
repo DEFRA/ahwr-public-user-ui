@@ -66,7 +66,7 @@ describe("Declaration test", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.application)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
       .mockReturnValue(undefined);
     getApplicationsBySbi.mockReturnValue([]);
   });
@@ -127,7 +127,7 @@ describe("Declaration test", () => {
 
     test("redirects to dashboard when application exists", async () => {
       when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.application)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
         .mockReturnValue({ reference: "POUL-PJ7E-WSI8", status: "AGREED" });
 
       const options = {

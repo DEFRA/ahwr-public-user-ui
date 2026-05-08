@@ -102,44 +102,6 @@ describe("preApplyHandler", () => {
     );
   });
 
-  test("sends an API request to get applications if poultry application in the session", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.organisation)
-      .mockReturnValue(organisation);
-
-    const newWorldApplications = [
-      {
-        sbi: 112231312,
-        type: "EE",
-        reference: "IAHW-1111-2222",
-        redacted: false,
-        status: "CLOSED",
-      },
-    ];
-    getApplicationsBySbi.mockResolvedValue(newWorldApplications);
-
-    const poultryApplication = {
-      sbi: 112231312,
-      type: "EE",
-      reference: "POUL-1111-2222",
-      redacted: false,
-      status: "AGREED",
-    };
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.application)
-      .mockReturnValue(poultryApplication);
-
-    await preApplyHandler(getRequest, h);
-
-    expect(getApplicationsBySbi).toHaveBeenCalled();
-    expect(setSessionEntry).toHaveBeenCalledWith(
-      getRequest,
-      sessionEntryKeys.application,
-      newWorldApplications[0],
-      { journey: "apply" },
-    );
-  });
-
   test("does not send an API request to get applications if the application is already in the session", async () => {
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.organisation)

@@ -13,16 +13,16 @@ export const prePoultryApplyHandler = async (request, h) => {
       throw new Error("No organisation found in session");
     }
 
-    let application = getSessionData(request, sessionEntryKeys.application);
+    let application = getSessionData(request, sessionEntryKeys.poultryApplication);
 
-    if (!application?.reference?.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY)) {
+    if (!application) {
       const latestApplications = await getApplicationsBySbi(organisation.sbi);
       const poultryApplications = latestApplications.filter((app) =>
         app.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY),
       );
       application = poultryApplications.length ? poultryApplications[0] : null;
-      await setSessionEntry(request, sessionEntryKeys.application, application, {
-        journey: JOURNEY.APPLY,
+      await setSessionEntry(request, sessionEntryKeys.poultryApplication, application, {
+        journey: JOURNEY.POULTRY_APPLY,
       });
     }
 

@@ -14,6 +14,7 @@ const EVENT_KEY_BY_SESSION_KEY = {
   changesInBiosecurity: "biosecurityChanges",
   costOfChanges: "biosecurityChangesCost",
   interview: "schemeExperienceInterview",
+  poultryApplication: "application",
 };
 
 const REVIEW_TYPE_MAP = {
@@ -34,6 +35,7 @@ const NORMALIZE_JOURNEY_BY_JOURNEY = {
   fundingSelection: "scheme",
   poultryClaim: "claim",
   endemicsClaim: "claim",
+  poultryApplication: "application",
 };
 
 export const sendSessionEvent = async ({

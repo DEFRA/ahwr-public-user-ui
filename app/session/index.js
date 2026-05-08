@@ -153,6 +153,7 @@ export const sessionEntryKeys = {
   signInRedirect: "signInRedirect",
   confirmedDetails: "confirmedDetails",
   application: "application",
+  poultryApplication: "poultryApplication",
   organisation: "organisation",
   fundingSelection: "fundingSelection",
 };
@@ -437,7 +438,9 @@ const emitPoultrySessionEvent = async ({
 
   if (entryKey === sessionEntryKeys.poultryApplyData || journey === JOURNEY.POULTRY_APPLY) {
     const journeyValue =
-      entryKey === "application" || entryKey === "tempReference" ? entryKey : "farmerApplyData";
+      entryKey === "poultryApplication" || entryKey === "tempReference"
+        ? entryKey
+        : "farmerApplyData";
 
     await sendSessionEvent({
       id: sessionId,

@@ -52,7 +52,7 @@ describe("prePoultryApplyHandler", () => {
 
     // Default mock setup for generateApplicationEvent
     when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.application)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
       .mockReturnValue(null);
 
     getApplicationsBySbi.mockResolvedValue([]);
@@ -96,9 +96,9 @@ describe("prePoultryApplyHandler", () => {
     expect(getApplicationsBySbi).toHaveBeenCalled();
     expect(setSessionEntry).toHaveBeenCalledWith(
       getRequest,
-      sessionEntryKeys.application,
+      sessionEntryKeys.poultryApplication,
       closedPoultryApplications[0],
-      { journey: "apply" },
+      { journey: "poultryApply" },
     );
   });
 
@@ -116,7 +116,7 @@ describe("prePoultryApplyHandler", () => {
     };
 
     when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.application)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
       .mockReturnValue(closedPoultryApplication);
 
     await prePoultryApplyHandler(getRequest, h);
@@ -139,7 +139,7 @@ describe("prePoultryApplyHandler", () => {
     };
 
     when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.application)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
       .mockReturnValue(closedPoultryApplication);
 
     await prePoultryApplyHandler(getRequest, h);
@@ -171,7 +171,7 @@ describe("prePoultryApplyHandler", () => {
     };
 
     when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.application)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
       .mockReturnValue(redactedApplication);
 
     const result = await prePoultryApplyHandler(getRequest, h);
@@ -200,9 +200,9 @@ describe("prePoultryApplyHandler", () => {
       expect(getApplicationsBySbi).toHaveBeenCalledWith(organisation.sbi);
       expect(setSessionEntry).toHaveBeenCalledWith(
         getRequest,
-        sessionEntryKeys.application,
+        sessionEntryKeys.poultryApplication,
         apiApplication,
-        { journey: "apply" },
+        { journey: "poultryApply" },
       );
     });
 
@@ -219,7 +219,7 @@ describe("prePoultryApplyHandler", () => {
       };
 
       when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.application)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
         .mockReturnValue(cachedApplication);
 
       await prePoultryApplyHandler(getRequest, h);
@@ -244,9 +244,14 @@ describe("prePoultryApplyHandler", () => {
 
       await prePoultryApplyHandler(getRequest, h);
 
-      expect(setSessionEntry).toHaveBeenCalledWith(getRequest, sessionEntryKeys.application, null, {
-        journey: "apply",
-      });
+      expect(setSessionEntry).toHaveBeenCalledWith(
+        getRequest,
+        sessionEntryKeys.poultryApplication,
+        null,
+        {
+          journey: "poultryApply",
+        },
+      );
     });
   });
 });

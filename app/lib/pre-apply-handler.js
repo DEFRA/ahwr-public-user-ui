@@ -3,10 +3,7 @@ import { JOURNEY } from "../constants/constants.js";
 import { dashboardRoutes } from "../constants/routes.js";
 import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
 import { trackError } from "../logging/logger.js";
-import {
-  APPLICATION_REFERENCE_PREFIX_NEW_WORLD,
-  APPLICATION_REFERENCE_PREFIX_POULTRY,
-} from "ffc-ahwr-common-library";
+import { APPLICATION_REFERENCE_PREFIX_NEW_WORLD } from "ffc-ahwr-common-library";
 
 export const preApplyHandler = async (request, h) => {
   if (request.method === "get") {
@@ -18,7 +15,7 @@ export const preApplyHandler = async (request, h) => {
 
     let application = getSessionData(request, sessionEntryKeys.application);
 
-    if (!application || application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY)) {
+    if (!application) {
       const latestApplications = await getApplicationsBySbi(organisation.sbi);
       const newWorldApplications = latestApplications.filter((newWorldApp) =>
         newWorldApp.reference.startsWith(APPLICATION_REFERENCE_PREFIX_NEW_WORLD),
