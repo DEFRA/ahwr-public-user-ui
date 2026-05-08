@@ -111,7 +111,10 @@ const postHandler = {
           "visit-date-year": year,
         } = request.payload;
         const date = { day, month, year };
-        const errorMessage = "Enter the date the vet visited";
+        const allFieldsProvided = day && month && year;
+        const errorMessage = allFieldsProvided
+          ? "Enter a valid date"
+          : "Enter the date the vet visited";
         const inputsInError = getInputsInError(error);
 
         return h
