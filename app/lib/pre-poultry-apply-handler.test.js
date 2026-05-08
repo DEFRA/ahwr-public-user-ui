@@ -1,6 +1,5 @@
 import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { userType } from "../constants/constants.js";
-import { preApplyHandler } from "./pre-apply-handler.js";
 import {
   getSessionData,
   setSessionData,
@@ -8,6 +7,7 @@ import {
   setSessionEntry,
 } from "../session/index.js";
 import { when } from "jest-when";
+import { prePoultryApplyHandler } from "./pre-poultry-apply-handler.js";
 
 jest.mock("../session");
 jest.mock("../api-requests/application-api");
@@ -46,7 +46,7 @@ const organisation = {
   userType: userType.NEW_USER,
 };
 
-describe("preApplyHandler", () => {
+describe("prePoultryApplyHandler", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -59,14 +59,14 @@ describe("preApplyHandler", () => {
   });
 
   test("nothing happens if the request is not a GET", async () => {
-    await preApplyHandler(postRequest, h);
+    await prePoultryApplyHandler(postRequest, h);
 
     expect(getSessionData).not.toHaveBeenCalled();
   });
 
   test("throws an error if the post request has no organisation in the session", async () => {
     try {
-      await preApplyHandler(getRequest, h);
+      await prePoultryApplyHandler(getRequest, h);
     } catch (error) {
       expect(error.message).toEqual("No organisation found in session");
     }
@@ -79,63 +79,25 @@ describe("preApplyHandler", () => {
       .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(organisation);
 
-    const closedNewWorldApplications = [
+    const closedPoultryApplications = [
       {
         sbi: 112231312,
         type: "EE",
-        reference: "IAHW-1111-2222",
+        reference: "POUL-1111-2222",
         redacted: false,
         status: "CLOSED",
       },
     ];
 
-    getApplicationsBySbi.mockResolvedValue(closedNewWorldApplications);
+    getApplicationsBySbi.mockResolvedValue(closedPoultryApplications);
 
-    await preApplyHandler(getRequest, h);
-
-    expect(getApplicationsBySbi).toHaveBeenCalled();
-    expect(setSessionEntry).toHaveBeenCalledWith(
-      getRequest,
-      sessionEntryKeys.application,
-      closedNewWorldApplications[0],
-      { journey: "apply" },
-    );
-  });
-
-  test("sends an API request to get applications if poultry application in the session", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.organisation)
-      .mockReturnValue(organisation);
-
-    const newWorldApplications = [
-      {
-        sbi: 112231312,
-        type: "EE",
-        reference: "IAHW-1111-2222",
-        redacted: false,
-        status: "CLOSED",
-      },
-    ];
-    getApplicationsBySbi.mockResolvedValue(newWorldApplications);
-
-    const poultryApplication = {
-      sbi: 112231312,
-      type: "EE",
-      reference: "POUL-1111-2222",
-      redacted: false,
-      status: "AGREED",
-    };
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.application)
-      .mockReturnValue(poultryApplication);
-
-    await preApplyHandler(getRequest, h);
+    await prePoultryApplyHandler(getRequest, h);
 
     expect(getApplicationsBySbi).toHaveBeenCalled();
     expect(setSessionEntry).toHaveBeenCalledWith(
       getRequest,
       sessionEntryKeys.application,
-      newWorldApplications[0],
+      closedPoultryApplications[0],
       { journey: "apply" },
     );
   });
@@ -145,19 +107,19 @@ describe("preApplyHandler", () => {
       .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(organisation);
 
-    const closedNewWorldApplication = {
+    const closedPoultryApplication = {
       sbi: 112231312,
       type: "EE",
-      reference: "IAHW-1111-2222",
+      reference: "POUL-1111-2222",
       redacted: false,
       status: "CLOSED",
     };
 
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.application)
-      .mockReturnValue(closedNewWorldApplication);
+      .mockReturnValue(closedPoultryApplication);
 
-    await preApplyHandler(getRequest, h);
+    await prePoultryApplyHandler(getRequest, h);
 
     expect(getApplicationsBySbi).not.toHaveBeenCalled();
     expect(setSessionData).not.toHaveBeenCalled();
@@ -168,19 +130,19 @@ describe("preApplyHandler", () => {
       .calledWith(expect.anything(), sessionEntryKeys.organisation)
       .mockReturnValue(organisation);
 
-    const closedNewWorldApplication = {
+    const closedPoultryApplication = {
       sbi: 112231312,
       type: "EE",
-      reference: "IAHW-1111-2222",
+      reference: "POUL-1111-2222",
       redacted: false,
       status: "AGREED",
     };
 
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.application)
-      .mockReturnValue(closedNewWorldApplication);
+      .mockReturnValue(closedPoultryApplication);
 
-    await preApplyHandler(getRequest, h);
+    await prePoultryApplyHandler(getRequest, h);
 
     expect(error).toHaveBeenCalledWith(
       {
@@ -192,7 +154,7 @@ describe("preApplyHandler", () => {
       },
       "User attempted to use apply journey despite already having an agreed agreement.",
     );
-    expect(h.redirect).toHaveBeenCalledWith("/vet-visits");
+    expect(h.redirect).toHaveBeenCalledWith("/poultry/vet-visits");
   });
 
   test("allows apply journey if application is agreed but redacted", async () => {
@@ -203,7 +165,7 @@ describe("preApplyHandler", () => {
     const redactedApplication = {
       sbi: 112231312,
       type: "EE",
-      reference: "IAHW-1111-2222",
+      reference: "POUL-1111-2222",
       redacted: true,
       status: "AGREED",
     };
@@ -212,7 +174,7 @@ describe("preApplyHandler", () => {
       .calledWith(expect.anything(), sessionEntryKeys.application)
       .mockReturnValue(redactedApplication);
 
-    const result = await preApplyHandler(getRequest, h);
+    const result = await prePoultryApplyHandler(getRequest, h);
 
     expect(result).toBe(mockContinue);
     expect(h.redirect).not.toHaveBeenCalled();
@@ -227,13 +189,13 @@ describe("preApplyHandler", () => {
       const apiApplication = {
         sbi: 112231312,
         type: "EE",
-        reference: "IAHW-1111-2222",
+        reference: "POUL-1111-2222",
         status: "CLOSED",
       };
 
       getApplicationsBySbi.mockResolvedValue([apiApplication]);
 
-      await preApplyHandler(getRequest, h);
+      await prePoultryApplyHandler(getRequest, h);
 
       expect(getApplicationsBySbi).toHaveBeenCalledWith(organisation.sbi);
       expect(setSessionEntry).toHaveBeenCalledWith(
@@ -252,7 +214,7 @@ describe("preApplyHandler", () => {
       const cachedApplication = {
         sbi: 112231312,
         type: "EE",
-        reference: "IAHW-1111-2222",
+        reference: "POUL-1111-2222",
         status: "CLOSED",
       };
 
@@ -260,27 +222,27 @@ describe("preApplyHandler", () => {
         .calledWith(expect.anything(), sessionEntryKeys.application)
         .mockReturnValue(cachedApplication);
 
-      await preApplyHandler(getRequest, h);
+      await prePoultryApplyHandler(getRequest, h);
 
       expect(getApplicationsBySbi).not.toHaveBeenCalled();
       expect(setSessionEntry).not.toHaveBeenCalled();
     });
 
-    test("sets application to null when API returns no ENDEMICS applications", async () => {
+    test("sets application to null when API returns no poultry applications", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.organisation)
         .mockReturnValue(organisation);
 
-      const poultryApplication = {
+      const endemicsApplication = {
         sbi: 112231312,
-        type: "POUL",
-        reference: "POUL-1111-2222",
+        type: "EE",
+        reference: "IAHW-1111-2222",
         status: "AGREED",
       };
 
-      getApplicationsBySbi.mockResolvedValue([poultryApplication]);
+      getApplicationsBySbi.mockResolvedValue([endemicsApplication]);
 
-      await preApplyHandler(getRequest, h);
+      await prePoultryApplyHandler(getRequest, h);
 
       expect(setSessionEntry).toHaveBeenCalledWith(getRequest, sessionEntryKeys.application, null, {
         journey: "apply",

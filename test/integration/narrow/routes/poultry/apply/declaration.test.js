@@ -19,6 +19,7 @@ import { when } from "jest-when";
 import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { refreshApplications } from "../../../../../../app/lib/context-helper.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import { dashboardRoutes } from "../../../../../../app/constants/routes.js";
 
 jest.mock("../../../../../../app/lib/context-helper");
 jest.mock("../../../../../../app/session/index");
@@ -64,6 +65,10 @@ describe("Declaration test", () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.application)
+      .mockReturnValue(undefined);
+    getApplicationsBySbi.mockReturnValue([]);
   });
 
   when(getSessionData)
@@ -75,14 +80,10 @@ describe("Declaration test", () => {
     .mockReturnValue(poultryApplyData);
 
   when(getSessionData)
-    .calledWith(expect.anything(), sessionEntryKeys.application)
-    .mockReturnValue({ reference: "IAHW-1234-ABCD" });
-
-  when(getSessionData)
     .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
     .mockReturnValue(true);
 
-  createApplication.mockResolvedValue({ applicationReference: "IAHW-PJ7E-WSI8" });
+  createApplication.mockResolvedValue({ applicationReference: "POUL-PJ7E-WSI8" });
 
   describe("GET /declaration route", () => {
     test("when not logged in redirects to dashboard /sign-in", async () => {
@@ -122,6 +123,23 @@ describe("Declaration test", () => {
         .first();
       expect(herdsText.length).toBe(1);
       expect(herdsText.text().trim()).toBe(expectedHerdsText);
+    });
+
+    test("redirects to dashboard when application exists", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.application)
+        .mockReturnValue({ reference: "POUL-PJ7E-WSI8", status: "AGREED" });
+
+      const options = {
+        method: "GET",
+        url: "/poultry/declaration",
+        auth,
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
+      expect(res.headers.location).toEqual(dashboardRoutes.poultryManageYourClaims);
     });
   });
 
@@ -167,7 +185,7 @@ describe("Declaration test", () => {
         "status: accepted sbi:0123456789",
         {
           reference:
-            "applicationReference: IAHW-PJ7E-WSI8, tempApplicationReference: TEMP-PJ7E-WSI8",
+            "applicationReference: POUL-PJ7E-WSI8, tempApplicationReference: TEMP-PJ7E-WSI8",
         },
       );
     });
@@ -209,7 +227,7 @@ describe("Declaration test", () => {
         "status: rejected sbi:0123456789",
         {
           reference:
-            "applicationReference: IAHW-PJ7E-WSI8, tempApplicationReference: TEMP-PJ7E-WSI8",
+            "applicationReference: POUL-PJ7E-WSI8, tempApplicationReference: TEMP-PJ7E-WSI8",
         },
       );
     });

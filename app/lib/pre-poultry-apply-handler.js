@@ -3,12 +3,9 @@ import { JOURNEY } from "../constants/constants.js";
 import { dashboardRoutes } from "../constants/routes.js";
 import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
 import { trackError } from "../logging/logger.js";
-import {
-  APPLICATION_REFERENCE_PREFIX_NEW_WORLD,
-  APPLICATION_REFERENCE_PREFIX_POULTRY,
-} from "ffc-ahwr-common-library";
+import { APPLICATION_REFERENCE_PREFIX_POULTRY } from "ffc-ahwr-common-library";
 
-export const preApplyHandler = async (request, h) => {
+export const prePoultryApplyHandler = async (request, h) => {
   if (request.method === "get") {
     const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
@@ -18,12 +15,12 @@ export const preApplyHandler = async (request, h) => {
 
     let application = getSessionData(request, sessionEntryKeys.application);
 
-    if (!application || application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY)) {
+    if (!application || !application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY)) {
       const latestApplications = await getApplicationsBySbi(organisation.sbi);
-      const newWorldApplications = latestApplications.filter((newWorldApp) =>
-        newWorldApp.reference.startsWith(APPLICATION_REFERENCE_PREFIX_NEW_WORLD),
+      const poultryApplications = latestApplications.filter((app) =>
+        app.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY),
       );
-      application = newWorldApplications.length ? newWorldApplications[0] : null;
+      application = poultryApplications.length ? poultryApplications[0] : null;
       await setSessionEntry(request, sessionEntryKeys.application, application, {
         journey: JOURNEY.APPLY,
       });
@@ -39,7 +36,7 @@ export const preApplyHandler = async (request, h) => {
         "User attempted to use apply journey despite already having an agreed agreement.",
       );
 
-      return h.redirect(dashboardRoutes.manageYourClaims).takeover();
+      return h.redirect(dashboardRoutes.poultryManageYourClaims).takeover();
     }
   }
 

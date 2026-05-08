@@ -14,12 +14,14 @@ import { createTempReference } from "../../../lib/create-temp-ref.js";
 import { getUserTypeByApplication } from "../../../lib/get-user-type-by-application.js";
 import { getApplicationsBySbi } from "../../../api-requests/application-api.js";
 import { JOURNEY } from "../../../constants/constants.js";
+import { prePoultryApplyHandler } from "../../../lib/pre-poultry-apply-handler.js";
 
 export const poultryClaimMultipleRouteHandlers = [
   {
     method: "GET",
     path: "/poultry/you-can-claim-multiple",
     options: {
+      pre: [{ method: prePoultryApplyHandler }],
       handler: async (request, h) => {
         // on way in we must generate a new reference
         const tempApplicationId = createTempReference({ referenceForClaim: false });

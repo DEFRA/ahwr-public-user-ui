@@ -5,12 +5,14 @@ import {
   sessionKeys,
 } from "../../../session/index.js";
 import { poultryApplyRoutes, poultryApplyViews } from "../../../constants/routes.js";
+import { prePoultryApplyHandler } from "../../../lib/pre-poultry-apply-handler.js";
 
 export const poultryNumbersRouteHandlers = [
   {
     method: "GET",
     path: "/poultry/numbers",
     options: {
+      pre: [{ method: prePoultryApplyHandler }],
       handler: async (request, h) => {
         const backLink = poultryApplyRoutes.youCanClaimMultiple;
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
