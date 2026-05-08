@@ -74,7 +74,7 @@ export const poultryDeclarationRouteHandlers = [
               backLink: poultryApplyRoutes.timings,
               latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${poultryApplyRoutes.declaration}`,
               errorMessage: {
-                text: "Select yes if you have read and agree to the terms and conditions",
+                text: "Confirm you have read and agree to the terms and conditions",
               },
               organisation: formatOrganisation(organisation),
             })

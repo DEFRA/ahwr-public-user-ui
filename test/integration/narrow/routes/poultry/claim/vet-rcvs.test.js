@@ -16,8 +16,8 @@ jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
 
 const errorMessages = {
-  enterRCVS: "Enter an RCVS number",
-  validRCVS: "An RCVS number is a 7 digit number or a 6 digit number ending in a letter.",
+  enterRCVS: "Enter a valid RCVS number - either a 7-digit number or 6 digits and a letter",
+  validRCVS: "Enter a valid RCVS number - either a 7-digit number or 6 digits and a letter",
 };
 
 describe("/poultry/vet-rcvs", () => {

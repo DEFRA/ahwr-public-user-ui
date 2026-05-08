@@ -111,7 +111,10 @@ const postHandler = {
           "visit-date-year": year,
         } = request.payload;
         const date = { day, month, year };
-        const errorMessage = "Enter a date in the boxes below";
+        const allFieldsProvided = day && month && year;
+        const errorMessage = allFieldsProvided
+          ? "Enter a valid date"
+          : "Enter the date the vet visited";
         const inputsInError = getInputsInError(error);
 
         return h
@@ -140,7 +143,7 @@ const postHandler = {
 
       if (!isValidDate(year, month, day)) {
         const validationError = buildErrorSummary({
-          errorMessage: "The date of review must be a real date",
+          errorMessage: "Enter a valid date",
           href: visitDateDayAnchor,
           inputsInError: { day: true, month: true, year: true },
         });
@@ -151,7 +154,7 @@ const postHandler = {
 
       if (dateIsInFuture(dateOfVisit)) {
         const validationError = buildErrorSummary({
-          errorMessage: "The date of review must be today or in the past",
+          errorMessage: "Enter a date that is not in the future",
           href: visitDateDayAnchor,
           inputsInError: { day: true, month: true, year: true },
         });
@@ -229,7 +232,7 @@ async function handleTimingException(request, h, date, agreementDate, tempClaimR
     month: "long",
     year: "numeric",
   });
-  const errorMessage = `The date the biosecurity review happened must be on or after ${formattedDate}, the date your agreement started`;
+  const errorMessage = `Enter a date from ${formattedDate}, when your agreement started`;
 
   trackEvent(request.logger, INVALID_DATE_OF_VISIT_EVENT, "review", {
     reference: tempClaimReference,

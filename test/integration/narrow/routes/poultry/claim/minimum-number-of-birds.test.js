@@ -199,7 +199,9 @@ describe("/poultry/minimum-number-of-birds tests", () => {
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#minimumNumberOfBirds"]').text()).toContain("Select one option");
+      expect($('a[href="#minimumNumberOfBirds"]').text()).toContain(
+        "Select if the vet has confirmed the minimum number of birds",
+      );
       expect($("title").text().trim()).toContain(
         "Error: Minimum number of birds - Get funding to improve animal health and welfare - GOV.UK",
       );

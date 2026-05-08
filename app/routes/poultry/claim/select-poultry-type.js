@@ -38,7 +38,11 @@ const getHandler = {
   },
 };
 
-const errorMessage = { text: "Select at least one option", href: "#typesOfPoultry" };
+const errorMessage = { text: "Select at least one type of poultry", href: "#typesOfPoultry" };
+const errorMessageChicken = {
+  text: "Select at least one type of chicken",
+  href: "#typesOfChicken",
+};
 
 const postHandler = {
   method: "POST",
@@ -71,8 +75,8 @@ const postHandler = {
         return h
           .view(poultryClaimViews.selectPoultryType, {
             backLink: getBackLink(herds),
-            errorMessageMain: errorMessage,
-            errorMessageChicken: errorMessage,
+            errorMessageMain: errorMessageChicken,
+            errorMessageChicken,
             typesOfPoultry,
           })
           .code(HttpStatus.BAD_REQUEST);

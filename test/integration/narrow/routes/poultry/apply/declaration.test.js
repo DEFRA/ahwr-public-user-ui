@@ -240,7 +240,7 @@ describe("Declaration test", () => {
       expect($("#organisation-address").text()).toContain("1 fake street");
       expect($("#organisation-sbi").text()).toEqual(organisation.sbi);
       expect($("#terms-error").text()).toMatch(
-        "Select yes if you have read and agree to the terms and conditions",
+        "Confirm you have read and agree to the terms and conditions",
       );
       expect(createApplication).not.toHaveBeenCalled();
       expect(refreshApplications).not.toHaveBeenCalled();

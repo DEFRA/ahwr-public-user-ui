@@ -8,7 +8,7 @@ import {
 import { poultryClaimViews, poultryClaimRoutes } from "../../../constants/routes.js";
 import HttpStatus from "http-status-codes";
 
-const INVALID_VALUE_TEXT = "Select an option";
+const INVALID_VALUE_TEXT = "Select how useful the vet's advice was";
 
 const getHandler = {
   method: "GET",

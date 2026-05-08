@@ -134,7 +134,7 @@ describe("/poultry/changes-in-biosecurity", () => {
 
         expect(await axe(response.payload)).toHaveNoViolations();
         const $ = cheerio.load(response.payload);
-        const errorMessage = "Select an option";
+        const errorMessage = "Select the vet's priority recommendation";
 
         expect($("li > a").text()).toMatch(errorMessage);
       });
@@ -173,7 +173,7 @@ describe("/poultry/changes-in-biosecurity", () => {
 
         expect(await axe(response.payload)).toHaveNoViolations();
         const $ = cheerio.load(response.payload);
-        const errorMessage = "Select an option";
+        const errorMessage = "Select the vet's priority recommendation";
 
         expect($("li > a").text()).toMatch(errorMessage);
       });
