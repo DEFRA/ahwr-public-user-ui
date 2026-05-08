@@ -36,12 +36,19 @@ import {
 
 const { customerSurvey } = config;
 
+const nonClaimableApplicationStatuses = new Set(["NOT_AGREED"]);
+
+const isClaimableApplication = (application) =>
+  !nonClaimableApplicationStatuses.has(application.status);
+
 export async function refreshApplications(sbi, request) {
   const applications = await getApplicationsBySbi(sbi, request.logger);
 
   // get latest new world
-  const latestEndemicsApplication = applications.find((application) =>
-    application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_NEW_WORLD),
+  const latestEndemicsApplication = applications.find(
+    (application) =>
+      application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_NEW_WORLD) &&
+      isClaimableApplication(application),
   );
 
   // get latest old world - if there isn't one, or it's not within 10 months of the new world one, then we won't consider it,
@@ -68,8 +75,10 @@ export async function refreshApplications(sbi, request) {
     latestEndemicsApplication,
   );
 
-  const latestPoultryApplication = applications.find((application) =>
-    application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY),
+  const latestPoultryApplication = applications.find(
+    (application) =>
+      application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY) &&
+      isClaimableApplication(application),
   );
 
   await setSessionData(

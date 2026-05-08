@@ -361,6 +361,181 @@ describe("context-helper", () => {
         undefined,
       );
     });
+
+    it("excludes NOT_AGREED poultry applications when selecting latestPoultryApplication", async () => {
+      const rejectedPoultry = {
+        type: "POUL",
+        reference: "POUL-1111-2222",
+        createdAt: "2026-04-29T00:00:00.000Z",
+        status: "NOT_AGREED",
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([rejectedPoultry]);
+
+      const { latestPoultryApplication } = await refreshApplications("123456789", mockRequest);
+
+      expect(latestPoultryApplication).toBeUndefined();
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "poultryClaim",
+        "latestPoultryApplication",
+        undefined,
+      );
+    });
+
+    it("prefers an AGREED poultry application over a more recent NOT_AGREED poultry application", async () => {
+      const rejectedPoultry = {
+        type: "POUL",
+        reference: "POUL-9999-9999",
+        createdAt: "2026-04-29T00:00:00.000Z",
+        status: "NOT_AGREED",
+      };
+      const agreedPoultry = {
+        type: "POUL",
+        reference: "POUL-1111-2222",
+        createdAt: "2026-01-15T00:00:00.000Z",
+        status: "AGREED",
+      };
+      // rejected first to mimic typical date-desc ordering returned by the backend
+      getApplicationsBySbi.mockResolvedValueOnce([rejectedPoultry, agreedPoultry]);
+
+      const { latestPoultryApplication } = await refreshApplications("123456789", mockRequest);
+
+      expect(latestPoultryApplication.reference).toBe("POUL-1111-2222");
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "poultryClaim",
+        "latestPoultryApplication",
+        agreedPoultry,
+      );
+    });
+
+    it("excludes NOT_AGREED endemics applications when selecting latestEndemicsApplication", async () => {
+      const rejectedEndemics = {
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        createdAt: "2026-04-29T00:00:00.000Z",
+        status: "NOT_AGREED",
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([rejectedEndemics]);
+
+      const { latestEndemicsApplication } = await refreshApplications("123456789", mockRequest);
+
+      expect(latestEndemicsApplication).toBeUndefined();
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestEndemicsApplication",
+        undefined,
+      );
+    });
+
+    it("prefers an AGREED endemics application over a more recent NOT_AGREED endemics application", async () => {
+      const rejectedEndemics = {
+        type: "EE",
+        reference: "IAHW-9999-9999",
+        createdAt: "2026-04-29T00:00:00.000Z",
+        status: "NOT_AGREED",
+      };
+      const agreedEndemics = {
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        createdAt: "2026-01-15T00:00:00.000Z",
+        status: "AGREED",
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([rejectedEndemics, agreedEndemics]);
+
+      const { latestEndemicsApplication } = await refreshApplications("123456789", mockRequest);
+
+      expect(latestEndemicsApplication.reference).toBe("IAHW-1111-2222");
+      expect(setSessionData).toHaveBeenCalledWith(
+        mockRequest,
+        "endemicsClaim",
+        "latestEndemicsApplication",
+        agreedEndemics,
+      );
+    });
+
+    it("filters poultry and endemics independently", async () => {
+      const rejectedPoultry = {
+        type: "POUL",
+        reference: "POUL-9999-9999",
+        createdAt: "2026-04-29T00:00:00.000Z",
+        status: "NOT_AGREED",
+      };
+      const agreedEndemics = {
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        createdAt: "2026-01-15T00:00:00.000Z",
+        status: "AGREED",
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([rejectedPoultry, agreedEndemics]);
+
+      const { latestPoultryApplication, latestEndemicsApplication } = await refreshApplications(
+        "123456789",
+        mockRequest,
+      );
+
+      expect(latestPoultryApplication).toBeUndefined();
+      expect(latestEndemicsApplication.reference).toBe("IAHW-1111-2222");
+    });
+
+    it("returns AGREED applications unchanged when no NOT_AGREED is present", async () => {
+      const agreedEndemics = {
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        createdAt: "2026-01-15T00:00:00.000Z",
+        status: "AGREED",
+      };
+      const agreedPoultry = {
+        type: "POUL",
+        reference: "POUL-1111-2222",
+        createdAt: "2026-01-15T00:00:00.000Z",
+        status: "AGREED",
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([agreedEndemics, agreedPoultry]);
+
+      const { latestEndemicsApplication, latestPoultryApplication } = await refreshApplications(
+        "123456789",
+        mockRequest,
+      );
+
+      expect(latestEndemicsApplication).toBe(agreedEndemics);
+      expect(latestPoultryApplication).toBe(agreedPoultry);
+    });
+
+    it("resolves latestVetVisitApplication against the AGREED endemics application's createdAt, ignoring a more recent NOT_AGREED one", async () => {
+      const oldWorldVisitDate = "2025-04-15T00:00:00.000Z";
+      const dateWithinTenMonthsOfOldWorldVisit = "2025-09-01T00:00:00.000Z";
+      const dateBeyondTenMonthsOfOldWorldVisit = "2026-05-01T00:00:00.000Z";
+      const rejectedEndemics = {
+        type: "EE",
+        reference: "IAHW-9999-9999",
+        createdAt: dateBeyondTenMonthsOfOldWorldVisit,
+        status: "NOT_AGREED",
+      };
+      const agreedEndemics = {
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        createdAt: dateWithinTenMonthsOfOldWorldVisit,
+        status: "AGREED",
+      };
+      const oldWorld = {
+        type: "VV",
+        reference: "AHWR-1111-2222",
+        data: {
+          visitDate: oldWorldVisitDate,
+        },
+      };
+      getApplicationsBySbi.mockResolvedValueOnce([rejectedEndemics, agreedEndemics, oldWorld]);
+
+      const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(
+        "123456789",
+        mockRequest,
+      );
+
+      expect(latestEndemicsApplication.reference).toBe("IAHW-1111-2222");
+      expect(latestVetVisitApplication.reference).toBe("AHWR-1111-2222");
+    });
   });
 
   describe("getScheme", () => {
