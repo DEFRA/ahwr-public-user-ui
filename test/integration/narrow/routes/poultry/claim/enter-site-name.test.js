@@ -227,7 +227,9 @@ describe("/poultry/enter-site-name", () => {
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#herdName"]').text()).toContain("Name must be between 2 and 30 characters");
+      expect($('a[href="#herdName"]').text()).toContain(
+        "Enter a site name of between 2 and 30 characters",
+      );
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-the-site");
       expectSiteText($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
@@ -251,7 +253,9 @@ describe("/poultry/enter-site-name", () => {
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#herdName"]').text()).toContain("Name must be between 2 and 30 characters");
+      expect($('a[href="#herdName"]').text()).toContain(
+        "Enter a site name of between 2 and 30 characters",
+      );
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-the-site");
       expectSiteText($);
       expect(emitHerdEvent).not.toHaveBeenCalled();

@@ -8,7 +8,7 @@ import {
 import { poultryClaimViews, poultryClaimRoutes } from "../../../constants/routes.js";
 import HttpStatus from "http-status-codes";
 
-const YES_TO_ASSESSMENT_TEXT = "Select an option";
+const YES_TO_ASSESSMENT_TEXT = "Select if you want to take part";
 
 const getHandler = {
   method: "GET",

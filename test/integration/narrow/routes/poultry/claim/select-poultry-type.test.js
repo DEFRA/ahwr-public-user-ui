@@ -207,8 +207,10 @@ describe("/poultry/select-poultry-type", () => {
 
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-error-summary__list").text()).toContain("Select at least one option");
-      expect($("#typesOfChicken-error").text()).toContain("Select at least one option");
+      expect($(".govuk-error-summary__list").text()).toContain(
+        "Select at least one type of chicken",
+      );
+      expect($("#typesOfChicken-error").text()).toContain("Select at least one type of chicken");
       expect(setSessionData).not.toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -235,8 +237,10 @@ describe("/poultry/select-poultry-type", () => {
 
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-error-summary__list").text()).toContain("Select at least one option");
-      expect($("#typesOfChicken-error").text()).toContain("Select at least one option");
+      expect($(".govuk-error-summary__list").text()).toContain(
+        "Select at least one type of chicken",
+      );
+      expect($("#typesOfChicken-error").text()).toContain("Select at least one type of chicken");
       expect(setSessionData).not.toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -262,8 +266,10 @@ describe("/poultry/select-poultry-type", () => {
 
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-error-summary__list").text()).toContain("Select at least one option");
-      expect($("#typesOfPoultry-error").text()).toContain("Select at least one option");
+      expect($(".govuk-error-summary__list").text()).toContain(
+        "Select at least one type of poultry",
+      );
+      expect($("#typesOfPoultry-error").text()).toContain("Select at least one type of poultry");
       expect(setSessionData).not.toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,

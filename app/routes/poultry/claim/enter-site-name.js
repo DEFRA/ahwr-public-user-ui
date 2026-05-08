@@ -31,7 +31,7 @@ const MIN_SITE_NAME_LENGTH = 2;
 const MAX_SITE_NAME_LENGTH = 30;
 
 const ERROR_MESSAGES = {
-  NAME_LENGTH: `Name must be between ${MIN_SITE_NAME_LENGTH} and ${MAX_SITE_NAME_LENGTH} characters`,
+  NAME_LENGTH: `Enter a site name of between ${MIN_SITE_NAME_LENGTH} and ${MAX_SITE_NAME_LENGTH} characters`,
   NAME_PATTERN:
     "Name must only include letters a to z, numbers and special characters such as hyphens, spaces and apostrophes.",
   NAME_UNIQUE: "You have already used this name, the name must be unique",

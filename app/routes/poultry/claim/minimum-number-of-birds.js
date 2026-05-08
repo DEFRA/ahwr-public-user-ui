@@ -41,7 +41,7 @@ const postHandler = {
           .view(poultryClaimViews.minimumNumberOfBirds, {
             ...request.payload,
             errorMessage: {
-              text: `Select one option`,
+              text: `Select if the vet has confirmed the minimum number of birds`,
               href: "#minimumNumberOfBirds",
             },
             backLink: poultryClaimRoutes.selectPoultryType,

@@ -287,56 +287,56 @@ describe("POST /poultry/date-of-visit", () => {
       day: "",
       month: "",
       year: "",
-      expectedError: "Enter a date in the boxes below",
+      expectedError: "Enter the date the vet visited",
     },
     {
       description: "non-numeric day",
       day: "abc",
       month: "01",
       year: "2025",
-      expectedError: "Enter a date in the boxes below",
+      expectedError: "Enter the date the vet visited",
     },
     {
       description: "non-numeric month",
       day: "21",
       month: "abc",
       year: "2025",
-      expectedError: "Enter a date in the boxes below",
+      expectedError: "Enter the date the vet visited",
     },
     {
       description: "non-numeric year",
       day: "21",
       month: "01",
       year: "abc",
-      expectedError: "Enter a date in the boxes below",
+      expectedError: "Enter the date the vet visited",
     },
     {
       description: "invalid day (32)",
       day: "32",
       month: "01",
       year: "2025",
-      expectedError: "Enter a date in the boxes below",
+      expectedError: "Enter the date the vet visited",
     },
     {
       description: "invalid month (13)",
       day: "21",
       month: "13",
       year: "2025",
-      expectedError: "Enter a date in the boxes below",
+      expectedError: "Enter the date the vet visited",
     },
     {
       description: "invalid date (Feb 30)",
       day: "30",
       month: "02",
       year: "2025",
-      expectedError: "The date of review must be a real date",
+      expectedError: "Enter a valid date",
     },
     {
       description: "missing day",
       day: "",
       month: "01",
       year: "2025",
-      expectedError: "Enter a date in the boxes below",
+      expectedError: "Enter the date the vet visited",
     },
   ])(
     "when adding invalid date ($description), shows error",
@@ -386,9 +386,7 @@ describe("POST /poultry/date-of-visit", () => {
     const $ = cheerio.load(res.payload);
     expect($("h1").text().trim()).toBe("Date of visit");
     expect($(".govuk-error-summary")).toHaveLength(1);
-    expect($(".govuk-error-summary").text()).toContain(
-      "The date of review must be today or in the past",
-    );
+    expect($(".govuk-error-summary").text()).toContain("Enter a date that is not in the future");
     expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
   });
 
@@ -419,8 +417,7 @@ describe("POST /poultry/date-of-visit", () => {
     expect(res.statusCode).toBe(400);
     expect(trackEvent).toHaveBeenCalled();
 
-    const expectedError =
-      "The date the biosecurity review happened must be on or after 1 March 2025, the date your agreement started";
+    const expectedError = "Enter a date from 1 March 2025, when your agreement started";
 
     expect(sendInvalidDataPoultryEvent).toHaveBeenCalled();
 
