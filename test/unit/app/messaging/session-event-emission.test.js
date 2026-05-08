@@ -165,7 +165,7 @@ describe("Send event on session set", () => {
       test("should call publishEvent with normalized fundingSelection when poultry", async () => {
         await sendSessionEvent({
           ...event,
-          sessionKey: "schemeType",
+          sessionKey: "selectedFunding",
           journey: "fundingSelection",
           value: "POUL",
           applicationReference: undefined,
@@ -185,7 +185,7 @@ describe("Send event on session set", () => {
       test("should call publishEvent with normalized fundingSelection when livestock", async () => {
         await sendSessionEvent({
           ...event,
-          sessionKey: "schemeType",
+          sessionKey: "selectedFunding",
           journey: "fundingSelection",
           value: "IAHW",
           applicationReference: undefined,
@@ -256,6 +256,25 @@ describe("Send event on session set", () => {
             reference: publishedEvent.data.reference,
             applicationReference: publishedEvent.data.applicationReference,
             typesOfPoultry: "",
+          },
+        });
+      });
+
+      test("converts biosecurity string value to object", async () => {
+        await sendSessionEvent({
+          ...event,
+          sessionKey: "biosecurity",
+          value: "yes",
+        });
+
+        expect(mockPublishEvent).toHaveBeenCalledWith({
+          ...publishedEvent,
+          type: `claim-biosecurity`,
+          message: `Session set for claim and biosecurity.`,
+          data: {
+            reference: publishedEvent.data.reference,
+            applicationReference: publishedEvent.data.applicationReference,
+            biosecurity: { biosecurity: "yes" },
           },
         });
       });

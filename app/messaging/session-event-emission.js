@@ -14,6 +14,7 @@ const EVENT_KEY_BY_SESSION_KEY = {
   changesInBiosecurity: "biosecurityChanges",
   costOfChanges: "biosecurityChangesCost",
   interview: "schemeExperienceInterview",
+  poultryApplication: "application",
 };
 
 const REVIEW_TYPE_MAP = {
@@ -25,13 +26,16 @@ const NORMALIZE_VALUE_BY_SESSION_KEY = {
   typeOfReview: (value) => REVIEW_TYPE_MAP[value] ?? value,
   typesOfPoultry: (value) =>
     value?.length ? value.filter((type) => type !== "chickens").join(" ") : "",
-  schemeType: (value) => (value === "POUL" ? "poultry" : "livestock"),
+  selectedFunding: (value) => (value === "POUL" ? "poultry" : "livestock"),
+  biosecurity: (value) =>
+    typeof value === "string" && value.length > 0 ? { biosecurity: value } : value,
 };
 
 const NORMALIZE_JOURNEY_BY_JOURNEY = {
   fundingSelection: "scheme",
   poultryClaim: "claim",
   endemicsClaim: "claim",
+  poultryApplication: "application",
 };
 
 export const sendSessionEvent = async ({

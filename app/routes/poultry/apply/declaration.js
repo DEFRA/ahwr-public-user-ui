@@ -18,6 +18,7 @@ import {
   resetFarmerApplyDataBeforeApplication,
   formatOrganisation,
 } from "../../apply/declaration.js";
+import { prePoultryApplyHandler } from "../../../lib/pre-poultry-apply-handler.js";
 
 const processRejectedApplication = async (h, request) => {
   // create new tempApplicationId as the current one has been used to create a rejected application
@@ -42,7 +43,7 @@ export const poultryDeclarationRouteHandlers = [
     method: "get",
     path: "/poultry/declaration",
     options: {
-      // pre: [{ method: (request, h) => preApplyHandler(request, h, { type: applicationType.POULTRY }) }],
+      pre: [{ method: prePoultryApplyHandler }],
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 

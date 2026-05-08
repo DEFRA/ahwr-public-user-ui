@@ -242,7 +242,7 @@ async function handleTimingException(request, h, date, agreementDate, tempClaimR
 
   await sendInvalidDataPoultryEvent({
     request,
-    sessionKey: date,
+    sessionKey: dateOfVisitKey,
     exception: errorMessage,
   });
 

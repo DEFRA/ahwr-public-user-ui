@@ -240,7 +240,7 @@ describe("session", () => {
       });
     });
 
-    test("emits event and sets journey to application when entryKey is application and journey is poultryApply", async () => {
+    test("emits event and sets journey to application when entryKey is poultryApplication and journey is poultryApply", async () => {
       const request = { yar: yarMock };
       yarMock.get.mockImplementation((entryKey) => {
         if (entryKey === sessionEntryKeys.poultryClaim) {
@@ -262,7 +262,7 @@ describe("session", () => {
 
       await setSessionEntry(
         request,
-        sessionEntryKeys.application,
+        sessionEntryKeys.poultryApplication,
         { reference: "POUL-G3CL-V59P" },
         { journey: "poultryApply" },
       );
@@ -271,10 +271,10 @@ describe("session", () => {
         applicationReference: "POUL-G3CL-V59P",
         email: "fake.farmer.email@example.com.test",
         id: 1,
-        journey: "application",
+        journey: "poultryApplication",
         reference: "POUL-G3CL-V59P",
         sbi: "123456789",
-        sessionKey: "application",
+        sessionKey: "poultryApplication",
         value: { reference: "POUL-G3CL-V59P" },
       });
     });

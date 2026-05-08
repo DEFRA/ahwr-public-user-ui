@@ -1,0 +1,257 @@
+import { getApplicationsBySbi } from "../api-requests/application-api.js";
+import { userType } from "../constants/constants.js";
+import {
+  getSessionData,
+  setSessionData,
+  sessionEntryKeys,
+  setSessionEntry,
+} from "../session/index.js";
+import { when } from "jest-when";
+import { prePoultryApplyHandler } from "./pre-poultry-apply-handler.js";
+
+jest.mock("../session");
+jest.mock("../api-requests/application-api");
+
+const mockSetBindings = jest.fn();
+const error = jest.fn();
+
+const getRequest = {
+  method: "get",
+  logger: {
+    setBindings: mockSetBindings,
+    error,
+  },
+};
+
+const postRequest = {
+  method: "post",
+  logger: {
+    setBindings: mockSetBindings,
+  },
+};
+
+const mockContinue = jest.fn();
+
+const h = {
+  continue: mockContinue,
+  redirect: jest.fn().mockReturnThis(),
+  takeover: jest.fn(),
+};
+
+const organisation = {
+  id: "organisation",
+  name: "org-name",
+  address: "1 fake street, fakerton, FA1 2DA",
+  sbi: "0123456789",
+  userType: userType.NEW_USER,
+};
+
+describe("prePoultryApplyHandler", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    // Default mock setup for generateApplicationEvent
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
+      .mockReturnValue(null);
+
+    getApplicationsBySbi.mockResolvedValue([]);
+  });
+
+  test("nothing happens if the request is not a GET", async () => {
+    await prePoultryApplyHandler(postRequest, h);
+
+    expect(getSessionData).not.toHaveBeenCalled();
+  });
+
+  test("throws an error if the post request has no organisation in the session", async () => {
+    try {
+      await prePoultryApplyHandler(getRequest, h);
+    } catch (error) {
+      expect(error.message).toEqual("No organisation found in session");
+    }
+
+    expect(getSessionData).toHaveBeenCalled();
+  });
+
+  test("sends an API request to get applications if they arent in the session, but organisation is in the session", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue(organisation);
+
+    const closedPoultryApplications = [
+      {
+        sbi: 112231312,
+        type: "EE",
+        reference: "POUL-1111-2222",
+        redacted: false,
+        status: "CLOSED",
+      },
+    ];
+
+    getApplicationsBySbi.mockResolvedValue(closedPoultryApplications);
+
+    await prePoultryApplyHandler(getRequest, h);
+
+    expect(getApplicationsBySbi).toHaveBeenCalled();
+    expect(setSessionEntry).toHaveBeenCalledWith(
+      getRequest,
+      sessionEntryKeys.poultryApplication,
+      closedPoultryApplications[0],
+      { journey: "poultryApply" },
+    );
+  });
+
+  test("does not send an API request to get applications if the application is already in the session", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue(organisation);
+
+    const closedPoultryApplication = {
+      sbi: 112231312,
+      type: "EE",
+      reference: "POUL-1111-2222",
+      redacted: false,
+      status: "CLOSED",
+    };
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
+      .mockReturnValue(closedPoultryApplication);
+
+    await prePoultryApplyHandler(getRequest, h);
+
+    expect(getApplicationsBySbi).not.toHaveBeenCalled();
+    expect(setSessionData).not.toHaveBeenCalled();
+  });
+
+  test("returns a redirect if user already has an agreed agreement", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue(organisation);
+
+    const closedPoultryApplication = {
+      sbi: 112231312,
+      type: "EE",
+      reference: "POUL-1111-2222",
+      redacted: false,
+      status: "AGREED",
+    };
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
+      .mockReturnValue(closedPoultryApplication);
+
+    await prePoultryApplyHandler(getRequest, h);
+
+    expect(error).toHaveBeenCalledWith(
+      {
+        error: expect.any(Error),
+        event: {
+          category: "user-action",
+          type: "exception",
+        },
+      },
+      "User attempted to use apply journey despite already having an agreed agreement.",
+    );
+    expect(h.redirect).toHaveBeenCalledWith("/poultry/vet-visits");
+  });
+
+  test("allows apply journey if application is agreed but redacted", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.organisation)
+      .mockReturnValue(organisation);
+
+    const redactedApplication = {
+      sbi: 112231312,
+      type: "EE",
+      reference: "POUL-1111-2222",
+      redacted: true,
+      status: "AGREED",
+    };
+
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
+      .mockReturnValue(redactedApplication);
+
+    const result = await prePoultryApplyHandler(getRequest, h);
+
+    expect(result).toBe(mockContinue);
+    expect(h.redirect).not.toHaveBeenCalled();
+  });
+
+  describe("generateApplicationEvent", () => {
+    test("fetches from API and sets application in session when not cached", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(organisation);
+
+      const apiApplication = {
+        sbi: 112231312,
+        type: "EE",
+        reference: "POUL-1111-2222",
+        status: "CLOSED",
+      };
+
+      getApplicationsBySbi.mockResolvedValue([apiApplication]);
+
+      await prePoultryApplyHandler(getRequest, h);
+
+      expect(getApplicationsBySbi).toHaveBeenCalledWith(organisation.sbi);
+      expect(setSessionEntry).toHaveBeenCalledWith(
+        getRequest,
+        sessionEntryKeys.poultryApplication,
+        apiApplication,
+        { journey: "poultryApply" },
+      );
+    });
+
+    test("does not fetch from API when application is already cached", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(organisation);
+
+      const cachedApplication = {
+        sbi: 112231312,
+        type: "EE",
+        reference: "POUL-1111-2222",
+        status: "CLOSED",
+      };
+
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
+        .mockReturnValue(cachedApplication);
+
+      await prePoultryApplyHandler(getRequest, h);
+
+      expect(getApplicationsBySbi).not.toHaveBeenCalled();
+      expect(setSessionEntry).not.toHaveBeenCalled();
+    });
+
+    test("sets application to null when API returns no poultry applications", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(organisation);
+
+      const endemicsApplication = {
+        sbi: 112231312,
+        type: "EE",
+        reference: "IAHW-1111-2222",
+        status: "AGREED",
+      };
+
+      getApplicationsBySbi.mockResolvedValue([endemicsApplication]);
+
+      await prePoultryApplyHandler(getRequest, h);
+
+      expect(setSessionEntry).toHaveBeenCalledWith(
+        getRequest,
+        sessionEntryKeys.poultryApplication,
+        null,
+        {
+          journey: "poultryApply",
+        },
+      );
+    });
+  });
+});
