@@ -53,6 +53,7 @@ const getHandler = {
 };
 
 const errorMessage = { text: "Select the site you are claiming for", href: "#siteSelected" };
+const errorMessage10Months = "There must be at least 10 months between your reviews.";
 
 const buildViewData = (previousClaims) => {
   const previousSites = getUniqueSites(previousClaims);
@@ -130,11 +131,10 @@ const postHandler = {
         previousClaimForSite &&
         areDatesWithin10Months(dateOfVisit, previousClaimForSite.data.dateOfVisit)
       ) {
-        const errorMessage = "There must be at least 10 months between your reviews.";
         await sendInvalidDataEvent({
           request,
           sessionKey: sessionKeys.poultryClaim.dateOfVisit,
-          exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
+          exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage10Months}`,
         });
 
         return h
