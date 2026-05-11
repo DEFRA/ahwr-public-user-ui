@@ -9,6 +9,7 @@ import Joi from "joi";
 import HttpStatus from "http-status-codes";
 import { formatDate } from "../../../lib/display-helpers.js";
 import { areDatesWithin10Months } from "../../../lib/utils.js";
+import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
 const radioValueNewSite = "NEW_SITE";
 
@@ -129,6 +130,13 @@ const postHandler = {
         previousClaimForSite &&
         areDatesWithin10Months(dateOfVisit, previousClaimForSite.data.dateOfVisit)
       ) {
+        const errorMessage = "There must be at least 10 months between your reviews.";
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.poultryClaim.dateOfVisit,
+          exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
+        });
+
         return h
           .view(poultryClaimViews.cannotContinueTimingRules, {
             backLink: poultryClaimRoutes.selectTheSite,

@@ -10,11 +10,13 @@ import {
 import { config } from "../../../../../../app/config/index.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 
 const auth = { credentials: { reference: "1111", sbi: "111111111" }, strategy: "cookie" };
 const url = "/poultry/select-the-site";
 
 jest.mock("../../../../../../app/session/index.js");
+jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 
 describe("/poultry/select-the-site", () => {
   let server;
@@ -840,11 +842,12 @@ describe("/poultry/select-the-site", () => {
     });
 
     test("shows timing rules exception when dateOfVisit is within 10 months of previous claim for same site", async () => {
+      const dateOfVisit = new Date("2025-10-31");
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           siteSelected: null,
-          dateOfVisit: new Date("2025-10-31"),
+          dateOfVisit,
           previousClaims: [
             {
               herd: {
@@ -873,14 +876,20 @@ describe("/poultry/select-the-site", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toContain("You cannot continue with your claim");
       expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-the-site");
+      expect(sendInvalidDataEvent).toHaveBeenCalledWith({
+        request: expect.anything(),
+        sessionKey: sessionKeys.poultryClaim.dateOfVisit,
+        exception: `Value ${dateOfVisit} is invalid. Error: There must be at least 10 months between your reviews.`,
+      });
     });
 
     test("allows claim when dateOfVisit is exactly 10 months after previous claim for same site", async () => {
+      const dateOfVisit = new Date("2025-11-01");
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
           siteSelected: null,
-          dateOfVisit: new Date("2025-11-01"),
+          dateOfVisit,
           previousClaims: [
             {
               herd: {
@@ -909,6 +918,11 @@ describe("/poultry/select-the-site", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toContain("You cannot continue with your claim");
       expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-the-site");
+      expect(sendInvalidDataEvent).toHaveBeenCalledWith({
+        request: expect.anything(),
+        sessionKey: sessionKeys.poultryClaim.dateOfVisit,
+        exception: `Value ${dateOfVisit} is invalid. Error: There must be at least 10 months between your reviews.`,
+      });
     });
 
     test("allows claim when dateOfVisit is more than 10 months after previous claim for same site", async () => {
