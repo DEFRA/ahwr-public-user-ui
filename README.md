@@ -35,7 +35,7 @@ and tested without relying on an external service.
 
 The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.
 
-### Enviroment Variables
+### Environment Variables
 
 Make sure that you have a .env file setup before the first time you run this script, as it will copy the .env file into the image. Otherwise, delete the image and run it again. Same for any .env modification
 
