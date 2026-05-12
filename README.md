@@ -35,14 +35,30 @@ and tested without relying on an external service.
 
 The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.
 
-### Start
+### Enviroment Variables
 
 Make sure that you have a .env file setup before the first time you run this script, as it will copy the .env file into the image. Otherwise, delete the image and run it again. Same for any .env modification
+
+The PUBLIC_UI_API_KEY needs to match the one the [application backend](https://github.com/DEFRA/ahwr-application-backend).
+
+The DEFRA and APIM missing values can be retrieved from the terminal of the dev environment using:
+
+```
+aws secretsmanager get-secret-value --secret-id "cdp/services/ahwr-public-user-ui" --query SecretString --output text | jq
+```
+
+### Start
 
 Use the start script inside the /scripts folder.
 
 ```
-./scripts/start
+scripts/start
+```
+
+If you need to delete the images you can run for simplicity:
+
+```
+scripts/clean
 ```
 
 You need to also spin up the [application backend](https://github.com/DEFRA/ahwr-application-backend).

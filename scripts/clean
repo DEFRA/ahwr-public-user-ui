@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+set -e
+projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; pwd)"
+
+# Determine which docker compose command is available
+if command -v docker compose &> /dev/null; then
+  compose_cmd="docker compose"
+elif command -v docker-compose &> /dev/null; then
+  compose_cmd="docker-compose"
+else
+  echo "Neither 'docker compose' nor 'docker-compose' is installed." >&2
+  exit 1
+fi
+
+cd "${projectRoot}"
+
+# Stop and remove containers, networks, and volumes
+$compose_cmd \
+  -f docker-compose.yaml \
+  -f docker-compose.override.yaml \
+  down --volumes --rmi local
+
+echo "Cleaned up containers, volumes, and locally-built images."
