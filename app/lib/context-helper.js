@@ -7,10 +7,9 @@ import {
   clearEndemicsClaim,
   clearPoultryClaim,
 } from "../session/index.js";
-import { areDatesWithin10Months } from "./utils.js";
-import { getApplicationsBySbi } from "../api-requests/application-api.js";
 import { getClaimsByApplicationReference } from "../api-requests/claim-api.js";
 import { createTempReference } from "./create-temp-ref.js";
+import { getLatestApplications } from "./application-helper.js";
 import {
   MULTIPLE_HERDS_RELEASE_DATE,
   ONLY_HERD,
@@ -25,34 +24,13 @@ import {
   poultryApplyUrls,
   poultryClaimUrls,
 } from "../constants/routes.js";
-import {
-  AHWR_SCHEME,
-  APPLICATION_REFERENCE_PREFIX_NEW_WORLD,
-  APPLICATION_REFERENCE_PREFIX_OLD_WORLD,
-  APPLICATION_REFERENCE_PREFIX_POULTRY,
-  claimType,
-  POULTRY_SCHEME,
-} from "ffc-ahwr-common-library";
+import { AHWR_SCHEME, claimType, POULTRY_SCHEME } from "ffc-ahwr-common-library";
 
 const { customerSurvey } = config;
 
 export async function refreshApplications(sbi, request) {
-  const applications = await getApplicationsBySbi(sbi, request.logger);
-
-  // get latest new world
-  const latestEndemicsApplication = applications.find((application) =>
-    application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_NEW_WORLD),
-  );
-
-  // get latest old world - if there isn't one, or it's not within 10 months of the new world one, then we won't consider it,
-  // and thus return undefined
-  const latestVetVisitApplication = applications.find((application) => {
-    // endemics application must have been created within 10 months of vet-visit application visit date
-    return (
-      application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_OLD_WORLD) &&
-      areDatesWithin10Months(application.data?.visitDate, latestEndemicsApplication?.createdAt ?? 0)
-    );
-  });
+  const { latestEndemicsApplication, latestPoultryApplication, latestVetVisitApplication } =
+    await getLatestApplications(sbi, request.logger);
 
   await setSessionData(
     request,
@@ -66,10 +44,6 @@ export async function refreshApplications(sbi, request) {
     sessionEntryKeys.endemicsClaim,
     sessionKeys.endemicsClaim.latestEndemicsApplication,
     latestEndemicsApplication,
-  );
-
-  const latestPoultryApplication = applications.find((application) =>
-    application.reference.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY),
   );
 
   await setSessionData(
