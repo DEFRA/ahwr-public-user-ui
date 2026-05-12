@@ -9,7 +9,7 @@ import Joi from "joi";
 import HttpStatus from "http-status-codes";
 import { formatDate } from "../../../lib/display-helpers.js";
 import { areDatesWithin10Months } from "../../../lib/utils.js";
-import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
+import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 
 const radioValueNewSite = "NEW_SITE";
 
@@ -131,7 +131,7 @@ const postHandler = {
         previousClaimForSite &&
         areDatesWithin10Months(dateOfVisit, previousClaimForSite.data.dateOfVisit)
       ) {
-        await sendInvalidDataEvent({
+        await sendInvalidDataPoultryEvent({
           request,
           sessionKey: sessionKeys.poultryClaim.dateOfVisit,
           exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage10Months}`,
