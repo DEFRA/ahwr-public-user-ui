@@ -10,7 +10,7 @@ import {
 import { config } from "../../../../../../app/config/index.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
-import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
+import { sendInvalidDataPoultryEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 
 const auth = { credentials: { reference: "1111", sbi: "111111111" }, strategy: "cookie" };
 const url = "/poultry/select-the-site";
@@ -876,7 +876,7 @@ describe("/poultry/select-the-site", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toContain("You cannot continue with your claim");
       expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-the-site");
-      expect(sendInvalidDataEvent).toHaveBeenCalledWith({
+      expect(sendInvalidDataPoultryEvent).toHaveBeenCalledWith({
         request: expect.anything(),
         sessionKey: sessionKeys.poultryClaim.dateOfVisit,
         exception: `Value ${dateOfVisit} is invalid. Error: There must be at least 10 months between your reviews.`,
@@ -918,7 +918,7 @@ describe("/poultry/select-the-site", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toContain("You cannot continue with your claim");
       expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-the-site");
-      expect(sendInvalidDataEvent).toHaveBeenCalledWith({
+      expect(sendInvalidDataPoultryEvent).toHaveBeenCalledWith({
         request: expect.anything(),
         sessionKey: sessionKeys.poultryClaim.dateOfVisit,
         exception: `Value ${dateOfVisit} is invalid. Error: There must be at least 10 months between your reviews.`,
