@@ -76,6 +76,16 @@ describe("you-can-claim-multiple page", () => {
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.payload).toContain("/select-funding"); // back-link
+      expect(res.payload).toContain("What you can claim for as part of this agreement");
+      expect(res.payload).toContain(
+        "Under this Poultry Biosecurity Review (PBR) agreement, you can claim funding for biosecurity reviews for every poultry site associated with your single business identifier (SBI).",
+      );
+      expect(res.payload).toContain(
+        "You can claim for one poultry site within each county parish holding (CPH).",
+      );
+      expect(res.payload).toContain("You need to make a separate claim for each poultry site.");
+      expect(res.payload).not.toContain("maximum of 3 biosecurity reviews");
+      expect(res.payload).not.toContain("31 March 2029");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryApplyData,
