@@ -68,7 +68,7 @@ describe("Check review numbers page test", () => {
   });
 
   describe("GET /numbers route when logged in", () => {
-    test("returns 200 and has correct backLink", async () => {
+    test("returns 200 with reviewed eligibility content and correct backLink", async () => {
       const res = await server.inject({ ...options, method: "GET" });
 
       expect(res.statusCode).toBe(200);
@@ -76,7 +76,7 @@ describe("Check review numbers page test", () => {
 
       const $ = cheerio.load(res.payload);
       const titleClassName = ".govuk-heading-l";
-      const title = "Minimum number of poultry in the unit";
+      const title = "Minimum number of poultry on the site";
       const pageTitleByClassName = $(titleClassName).text();
       const pageTitleByName = $("title").text();
       const fullTitle = `${title} - Get funding to improve animal health and welfare`;
@@ -85,6 +85,34 @@ describe("Check review numbers page test", () => {
       expect(pageTitleByName).toContain(fullTitle);
       expect(pageTitleByClassName).toEqual(title);
       expect(backLinkUrlByClassName).toContain(poultryApplyRoutes.youCanClaimMultiple);
+
+      expect(res.payload).toContain(
+        "To be eligible for a review, each site must have the capacity to hold any of the following:",
+      );
+
+      const bulletItems = $("ul.govuk-list--bullet").first().find("li");
+      const actualItems = bulletItems.map((i, el) => $(el).text().trim()).get();
+      expect(actualItems).toEqual([
+        "1,000 or more breeder chickens",
+        "1,000 or more broiler chickens",
+        "1,000 or more laying hens (including pullets)",
+        "500 or more ducks",
+        "500 or more geese",
+        "500 or more turkeys",
+      ]);
+
+      expect(res.payload).toContain(
+        "Species numbers cannot be combined, for example 200 ducks and 300 turkeys.",
+      );
+      expect(res.payload).toContain(
+        "If the site is empty, the vet must assess its capacity to hold the minimum number of relevant poultry.",
+      );
+
+      expect(res.payload).not.toContain("Minimum number of poultry in the unit");
+      expect(res.payload).not.toContain("Each time you do a biosecurity review of the unit");
+      expect(res.payload).not.toContain("1,000 broilers");
+      expect(res.payload).not.toContain("1,000 laying hens");
+
       ok($);
     });
   });
