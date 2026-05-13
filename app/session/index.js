@@ -220,11 +220,9 @@ export const getSessionData = (request, entryKey, key) => {
       );
     }
 
-    // If the session has expired this will throw an error
     return request.yar.get(entryKey)?.[key];
   }
 
-  // If the session has expired this will throw an error
   return request.yar.get(entryKey);
 };
 
