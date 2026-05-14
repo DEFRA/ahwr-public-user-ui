@@ -62,7 +62,7 @@ describe("Declaration test", () => {
   });
 
   describe("GET /poultry/timings route", () => {
-    test("returns 200 when application found", async () => {
+    test("returns 200 with reviewed timing rules content", async () => {
       getApplicationsBySbi.mockResolvedValueOnce([]);
 
       const options = {
@@ -80,18 +80,26 @@ describe("Declaration test", () => {
       expect($("title").text()).toMatch(
         "Timing of poultry biosecurity reviews - Get funding to improve animal health and welfare",
       );
-      expect($("main h2").length).toBe(1);
 
-      const firstListItems = $("ul.govuk-list--bullet").first().find("li");
+      expect(res.payload).toContain(
+        "You cannot organise a review with a vet until this PBR agreement is in place.",
+      );
+      expect(res.payload).toContain(
+        "Once a review has been completed on a site, you must wait at least 10 months before having the next review on that site.",
+      );
+      expect(res.payload).toContain("You can claim for a maximum of 3 reviews for each site.");
+      expect(res.payload).toContain("All reviews must be completed by 31 December 2028.");
 
-      const expectedItems = [
-        "have an poultry biosecurity review agreement in place before you do your first biosecurity review",
-        "have no more than 3 biosecurity assessment on any number of units by 31 Match 2029",
-      ];
+      expect($("main h2").length).toBe(0);
+      expect($(".govuk-warning-text").length).toBe(0);
+      expect($("ul.govuk-list--bullet").length).toBe(0);
 
-      const actualItems = firstListItems.map((i, el) => $(el).text().trim()).get();
-
-      expect(actualItems).toEqual(expectedItems);
+      expect(res.payload).not.toContain(
+        "Claim your poultry biosecurity reviews as part of Get funding to improve animal health and welfare.",
+      );
+      expect(res.payload).not.toContain(
+        "To be eligible to claim for a poultry biosecurity review you must:",
+      );
     });
   });
 

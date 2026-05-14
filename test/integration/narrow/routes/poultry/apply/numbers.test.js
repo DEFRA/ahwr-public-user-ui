@@ -110,8 +110,6 @@ describe("Check review numbers page test", () => {
 
       expect(res.payload).not.toContain("Minimum number of poultry in the unit");
       expect(res.payload).not.toContain("Each time you do a biosecurity review of the unit");
-      expect(res.payload).not.toContain("1,000 broilers");
-      expect(res.payload).not.toContain("1,000 laying hens");
 
       ok($);
     });
