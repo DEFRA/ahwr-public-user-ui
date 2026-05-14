@@ -131,7 +131,6 @@ export const sessionKeys = {
   fundingSelection: {
     agreement: "agreement",
     selectedFunding: "selectedFunding",
-    error: "error",
   },
 };
 
