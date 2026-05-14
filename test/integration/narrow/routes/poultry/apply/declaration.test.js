@@ -215,6 +215,23 @@ describe("Declaration test", () => {
       expect($("title").text()).toMatch(
         "Agreement offer rejected - Get funding to improve animal health and welfare",
       );
+      expect($("h1").text()).toMatch("Agreement offer rejected");
+      expect(res.payload).toContain(
+        "You've rejected the agreement offer and your application has been cancelled.",
+      );
+      expect(res.payload).toContain("You'll need to start a new application if you:");
+
+      const bulletItems = $("ul.govuk-list--bullet").first().find("li");
+      const actualItems = bulletItems.map((i, el) => $(el).text().trim()).get();
+      expect(actualItems).toEqual([
+        "rejected the agreement by mistake",
+        "change your mind and want to apply again",
+      ]);
+
+      const callChargesLink = $("a:contains('Find out about call charges')");
+      expect(callChargesLink.length).toBe(1);
+      expect(callChargesLink.text().trim()).toBe("Find out about call charges (opens in new tab)");
+
       ok($);
       expect(createApplication).toHaveBeenCalledWith(
         { organisation, ...poultryApplyData, type: "POUL" },
