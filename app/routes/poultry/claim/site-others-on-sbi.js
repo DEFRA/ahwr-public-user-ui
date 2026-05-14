@@ -72,7 +72,7 @@ const postHandler = {
           herdReasonDifferentBreed: false,
           herdReasonOtherPurpose: false,
           herdReasonKeptSeparate: false,
-          herdReasonOnlyHerd: true,
+          herdReasonOnlyHerd: isOnlyHerdOnSbi === "yes",
           herdReasonOther: false,
         },
       });
