@@ -13,7 +13,7 @@ export const viewContextPlugin = {
       server.ext("onPreResponse", function (request, h) {
         const response = request.response;
 
-        if (response.variety === "view") {
+        if (response.variety === "view" && !response.source.template?.startsWith("error-pages/")) {
           const ctx = response.source.context || {};
 
           let serviceUrl = "/";
