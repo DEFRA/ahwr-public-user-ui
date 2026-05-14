@@ -14,25 +14,10 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Timing of poultry biosecurity reviews</h1>
-    <p>Claim your poultry biosecurity reviews as part of Get funding to improve animal health and welfare.</p>
-
-    <hr class="govuk-section-break govuk-section-break--s" />
-
-    {{ govukWarningText({
-      text: "You need to accept this agreement before you arrange a biosecurity assessment with your vet. You need to follow these timing rules to be eligible for a claim.",
-      iconFallbackText: "Warning"
-    }) }}
-
-    <hr class="govuk-section-break govuk-section-break--s" />
-
-    <h2 class="govuk-heading-m">Poultry biosecurity reviews</h2>
-    <p>To be eligible to claim for a poultry biosecurity review you must:</p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>have an poultry biosecurity review agreement in place before you do your first biosecurity review</li>
-      <li>have no more than 3 biosecurity assessment on any number of units by 31 Match 2029</li>
-    </ul>
-
-    <hr class="govuk-section-break govuk-section-break--m" />
+    <p class="govuk-body">You cannot organise a review with a vet until this PBR agreement is in place.</p>
+    <p class="govuk-body">Once a review has been completed on a site, you must wait at least 10 months before having the next review on that site.</p>
+    <p class="govuk-body">You can claim for a maximum of 3 reviews for each site.</p>
+    <p class="govuk-body">All reviews must be completed by 31 December 2028.</p>
 
     <form method="POST" autocomplete="off" novalidate="novalidate" id ="submitDeclarationForm">
       <input type="hidden" name="crumb" value="{{crumb}}"/>
