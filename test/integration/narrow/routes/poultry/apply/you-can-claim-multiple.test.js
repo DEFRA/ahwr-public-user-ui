@@ -1,3 +1,4 @@
+import * as cheerio from "cheerio";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import {
   getSessionData,
@@ -129,7 +130,7 @@ describe("you-can-claim-multiple page", () => {
       expect(res.headers.location).toEqual(poultryApplyRoutes.numbers);
     });
 
-    test("returns 200 and navigates to the offer rejected page when user disagrees", async () => {
+    test("returns 200 and navigates to the terms rejected page with back link when user disagrees", async () => {
       const options = {
         ...postOptionsBase,
         payload: {
@@ -149,6 +150,10 @@ describe("you-can-claim-multiple page", () => {
       );
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.payload).toContain("You cannot continue with your application");
+
+      const $ = cheerio.load(res.payload);
+      const backLinkHref = $(".govuk-back-link").attr("href");
+      expect(backLinkHref).toContain(poultryApplyRoutes.youCanClaimMultiple);
     });
   });
 });

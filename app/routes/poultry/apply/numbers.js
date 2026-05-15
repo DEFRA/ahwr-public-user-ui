@@ -47,8 +47,8 @@ export const poultryNumbersRouteHandlers = [
           "no",
         );
 
-        return h.view(poultryApplyViews.offerRejected, {
-          termsRejected: true,
+        return h.view(poultryApplyViews.termsRejected, {
+          backLink: poultryApplyRoutes.numbers,
         });
       },
     },

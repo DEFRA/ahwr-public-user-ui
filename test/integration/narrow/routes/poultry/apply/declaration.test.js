@@ -232,6 +232,8 @@ describe("Declaration test", () => {
       expect(callChargesLink.length).toBe(1);
       expect(callChargesLink.text().trim()).toBe("Find out about call charges (opens in new tab)");
 
+      expect($(".govuk-back-link").length).toBe(0);
+
       ok($);
       expect(createApplication).toHaveBeenCalledWith(
         { organisation, ...poultryApplyData, type: "POUL" },

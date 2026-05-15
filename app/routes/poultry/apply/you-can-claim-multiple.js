@@ -79,8 +79,8 @@ export const poultryClaimMultipleRouteHandlers = [
           "no",
         );
 
-        return h.view(poultryApplyViews.offerRejected, {
-          termsRejected: true,
+        return h.view(poultryApplyViews.termsRejected, {
+          backLink: poultryApplyRoutes.youCanClaimMultiple,
         });
       },
     },
