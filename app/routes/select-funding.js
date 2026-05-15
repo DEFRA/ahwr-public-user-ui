@@ -55,12 +55,7 @@ export const selectFundingRouteHandlers = [
         failAction: async (request, h, error) => {
           request.logger.error({ error });
           clearFundingSelection(request);
-          setSessionData(
-            request,
-            sessionEntryKeys.fundingSelection,
-            sessionKeys.fundingSelection.error,
-            "No funding selected",
-          );
+
           const { livestockText, poultryText, organisation } = getScreenInformation(request);
 
           const attachedToMultipleBusinesses = getSessionData(

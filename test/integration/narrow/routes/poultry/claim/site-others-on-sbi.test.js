@@ -3,6 +3,7 @@ import { createServer } from "../../../../../../app/server.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
 import {
+  emitHerdEvent,
   getSessionData,
   sessionEntryKeys,
   sessionKeys,
@@ -124,6 +125,7 @@ describe("/site-others-on-sbi tests", () => {
     test("saves answer in session and navigates to select poultry type", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",
+        herdId: "10000001-94b3-4d19-be59-42a9dc9a6811",
       });
 
       const res = await server.inject({
@@ -144,6 +146,55 @@ describe("/site-others-on-sbi tests", () => {
         "yes",
         { shouldEmitEvent: false },
       );
+      expect(emitHerdEvent).toHaveBeenCalledWith({
+        request: expect.any(Object),
+        type: "herd-reasons",
+        message: "Only herd for user",
+        data: {
+          herdId: "10000001-94b3-4d19-be59-42a9dc9a6811",
+          herdVersion: 1,
+          herdReasonManagementNeeds: false,
+          herdReasonUniqueHealth: false,
+          herdReasonDifferentBreed: false,
+          herdReasonOtherPurpose: false,
+          herdReasonKeptSeparate: false,
+          herdReasonOnlyHerd: true,
+          herdReasonOther: false,
+        },
+      });
+    });
+
+    test("emits herd event with herdReasonOnlyHerd as false when isOnlyHerdOnSbi is no", async () => {
+      getSessionData.mockReturnValue({
+        reference: "TEMP-6GSE-PIR8",
+        herdId: "10000001-94b3-4d19-be59-42a9dc9a6811",
+      });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb, isOnlyHerdOnSbi: "no" },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(302);
+      expect(emitHerdEvent).toHaveBeenCalledWith({
+        request: expect.any(Object),
+        type: "herd-reasons",
+        message: "Only herd for user",
+        data: {
+          herdId: "10000001-94b3-4d19-be59-42a9dc9a6811",
+          herdVersion: 1,
+          herdReasonManagementNeeds: false,
+          herdReasonUniqueHealth: false,
+          herdReasonDifferentBreed: false,
+          herdReasonOtherPurpose: false,
+          herdReasonKeptSeparate: false,
+          herdReasonOnlyHerd: false,
+          herdReasonOther: false,
+        },
+      });
     });
 
     test("display errors when no answer selected", async () => {

@@ -384,12 +384,6 @@ describe("select-funding", () => {
       expect($(".govuk-error-summary li > a").text()).toMatch(errorMessage);
       expect($(".govuk-error-message").text()).toContain(errorMessage);
       expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
-      expect(setSessionData).toHaveBeenCalledWith(
-        expect.anything(),
-        sessionEntryKeys.fundingSelection,
-        "error",
-        "No funding selected",
-      );
     });
 
     test("shows 'Claim for a different business' link in failAction when attachedToMultipleBusinesses is true", async () => {
