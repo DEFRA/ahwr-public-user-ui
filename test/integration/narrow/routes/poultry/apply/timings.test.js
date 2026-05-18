@@ -123,7 +123,7 @@ describe("Declaration test", () => {
       expect(res.headers.location).toEqual(poultryApplyRoutes.declaration);
     });
 
-    test("returns 200 to agreement rejected page when rejected answer given", async () => {
+    test("returns 200 to terms rejected page with back link when rejected answer given", async () => {
       const res = await server.inject({
         url: poultryApplyRoutes.timings,
         auth,
@@ -131,9 +131,14 @@ describe("Declaration test", () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, agreementStatus: "rejected" },
       });
+
       expect(res.statusCode).toBe(200);
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.payload).toContain("You cannot continue with your application");
+
+      const $ = cheerio.load(res.payload);
+      const backLinkHref = $(".govuk-back-link").attr("href");
+      expect(backLinkHref).toContain(poultryApplyRoutes.timings);
     });
   });
 });

@@ -33,9 +33,7 @@ const processRejectedApplication = async (h, request) => {
     tempApplicationId,
   );
 
-  return h.view(poultryApplyViews.offerRejected, {
-    offerRejected: true,
-  });
+  return h.view(poultryApplyViews.offerRejected);
 };
 
 export const poultryDeclarationRouteHandlers = [

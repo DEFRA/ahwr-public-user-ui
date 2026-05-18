@@ -134,7 +134,7 @@ describe("Check review numbers page test", () => {
       expect(res.headers.location).toEqual(poultryApplyRoutes.timings);
     });
 
-    test("returns 200 to offer rejected page when not agree answer given", async () => {
+    test("returns 200 to terms rejected page with back link when not agree answer given", async () => {
       const res = await server.inject({
         ...options,
         method: "POST",
@@ -145,6 +145,10 @@ describe("Check review numbers page test", () => {
       expect(res.statusCode).toBe(200);
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.payload).toContain("You cannot continue with your application");
+
+      const $ = cheerio.load(res.payload);
+      const backLinkHref = $(".govuk-back-link").attr("href");
+      expect(backLinkHref).toContain(poultryApplyRoutes.numbers);
     });
   });
 });

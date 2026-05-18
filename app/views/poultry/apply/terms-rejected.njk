@@ -1,0 +1,25 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your application - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+{{ govukBackLink({
+text: "Back",
+href: backLink,
+attributes: {id: "back"}
+}) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">You cannot continue with your application</h1>
+      <p class="govuk-body">Based on your answers you cannot continue with your application.</p>
+      <p class="govuk-body"><a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/funding-for-farmers">Read guidance to find out if you could be eligible for other farming schemes</a>.</p>
+
+      <p>If you have any questions about your application, contact the Rural Payments Agency.</p>
+
+      {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+    </div>
+  </div>
+{% endblock %}
