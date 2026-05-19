@@ -65,8 +65,8 @@ export async function isURNUnique(data, logger) {
   }
 }
 
-export async function getClaimsCount(cph, herdId, logger) {
-  const params = new URLSearchParams({ cph });
+export async function getClaimsCount(cph, herdId, species, logger) {
+  const params = new URLSearchParams({ cph, species });
 
   if (herdId) {
     params.append("herdId", herdId);

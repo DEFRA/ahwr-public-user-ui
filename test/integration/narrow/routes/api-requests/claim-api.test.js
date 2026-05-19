@@ -56,18 +56,35 @@ describe("claim api", () => {
     });
   });
 
-  test("getClaimsCount", async () => {
+  test("getClaimsCount sends cph, species=poultry and herdId", async () => {
     const params = new URLSearchParams({
       cph: "22/333/4444",
+      species: "poultry",
       herdId: "e3d320b7-b2cf-469a-903f-ead7587d98e9",
     });
     await testWreckApiFunction({
       fn: getClaimsCount,
       method: "get",
       endpoint: `${config.applicationApiUri}/claims/count?${params.toString()}`,
-      args: ["22/333/4444", "e3d320b7-b2cf-469a-903f-ead7587d98e9"],
+      args: ["22/333/4444", "e3d320b7-b2cf-469a-903f-ead7587d98e9", "poultry"],
       outboundPayload: null,
       returnPayload: { count: 2 },
+      logger: makeLogger(),
+    });
+  });
+
+  test("getClaimsCount omits herdId when not supplied but still sends species=poultry", async () => {
+    const params = new URLSearchParams({
+      cph: "22/333/4444",
+      species: "poultry",
+    });
+    await testWreckApiFunction({
+      fn: getClaimsCount,
+      method: "get",
+      endpoint: `${config.applicationApiUri}/claims/count?${params.toString()}`,
+      args: ["22/333/4444", undefined, "poultry"],
+      outboundPayload: null,
+      returnPayload: { count: 0 },
       logger: makeLogger(),
     });
   });
