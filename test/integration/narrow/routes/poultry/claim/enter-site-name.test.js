@@ -59,11 +59,15 @@ describe("/poultry/enter-site-name", () => {
       "Enter the site name - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
     );
     expect($(".govuk-label--l").text().trim()).toBe("Enter the site name");
-    expect($(".govuk-hint").text().trim()).toContain("Tell us about this site");
+    expect($(".govuk-hint").text().trim()).toContain(
+      "Enter the site name from the ’Tell us about this poultry site’ section of the summary the vet gave you.",
+    );
     expect($(".govuk-details__summary-text").text().trim()).toBe(
       "I don't have the site details from the vet",
     );
-    expect($(".govuk-details__text").text().trim()).toContain("Tell us about this site");
+    expect($(".govuk-details__text").text().trim()).toContain(
+      "Your vet should have completed the  ‘Tell us about this site’ section on the vet template. You can ask them to download the form and fill the details in for you.",
+    );
   };
 
   describe("GET", () => {

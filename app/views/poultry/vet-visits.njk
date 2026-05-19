@@ -43,10 +43,8 @@
   <h1 class="govuk-heading-xl govuk-!-static-margin-bottom-4">Manage your claims</h1>
 
   <div class="govuk-grid-column-full govuk-!-padding-0">
-    <p>
-      Start a new claim or view and manage your current claims.
-      We recommend you claim in order of the visits.
-    <p>
+    <p class="govuk-body">Start a new claim, or view and manage your current claims.</p>
+    <p class="govuk-body">We recommend you claim in order of the visits.</p>
 
       {{ govukButton({
       text: 'Start a new claim',
@@ -78,7 +76,7 @@
     {% endif %}
 
   {% if not rows.length %}
-    <p class="govuk-caption-m">Your claims will appear here once you have submitted them.</p>
+    <p class="govuk-caption-m">You have not submitted any claims yet.</p>
   {% endif %}
 
   </div>
