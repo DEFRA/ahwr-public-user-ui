@@ -33,6 +33,8 @@ jest.mock("../../../../../../app/config/index.js", () => ({
     ...jest.requireActual("../../../../../../app/config/index.js").config,
     poultry: {
       enabled: "true",
+      termsAndConditionsUri: "https://example.gov.uk/poultry-terms",
+      vetSummaryTemplateUri: "https://example.gov.uk/poultry-vet-summary",
     },
   },
 }));
@@ -110,19 +112,107 @@ describe("Declaration test", () => {
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("Review your agreement offer");
+      ok($);
+
       expect($("title").text()).toMatch(
         "Review your agreement offer - Get funding to improve animal health and welfare",
       );
-      ok($);
-      const expectedHerdsText = `If the RPA requests evidence that your biosecurity review took place, or details of the units you have, you must provide it. This will be on your vet summary.`;
-      const herdsText = $("p")
-        .filter((i, el) => {
-          return $(el).text().trim().startsWith("If the RPA requests evidence");
-        })
+      expect($("h1.govuk-heading-l").text().trim()).toBe("Review your agreement offer");
+
+      const intro = $("p")
+        .filter((i, el) =>
+          $(el).text().trim().startsWith("This is an offer of Poultry Biosecurity Review funding"),
+        )
         .first();
-      expect(herdsText.length).toBe(1);
-      expect(herdsText.text().trim()).toBe(expectedHerdsText);
+      expect(intro.text().trim()).toBe(
+        "This is an offer of Poultry Biosecurity Review funding for this business:",
+      );
+
+      expect($("#organisation-name").text()).toEqual(organisation.name);
+      expect($("#organisation-sbi").text()).toEqual(organisation.sbi);
+
+      const eitherHeading = $("h2:contains('You can either:')").first();
+      expect(eitherHeading.length).toBe(1);
+      const eitherBullets = eitherHeading
+        .nextAll("ul")
+        .first()
+        .find("li")
+        .map((i, el) => $(el).text().trim())
+        .get();
+      expect(eitherBullets).toEqual(["accept this offer", "reject this offer"]);
+
+      const mustHeading = $("h2:contains('For each review you must:')").first();
+      expect(mustHeading.length).toBe(1);
+      const mustBullets = mustHeading
+        .nextAll("ul")
+        .first()
+        .find("li")
+        .map((i, el) => $(el).text().trim().replace(/\s+/g, " "))
+        .get();
+      expect(mustBullets).toEqual([
+        "allow a vet to asses the biosecurity of the site being reviewed",
+        "share details about the vet with the Rural Payments Agency (RPA)",
+        "ensure the vet completes a poultry biosecurity review vet summary template (opens in new tab) as part of the review",
+      ]);
+
+      const askedHeading = $("h2:contains('If asked, you must provide the RPA with:')").first();
+      expect(askedHeading.length).toBe(1);
+      const askedBullets = askedHeading
+        .nextAll("ul")
+        .first()
+        .find("li")
+        .map((i, el) => $(el).text().trim())
+        .get();
+      expect(askedBullets).toEqual([
+        "evidence that your review took place",
+        "details of your poultry site",
+      ]);
+
+      const vetSummaryPara = $("p")
+        .filter((i, el) => $(el).text().trim() === "This information will be on your vet summary.")
+        .first();
+      expect(vetSummaryPara.length).toBe(1);
+
+      expect($("h2:contains('Declaration')").length).toBe(1);
+      const confirmPara = $("p")
+        .filter((i, el) => $(el).text().trim().startsWith("Confirm that you have read"))
+        .first();
+      expect(confirmPara.text().trim().replace(/\s+/g, " ")).toBe(
+        "Confirm that you have read the agreement terms and conditions (opens in new tab).",
+      );
+
+      const vetLink = $("#vetSummaryTemplateUri");
+      expect(vetLink.length).toBe(1);
+      expect(vetLink.attr("href")).toBe("https://example.gov.uk/poultry-vet-summary");
+      expect(vetLink.attr("target")).toBe("_blank");
+      expect(vetLink.attr("rel")).toMatch(/noopener/);
+      expect(vetLink.attr("rel")).toMatch(/noreferrer/);
+      expect(vetLink.text().trim()).toBe(
+        "poultry biosecurity review vet summary template (opens in new tab)",
+      );
+
+      const termsLink = $("#termsAndConditionsUri");
+      expect(termsLink.length).toBe(1);
+      expect(termsLink.attr("href")).toBe("https://example.gov.uk/poultry-terms");
+      expect(termsLink.attr("target")).toBe("_blank");
+      expect(termsLink.attr("rel")).toMatch(/noopener/);
+      expect(termsLink.attr("rel")).toMatch(/noreferrer/);
+      expect(termsLink.text().trim()).toBe("the agreement terms and conditions (opens in new tab)");
+
+      expect(res.payload).not.toContain(
+        "If the RPA requests evidence that your biosecurity review took place",
+      );
+      expect(res.payload).not.toContain("If you accept this offer you confirm that:");
+      expect(res.payload).not.toContain(
+        "The agreement terms and conditions include, but are not limited to:",
+      );
+      expect(res.payload).not.toContain("you must have the minimum number of poultry needed");
+      expect(res.payload).not.toContain(
+        "you must follow the rules for timing of biosecurity reviews",
+      );
+
+      expect($("button[value='accepted']").text().trim()).toBe("Accept offer");
+      expect($("button[value='rejected']").text().trim()).toBe("Reject offer");
     });
 
     test("redirects to dashboard when application exists", async () => {
@@ -279,6 +369,16 @@ describe("Declaration test", () => {
       expect($("#terms-error").text()).toMatch(
         "Confirm you have read and agree to the terms and conditions",
       );
+
+      const vetLink = $("#vetSummaryTemplateUri");
+      expect(vetLink.attr("href")).toBe("https://example.gov.uk/poultry-vet-summary");
+      expect(vetLink.attr("target")).toBe("_blank");
+      const termsLink = $("#termsAndConditionsUri");
+      expect(termsLink.attr("href")).toBe("https://example.gov.uk/poultry-terms");
+      expect(termsLink.attr("target")).toBe("_blank");
+      expect($("button[value='accepted']").text().trim()).toBe("Accept offer");
+      expect($("button[value='rejected']").text().trim()).toBe("Reject offer");
+
       expect(createApplication).not.toHaveBeenCalled();
       expect(refreshApplications).not.toHaveBeenCalled();
       expect(trackEvent).not.toHaveBeenCalled();
