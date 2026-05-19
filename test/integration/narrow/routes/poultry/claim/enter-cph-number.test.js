@@ -64,7 +64,7 @@ describe("/enter-cph-number tests", () => {
       "Enter the CPH number for this site - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
     );
     expect($(".govuk-label").text().trim()).toBe(
-      "Enter the County Parish Holding (CPH) number for this site",
+      "Enter the county parish holding (CPH) number for this site",
     );
   };
 

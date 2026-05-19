@@ -28,16 +28,12 @@
           govukRadios({
             id: "isOnlyHerdOnSbi",
             name: "isOnlyHerdOnSbi",
-            classes: 'govuk-radios--inline',
             fieldset:{
               legend:{
                 isPageHeading: true,
                 classes: "govuk-fieldset__legend--l",
                 text: 'Is this the only site associated with this Single Business Identifier (SBI)?'
               }
-            }, 
-            hint: {
-              text: "You can find this information on the ‘Tell us about this site’ section of the form that the vet filled in for you."
             }, 
             errorMessage: errorMessage,
             items: [
