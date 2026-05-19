@@ -49,7 +49,8 @@ export const poultryDeclarationRouteHandlers = [
 
         return h.view(poultryApplyViews.declaration, {
           backLink: poultryApplyRoutes.timings,
-          latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${poultryApplyRoutes.declaration}`,
+          termsAndConditionsUri: config.poultry.termsAndConditionsUri,
+          vetSummaryTemplateUri: config.poultry.vetSummaryTemplateUri,
           organisation: formatOrganisation(organisation),
         });
       },
@@ -73,7 +74,8 @@ export const poultryDeclarationRouteHandlers = [
           return h
             .view(poultryApplyViews.declaration, {
               backLink: poultryApplyRoutes.timings,
-              latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${poultryApplyRoutes.declaration}`,
+              termsAndConditionsUri: config.poultry.termsAndConditionsUri,
+              vetSummaryTemplateUri: config.poultry.vetSummaryTemplateUri,
               errorMessage: {
                 text: "Confirm you have read and agree to the terms and conditions",
               },

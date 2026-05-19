@@ -25,40 +25,36 @@
       {% endif %}
       <h1 class="govuk-heading-l">Review your agreement offer</h1>
 
-      <p class="govuk-body">This is an offer of funding to poultry biosecurity review for this business:</p>
+      <p class="govuk-body">This is an offer of Poultry Biosecurity Review funding for this business:</p>
       <div class="govuk-inset-text">
         <span id="organisation-name">{{ organisation.name }}</span><br>
         <span id="organisation-address">{% for line in organisation.address %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</span><br>
       SBI: <span id="organisation-sbi">{{ organisation.sbi }}</span>
       </div>
 
-      <h2 class="govuk-heading-s">You may either:</h2>
+      <h2 class="govuk-heading-s">You can either:</h2>
       <ul class="govuk-list govuk-list--bullet">
-        <li>accept this offer of agreement subject to the following</li>
+        <li>accept this offer</li>
         <li>reject this offer</li>
-      </ul><br>
+      </ul>
 
-      <h2 class="govuk-heading-s">You must:</h2>
+      <h2 class="govuk-heading-s">For each review you must:</h2>
       <ul class="govuk-list govuk-list--bullet">
-        <li>allow a vet to asses the biosecurity for the unit being reviewed</li>
+        <li>allow a vet to asses the biosecurity of the site being reviewed</li>
         <li>share details about the vet with the Rural Payments Agency (RPA)</li>
-      </ul><br>
+        <li>ensure the vet completes a <a id="vetSummaryTemplateUri" class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ vetSummaryTemplateUri }}">poultry biosecurity review vet summary template (opens in new tab)</a> as part of the review</li>
+      </ul>
 
-      <p class="govuk-body">
-        If the RPA requests evidence that your biosecurity review took place, or details of the units you have, you must provide it. This will be on your vet summary.
-      </p>
-
-      <p>If you accept this offer you confirm that:</p>
+      <h2 class="govuk-heading-s">If asked, you must provide the RPA with:</h2>
       <ul class="govuk-list govuk-list--bullet">
-        <li>you have read, understood and agree to follow <a id="termsAndConditionsUri" class="govuk-link" rel="external" href="{{latestTermsAndConditionsUri}}">the agreement terms and conditions</a>
-        </li>
-      </ul><br>
+        <li>evidence that your review took place</li>
+        <li>details of your poultry site</li>
+      </ul>
 
-      <p>The agreement terms and conditions include, but are not limited to:</p>
-      <ul class="govuk-list govuk-list--bullet">
-        <li>you must have the minimum number of poultry needed</li>
-        <li>you must follow the rules for timing of biosecurity reviews</li>
-      </ul><br>
+      <p class="govuk-body">This information will be on your vet summary.</p>
+
+      <h2 class="govuk-heading-s">Declaration</h2>
+      <p class="govuk-body">Confirm that you have read <a id="termsAndConditionsUri" class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ termsAndConditionsUri }}">the agreement terms and conditions (opens in new tab)</a>.</p>
 
       <form method="POST" autocomplete="off" novalidate="novalidate" id ="submitDeclarationForm">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
@@ -75,15 +71,15 @@
 
         <div class="govuk-button-group">
           {{ govukButton({
-          text: "Accept",
-          attributes: { "aria-label": "Accept - Review your agreement offer" },
+          text: "Accept offer",
+          attributes: { "aria-label": "Accept offer - Review your agreement offer" },
           value: "accepted",
           name: "offerStatus",
           preventDoubleClick: true
         }) }}
           {{ govukButton({
-          text: "Reject",
-          attributes: { "aria-label": "Reject - Review your agreement offer" },
+          text: "Reject offer",
+          attributes: { "aria-label": "Reject offer - Review your agreement offer" },
           classes: "govuk-button--secondary",
           value: "rejected",
           name: "offerStatus",
