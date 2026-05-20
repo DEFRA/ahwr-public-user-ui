@@ -75,7 +75,9 @@ describe("Claim confirmation", () => {
     expect($("#message").text().trim()).toContain("poultry biosecurity review");
     expect(clearPoultryClaim).toHaveBeenCalled();
     const guidanceLink = $("p:contains('poultry biosecurity review') a.govuk-link");
-    expect(guidanceLink.attr("href")).toBe("test");
+    expect(guidanceLink.attr("href")).toBe(
+      "https://www.gov.uk/guidance/poultry-biosecurity-review-funding-guidance-for-poultry-keepers-and-vets#how-to-have-a-poultry-biosecurity-review",
+    );
     expect(guidanceLink.text()).toContain("read the guidance");
   });
 });
