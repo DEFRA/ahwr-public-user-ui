@@ -1,12 +1,12 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Claim complete - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}Claim submitted - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{ govukPanel({
-      titleText: "Claim complete",
+      titleText: "Claim submitted",
       html: "Your claim number:<br><strong id=reference>" + reference + "</strong>"
     }) }}
       <p id="message" class="govuk-!-margin-top-6">You have successfully submitted your claim for a poultry biosecurity review.</p>
@@ -19,16 +19,16 @@
         <li>make another claim</li>
         <li>view your claims</li>
       </ul>
-      <p>If you want to arrange another poultry biosecurity review then read the <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/plan-an-animal-health-and-welfare-review">guidance on timings of poultry biosecurity review</a>.</p>
+      <p>If you want to arrange another poultry biosecurity review, <a class="govuk-link" rel="external" href={{ guidanceUri }} >read the guidance</a> to find out how often you can claim.</p>
       <h2 class="govuk-heading-m">Get help with your claim</h2>
       <p>If you need to change the details of your claim, contact the RPA and give your agreement number.</p>
       {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
       <br/>
       <p>
-        <a class='govuk-link' rel="external noopener noreferrer" target={{ claimSurveyUri }} href={{ claimSurveyUri }}>
+        <a class='govuk-link' rel="external noopener noreferrer" target={{ customerSurveyUri }} href={{ customerSurveyUri }}>
         What did you think of this service?
       </a>
-      (giving feedback takes about 5 minutes)
+      (takes about 5 minutes)
     </p>
     </div>
   </div>

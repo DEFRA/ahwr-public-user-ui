@@ -74,5 +74,8 @@ describe("Claim confirmation", () => {
     expect($("#reference").text().trim()).toEqual(reference);
     expect($("#message").text().trim()).toContain("poultry biosecurity review");
     expect(clearPoultryClaim).toHaveBeenCalled();
+    const guidanceLink = $("p:contains('poultry biosecurity review') a.govuk-link");
+    expect(guidanceLink.attr("href")).toBe("test");
+    expect(guidanceLink.text()).toContain("read the guidance");
   });
 });

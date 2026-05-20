@@ -102,6 +102,7 @@ const configSchema = joi.object({
     enabled: joi.bool().required(),
     termsAndConditionsUri: joi.string().required(),
     vetSummaryTemplateUri: joi.string().required(),
+    guidanceUri: joi.string().required(),
   },
 });
 
@@ -200,6 +201,7 @@ export const getConfig = () => {
       enabled: process.env.POULTRY_ENABLED === "true",
       termsAndConditionsUri: process.env.POULTRY_TERMS_AND_CONDITIONS_URL,
       vetSummaryTemplateUri: process.env.POULTRY_VET_SUMMARY_TEMPLATE_URL,
+      guidanceUri: process.env.POULTRY_GUIDANCE_URL,
     },
   };
 
