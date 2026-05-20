@@ -2,7 +2,10 @@ import { clearPoultryClaim, getSessionData, sessionEntryKeys } from "../../../se
 import { config } from "../../../config/index.js";
 import { dashboardRoutes, poultryClaimViews } from "../../../constants/routes.js";
 
-const { customerSurvey } = config;
+const {
+  customerSurvey,
+  poultry: { guidanceUri },
+} = config;
 
 const getHandler = {
   method: "GET",
@@ -18,6 +21,7 @@ const getHandler = {
         reference,
         amount,
         claimSurveyUri: customerSurvey.claimUri,
+        guidanceUri,
       });
     },
   },

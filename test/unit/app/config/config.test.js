@@ -31,4 +31,9 @@ describe("Base config", () => {
     delete process.env.POULTRY_VET_SUMMARY_TEMPLATE_URL;
     expect(() => getConfig()).toThrow(/poultry.*vetSummaryTemplateUri.*required/);
   });
+
+  test("should throw an error if poultry guidance URL is missing", () => {
+    delete process.env.POULTRY_GUIDANCE_URL;
+    expect(() => getConfig()).toThrow(/poultry.*guidanceUri.*required/);
+  });
 });
