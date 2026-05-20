@@ -6,6 +6,7 @@ import {
 } from "../../../../../app/api-requests/claim-api.js";
 import { config } from "../../../../../app/config/index.js";
 import { testWreckApiFunction } from "../../../../helpers/test-wreck-api.js";
+import { POULTRY_SCHEME } from "ffc-ahwr-common-library";
 
 jest.mock("@hapi/wreck");
 jest.mock("../../../../../app/logging/logger.js", () => ({
@@ -56,33 +57,33 @@ describe("claim api", () => {
     });
   });
 
-  test("getClaimsCount sends cph, species=poultry and herdId", async () => {
+  test("getClaimsCount sends cph, the poultry scheme and herdId", async () => {
     const params = new URLSearchParams({
       cph: "22/333/4444",
-      species: "poultry",
+      scheme: POULTRY_SCHEME,
       herdId: "e3d320b7-b2cf-469a-903f-ead7587d98e9",
     });
     await testWreckApiFunction({
       fn: getClaimsCount,
       method: "get",
       endpoint: `${config.applicationApiUri}/claims/count?${params.toString()}`,
-      args: ["22/333/4444", "e3d320b7-b2cf-469a-903f-ead7587d98e9", "poultry"],
+      args: ["22/333/4444", "e3d320b7-b2cf-469a-903f-ead7587d98e9", POULTRY_SCHEME],
       outboundPayload: null,
       returnPayload: { count: 2 },
       logger: makeLogger(),
     });
   });
 
-  test("getClaimsCount omits herdId when not supplied but still sends species=poultry", async () => {
+  test("getClaimsCount omits herdId when not supplied but still sends the poultry scheme", async () => {
     const params = new URLSearchParams({
       cph: "22/333/4444",
-      species: "poultry",
+      scheme: POULTRY_SCHEME,
     });
     await testWreckApiFunction({
       fn: getClaimsCount,
       method: "get",
       endpoint: `${config.applicationApiUri}/claims/count?${params.toString()}`,
-      args: ["22/333/4444", undefined, "poultry"],
+      args: ["22/333/4444", undefined, POULTRY_SCHEME],
       outboundPayload: null,
       returnPayload: { count: 0 },
       logger: makeLogger(),

@@ -13,6 +13,7 @@ import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { config } from "../../../../../../app/config/index.js";
 import { getClaimsCount } from "../../../../../../app/api-requests/claim-api.js";
+import { POULTRY_SCHEME } from "ffc-ahwr-common-library";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/api-requests/claim-api.js");
@@ -259,7 +260,7 @@ describe("/enter-cph-number tests", () => {
         expect(getClaimsCount).toHaveBeenCalledWith(
           "22/333/4444",
           "e3d320b7-b2cf-469a-903f-ead7587d98e9",
-          "poultry",
+          POULTRY_SCHEME,
           expect.any(Object),
         );
       });

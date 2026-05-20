@@ -8,7 +8,7 @@ import {
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes.js";
-import { SPECIES } from "../../../constants/claim-constants.js";
+import { POULTRY_SCHEME } from "ffc-ahwr-common-library";
 import { normalizeCphNumber } from "../../../lib/cph-normalization.js";
 import { getClaimsCount } from "../../../api-requests/claim-api.js";
 
@@ -64,7 +64,7 @@ const postHandler = {
       const { herdCph } = request.payload;
       const { herds, herdId } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
-      const response = await getClaimsCount(herdCph, herdId, SPECIES.POULTRY, request.logger);
+      const response = await getClaimsCount(herdCph, herdId, POULTRY_SCHEME, request.logger);
 
       if (response.count > 0) {
         return h
