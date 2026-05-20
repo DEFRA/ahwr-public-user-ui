@@ -18,7 +18,7 @@ export const checkDetailsHandlers = [
           throw new Error("Organisation not in session.");
         }
 
-        return h.view("check-details", await getOrganisationModel(request, organisation));
+        return h.view("poultry/check-details", await getOrganisationModel(request, organisation));
       },
     },
   },
