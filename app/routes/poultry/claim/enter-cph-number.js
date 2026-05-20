@@ -8,6 +8,7 @@ import {
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes.js";
+import { POULTRY_SCHEME } from "ffc-ahwr-common-library";
 import { normalizeCphNumber } from "../../../lib/cph-normalization.js";
 import { getClaimsCount } from "../../../api-requests/claim-api.js";
 
@@ -50,7 +51,7 @@ const postHandler = {
           .view(poultryClaimViews.enterCphNumber, {
             ...request.payload,
             errorMessage: {
-              text: "Enter the CPH for this site in the format 12/345/6789",
+              text: "Enter the CPH for this site, format should be nn/nnn/nnnn",
               href: "#herdCph",
             },
             backLink: getBackLink(herdVersion),
@@ -63,14 +64,14 @@ const postHandler = {
       const { herdCph } = request.payload;
       const { herds, herdId } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
-      const response = await getClaimsCount(herdCph, herdId, request.logger);
+      const response = await getClaimsCount(herdCph, herdId, POULTRY_SCHEME, request.logger);
 
       if (response.count > 0) {
         return h
           .view(poultryClaimViews.enterCphNumber, {
             ...request.payload,
             errorMessage: {
-              text: "Enter a CPH that you have not used for a different site",
+              text: "You have already used this CPH, the CPH must be unique",
               href: "#herdCph",
             },
             backLink: getBackLink(herds),

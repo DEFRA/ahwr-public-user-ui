@@ -13,6 +13,7 @@ import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { config } from "../../../../../../app/config/index.js";
 import { getClaimsCount } from "../../../../../../app/api-requests/claim-api.js";
+import { POULTRY_SCHEME } from "ffc-ahwr-common-library";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/api-requests/claim-api.js");
@@ -172,10 +173,10 @@ describe("/enter-cph-number tests", () => {
         expect(res.statusCode).toBe(400);
         expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
         expect($('a[href="#herdCph"]').text()).toContain(
-          "Enter the CPH for this site in the format 12/345/6789",
+          "Enter the CPH for this site, format should be nn/nnn/nnnn",
         );
         expect($('p[id="herdCph-error"]').text()).toContain(
-          "Enter the CPH for this site in the format 12/345/6789",
+          "Enter the CPH for this site, format should be nn/nnn/nnnn",
         );
         expectSiteText($);
         expect(emitHerdEvent).not.toHaveBeenCalled();
@@ -199,10 +200,10 @@ describe("/enter-cph-number tests", () => {
         expect(res.statusCode).toBe(400);
         expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
         expect($('a[href="#herdCph"]').text()).toContain(
-          "Enter the CPH for this site in the format 12/345/6789",
+          "Enter the CPH for this site, format should be nn/nnn/nnnn",
         );
         expect($('p[id="herdCph-error"]').text()).toContain(
-          "Enter the CPH for this site in the format 12/345/6789",
+          "Enter the CPH for this site, format should be nn/nnn/nnnn",
         );
         expectSiteText($);
         expect(emitHerdEvent).not.toHaveBeenCalled();
@@ -249,16 +250,17 @@ describe("/enter-cph-number tests", () => {
         expect(res.statusCode).toBe(400);
         expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
         expect($('a[href="#herdCph"]').text()).toContain(
-          "Enter a CPH that you have not used for a different site",
+          "You have already used this CPH, the CPH must be unique",
         );
         expect($('p[id="herdCph-error"]').text()).toContain(
-          "Enter a CPH that you have not used for a different site",
+          "You have already used this CPH, the CPH must be unique",
         );
         expectSiteText($);
         expect(emitHerdEvent).not.toHaveBeenCalled();
         expect(getClaimsCount).toHaveBeenCalledWith(
           "22/333/4444",
           "e3d320b7-b2cf-469a-903f-ead7587d98e9",
+          POULTRY_SCHEME,
           expect.any(Object),
         );
       });
@@ -283,10 +285,10 @@ describe("/enter-cph-number tests", () => {
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
       expect($('a[href="#herdCph"]').text()).toContain(
-        "Enter the CPH for this site in the format 12/345/6789",
+        "Enter the CPH for this site, format should be nn/nnn/nnnn",
       );
       expect($('p[id="herdCph-error"]').text()).toContain(
-        "Enter the CPH for this site in the format 12/345/6789",
+        "Enter the CPH for this site, format should be nn/nnn/nnnn",
       );
       expectSiteText($);
       expect($(".govuk-back-link").attr("href")).toContain("/select-the-site");
