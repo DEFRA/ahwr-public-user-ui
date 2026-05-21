@@ -379,7 +379,7 @@ describe("select-funding", () => {
 
       expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
-      const errorMessage = "Select a funding";
+      const errorMessage = "Select a funding agreement";
 
       expect($(".govuk-error-summary li > a").text()).toMatch(errorMessage);
       expect($(".govuk-error-message").text()).toContain(errorMessage);
