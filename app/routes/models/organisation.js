@@ -11,7 +11,6 @@ const formatAddressForDisplay = (organisation) => {
 export const getOrganisationModel = async (request, organisation, errorText) => {
   const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
 
-  // TODO remove after poultry release
   const rows = [
     { key: { text: "Farmer name" }, value: { text: organisation.farmerName } },
     { key: { text: "Business name" }, value: { text: organisation.name } },
@@ -40,7 +39,7 @@ export const getOrganisationModel = async (request, organisation, errorText) => 
       href: await requestAuthorizationCodeUrl(request),
     },
     organisation,
-    listData: { rows }, // TODO remove after poultry release
+    listData: { rows },
     businessRows,
     personalRows,
     ...getYesNoRadios(labelText, "confirmCheckDetails", undefined, errorText, {
