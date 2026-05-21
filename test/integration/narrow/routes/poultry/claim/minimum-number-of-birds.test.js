@@ -89,8 +89,28 @@ describe("/poultry/minimum-number-of-birds tests", () => {
       expect($("#back").attr("href")).toContain("/select-poultry-type");
       const legend = $(".govuk-fieldset__legend--l");
       expect(legend.text().trim()).toBe(
-        "Has your vet confirmed that this site has the capacity to hold the minimum number of birds?",
+        "Has your vet confirmed that this site can hold the minimum number of birds?",
       );
+
+      const hint = $(".govuk-hint");
+      expect(hint.text()).toContain("The minimum numbers of birds are:");
+      const birdNumbers = hint
+        .find("li")
+        .map((_, el) => $(el).text().trim())
+        .get();
+      expect(birdNumbers).toEqual([
+        "1,000 broiler chickens",
+        "1,000 breeder chickens",
+        "1,000 laying hens (including pullets)",
+        "500 ducks",
+        "500 geese",
+        "500 turkeys",
+      ]);
+      expect(hint.text()).toContain(
+        "You only need to meet the minimum number for one type of poultry.",
+      );
+      expect(hint.text()).not.toContain("You might not have any birds");
+
       expectPhaseBanner.ok($);
     });
 
