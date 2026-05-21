@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorMessage %}Error: {% endif %}What was the main change the vet recommended to improve your farm's biosecurity? - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Which recommendation did the vet say should be your top priority? - {{ serviceName }} - GOV.UK{% endblock %}
 
 {%block beforeContent %}
   {{ 
@@ -34,59 +34,47 @@
                 name: "changesInBiosecurity",
                 fieldset:{
                   legend:{
-                    text: "What was the main change the vet recommended to improve your farm's biosecurity?",
+                    text: "Which recommendation did the vet say should be your top priority?",
                     isPageHeading: true,
                     classes: "govuk-fieldset__legend--l"
                   }
                 }, 
                 hint: {
-                  text: "Please choose the one category that best fits the main recommendation."
+                  text: "You can find this on the summary the vet gave you. This information does not affect your claim."
                 }, 
                 errorMessage: radioErrorMessage,
                 items: [
                   {
                     value:"infra-and-control",
-                    text: "Housing, buildings, infrastructure, and wild bird control",
-                    hint: {
-                      text: "For example, repairs to sheds, improving building structure or layout, blocking wild bird access, netting/mesh, improving separation between areas"
-                    },
+                    text: "Housing, buildings, infrastructure and wild bird control",
                     checked: previousAnswer == "infra-and-control"
                   },
                   {
                     value:"people-and-hygiene",
-                    text: "People, visitors, and hygiene procedures",
-                    hint: {
-                      text: "For example, footbaths, boot changes, handwashing, visitor controls, staff routines, hygiene locks, clean/dirty area protocols"
-                    },
+                    text: "People, visitors and hygiene procedures",
                     checked: previousAnswer == "people-and-hygiene"
                   },
                   {
                     value:"movement-and-management",
-                    text: "Bird movements, and flock management",
-                    hint: {
-                      text: "For example, bringing in day-old chicks or older birds, quarantine routines, thinning/depopulation practices, movement of birds between sheds"
-                    },
+                    text: "Bird movements and flock management",
                     checked: previousAnswer == "movement-and-management"
                   },
                   {
                     value:"bird-handling",
-                    text: "Feed, water, bedding, eggs, and waste handling",
-                    hint:  {
-                      text: "For example, feed/water hygiene, storage improvements, egg collection/transport hygiene, muck and carcass disposal, bedding management"
-                    },
+                    text: "Feed, water, bedding, eggs and waste handling",
                     checked: previousAnswer == "bird-handling"
                   },
                   {
                     value:"cleaning",
-                    text: "Cleaning, disinfection, and disease control",
-                    hint: {
-                      text: "For example, cleaning shed interiors, correct order of disinfection, disease monitoring, improving mortality checks"
-                    },
+                    text: "Cleaning, disinfection and disease control",
                     checked: previousAnswer == "cleaning"
                   },
                   {
+                    divider: "or"
+                  },
+                  {
                     value:"no-recommendation",
-                    text: "No recommendations were made in my review",
+                    text: "The vet did not make any recommendations",
                     checked: previousAnswer == "no-recommendation"
                   }
                 ]

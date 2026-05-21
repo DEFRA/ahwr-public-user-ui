@@ -84,10 +84,10 @@ describe("/poultry/changes-in-biosecurity", () => {
       expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       expect($("title").text()).toMatch(
-        "What was the main change the vet recommended to improve your farm's biosecurity? - Get funding to improve animal health and welfare",
+        "Which recommendation did the vet say should be your top priority? - Get funding to improve animal health and welfare",
       );
       expect($("h1").text()).toMatch(
-        "What was the main change the vet recommended to improve your farm's biosecurity?",
+        "Which recommendation did the vet say should be your top priority?",
       );
     });
 

@@ -49,7 +49,7 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
   const filteredPoultryTypes = poultryClaim.typesOfPoultry.filter((type) => type !== "chickens");
 
   const typesOfPoultryRow = createdHerdRowObject(
-    "Species",
+    "Types of poultry",
     upperFirstLetter(filteredPoultryTypes.join(", ").replace("-", " ")),
     poultryClaimRoutes.selectPoultryType,
     "species",

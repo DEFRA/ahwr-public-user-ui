@@ -84,10 +84,10 @@ describe("/poultry/cost-of-changes", () => {
       expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       expect($("title").text()).toMatch(
-        "What do you expect to spend on recommended biosecurity changes? - Get funding to improve animal health and welfare",
+        "How much do you expect to spend on recommended biosecurity changes? - Get funding to improve animal health and welfare",
       );
       expect($("h1").text()).toMatch(
-        "What do you expect to spend on recommended biosecurity changes?",
+        "How much do you expect to spend on recommended biosecurity changes?",
       );
     });
 

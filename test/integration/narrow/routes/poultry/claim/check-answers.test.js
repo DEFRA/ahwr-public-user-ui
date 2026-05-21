@@ -386,7 +386,7 @@ describe("Poultry check answers test", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       const speciesRow = $(".govuk-summary-list__row").eq(5);
-      expect(speciesRow.find(".govuk-summary-list__key").text().trim()).toBe("Species");
+      expect(speciesRow.find(".govuk-summary-list__key").text().trim()).toBe("Types of poultry");
       expect(speciesRow.find(".govuk-summary-list__value").text().trim()).toBe("Laying hens");
       expect(speciesRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
         "/poultry/select-poultry-type",
