@@ -34,13 +34,13 @@
                 name: "costOfChanges",
                 fieldset:{
                   legend:{
-                    text: "What do you expect to spend on recommended biosecurity changes?",
+                    text: "How much do you expect to spend on recommended biosecurity changes?",
                     isPageHeading: true,
                     classes: "govuk-fieldset__legend--l"
                   }
                 }, 
                 hint: {
-                  text: "Please give your best estimate."
+                  text: "Select your best estimate."
                 }, 
                 errorMessage: radioErrorMessage,
                 items: [
@@ -66,12 +66,15 @@
                   },
                   {
                     value:"not-sure",
-                    text: "I am not sure about the cost",
+                    text: "I'm not sure how much I'll spend",
                     checked: previousAnswer == "not-sure"
                   },
                   {
+                    divider: "or"
+                  },
+                  {
                     value:"no-intention",
-                    text: "I do not intend to make changes",
+                    text: "I do not intend to make biosecurity changes",
                     checked: previousAnswer == "no-intention"
                   }
                 ]
