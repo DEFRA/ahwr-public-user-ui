@@ -68,7 +68,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -99,7 +99,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -112,7 +112,7 @@ describe("/poultry/select-site", () => {
       expect(res.statusCode).toBe(200);
       expect(res.payload).toContain("Main Farm");
       expect(res.payload).toContain("12/345/6789");
-      expect(res.payload).toContain("Layers");
+      expect(res.payload).toContain("Laying hens");
       expect(res.payload).toContain("15 March 2024");
       expect(res.payload).toContain("20 March 2024");
     });
@@ -130,7 +130,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -159,7 +159,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -183,6 +183,36 @@ describe("/poultry/select-site", () => {
       expect(radioLabels).toContain("No, I'm claiming for a different site");
     });
 
+    test("formats the types of poultry as a capitalised, comma-separated list excluding chickens", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: ["chickens", "broilers", "laying-hens", "ducks"],
+                dateOfVisit: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-summary-list__value").first().text()).toContain(
+        "Broilers, laying hens, ducks",
+      );
+    });
+
     test("returns 200 and displays page correctly with multiple previous sites", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -196,7 +226,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -208,7 +238,7 @@ describe("/poultry/select-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -238,7 +268,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -250,7 +280,7 @@ describe("/poultry/select-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -306,7 +336,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -317,7 +347,7 @@ describe("/poultry/select-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
               },
             },
           ],
@@ -343,7 +373,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -354,7 +384,7 @@ describe("/poultry/select-site", () => {
                 name: "Second Farm",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
               },
             },
           ],
@@ -380,7 +410,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -392,7 +422,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-01-10",
               },
               createdAt: "2024-01-15",
@@ -404,7 +434,7 @@ describe("/poultry/select-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -432,13 +462,13 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
             {
-              data: { typesOfPoultry: "Broilers" },
+              data: { typesOfPoultry: ["broilers"] },
             },
           ],
         });
@@ -463,7 +493,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -523,7 +553,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -593,7 +623,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -605,7 +635,7 @@ describe("/poultry/select-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -673,7 +703,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -710,7 +740,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -722,7 +752,7 @@ describe("/poultry/select-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -759,7 +789,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -834,7 +864,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -846,7 +876,7 @@ describe("/poultry/select-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -923,7 +953,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
@@ -965,7 +995,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
@@ -1006,7 +1036,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
@@ -1040,7 +1070,7 @@ describe("/poultry/select-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
@@ -1052,7 +1082,7 @@ describe("/poultry/select-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-01-01",
               },
               createdAt: "2024-01-05",

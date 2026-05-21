@@ -191,7 +191,15 @@ describe("GET /vet-visits", () => {
         type: "REVIEW",
         data: {
           dateOfVisit: "2026-04-21T00:00:00.000Z",
-          typesOfPoultry: ["broilers", "laying-hens", "breeders", "ducks", "geese", "turkeys"],
+          typesOfPoultry: [
+            "chickens",
+            "broilers",
+            "laying-hens",
+            "breeders",
+            "ducks",
+            "geese",
+            "turkeys",
+          ],
           minimumNumberOfBirds: "yes",
           vetsName: "Vet 1",
           vetRCVSNumber: "1234567",
@@ -269,6 +277,7 @@ describe("GET /vet-visits", () => {
       ],
       ["4 June 2026", "site two", "Broilers, laying hens", "PORE-D51M-ABCJ", "Paid"],
     ]);
+    expect($("body").text()).not.toContain("Chickens");
     expect($("body").text()).not.toContain("You have not submitted any claims yet.");
     expect(await axe(res.payload)).toHaveNoViolations();
   });
