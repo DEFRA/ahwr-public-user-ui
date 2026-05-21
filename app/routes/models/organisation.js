@@ -41,8 +41,8 @@ export const getOrganisationModel = async (request, organisation, errorText) => 
     },
     organisation,
     listData: { rows }, // TODO remove after poultry release
-    businessListData: { rows: businessRows },
-    personalListData: { rows: personalRows },
+    businessRows,
+    personalRows,
     ...getYesNoRadios(labelText, "confirmCheckDetails", undefined, errorText, {
       isPageHeading: false,
       legendClasses: "govuk-fieldset__legend--m",

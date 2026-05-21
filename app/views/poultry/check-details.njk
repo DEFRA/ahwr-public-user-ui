@@ -26,12 +26,12 @@
     <p class="govuk-body">If these details are incorrect, you need to update them before you can get funding to Improve Animal Health and Welfare (IAHW).</p>
     <h2 class="govuk-heading-m">Business details</h2>
     {{ govukSummaryList({
-      rows: businessListData.rows
+      rows: businessRows
     }) }}
 
     <h2 class="govuk-heading-m">Personal details</h2>
     {{ govukSummaryList({
-      rows: personalListData.rows
+      rows: personalRows
     }) }}
 
     <form method="POST" autocomplete="off" novalidate="novalidate">
