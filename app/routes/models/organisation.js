@@ -21,12 +21,27 @@ export const getOrganisationModel = async (request, organisation, errorText) => 
     { key: { text: "Address" }, value: { html: formatAddressForDisplay(organisation) } },
   ];
 
+  const businessRows = [
+    { key: { text: "Business name" }, value: { text: organisation.name } },
+    { key: { text: "Single business identifier (SBI)" }, value: { text: organisation.sbi } },
+    { key: { text: "Business address" }, value: { html: formatAddressForDisplay(organisation) } },
+    { key: { text: "Business email address" }, value: { text: organisation.orgEmail } },
+  ];
+
+  const personalRows = [
+    { key: { text: "Full name" }, value: { text: organisation.farmerName } },
+    { key: { text: "Customer reference number (CRN)" }, value: { text: crn } },
+    { key: { text: "Personal email address" }, value: { text: organisation.email } },
+  ];
+
   return {
     backLink: {
       href: await requestAuthorizationCodeUrl(request),
     },
     organisation,
     listData: { rows },
+    businessRows,
+    personalRows,
     ...getYesNoRadios(labelText, "confirmCheckDetails", undefined, errorText, {
       isPageHeading: false,
       legendClasses: "govuk-fieldset__legend--m",
