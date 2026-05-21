@@ -50,7 +50,7 @@ export const selectFundingRouteHandlers = [
           fundingType: Joi.string()
             .valid("IAHW", "POUL")
             .required()
-            .messages({ "any.required": "Select a funding" }),
+            .messages({ "any.required": "Select a funding agreement" }),
         }),
         failAction: async (request, h, error) => {
           request.logger.error({ error });
