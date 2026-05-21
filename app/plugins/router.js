@@ -77,13 +77,13 @@ import { poultryChangesInBiosecurityHandlers } from "../routes/poultry/claim/cha
 import { poultryBiosecurityCostOfChangesHandlers } from "../routes/poultry/claim/biosecurity-cost-of-changes.js";
 import { poultryInterviewHandlers } from "../routes/poultry/claim/interview.js";
 import { poultryConfirmationHandlers } from "../routes/poultry/claim/confirmation.js";
+import { poultryCheckDetailsHandlers } from "../routes/poultry/check-details.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
   assetsRouteHandlers,
   cookieHandlers,
   entryPointHandlers,
-  checkDetailsHandlers,
   updateDetailsHandlers,
   signinRouteHandlers,
   downloadApplicationHandlers,
@@ -161,7 +161,10 @@ const poultryRoutes = [
   poultryBiosecurityCostOfChangesHandlers,
   poultryInterviewHandlers,
   poultryConfirmationHandlers,
+  poultryCheckDetailsHandlers,
 ].flat();
+
+const livestockRoutes = [checkDetailsHandlers].flat();
 
 let routes;
 const mapRoutes = () => {
@@ -169,6 +172,8 @@ const mapRoutes = () => {
 
   if (config.poultry.enabled) {
     routes = routes.concat(poultryRoutes);
+  } else {
+    routes = routes.concat(livestockRoutes);
   }
 
   if (config.devLogin.enabled) {

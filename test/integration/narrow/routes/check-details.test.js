@@ -18,6 +18,7 @@ describe("/check-details", () => {
   let crumb;
 
   beforeAll(async () => {
+    config.poultry.enabled = false;
     server = await createServer();
     crumb = await getCrumbs(server);
   });
@@ -25,10 +26,6 @@ describe("/check-details", () => {
   afterAll(async () => {
     await server.stop();
     jest.resetAllMocks();
-  });
-
-  beforeEach(() => {
-    config.poultry.enabled = false;
   });
 
   afterEach(() => {
@@ -160,30 +157,6 @@ describe("/check-details", () => {
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location).toEqual("/you-can-claim-multiple");
-    expect(setSessionEntry).toHaveBeenCalledWith(
-      expect.anything(),
-      sessionEntryKeys.confirmedDetails,
-      true,
-      { shouldEmitEvent: false },
-    );
-  });
-
-  test("POST /check-details with confirmCheckDetails = yes in payload, and flag is up", async () => {
-    config.poultry.enabled = true;
-
-    const res = await server.inject({
-      url: "/check-details",
-      method: "POST",
-      auth: {
-        credentials: {},
-        strategy: "cookie",
-      },
-      payload: { crumb, confirmCheckDetails: "yes" },
-      headers: { cookie: `crumb=${crumb}` },
-    });
-
-    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-    expect(res.headers.location).toEqual("/select-funding");
     expect(setSessionEntry).toHaveBeenCalledWith(
       expect.anything(),
       sessionEntryKeys.confirmedDetails,

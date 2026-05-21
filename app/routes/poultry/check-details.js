@@ -1,12 +1,12 @@
-import { getOrganisationModel } from "./models/organisation.js";
+import { getOrganisationModel } from "../models/organisation.js";
 import joi from "joi";
 import { StatusCodes } from "http-status-codes";
-import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
-import { config } from "../config/index.js";
-import { applyRoutes } from "../constants/routes.js";
+import { getSessionData, sessionEntryKeys, setSessionEntry } from "../../session/index.js";
+import { config } from "../../config/index.js";
+import { dashboardRoutes } from "../../constants/routes.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 
-export const checkDetailsHandlers = [
+export const poultryCheckDetailsHandlers = [
   {
     method: "GET",
     path: "/check-details",
@@ -18,7 +18,7 @@ export const checkDetailsHandlers = [
           throw new Error("Organisation not in session.");
         }
 
-        return h.view("check-details", await getOrganisationModel(request, organisation));
+        return h.view("poultry/check-details", await getOrganisationModel(request, organisation));
       },
     },
   },
@@ -39,7 +39,7 @@ export const checkDetailsHandlers = [
           }
 
           return h
-            .view("check-details", {
+            .view("poultry/check-details", {
               errorMessage: { text: "Select if these details are correct" },
               ...(await getOrganisationModel(
                 request,
@@ -64,13 +64,7 @@ export const checkDetailsHandlers = [
         );
 
         if (confirmCheckDetails === "yes") {
-          const redirectToApply = getSessionData(request, sessionEntryKeys.signInRedirect);
-
-          if (redirectToApply === true) {
-            return h.redirect(applyRoutes.youCanClaimMultiple);
-          }
-
-          return h.redirect("/vet-visits");
+          return h.redirect(dashboardRoutes.selectFunding);
         }
 
         return h.view("update-details", {

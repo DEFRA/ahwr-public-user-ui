@@ -11,6 +11,17 @@ const formatAddressForDisplay = (organisation) => {
 export const getOrganisationModel = async (request, organisation, errorText) => {
   const crn = getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn);
 
+  // TODO remove after poultry release
+  const rows = [
+    { key: { text: "Farmer name" }, value: { text: organisation.farmerName } },
+    { key: { text: "Business name" }, value: { text: organisation.name } },
+    { key: { text: "CRN number" }, value: { text: crn } },
+    { key: { text: "SBI number" }, value: { text: organisation.sbi } },
+    { key: { text: "Organisation email address" }, value: { text: organisation.orgEmail } },
+    { key: { text: "User email address" }, value: { text: organisation.email } },
+    { key: { text: "Address" }, value: { html: formatAddressForDisplay(organisation) } },
+  ];
+
   const businessRows = [
     { key: { text: "Business name" }, value: { text: organisation.name } },
     { key: { text: "Single business identifier (SBI)" }, value: { text: organisation.sbi } },
@@ -29,6 +40,7 @@ export const getOrganisationModel = async (request, organisation, errorText) => 
       href: await requestAuthorizationCodeUrl(request),
     },
     organisation,
+    listData: { rows }, // TODO remove after poultry release
     businessListData: { rows: businessRows },
     personalListData: { rows: personalRows },
     ...getYesNoRadios(labelText, "confirmCheckDetails", undefined, errorText, {
