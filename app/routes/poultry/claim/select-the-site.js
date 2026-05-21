@@ -70,7 +70,7 @@ const buildViewData = (previousClaims) => {
   const site = previousSites[0];
   return {
     backLink: poultryClaimRoutes.dateOfVisit,
-    pageTitleText: "Is this the same site you have previously claimed for?",
+    pageTitleText: "Your previous claim",
     siteId: site?.id,
     name: site?.name,
     sites: previousSites,

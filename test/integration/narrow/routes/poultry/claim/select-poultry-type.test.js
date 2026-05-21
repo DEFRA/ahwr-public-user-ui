@@ -160,7 +160,7 @@ describe("/poultry/select-poultry-type", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("#back").attr("href")).toEqual("/poultry/select-the-site");
+      expect($("#back").attr("href")).toEqual("/poultry/select-site");
     });
 
     test("handles undefined typesOfPoultry in session", async () => {

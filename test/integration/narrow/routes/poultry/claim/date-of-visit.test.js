@@ -245,7 +245,7 @@ describe("POST /poultry/date-of-visit", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location.toString()).toEqual("/poultry/select-the-site");
+    expect(res.headers.location.toString()).toEqual("/poultry/select-site");
     expect(setSessionData).toHaveBeenCalledWith(
       expect.anything(),
       sessionEntryKeys.poultryClaim,

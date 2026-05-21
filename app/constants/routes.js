@@ -201,7 +201,7 @@ export const poultryClaimRoutes = {
   interview: "/poultry/interview",
   minimumNumberOfBirds: "/poultry/minimum-number-of-birds",
   selectPoultryType: "/poultry/select-poultry-type",
-  selectTheSite: "/poultry/select-the-site",
+  selectTheSite: "/poultry/select-site",
   siteOthersOnSbi: "/poultry/site-others-on-sbi",
   vetName: "/poultry/vet-name",
   vetRcvs: "/poultry/vet-rcvs",

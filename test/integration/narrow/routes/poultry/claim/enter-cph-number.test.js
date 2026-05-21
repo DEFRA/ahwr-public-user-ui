@@ -120,7 +120,7 @@ describe("/enter-cph-number tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-site");
+      expect($(".govuk-back-link").attr("href")).toContain("/select-site");
       expectSiteText($);
       expectPhaseBanner.ok($);
     });
@@ -291,7 +291,7 @@ describe("/enter-cph-number tests", () => {
         "Enter the CPH for this site, format should be nn/nnn/nnnn",
       );
       expectSiteText($);
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-site");
+      expect($(".govuk-back-link").attr("href")).toContain("/select-site");
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
   });
