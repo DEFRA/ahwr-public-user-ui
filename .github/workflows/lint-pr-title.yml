@@ -1,0 +1,17 @@
+name: Lint PR title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  lint-pr-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "PR title: $PR_TITLE"
+          echo "$PR_TITLE" | grep -Pq '^(feat|fix|chore|docs|style|refactor|test|ci)(\(.+\))?: .+' \
+            || (echo "❌ PR title must follow Conventional Commits" && exit 1)
