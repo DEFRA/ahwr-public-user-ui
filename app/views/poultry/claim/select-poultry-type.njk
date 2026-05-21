@@ -30,19 +30,19 @@
             errorMessage: errorMessageChicken,
             items: [
               {
+                value: "breeders",
+                text: "Breeders",
+                checked: typesOfChicken and "breeders" in typesOfChicken
+              },
+              {
                 value: "broilers",
                 text: "Broilers",
                 checked: typesOfChicken and "broilers" in typesOfChicken
               },
               {
                 value: "laying-hens",
-                text: "Laying hens",
+                text: "Laying hens (including pullets)",
                 checked: typesOfChicken and "laying-hens" in typesOfChicken
-              },
-              {
-                value: "breeders",
-                text: "Breeders",
-                checked: typesOfChicken and "breeders" in typesOfChicken
               }
             ]
           }) }}
@@ -53,13 +53,13 @@
           errorMessage: errorMessage,
           fieldset: {
           legend: {
-            text: "Which type of poultry do you keep on this site?",
+            text: "Which types of poultry do you keep on this site?",
             isPageHeading: true,
             classes: "govuk-fieldset__legend--l"
             }
           },
           hint: {
-            text: "Select all types of poultry you keep on this site"
+            text: "Select all poultry kept on this site"
           },
           items: [
             {
