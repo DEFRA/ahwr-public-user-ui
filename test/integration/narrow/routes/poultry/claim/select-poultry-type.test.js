@@ -83,6 +83,54 @@ describe("/poultry/select-poultry-type", () => {
       expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
     });
 
+    test("shows the updated heading", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ typesOfPoultry: [] });
+
+      const res = await server.inject({
+        method: "GET",
+        url,
+        auth,
+      });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toEqual("Which types of poultry do you keep on this site?");
+    });
+
+    test("shows the updated hint", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ typesOfPoultry: [] });
+
+      const res = await server.inject({
+        method: "GET",
+        url,
+        auth,
+      });
+
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-hint").text().trim()).toEqual("Select all poultry kept on this site");
+    });
+
+    test("shows chicken sub-types in alphabetical order with the pullets label", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ typesOfPoultry: ["chickens", "laying-hens"] });
+
+      const res = await server.inject({
+        method: "GET",
+        url,
+        auth,
+      });
+
+      const $ = cheerio.load(res.payload);
+      const subTypeLabels = $(".govuk-checkboxes__conditional .govuk-checkboxes__label")
+        .map((_, el) => $(el).text().trim())
+        .get();
+      expect(subTypeLabels).toEqual(["Breeders", "Broilers", "Laying hens (including pullets)"]);
+    });
+
     test("shows back link to select-the-site when no herds exist", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
