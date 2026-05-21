@@ -13,12 +13,12 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 import { sendInvalidDataPoultryEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 
 const auth = { credentials: { reference: "1111", sbi: "111111111" }, strategy: "cookie" };
-const url = "/poultry/select-the-site";
+const url = "/poultry/select-site";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 
-describe("/poultry/select-the-site", () => {
+describe("/poultry/select-site", () => {
   let server;
 
   beforeAll(async () => {
@@ -68,7 +68,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -82,7 +82,8 @@ describe("/poultry/select-the-site", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-visit");
-      expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
+      expect($("title").text()).toContain("Your previous claim");
+      expect($("h1").text()).toContain("Your previous claim");
     });
 
     test("displays species, last visit date, and claim date for single site", async () => {
@@ -98,7 +99,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -111,9 +112,105 @@ describe("/poultry/select-the-site", () => {
       expect(res.statusCode).toBe(200);
       expect(res.payload).toContain("Main Farm");
       expect(res.payload).toContain("12/345/6789");
-      expect(res.payload).toContain("Layers");
+      expect(res.payload).toContain("Laying hens");
       expect(res.payload).toContain("15 March 2024");
       expect(res.payload).toContain("20 March 2024");
+    });
+
+    test("labels the previous claim summary with 'Types of poultry' for a single site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: ["laying-hens"],
+                dateOfVisit: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-summary-list__key").first().text()).toContain("Types of poultry");
+      expect(res.payload).not.toContain("Your last claim for this species:");
+    });
+
+    test("asks whether claiming for the same site with the reworded question and options", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: ["laying-hens"],
+                dateOfVisit: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-fieldset__legend").text()).toContain(
+        "Are you making another claim for the same site?",
+      );
+      expect(res.payload).toContain("You can have reviews on more than one site.");
+      expect(res.payload).not.toContain(
+        "You can now have reviews and follow-ups on more than one site.",
+      );
+      const radioLabels = $(".govuk-radios__label").text();
+      expect(radioLabels).toContain("Yes, I'm claiming for the same site");
+      expect(radioLabels).toContain("No, I'm claiming for a different site");
+    });
+
+    test("formats the types of poultry as a capitalised, comma-separated list excluding chickens", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: ["chickens", "broilers", "laying-hens", "ducks"],
+                dateOfVisit: "2024-03-15",
+              },
+              createdAt: "2024-03-20",
+            },
+          ],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-summary-list__value").first().text()).toContain(
+        "Broilers, laying hens, ducks",
+      );
     });
 
     test("returns 200 and displays page correctly with multiple previous sites", async () => {
@@ -129,7 +226,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -141,7 +238,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -171,7 +268,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -183,7 +280,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -239,7 +336,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -250,7 +347,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
               },
             },
           ],
@@ -260,7 +357,7 @@ describe("/poultry/select-the-site", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
+      expect($("title").text()).toContain("Your previous claim");
     });
 
     test("filters out claims without herd cph", async () => {
@@ -276,7 +373,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -287,7 +384,7 @@ describe("/poultry/select-the-site", () => {
                 name: "Second Farm",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
               },
             },
           ],
@@ -297,7 +394,7 @@ describe("/poultry/select-the-site", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
+      expect($("title").text()).toContain("Your previous claim");
     });
 
     test("returns unique sites when duplicate name/cph combinations exist", async () => {
@@ -313,7 +410,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -325,7 +422,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-01-10",
               },
               createdAt: "2024-01-15",
@@ -337,7 +434,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -365,13 +462,13 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
             },
             {
-              data: { typesOfPoultry: "Broilers" },
+              data: { typesOfPoultry: ["broilers"] },
             },
           ],
         });
@@ -380,7 +477,7 @@ describe("/poultry/select-the-site", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
+      expect($("title").text()).toContain("Your previous claim");
     });
 
     test("preserves previously selected site", async () => {
@@ -396,7 +493,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -429,7 +526,7 @@ describe("/poultry/select-the-site", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Is this the same site you have previously claimed for?");
+      expect($("title").text()).toContain("Your previous claim");
       expect(res.payload).toContain("Main Farm");
       expect(res.payload).toContain("12/345/6789");
     });
@@ -456,7 +553,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -526,7 +623,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -538,7 +635,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -606,7 +703,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -643,7 +740,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -655,7 +752,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -692,7 +789,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -767,7 +864,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2024-03-15",
               },
               createdAt: "2024-03-20",
@@ -779,7 +876,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-02-10",
               },
               createdAt: "2024-02-15",
@@ -856,7 +953,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
@@ -875,7 +972,7 @@ describe("/poultry/select-the-site", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toContain("You cannot continue with your claim");
-      expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-the-site");
+      expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-site");
       expect(sendInvalidDataPoultryEvent).toHaveBeenCalledWith({
         request: expect.anything(),
         sessionKey: sessionKeys.poultryClaim.dateOfVisit,
@@ -898,7 +995,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
@@ -917,7 +1014,7 @@ describe("/poultry/select-the-site", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toContain("You cannot continue with your claim");
-      expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-the-site");
+      expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-site");
       expect(sendInvalidDataPoultryEvent).toHaveBeenCalledWith({
         request: expect.anything(),
         sessionKey: sessionKeys.poultryClaim.dateOfVisit,
@@ -939,7 +1036,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
@@ -973,7 +1070,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "12/345/6789",
               },
               data: {
-                typesOfPoultry: "Layers",
+                typesOfPoultry: ["laying-hens"],
                 dateOfVisit: "2025-01-01",
               },
               createdAt: "2025-01-05",
@@ -985,7 +1082,7 @@ describe("/poultry/select-the-site", () => {
                 cph: "98/765/4321",
               },
               data: {
-                typesOfPoultry: "Broilers",
+                typesOfPoultry: ["broilers"],
                 dateOfVisit: "2024-01-01",
               },
               createdAt: "2024-01-05",

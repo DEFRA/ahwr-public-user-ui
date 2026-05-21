@@ -32,6 +32,14 @@ export function upperFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+export const formatTypesOfPoultry = (typesOfPoultry) =>
+  upperFirstLetter(
+    (typesOfPoultry ?? [])
+      .filter((type) => type !== "chickens")
+      .join(", ")
+      .replaceAll("-", " "),
+  );
+
 export const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" });
 

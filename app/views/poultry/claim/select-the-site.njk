@@ -26,18 +26,16 @@
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
         {% if sites.length == 1 %}
-          <h1 class="govuk-heading-l govuk-!-margin-bottom-2">{{ pageTitleText }}</h1>
-          <p class="govuk-hint govuk-!-margin-bottom-7">You can now have reviews and follow-ups on more than one site.</p>
-          <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Your last claim for this species:</p>
-          {{ 
+          <h1 class="govuk-heading-l">{{ pageTitleText }}</h1>
+          {{
             govukSummaryList({
               rows: [
                 {
                   key: {
-                    text: "Species"
+                    text: "Types of poultry"
                   },
                   value: {
-                    text: species 
+                    text: species
                   }
                 },
                 {
@@ -79,16 +77,25 @@
             govukRadios({
               id: "siteSelected",
               name: "siteSelected",
+              fieldset: {
+                legend: {
+                  text: "Are you making another claim for the same site?",
+                  classes: "govuk-fieldset__legend--m"
+                }
+              },
+              hint: {
+                text: "You can have reviews on more than one site."
+              },
               errorMessage: errorMessage,
               items: [
                 {
                   value: siteId,
-                  text: "Yes, it's the same",
+                  text: "Yes, I'm claiming for the same site",
                   checked: siteSelected == siteId
                 },
                 {
                   value: radioValueNewSite,
-                  text: "No, it's a different site",
+                  text: "No, I'm claiming for a different site",
                   checked: siteSelected == radioValueNewSite
                 }
               ]

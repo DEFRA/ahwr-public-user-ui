@@ -1,5 +1,5 @@
 import { poultryClaimRoutes } from "../constants/routes.js";
-import { formatDate, upperFirstLetter } from "./display-helpers.js";
+import { formatDate, formatTypesOfPoultry, upperFirstLetter } from "./display-helpers.js";
 import { createdHerdRowObject, createImmutableRowObject } from "./generate-answer-rows.js";
 
 const biosecurityUsefulnessLabels = {
@@ -46,11 +46,9 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
     poultryClaim,
   );
 
-  const filteredPoultryTypes = poultryClaim.typesOfPoultry.filter((type) => type !== "chickens");
-
   const typesOfPoultryRow = createdHerdRowObject(
     "Types of poultry",
-    upperFirstLetter(filteredPoultryTypes.join(", ").replace("-", " ")),
+    formatTypesOfPoultry(poultryClaim.typesOfPoultry),
     poultryClaimRoutes.selectPoultryType,
     "species",
   );

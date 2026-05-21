@@ -7,7 +7,7 @@ import {
 } from "../../../session/index.js";
 import Joi from "joi";
 import HttpStatus from "http-status-codes";
-import { formatDate } from "../../../lib/display-helpers.js";
+import { formatDate, formatTypesOfPoultry } from "../../../lib/display-helpers.js";
 import { areDatesWithin10Months } from "../../../lib/utils.js";
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 
@@ -33,7 +33,7 @@ const getUniqueSites = (previousClaims) => {
       id: claim.herd.id,
       name: claim.herd.name,
       cph: claim.herd.cph,
-      species: claim.data?.typesOfPoultry,
+      species: formatTypesOfPoultry(claim.data?.typesOfPoultry),
       lastVisitDate: claim.data?.dateOfVisit ? formatDate(claim.data.dateOfVisit) : undefined,
       claimDate: claim.createdAt ? formatDate(claim.createdAt) : undefined,
     }));
@@ -70,7 +70,7 @@ const buildViewData = (previousClaims) => {
   const site = previousSites[0];
   return {
     backLink: poultryClaimRoutes.dateOfVisit,
-    pageTitleText: "Is this the same site you have previously claimed for?",
+    pageTitleText: "Your previous claim",
     siteId: site?.id,
     name: site?.name,
     sites: previousSites,
