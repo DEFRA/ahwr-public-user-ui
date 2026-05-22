@@ -163,6 +163,7 @@ export const poultryDeclarationRouteHandlers = [
           reference: applicationReference,
           isNewUser: userType.NEW_USER === organisation.userType,
           latestTermsAndConditionsUri: config.latestTermsAndConditionsUri,
+          guidanceUri: config.poultry.guidanceUri,
         });
       },
     },

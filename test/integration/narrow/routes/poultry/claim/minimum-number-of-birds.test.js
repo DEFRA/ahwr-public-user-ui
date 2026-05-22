@@ -182,6 +182,34 @@ describe("/poultry/minimum-number-of-birds tests", () => {
       expect(sendInvalidDataPoultryEvent).toHaveBeenCalled();
     });
 
+    test("exception page links to the poultry guidance and shows the change-answer copy", async () => {
+      getSessionData.mockReturnValue({
+        reference: "TEMP-6GSE-PIR8",
+      });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb, minimumNumberOfBirds: "no" },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+
+      const guidanceLink = $("a").filter(
+        (_, el) => $(el).text().trim() === "minimum number of birds",
+      );
+      expect(guidanceLink.attr("href")).toEqual(config.poultry.guidanceUri);
+
+      const changeAnswerLink = $('a.govuk-link[href="/poultry/minimum-number-of-birds"]');
+      expect(changeAnswerLink.text().trim()).toEqual(
+        "Change your answer if you had the minimum number of birds.",
+      );
+    });
+
     test("displays errors when no answer selected", async () => {
       getSessionData.mockReturnValue({
         reference: "TEMP-6GSE-PIR8",

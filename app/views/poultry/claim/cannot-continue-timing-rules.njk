@@ -16,12 +16,17 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
-      <p class ="govuk-body">Based on your answers you cannot continue with your application</p>
       <p class="govuk-body">
-        <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups">Read guidance to find out if you could be eligible
-for other farming schemes.</a>
+        <a class="govuk-link" rel="external" href="{{ guidanceUri }}">There must be at least 10 months between your poultry biosecurity reviews for this site</a>
       </p>
-      <p class="govuk-body">If you have any questions about your application, contact the Rural Payments Agency.</p>
+      <p class="govuk-body">If you entered the wrong date, you'll need to go back and enter the correct date.</p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="{{ backToDateLink }}">Enter the date the vet last visited your farm</a>
+      </p>
+      {{ govukWarningText({
+        text: "Submitted claims will be checked by our team.",
+        iconFallbackText: "Warning"
+      }) }}
       {% include './chunks/get-help-with-claim.njk' %}
     </div>
   </div>
