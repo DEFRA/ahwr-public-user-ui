@@ -22,7 +22,6 @@ describe("Poultry check answers test", () => {
 
   beforeAll(async () => {
     config.poultry.enabled = true;
-
     server = await createServer();
     await server.initialize();
   });
