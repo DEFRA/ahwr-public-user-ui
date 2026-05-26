@@ -35,6 +35,7 @@ jest.mock("../../../../../../app/config/index.js", () => ({
       enabled: "true",
       termsAndConditionsUri: "https://example.gov.uk/poultry-terms",
       vetSummaryTemplateUri: "https://example.gov.uk/poultry-vet-summary",
+      guidanceUri: "https://example.gov.uk/poultry-guidance",
     },
   },
 }));
@@ -262,6 +263,15 @@ describe("Declaration test", () => {
       expect($("title").text()).toMatch(
         "Application complete - Get funding to improve animal health and welfare",
       );
+
+      const guidanceLinks = $("a").filter(
+        (_, el) => $(el).text().trim() === "how to have a poultry biosecurity review",
+      );
+      expect(guidanceLinks.length).toBe(2);
+      guidanceLinks.each((_, el) => {
+        expect($(el).attr("href")).toBe("https://example.gov.uk/poultry-guidance");
+      });
+
       ok($);
       expect(clearApplyRedirect).toHaveBeenCalled();
       expect(refreshApplications).toHaveBeenCalledWith(organisation.sbi, expect.anything());

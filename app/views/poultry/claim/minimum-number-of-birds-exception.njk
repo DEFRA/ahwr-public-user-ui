@@ -16,10 +16,10 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
-      <p class="govuk-body">Your site must have the capacity to hold the <a href='https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#who-can-get-funding'>minimum number of birds</a> for at least one of the species.</p>
+      <p class="govuk-body">Your site must have the capacity to hold the <a class="govuk-link" rel="external" href="{{ guidanceUri }}">minimum number of birds</a> for at least one of the species.</p>
       <p class="govuk-body">If your site can hold the minimum number of birds, you'll need to go back and change your answer.</p>
       <p class="govuk-body">
-        <a class="govuk-link" href="/poultry/minimum-number-of-birds">Change your answer if you had the minimum number of birds</a>
+        <a class="govuk-link" href="{{ backLink }}">Change your answer if you had the minimum number of birds.</a>
       </p>
         {{ govukWarningText({
           text: "Submitted claims will be checked by our team.",

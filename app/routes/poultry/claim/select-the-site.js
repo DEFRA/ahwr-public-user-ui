@@ -10,6 +10,11 @@ import HttpStatus from "http-status-codes";
 import { formatDate, formatTypesOfPoultry } from "../../../lib/display-helpers.js";
 import { areDatesWithin10Months } from "../../../lib/utils.js";
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
+import { config } from "../../../config/index.js";
+
+const {
+  poultry: { guidanceUri },
+} = config;
 
 const radioValueNewSite = "NEW_SITE";
 
@@ -141,6 +146,7 @@ const postHandler = {
           .view(poultryClaimViews.cannotContinueTimingRules, {
             backLink: poultryClaimRoutes.selectTheSite,
             backToDateLink: poultryClaimRoutes.dateOfVisit,
+            guidanceUri,
           })
           .code(HttpStatus.BAD_REQUEST);
       }

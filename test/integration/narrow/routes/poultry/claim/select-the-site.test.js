@@ -980,6 +980,59 @@ describe("/poultry/select-site", () => {
       });
     });
 
+    test("timing rules exception shows the guidance link, change-answer link and warning", async () => {
+      const dateOfVisit = new Date("2025-10-31");
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          siteSelected: null,
+          dateOfVisit,
+          previousClaims: [
+            {
+              herd: {
+                id: "herd-123",
+                name: "Main Farm",
+                cph: "12/345/6789",
+              },
+              data: {
+                typesOfPoultry: ["laying-hens"],
+                dateOfVisit: "2025-01-01",
+              },
+              createdAt: "2025-01-05",
+            },
+          ],
+        });
+
+      const res = await server.inject({
+        method: "POST",
+        url,
+        auth,
+        payload: { crumb, siteSelected: "herd-123" },
+        headers: { cookie: `crumb=${crumb}` },
+      });
+
+      expect(res.statusCode).toBe(400);
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+
+      const guidanceLink = $("a").filter(
+        (_, el) =>
+          $(el).text().trim() ===
+          "There must be at least 10 months between your poultry biosecurity reviews for this site",
+      );
+      expect(guidanceLink.attr("href")).toEqual(config.poultry.guidanceUri);
+
+      const changeAnswerLink = $('a[href="/poultry/date-of-visit"]');
+      expect(changeAnswerLink.text().trim()).toEqual(
+        "Enter the date the vet last visited your farm",
+      );
+
+      expect(res.payload).toContain(
+        "If you entered the wrong date, you'll need to go back and enter the correct date.",
+      );
+      expect(res.payload).toContain("Submitted claims will be checked by our team.");
+    });
+
     test("allows claim when dateOfVisit is exactly 10 months after previous claim for same site", async () => {
       const dateOfVisit = new Date("2025-11-01");
       when(getSessionData)

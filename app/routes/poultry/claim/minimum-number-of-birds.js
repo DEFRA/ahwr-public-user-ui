@@ -8,6 +8,11 @@ import {
 import HttpStatus from "http-status-codes";
 import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes.js";
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
+import { config } from "../../../config/index.js";
+
+const {
+  poultry: { guidanceUri },
+} = config;
 
 const getHandler = {
   method: "GET",
@@ -70,6 +75,7 @@ const postHandler = {
         });
         return h.view(poultryClaimViews.minimumNumberOfBirdsException, {
           backLink: poultryClaimRoutes.minimumNumberOfBirds,
+          guidanceUri,
         });
       }
     },
