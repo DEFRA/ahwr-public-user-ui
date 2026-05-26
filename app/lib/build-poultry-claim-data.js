@@ -7,16 +7,16 @@ const biosecurityUsefulnessLabels = {
   "somewhat-useful": "Somewhat useful",
   "not-very-useful": "Not very useful",
   "not-useful": "Not useful at all",
-  "not-sure": "I am not sure yet",
+  "not-sure": "I'm not sure yet",
 };
 
 const changesInBiosecurityLabels = {
-  "infra-and-control": "Housing, buildings, infrastructure, and wild bird control",
-  "people-and-hygiene": "People, visitors, and hygiene procedures",
-  "movement-and-management": "Bird movements, and flock management",
-  "bird-handling": "Feed, water, bedding, eggs, and waste handling",
-  cleaning: "Cleaning, disinfection, and disease control",
-  "no-recommendation": "No recommendations were made in my review",
+  "infra-and-control": "Housing, buildings, infrastructure and wild bird control",
+  "people-and-hygiene": "People, visitors and hygiene procedures",
+  "movement-and-management": "Bird movements and flock management",
+  "bird-handling": "Feed, water, bedding, eggs and waste handling",
+  cleaning: "Cleaning, disinfection and disease control",
+  "no-recommendation": "The vet did not make any recommendations",
 };
 
 const costOfChangesLabels = {
@@ -24,8 +24,8 @@ const costOfChangesLabels = {
   "1500-3000": "£1,500 to £3,000",
   "3000-4500": "£3,000 to £4,500",
   "over-4500": "Over £4,500",
-  "not-sure": "I am not sure about the cost",
-  "no-intention": "I do not intend to make changes",
+  "not-sure": "I'm not sure how much I'll spend",
+  "no-intention": "I do not intend to make biosecurity changes",
 };
 
 export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
