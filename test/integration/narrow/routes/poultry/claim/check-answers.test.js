@@ -22,7 +22,6 @@ describe("Poultry check answers test", () => {
 
   beforeAll(async () => {
     config.poultry.enabled = true;
-
     server = await createServer();
     await server.initialize();
   });
@@ -590,7 +589,7 @@ describe("Poultry check answers test", () => {
         "Biosecurity recommended changes",
       );
       expect(changesInBiosecurityRow.find(".govuk-summary-list__value").text().trim()).toBe(
-        "Housing, buildings, infrastructure, and wild bird control",
+        "Housing, buildings, infrastructure and wild bird control",
       );
       expect(changesInBiosecurityRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
         "/poultry/changes-in-biosecurity",
