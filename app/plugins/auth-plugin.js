@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import { config } from "../config/index.js";
 import { getLogger } from "../logging/logger.js";
 import { getSessionData, sessionEntryKeys } from "../session/index.js";
@@ -7,7 +8,9 @@ const AUTH_COOKIE_VALIDATED = "authCookieValidated";
 
 const hasAuthCookie = (request) => {
   const cookieHeader = request.headers.cookie;
-  if (!cookieHeader) return false;
+  if (!cookieHeader) {
+    return false;
+  }
   return cookieHeader.includes(`${config.cookie.cookieNameAuth}=`);
 };
 
@@ -56,7 +59,8 @@ export const authPlugin = {
         const location = response.isBoom
           ? response.output.headers?.location
           : response.headers?.location;
-        const isRedirectToSignIn = statusCode === 302 && location === "/sign-in";
+        const isRedirectToSignIn =
+          statusCode === StatusCodes.MOVED_TEMPORARILY && location === "/sign-in";
 
         if (
           isRedirectToSignIn &&
