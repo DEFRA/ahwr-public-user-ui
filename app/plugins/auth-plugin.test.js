@@ -153,7 +153,7 @@ describe("Auth plugin", () => {
 
       expect(mockLogger.info).toHaveBeenCalledWith(
         { path: "/protected" },
-        "Auth cookie validation failed: no organisation in session",
+        "Auth validation failed: no organisation in session",
       );
     });
 
@@ -193,6 +193,42 @@ describe("Auth plugin", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.result).toBe("public content");
+    });
+  });
+
+  describe("invalid cookie handling", () => {
+    beforeEach(() => {
+      server.route({
+        method: "GET",
+        path: "/protected",
+        handler: () => "protected content",
+      });
+    });
+
+    test("should log when cookie is corrupted or cannot be decrypted", async () => {
+      const response = await server.inject({
+        method: "GET",
+        url: "/protected",
+        headers: { cookie: "test_auth=invalid-corrupted-cookie-value" },
+      });
+
+      expect(response.statusCode).toBe(302);
+      expect(response.headers.location).toBe("/sign-in");
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        { path: "/protected" },
+        "Auth cookie invalid: decryption failed or cookie corrupted",
+      );
+    });
+
+    test("should not log cookie error when no cookie is present", async () => {
+      const response = await server.inject({
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(302);
+      expect(response.headers.location).toBe("/sign-in");
+      expect(mockLogger.info).not.toHaveBeenCalled();
     });
   });
 });
