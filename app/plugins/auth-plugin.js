@@ -1,4 +1,5 @@
 import { config } from "../config/index.js";
+import { getLogger } from "../logging/logger.js";
 import { getSessionData, sessionEntryKeys } from "../session/index.js";
 
 export const authPlugin = {
@@ -13,6 +14,8 @@ export const authPlugin = {
           password: config.cookie.password,
           path: config.cookiePolicy.path,
           ttl: config.cookie.ttl,
+          clearInvalid: true,
+          ignoreErrors: true,
         },
         keepAlive: true,
         redirectTo: (_request) => {
@@ -20,6 +23,13 @@ export const authPlugin = {
         },
         validateFunc: async (request) => {
           const sessionWasSet = Boolean(getSessionData(request, sessionEntryKeys.organisation));
+
+          if (!sessionWasSet) {
+            getLogger().info(
+              { path: request.path },
+              "Auth cookie validation failed: no organisation in session",
+            );
+          }
 
           return { valid: sessionWasSet };
         },
