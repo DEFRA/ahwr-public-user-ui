@@ -18,16 +18,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Depth 0 is required for branch-based versioning
 
       - name: Test code and Create Test Coverage Reports
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: |
+          npm install -g npm@11.10.0
           ./scripts/test
 
       - name: Publish Hot Fix

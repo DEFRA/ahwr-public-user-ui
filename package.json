@@ -5,6 +5,9 @@
   "homepage": "https://github.com/DEFRA/ahwr-public-user-ui",
   "main": "app/index.js",
   "type": "module",
+  "engines": {
+    "npm": ">=11.10.0"
+  },
   "scripts": {
     "build": "webpack",
     "build:watch": "webpack --watch",
