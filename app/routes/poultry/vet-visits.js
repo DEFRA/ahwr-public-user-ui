@@ -7,7 +7,9 @@ import nunjucks from "nunjucks";
 import { getClaimsByApplicationReference } from "../../api-requests/claim-api.js";
 import { formatTypesOfPoultry } from "../../lib/display-helpers.js";
 
-const { latestTermsAndConditionsUri } = config;
+const {
+  poultry: { termsAndConditionsUri, guidanceUri },
+} = config;
 
 const centringClass = "vertical-middle";
 
@@ -141,7 +143,8 @@ export const poultryVetVisitsHandlers = [
           ...(attachedToMultipleBusinesses && {
             hostname: await requestAuthorizationCodeUrl(request),
           }),
-          latestTermsAndConditionsUri,
+          latestTermsAndConditionsUri: termsAndConditionsUri,
+          guidanceUri,
           rows,
           headers: HEADERS,
         });
