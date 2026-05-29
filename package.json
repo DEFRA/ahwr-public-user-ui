@@ -5,6 +5,9 @@
   "homepage": "https://github.com/DEFRA/ahwr-public-user-ui",
   "main": "app/index.js",
   "type": "module",
+  "engines": {
+    "npm": ">=11.10.0"
+  },
   "scripts": {
     "build": "webpack",
     "build:watch": "webpack --watch",
@@ -37,14 +40,14 @@
     "@hapi/catbox-redis": "7.0.2",
     "@hapi/cookie": "11.0.2",
     "@hapi/crumb": "8.0.1",
-    "@hapi/hapi": "21.4.3",
+    "@hapi/hapi": "21.4.9",
     "@hapi/inert": "6.0.5",
     "@hapi/vision": "6.1.0",
-    "@hapi/wreck": "18.1.0",
+    "@hapi/wreck": "18.1.2",
     "@hapi/yar": "11.0.0",
     "@ministryofjustice/frontend": "5.2.1",
     "aws-embedded-metrics": "4.2.0",
-    "ffc-ahwr-common-library": "3.7.4",
+    "ffc-ahwr-common-library": "3.8.2",
     "form-data": "4.0.4",
     "global-agent": "3.0.0",
     "govuk-frontend": "5.14.0",
