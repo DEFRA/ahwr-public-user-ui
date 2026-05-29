@@ -153,7 +153,7 @@ describe("Declaration test", () => {
       expect(mustBullets).toEqual([
         "allow a vet to asses the biosecurity of the site being reviewed",
         "share details about the vet with the Rural Payments Agency (RPA)",
-        "ensure the vet completes a poultry biosecurity review vet summary template (opens in new tab) as part of the review",
+        "ensure the vet completes a poultry biosecurity review vet summary sheet (opens in new tab) as part of the review",
       ]);
 
       const askedHeading = $("h2:contains('If asked, you must provide the RPA with:')").first();
@@ -189,7 +189,7 @@ describe("Declaration test", () => {
       expect(vetLink.attr("rel")).toMatch(/noopener/);
       expect(vetLink.attr("rel")).toMatch(/noreferrer/);
       expect(vetLink.text().trim()).toBe(
-        "poultry biosecurity review vet summary template (opens in new tab)",
+        "poultry biosecurity review vet summary sheet (opens in new tab)",
       );
 
       const termsLink = $("#termsAndConditionsUri");
