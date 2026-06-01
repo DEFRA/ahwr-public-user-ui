@@ -51,7 +51,7 @@ const postHandler = {
           .view(poultryClaimViews.enterCphNumber, {
             ...request.payload,
             errorMessage: {
-              text: "Enter the CPH for this site, format should be nn/nnn/nnnn",
+              text: "Enter the CPH for this site in the format 12/345/6789",
               href: "#herdCph",
             },
             backLink: getBackLink(herdVersion),
@@ -71,7 +71,7 @@ const postHandler = {
           .view(poultryClaimViews.enterCphNumber, {
             ...request.payload,
             errorMessage: {
-              text: "You have already used this CPH, the CPH must be unique",
+              text: "Enter a CPH that you have not used for a different site",
               href: "#herdCph",
             },
             backLink: getBackLink(herds),
