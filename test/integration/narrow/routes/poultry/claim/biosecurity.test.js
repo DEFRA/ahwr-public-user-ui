@@ -148,7 +148,7 @@ describe("/poultry/biosecurity", () => {
 
         expect(await axe(response.payload)).toHaveNoViolations();
         const $ = cheerio.load(response.payload);
-        const errorMessage = "Select yes if the vet did a biosecurity assessment";
+        const errorMessage = "Select if the vet did a biosecurity assessment";
 
         expect($("li > a").text()).toMatch(errorMessage);
       });

@@ -38,7 +38,7 @@ const postHandler = {
           .view(poultryClaimViews.siteOthersOnSbi, {
             ...request.payload,
             errorMessage: {
-              text: `Select yes if this is the only site associated with this SBI`,
+              text: `Select if this is the only site associated with this SBI`,
               href: "#isOnlyHerdOnSbi",
             },
             backLink: poultryClaimRoutes.enterCphNumber,

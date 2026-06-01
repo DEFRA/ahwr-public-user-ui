@@ -9,7 +9,7 @@ import { poultryClaimViews, poultryClaimRoutes } from "../../../constants/routes
 import HttpStatus from "http-status-codes";
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 
-const YES_TO_ASSESSMENT_TEXT = "Select yes if the vet did a biosecurity assessment";
+const YES_TO_ASSESSMENT_TEXT = "Select if the vet did a biosecurity assessment";
 
 const getHandler = {
   method: "GET",

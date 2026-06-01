@@ -214,7 +214,7 @@ describe("/site-others-on-sbi tests", () => {
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
       expect($('a[href="#isOnlyHerdOnSbi"]').text()).toContain(
-        "Select yes if this is the only site associated with this SBI",
+        "Select if this is the only site associated with this SBI",
       );
       expect($("title").text().trim()).toContain(
         "Is this the only site associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
