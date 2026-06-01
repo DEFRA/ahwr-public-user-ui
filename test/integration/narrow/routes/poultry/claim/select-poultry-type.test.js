@@ -162,7 +162,7 @@ describe("/poultry/select-poultry-type", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("#back").attr("href")).toEqual("/poultry/select-site");
+      expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
     });
 
     test("handles undefined typesOfPoultry in session", async () => {

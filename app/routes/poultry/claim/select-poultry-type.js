@@ -15,22 +15,21 @@ const chickenSubtypes = new Set([
   TYPE_OF_POULTRY.BREEDERS,
 ]);
 
-const getBackLink = (herds) =>
-  herds?.length ? poultryClaimRoutes.selectTheSite : poultryClaimRoutes.siteOthersOnSbi;
+const backLink = poultryClaimRoutes.siteOthersOnSbi;
 
 const getHandler = {
   method: "GET",
   path: poultryClaimRoutes.selectPoultryType,
   options: {
     handler: async (request, h) => {
-      const { typesOfPoultry: storedTypes = [], herds } = getSessionData(
+      const { typesOfPoultry: storedTypes = [] } = getSessionData(
         request,
         sessionEntryKeys.poultryClaim,
       );
       const typesOfPoultry = storedTypes.filter((t) => !chickenSubtypes.has(t));
       const typesOfChicken = storedTypes.filter((t) => chickenSubtypes.has(t));
       return h.view(poultryClaimViews.selectPoultryType, {
-        backLink: getBackLink(herds),
+        backLink,
         typesOfPoultry,
         typesOfChicken,
       });
@@ -55,10 +54,9 @@ const postHandler = {
       }),
       failAction: async (request, h, error) => {
         request.logger.error({ error });
-        const { herds } = getSessionData(request, sessionEntryKeys.poultryClaim);
         return h
           .view(poultryClaimViews.selectPoultryType, {
-            backLink: getBackLink(herds),
+            backLink,
             errorMessageMain: errorMessage,
             errorMessage,
           })
@@ -68,13 +66,12 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typesOfPoultry, typesOfChicken } = request.payload;
-      const { herds } = getSessionData(request, sessionEntryKeys.poultryClaim);
       const hasChicken = typesOfPoultry.includes("chickens");
 
       if (hasChicken && typesOfChicken.length === 0) {
         return h
           .view(poultryClaimViews.selectPoultryType, {
-            backLink: getBackLink(herds),
+            backLink,
             errorMessageMain: errorMessageChicken,
             errorMessageChicken,
             typesOfPoultry,
