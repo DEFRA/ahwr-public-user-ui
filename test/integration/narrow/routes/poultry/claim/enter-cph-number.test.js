@@ -173,10 +173,10 @@ describe("/enter-cph-number tests", () => {
         expect(res.statusCode).toBe(400);
         expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
         expect($('a[href="#herdCph"]').text()).toContain(
-          "Enter the CPH for this site, format should be nn/nnn/nnnn",
+          "Enter the CPH for this site in the format 12/345/6789",
         );
         expect($('p[id="herdCph-error"]').text()).toContain(
-          "Enter the CPH for this site, format should be nn/nnn/nnnn",
+          "Enter the CPH for this site in the format 12/345/6789",
         );
         expectSiteText($);
         expect(emitHerdEvent).not.toHaveBeenCalled();
@@ -200,10 +200,10 @@ describe("/enter-cph-number tests", () => {
         expect(res.statusCode).toBe(400);
         expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
         expect($('a[href="#herdCph"]').text()).toContain(
-          "Enter the CPH for this site, format should be nn/nnn/nnnn",
+          "Enter the CPH for this site in the format 12/345/6789",
         );
         expect($('p[id="herdCph-error"]').text()).toContain(
-          "Enter the CPH for this site, format should be nn/nnn/nnnn",
+          "Enter the CPH for this site in the format 12/345/6789",
         );
         expectSiteText($);
         expect(emitHerdEvent).not.toHaveBeenCalled();
@@ -250,10 +250,10 @@ describe("/enter-cph-number tests", () => {
         expect(res.statusCode).toBe(400);
         expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
         expect($('a[href="#herdCph"]').text()).toContain(
-          "You have already used this CPH, the CPH must be unique",
+          "Enter a CPH that you have not used for a different site",
         );
         expect($('p[id="herdCph-error"]').text()).toContain(
-          "You have already used this CPH, the CPH must be unique",
+          "Enter a CPH that you have not used for a different site",
         );
         expectSiteText($);
         expect(emitHerdEvent).not.toHaveBeenCalled();
@@ -285,10 +285,10 @@ describe("/enter-cph-number tests", () => {
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
       expect($('a[href="#herdCph"]').text()).toContain(
-        "Enter the CPH for this site, format should be nn/nnn/nnnn",
+        "Enter the CPH for this site in the format 12/345/6789",
       );
       expect($('p[id="herdCph-error"]').text()).toContain(
-        "Enter the CPH for this site, format should be nn/nnn/nnnn",
+        "Enter the CPH for this site in the format 12/345/6789",
       );
       expectSiteText($);
       expect($(".govuk-back-link").attr("href")).toContain("/select-site");
