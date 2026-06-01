@@ -110,7 +110,9 @@ describe("/poultry/select-poultry-type", () => {
       });
 
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-hint").text().trim()).toEqual("Select all poultry kept on this site");
+      expect($(".govuk-hint").text().trim()).toEqual(
+        "Select all types of poultry you keep on this site",
+      );
     });
 
     test("shows chicken sub-types in alphabetical order with the pullets label", async () => {
