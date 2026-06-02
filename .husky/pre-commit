@@ -1,2 +1,2 @@
 pre-commit run --all-files
-lint-staged
+nano-staged
