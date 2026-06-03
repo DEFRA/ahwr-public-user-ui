@@ -9,6 +9,11 @@ import {
 import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes.js";
 import { vetsNameSchema } from "../../utils/schemas.js";
 
+const poultryVetsNameSchema = vetsNameSchema.messages({
+  "string.pattern.base":
+    "The vet's name must only include letters a to z, numbers and special characters such as hyphens, spaces, apostrophes, ampersands, commas, parentheses or a forward slash",
+});
+
 const getHandler = {
   method: "GET",
   path: poultryClaimRoutes.vetName,
@@ -33,7 +38,7 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        vetsName: vetsNameSchema,
+        vetsName: poultryVetsNameSchema,
       }),
       failAction: async (request, h, error) => {
         request.logger.error({ error });
