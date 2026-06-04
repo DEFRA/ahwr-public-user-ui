@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
+
 import {
   getSessionData,
   sessionEntryKeys,
@@ -21,7 +22,7 @@ const errorMessages = {
 
 jest.mock("../../../../../../app/session/index.js");
 
-describe("Vet name test", () => {
+describe("/poultry/vet-name", () => {
   const auth = { credentials: {}, strategy: "cookie" };
   const url = "/poultry/vet-name";
   let server;
@@ -110,7 +111,7 @@ describe("Vet name test", () => {
       const options = {
         method: "POST",
         url,
-        payload: { crumb, numberAnimalsTested: "123" },
+        payload: { crumb, vetsName: "Test Vet" },
         headers: { cookie: `crumb=${crumb}` },
       };
 
@@ -121,13 +122,14 @@ describe("Vet name test", () => {
     });
 
     test.each([
-      { vetsName: "", error: errorMessages.enterName },
+      { vetsName: "", error: errorMessages.enterName, description: "empty name" },
       {
         vetsName: "dfdddfdf6697979779779dfdddfdf669797977977955444556655",
         error: errorMessages.nameLength,
+        description: "name too long",
       },
-      { vetsName: "****", error: errorMessages.namePattern },
-    ])("show error message when the vet name is not valid", async ({ vetsName, error }) => {
+      { vetsName: "****", error: errorMessages.namePattern, description: "invalid characters" },
+    ])("returns 400 when vet name is invalid - $description", async ({ vetsName, error }) => {
       const options = {
         method: "POST",
         url,
@@ -145,7 +147,7 @@ describe("Vet name test", () => {
       expect($("#vetsName-error").text()).toMatch(error);
     });
     test.each([{ vetsName: "Adam" }, { vetsName: "(Sarah)" }, { vetsName: "Kevin&&" }])(
-      "Continue to vet rvs screen if the vet name is valid",
+      "returns 302 and redirects to /poultry/vet-rcvs when vet name is valid - $vetsName",
       async ({ vetsName }) => {
         const options = {
           method: "POST",
