@@ -87,6 +87,44 @@ describe("/poultry/vet-name", () => {
       expectPhaseBanner.ok($);
     });
 
+    test("pre-populates input with previously entered vet name", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.vetsName,
+        )
+        .mockReturnValue("John Smith");
+
+      const options = {
+        method: "GET",
+        url,
+        auth,
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($("#vetsName").val()).toBe("John Smith");
+      expect(await axe(res.payload)).toHaveNoViolations();
+    });
+
+    test("back link points to /poultry/minimum-number-of-birds", async () => {
+      const options = {
+        method: "GET",
+        url,
+        auth,
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-back-link").attr("href")).toBe("/poultry/minimum-number-of-birds");
+      expect(await axe(res.payload)).toHaveNoViolations();
+    });
+
     test("when not logged in redirects to /sign-in", async () => {
       const options = {
         method: "GET",
@@ -97,6 +135,27 @@ describe("/poultry/vet-name", () => {
 
       expect(res.statusCode).toBe(302);
       expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    });
+
+    test("redirects to apply journey when poultry agreement is not AGREED", async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.poultryClaim,
+          sessionKeys.poultryClaim.latestPoultryApplication,
+        )
+        .mockReturnValue({ status: "REJECTED" });
+
+      const options = {
+        method: "GET",
+        url,
+        auth,
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/poultry/you-can-claim-multiple");
     });
   });
 
@@ -143,8 +202,13 @@ describe("/poultry/vet-name", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("What is the vet's name?");
+      expect($("title").text().trim()).toContain("Error: What is the vet's name?");
+      expect($(".govuk-error-summary__title").text().trim()).toBe("There is a problem");
       expect($("#main-content > div > div > div > div > div > ul > li > a").text()).toMatch(error);
+      expect($('a[href="#vetsName"]').text().trim()).toBe(error);
       expect($("#vetsName-error").text()).toMatch(error);
+      expect($("#vetsName").val()).toBe(vetsName);
+      expect(await axe(res.payload)).toHaveNoViolations();
     });
     test.each([{ vetsName: "Adam" }, { vetsName: "(Sarah)" }, { vetsName: "Kevin&&" }])(
       "returns 302 and redirects to /poultry/vet-rcvs when vet name is valid - $vetsName",
