@@ -40,6 +40,7 @@ describe("/poultry/vet-rcvs", () => {
         sessionKeys.poultryClaim.latestPoultryApplication,
       )
       .mockReturnValue({ status: "AGREED" });
+
     when(getSessionData)
       .calledWith(
         expect.anything(),
@@ -47,6 +48,14 @@ describe("/poultry/vet-rcvs", () => {
         sessionKeys.confirmedDetails,
       )
       .mockReturnValue(true);
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.reference,
+      )
+      .mockReturnValue("POUL-1LZ5-ELVQ");
   });
 
   afterAll(async () => {
