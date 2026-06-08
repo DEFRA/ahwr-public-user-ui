@@ -92,6 +92,14 @@ describe("Poultry check answers test", () => {
         sessionKeys.confirmedDetails,
       )
       .mockReturnValue(true);
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.reference,
+      )
+      .mockReturnValue("POUL-1LZ5-ELVQ");
   });
 
   describe(`GET ${url} route`, () => {

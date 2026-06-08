@@ -83,6 +83,14 @@ describe("GET /poultry/date-of-visit", () => {
       )
       .mockReturnValue(true);
 
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.poultryClaim,
+        sessionKeys.poultryClaim.reference,
+      )
+      .mockReturnValue("POUL-1LZ5-ELVQ");
+
     refreshApplications.mockResolvedValue({
       latestPoultryApplication: mockLatestPoultryApplication,
     });
