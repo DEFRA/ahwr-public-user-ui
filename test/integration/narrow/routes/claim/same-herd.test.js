@@ -55,6 +55,14 @@ describe("select-the-herd tests", () => {
         sessionKeys.confirmedDetails,
       )
       .mockReturnValue(true);
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.reference,
+      )
+      .mockReturnValue("IAHW-1LZ5-ELVQ");
   });
 
   afterEach(() => {

@@ -45,6 +45,14 @@ describe("Vet rcvs test when Optional PI Hunt is OFF", () => {
       )
       .mockReturnValue(true);
 
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.reference,
+      )
+      .mockReturnValue("IAHW-1LZ5-ELVQ");
+
     setSessionData.mockImplementation(() => {});
     server = await createServer();
     await server.initialize();
