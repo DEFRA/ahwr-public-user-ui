@@ -12,6 +12,10 @@ process.env.FCP_AHWR_EVENT_QUEUE_SA_KEY = "abcdefghijk123456";
 process.env.EVENT_QUEUE_ADDRESS = "ffc-ahwr-event-xyz";
 process.env.DOCUMENT_BUCKET_NAME = "dev-ahwr-documents-xyz";
 process.env.AWS_REGION = "eu-west-2";
+process.env.RPA_HOST_NAME = "https://rpa-test.com";
 process.env.RPA_GET_PERSON_SUMMARY_URL = "http://rpa.com";
+process.env.RPA_GET_ORGANISATION_PERMISSIONS_URL = "/api/organisation/organisationId/permissions";
+process.env.RPA_GET_ORGANISATION_URL = "/api/organisation/organisationId";
+process.env.RPA_GET_CPH_NUMBERS_URL = "/api/organisation/organisationId/cph";
 
 config();
