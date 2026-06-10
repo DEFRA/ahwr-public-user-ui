@@ -17,17 +17,17 @@ import { getPersonSummary } from "./person.js";
 const formatOrganisationAddress = (address) => {
   const fields = address?.uprn
     ? [
-        address.pafOrganisationName,
-        address.flatName,
-        address.buildingName,
-        address.buildingNumberRange,
-        address.street,
-        address.dependentLocality,
-        address.doubleDependentLocality,
-        address.county,
-        address.city,
-        address.postalCode,
-        address.country,
+        address?.pafOrganisationName,
+        address?.flatName,
+        address?.buildingName,
+        address?.buildingNumberRange,
+        address?.street,
+        address?.dependentLocality,
+        address?.doubleDependentLocality,
+        address?.city,
+        address?.county,
+        address?.postalCode,
+        address?.country,
       ]
     : [
         address?.address1,
@@ -36,6 +36,7 @@ const formatOrganisationAddress = (address) => {
         address?.address4,
         address?.address5,
         address?.city,
+        address?.county,
         address?.postalCode,
         address?.country,
       ];

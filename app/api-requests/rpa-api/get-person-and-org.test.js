@@ -65,7 +65,7 @@ const defaultOrganisation = {
 };
 
 const formattedAddress =
-  "Thompsons,Sisterdene,Grey Building,1-30,Brown Lane,Westfield,North Westfield,West Sussex,Grenwald,WS11 2DS,GBR";
+  "Thompsons,Sisterdene,Grey Building,1-30,Brown Lane,Westfield,North Westfield,Grenwald,West Sussex,WS11 2DS,GBR";
 
 describe("getPersonAndOrg", () => {
   const request = { stuff: true };
@@ -81,7 +81,11 @@ describe("getPersonAndOrg", () => {
     sendRPAGetRequest.mockImplementation(({ url, headers }) => {
       if (headers?.crn === crn) return Promise.resolve({ _data: rawPersonSummary });
       if (url?.includes("permissions")) return Promise.resolve(orgAuth);
-      if (url?.includes("cph")) return Promise.resolve({ success: true, data: [{ cphNumber: 1 }, { cphNumber: 2 }, { cphNumber: 3 }] });
+      if (url?.includes("cph"))
+        return Promise.resolve({
+          success: true,
+          data: [{ cphNumber: 1 }, { cphNumber: 2 }, { cphNumber: 3 }],
+        });
       return Promise.resolve(org);
     });
   };
@@ -128,7 +132,13 @@ describe("getPersonAndOrg", () => {
   describe("orgDetails", () => {
     describe("organisationPermission", () => {
       test("is true when person has a Submit privilege", async () => {
-        const result = await getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken });
+        const result = await getPersonAndOrg({
+          request,
+          apimAccessToken,
+          crn,
+          logger,
+          accessToken,
+        });
         expect(result.orgDetails.organisationPermission).toBe(true);
       });
 
@@ -141,14 +151,26 @@ describe("getPersonAndOrg", () => {
             },
           },
         });
-        const result = await getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken });
+        const result = await getPersonAndOrg({
+          request,
+          apimAccessToken,
+          crn,
+          logger,
+          accessToken,
+        });
         expect(result.orgDetails.organisationPermission).toBe(false);
       });
     });
 
     describe("organisation", () => {
       test("includes sbi, name, and email from the organisation API", async () => {
-        const result = await getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken });
+        const result = await getPersonAndOrg({
+          request,
+          apimAccessToken,
+          crn,
+          logger,
+          accessToken,
+        });
         expect(result.orgDetails.organisation).toMatchObject({
           sbi: 999000,
           name: "Unit test org",
@@ -179,6 +201,7 @@ describe("getPersonAndOrg", () => {
                   address3: "West Sussex",
                   address4: "England",
                   address5: "UK",
+                  county: "West Sussex",
                   city: "Grenwald",
                   postalCode: "WS11 2DS",
                   country: "GBR",
@@ -194,7 +217,7 @@ describe("getPersonAndOrg", () => {
             accessToken,
           });
           expect(result.orgDetails.organisation.address).toBe(
-            "1 Brown Lane,Smithering,West Sussex,England,UK,Grenwald,WS11 2DS,GBR",
+            "1 Brown Lane,Smithering,West Sussex,England,UK,Grenwald,West Sussex,WS11 2DS,GBR",
           );
         });
 
