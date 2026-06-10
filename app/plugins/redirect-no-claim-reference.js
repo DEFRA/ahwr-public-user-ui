@@ -1,8 +1,8 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { dashboardRoutes, claimRoutes } from "../constants/routes.js";
 
-const includedPaths = Object.values(claimRoutes).filter(
-  (path) => path !== claimRoutes.whichSpecies,
+const includedPaths = new Set(
+  Object.values(claimRoutes).filter((path) => path !== claimRoutes.whichSpecies),
 );
 
 export const redirectNoClaimReferencePlugin = {
@@ -14,7 +14,7 @@ export const redirectNoClaimReferencePlugin = {
           return h.continue;
         }
 
-        if (!includedPaths.includes(request.path)) {
+        if (!includedPaths.has(request.path)) {
           return h.continue;
         }
 
