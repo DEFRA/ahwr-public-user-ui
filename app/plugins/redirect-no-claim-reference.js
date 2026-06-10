@@ -14,9 +14,7 @@ export const redirectNoClaimReferencePlugin = {
           return h.continue;
         }
 
-        const isIncludedPath = includedPaths.some((path) => request?.path === path);
-
-        if (!isIncludedPath) {
+        if (!includedPaths.includes(request.path)) {
           return h.continue;
         }
 
