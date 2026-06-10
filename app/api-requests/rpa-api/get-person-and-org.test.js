@@ -1,10 +1,5 @@
 import { getPersonAndOrg } from "./get-person-and-org.js";
-import { getPersonSummary } from "./person.js";
-import {
-  getOrganisationAuthorisation,
-  getOrganisation,
-  getOrganisationRole,
-} from "./organisation.js";
+import { sendRPAGetRequest } from "./send-get-request.js";
 import {
   setSessionData,
   sessionEntryKeys,
@@ -12,7 +7,6 @@ import {
   getSessionData,
   setSessionEntry,
 } from "../../session/index.js";
-import { getCphNumbers } from "./cph-numbers.js";
 import { when } from "jest-when";
 
 jest.mock("../../session", () => {
@@ -23,22 +17,18 @@ jest.mock("../../session", () => {
   }, {});
 });
 
-jest.mock("./person", () => ({ getPersonSummary: jest.fn() }));
-jest.mock("./cph-numbers", () => ({ getCphNumbers: jest.fn() }));
-jest.mock("./organisation", () => {
-  const actual = jest.requireActual("./organisation");
-  return {
-    ...actual,
-    getOrganisationAuthorisation: jest.fn(),
-    getOrganisation: jest.fn(),
-    getOrganisationRole: jest.fn(),
-  };
-});
+jest.mock("./send-get-request", () => ({ sendRPAGetRequest: jest.fn() }));
 
-const defaultPersonSummary = {
+const rawPersonSummary = {
   id: 12345,
-  name: "Farmer Tom",
+  firstName: "Farmer",
+  lastName: "Tom",
   email: "farmertomstestemail@test.com.test",
+};
+
+const expectedPersonSummary = {
+  ...rawPersonSummary,
+  name: "Farmer Tom",
 };
 
 const defaultOrganisationAuthorisation = {
@@ -84,15 +74,29 @@ describe("getPersonAndOrg", () => {
   const logger = { info: jest.fn(), error: jest.fn() };
   const accessToken = { currentRelationshipId: "22222" };
 
+  const setupSendRPAGetRequest = ({
+    orgAuth = { data: defaultOrganisationAuthorisation },
+    org = { _data: defaultOrganisation },
+  } = {}) => {
+    sendRPAGetRequest.mockImplementation(({ url, headers }) => {
+      if (headers?.crn === crn) return Promise.resolve({ _data: rawPersonSummary });
+      if (url?.includes("permissions")) return Promise.resolve(orgAuth);
+      if (url?.includes("cph")) return Promise.resolve({ success: true, data: [{ cphNumber: 1 }, { cphNumber: 2 }, { cphNumber: 3 }] });
+      return Promise.resolve(org);
+    });
+  };
+
   beforeEach(() => {
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.tokens, sessionKeys.tokens.accessToken)
       .mockReturnValue("abc123");
-    getPersonSummary.mockResolvedValue(defaultPersonSummary);
-    getOrganisationAuthorisation.mockResolvedValue(defaultOrganisationAuthorisation);
-    getOrganisation.mockResolvedValue(defaultOrganisation);
-    getOrganisationRole.mockReturnValue("Agent");
-    getCphNumbers.mockResolvedValue([1, 2, 3]);
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.customer, sessionKeys.customer.organisationId)
+      .mockReturnValue("88888");
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.customer, sessionKeys.customer.crn)
+      .mockReturnValue("111111");
+    setupSendRPAGetRequest();
   });
 
   afterEach(() => {
@@ -101,19 +105,9 @@ describe("getPersonAndOrg", () => {
   });
 
   describe("personSummary", () => {
-    test("is populated from getPersonSummary", async () => {
+    test("is populated from the person API", async () => {
       const result = await getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken });
-      expect(result.personSummary).toEqual(defaultPersonSummary);
-    });
-
-    test("calls getPersonSummary with the correct arguments", async () => {
-      await getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken });
-      expect(getPersonSummary).toHaveBeenCalledWith({
-        apimAccessToken,
-        crn,
-        logger,
-        defraIdAccessToken: "abc123",
-      });
+      expect(result.personSummary).toMatchObject(expectedPersonSummary);
     });
   });
 
@@ -125,18 +119,9 @@ describe("getPersonAndOrg", () => {
   });
 
   describe("cphNumbers", () => {
-    test("is populated from getCphNumbers", async () => {
+    test("is populated from the CPH numbers API", async () => {
       const result = await getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken });
       expect(result.cphNumbers).toEqual([1, 2, 3]);
-    });
-
-    test("calls getCphNumbers with the correct arguments", async () => {
-      await getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken });
-      expect(getCphNumbers).toHaveBeenCalledWith({
-        apimAccessToken,
-        defraIdAccessToken: "abc123",
-        request,
-      });
     });
   });
 
@@ -148,9 +133,13 @@ describe("getPersonAndOrg", () => {
       });
 
       test("is false when person has no valid permission", async () => {
-        getOrganisationAuthorisation.mockResolvedValueOnce({
-          ...defaultOrganisationAuthorisation,
-          personPrivileges: [{ personId: 12345, privilegeNames: ["View only"] }],
+        setupSendRPAGetRequest({
+          orgAuth: {
+            data: {
+              ...defaultOrganisationAuthorisation,
+              personPrivileges: [{ personId: 12345, privilegeNames: ["View only"] }],
+            },
+          },
         });
         const result = await getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken });
         expect(result.orgDetails.organisationPermission).toBe(false);
@@ -167,20 +156,6 @@ describe("getPersonAndOrg", () => {
         });
       });
 
-      test("calls getOrganisation and getOrganisationAuthorisation with the correct arguments", async () => {
-        await getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken });
-        expect(getOrganisation).toHaveBeenCalledWith({
-          apimAccessToken,
-          defraIdAccessToken: "abc123",
-          organisationId: accessToken.currentRelationshipId,
-        });
-        expect(getOrganisationAuthorisation).toHaveBeenCalledWith({
-          apimAccessToken,
-          defraIdAccessToken: "abc123",
-          organisationId: accessToken.currentRelationshipId,
-        });
-      });
-
       describe("address", () => {
         test("uses paf fields when uprn is present", async () => {
           const result = await getPersonAndOrg({
@@ -194,17 +169,21 @@ describe("getPersonAndOrg", () => {
         });
 
         test("uses address1-5 fields when uprn is absent", async () => {
-          getOrganisation.mockResolvedValueOnce({
-            ...defaultOrganisation,
-            address: {
-              address1: "1 Brown Lane",
-              address2: "Smithering",
-              address3: "West Sussex",
-              address4: "England",
-              address5: "UK",
-              city: "Grenwald",
-              postalCode: "WS11 2DS",
-              country: "GBR",
+          setupSendRPAGetRequest({
+            org: {
+              _data: {
+                ...defaultOrganisation,
+                address: {
+                  address1: "1 Brown Lane",
+                  address2: "Smithering",
+                  address3: "West Sussex",
+                  address4: "England",
+                  address5: "UK",
+                  city: "Grenwald",
+                  postalCode: "WS11 2DS",
+                  country: "GBR",
+                },
+              },
             },
           });
           const result = await getPersonAndOrg({
@@ -220,9 +199,13 @@ describe("getPersonAndOrg", () => {
         });
 
         test("excludes falsy address fields", async () => {
-          getOrganisation.mockResolvedValueOnce({
-            ...defaultOrganisation,
-            address: { address1: "1 Brown Lane", address2: null, postalCode: "WS11 2DS" },
+          setupSendRPAGetRequest({
+            org: {
+              _data: {
+                ...defaultOrganisation,
+                address: { address1: "1 Brown Lane", address2: null, postalCode: "WS11 2DS" },
+              },
+            },
           });
           const result = await getPersonAndOrg({
             request,
@@ -238,29 +221,8 @@ describe("getPersonAndOrg", () => {
   });
 
   describe("when an API call fails", () => {
-    test("throws when getPersonSummary rejects", async () => {
-      getPersonSummary.mockRejectedValueOnce(new Error("Person summary error"));
-      await expect(
-        getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken }),
-      ).rejects.toThrow("Failed to retrieve person or organisation details");
-    });
-
-    test("throws when getOrganisationAuthorisation rejects", async () => {
-      getOrganisationAuthorisation.mockRejectedValueOnce(new Error("Organisation auth error"));
-      await expect(
-        getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken }),
-      ).rejects.toThrow("Failed to retrieve person or organisation details");
-    });
-
-    test("throws when getOrganisation rejects", async () => {
-      getOrganisation.mockRejectedValueOnce(new Error("Organisation error"));
-      await expect(
-        getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken }),
-      ).rejects.toThrow("Failed to retrieve person or organisation details");
-    });
-
-    test("throws when getCphNumbers rejects", async () => {
-      getCphNumbers.mockRejectedValueOnce(new Error("CPH numbers error"));
+    test("throws when any API call fails", async () => {
+      sendRPAGetRequest.mockRejectedValue(new Error("API error"));
       await expect(
         getPersonAndOrg({ request, apimAccessToken, crn, logger, accessToken }),
       ).rejects.toThrow("Failed to retrieve person or organisation details");
