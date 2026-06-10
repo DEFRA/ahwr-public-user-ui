@@ -57,6 +57,18 @@ const setOrganisationSessionData = async (request, personSummary, org, crn) => {
   await setSessionEntry(request, sessionEntryKeys.organisation, organisation);
 };
 
+/**
+ * Fetches person and organisation details in parallel and writes them to the session.
+ *
+ * @param {object} params
+ * @param {import('@hapi/hapi').Request} params.request - Hapi request (used for session access)
+ * @param {string} params.apimAccessToken - APIM bearer token
+ * @param {number} params.crn - Customer Reference Number
+ * @param {import('pino').Logger} params.logger - Pino logger instance
+ * @param {{ currentRelationshipId: string }} params.accessToken - Defra ID access token containing the organisation relationship ID
+ * @returns {Promise<{ personSummary: object, personRole: string, cphNumbers: string[]|null, orgDetails: { organisationPermission: boolean, organisation: object } }>}
+ * @throws {AggregateError} When any of the parallel API calls fail
+ */
 export const getPersonAndOrg = async ({ request, apimAccessToken, crn, logger, accessToken }) => {
   const organisationId = accessToken.currentRelationshipId;
   const defraIdAccessToken = getSessionData(
