@@ -15,24 +15,31 @@ import {
 import { getPersonSummary } from "./person.js";
 
 const formatOrganisationAddress = (address) => {
-  return [
-    address?.address1,
-    address?.address2,
-    address?.address3,
-    address?.address4,
-    address?.address5,
-    address?.pafOrganisationName,
-    address?.flatName,
-    address?.buildingNumberRange,
-    address?.buildingName,
-    address?.street,
-    address?.city,
-    address?.county,
-    address?.postalCode,
-    address?.country,
-  ]
-    .filter(Boolean)
-    .join(",");
+  const fields = address?.uprn
+    ? [
+        address.pafOrganisationName,
+        address.flatName,
+        address.buildingName,
+        address.buildingNumberRange,
+        address.street,
+        address.dependentLocality,
+        address.doubleDependentLocality,
+        address.county,
+        address.city,
+        address.postalCode,
+        address.country,
+      ]
+    : [
+        address?.address1,
+        address?.address2,
+        address?.address3,
+        address?.address4,
+        address?.address5,
+        address?.city,
+        address?.postalCode,
+        address?.country,
+      ];
+  return fields.filter(Boolean).join(",");
 };
 
 const setOrganisationSessionData = async (request, personSummary, org, crn) => {

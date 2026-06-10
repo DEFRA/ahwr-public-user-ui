@@ -51,6 +51,7 @@ const defaultOrganisationAuthorisation = {
 
 const defaultOrganisation = {
   address: {
+    uprn: "10001234567",
     address1: "1 Brown Lane",
     address2: "Smithering",
     address3: "West Sussex",
@@ -61,6 +62,8 @@ const defaultOrganisation = {
     buildingNumberRange: "1-30",
     buildingName: "Grey Building",
     street: "Brown Lane",
+    dependentLocality: "Westfield",
+    doubleDependentLocality: "North Westfield",
     city: "Grenwald",
     county: "West Sussex",
     postalCode: "WS11 2DS",
@@ -72,7 +75,7 @@ const defaultOrganisation = {
 };
 
 const formattedAddress =
-  "1 Brown Lane,Smithering,West Sussex,England,UK,Thompsons,Sisterdene,1-30,Grey Building,Brown Lane,Grenwald,West Sussex,WS11 2DS,GBR";
+  "Thompsons,Sisterdene,Grey Building,1-30,Brown Lane,Westfield,North Westfield,West Sussex,Grenwald,WS11 2DS,GBR";
 
 describe("getPersonAndOrg", () => {
   const request = { stuff: true };
@@ -179,7 +182,7 @@ describe("getPersonAndOrg", () => {
       });
 
       describe("address", () => {
-        test("concatenates all address fields with commas", async () => {
+        test("uses paf fields when uprn is present", async () => {
           const result = await getPersonAndOrg({
             request,
             apimAccessToken,
@@ -188,6 +191,32 @@ describe("getPersonAndOrg", () => {
             accessToken,
           });
           expect(result.orgDetails.organisation.address).toBe(formattedAddress);
+        });
+
+        test("uses address1-5 fields when uprn is absent", async () => {
+          getOrganisation.mockResolvedValueOnce({
+            ...defaultOrganisation,
+            address: {
+              address1: "1 Brown Lane",
+              address2: "Smithering",
+              address3: "West Sussex",
+              address4: "England",
+              address5: "UK",
+              city: "Grenwald",
+              postalCode: "WS11 2DS",
+              country: "GBR",
+            },
+          });
+          const result = await getPersonAndOrg({
+            request,
+            apimAccessToken,
+            crn,
+            logger,
+            accessToken,
+          });
+          expect(result.orgDetails.organisation.address).toBe(
+            "1 Brown Lane,Smithering,West Sussex,England,UK,Grenwald,WS11 2DS,GBR",
+          );
         });
 
         test("excludes falsy address fields", async () => {
