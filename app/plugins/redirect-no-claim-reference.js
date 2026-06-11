@@ -1,0 +1,35 @@
+import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
+import { dashboardRoutes, claimRoutes } from "../constants/routes.js";
+
+const includedPaths = new Set(
+  Object.values(claimRoutes).filter((path) => path !== claimRoutes.whichSpecies),
+);
+
+export const redirectNoClaimReferencePlugin = {
+  plugin: {
+    name: "redirect-no-claim-reference",
+    register: (server) => {
+      server.ext("onPreHandler", (request, h) => {
+        if (request.method !== "get") {
+          return h.continue;
+        }
+
+        if (!includedPaths.has(request.path)) {
+          return h.continue;
+        }
+
+        const claimReference = getSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.reference,
+        );
+
+        if (!claimReference) {
+          return h.redirect(dashboardRoutes.manageYourClaims).takeover();
+        }
+
+        return h.continue;
+      });
+    },
+  },
+};

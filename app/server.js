@@ -22,6 +22,7 @@ import { requestTracing } from "./lib/request-tracing.js";
 import { loggingContextPlugin } from "./plugins/logging-context.js";
 import { redirectPoultryAgreementNotAcceptedPlugin } from "./plugins/redirect-poultry-agreement-not-accepted.js";
 import { redirectPoultryNoClaimReferencePlugin } from "./plugins/redirect-poultry-no-claim-reference.js";
+import { redirectNoClaimReferencePlugin } from "./plugins/redirect-no-claim-reference.js";
 
 export async function createServer() {
   setupProxy();
@@ -55,6 +56,7 @@ export async function createServer() {
   await server.register(headerPlugin);
   await server.register(redirectNoCheckDetailsPlugin);
   await server.register(redirectAgreementNotAcceptedPlugin);
+  await server.register(redirectNoClaimReferencePlugin);
   await server.register(redirectPoultryAgreementNotAcceptedPlugin);
   await server.register(redirectPoultryNoClaimReferencePlugin);
   await server.register(redirectAgreementRedactedPlugin);

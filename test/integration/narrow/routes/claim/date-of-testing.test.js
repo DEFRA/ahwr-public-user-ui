@@ -65,6 +65,14 @@ describe("Date of testing", () => {
         sessionKeys.confirmedDetails,
       )
       .mockReturnValue(true);
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.reference,
+      )
+      .mockReturnValue("IAHW-1LZ5-ELVQ");
   });
 
   afterEach(() => {
@@ -378,6 +386,14 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
         sessionKeys.confirmedDetails,
       )
       .mockReturnValue(true);
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.reference,
+      )
+      .mockReturnValue("IAHW-1LZ5-ELVQ");
   });
   afterAll(async () => {
     await server.stop();

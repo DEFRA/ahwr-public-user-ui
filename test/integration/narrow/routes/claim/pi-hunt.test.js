@@ -48,6 +48,14 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
       )
       .mockReturnValue(true);
 
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.reference,
+      )
+      .mockReturnValue("IAHW-1LZ5-ELVQ");
+
     setSessionData.mockImplementation(() => {});
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => {
       return false;

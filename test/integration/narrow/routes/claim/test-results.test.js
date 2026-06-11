@@ -37,6 +37,15 @@ describe("Test Results test", () => {
         sessionKeys.confirmedDetails,
       )
       .mockReturnValue(true);
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.reference,
+      )
+      .mockReturnValue("IAHW-1LZ5-ELVQ");
+
     setSessionData.mockImplementation(() => {});
 
     server = await createServer();

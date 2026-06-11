@@ -35,6 +35,14 @@ describe("Endemics package test", () => {
       )
       .mockReturnValue(true);
 
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.reference,
+      )
+      .mockReturnValue("IAHW-1LZ5-ELVQ");
+
     server = await createServer();
     await server.initialize();
   });
