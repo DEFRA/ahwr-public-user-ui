@@ -6,6 +6,7 @@ import {
   allPoultryRoutes,
   applyRoutes,
   dashboardRoutes,
+  loginRoutes,
   poultryApplyRoutes,
 } from "../constants/routes.js";
 
@@ -45,7 +46,11 @@ const userHasPoultryAgreement = (request) => {
 };
 
 export const shouldShowManageYourClaims = (request) => {
-  const hiddenPaths = [dashboardRoutes.checkDetails, dashboardRoutes.selectFunding];
+  const hiddenPaths = [
+    dashboardRoutes.checkDetails,
+    dashboardRoutes.selectFunding,
+    loginRoutes.signInOidc,
+  ];
 
   if (hiddenPaths.includes(request.path)) {
     return false;
