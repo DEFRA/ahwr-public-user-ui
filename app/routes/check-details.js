@@ -1,12 +1,12 @@
-import { getOrganisationModel } from "../models/organisation.js";
+import { getOrganisationModel } from "./models/organisation.js";
 import joi from "joi";
 import { StatusCodes } from "http-status-codes";
-import { getSessionData, sessionEntryKeys, setSessionEntry } from "../../session/index.js";
-import { config } from "../../config/index.js";
-import { dashboardRoutes } from "../../constants/routes.js";
+import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
+import { config } from "../config/index.js";
+import { dashboardRoutes } from "../constants/routes.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 
-export const poultryCheckDetailsHandlers = [
+export const checkDetailsHandlers = [
   {
     method: "GET",
     path: "/check-details",
@@ -18,7 +18,7 @@ export const poultryCheckDetailsHandlers = [
           throw new Error("Organisation not in session.");
         }
 
-        return h.view("poultry/check-details", await getOrganisationModel(request, organisation));
+        return h.view("check-details", await getOrganisationModel(request, organisation));
       },
     },
   },
@@ -39,7 +39,7 @@ export const poultryCheckDetailsHandlers = [
           }
 
           return h
-            .view("poultry/check-details", {
+            .view("check-details", {
               errorMessage: { text: "Select if these details are correct" },
               ...(await getOrganisationModel(
                 request,

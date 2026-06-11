@@ -76,7 +76,7 @@ import { poultryChangesInBiosecurityHandlers } from "../routes/poultry/claim/cha
 import { poultryBiosecurityCostOfChangesHandlers } from "../routes/poultry/claim/biosecurity-cost-of-changes.js";
 import { poultryInterviewHandlers } from "../routes/poultry/claim/interview.js";
 import { poultryConfirmationHandlers } from "../routes/poultry/claim/confirmation.js";
-import { poultryCheckDetailsHandlers as checkDetailsHandlers } from "../routes/poultry/check-details.js";
+import { checkDetailsHandlers } from "../routes/check-details.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
