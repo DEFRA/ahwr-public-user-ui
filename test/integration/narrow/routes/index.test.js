@@ -1,4 +1,3 @@
-import { config } from "../../../../app/config/index.js";
 import { when } from "jest-when";
 import { createServer } from "../../../../app/server.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
@@ -29,7 +28,7 @@ describe("root / path", () => {
       expect(res.headers.location).toBe("/check-details");
     });
 
-    test("check no agreement no poultry flag", async () => {
+    test("check no agreements", async () => {
       when(getSessionData)
         .calledWith(
           expect.anything(),
@@ -38,31 +37,6 @@ describe("root / path", () => {
         )
         .mockReturnValue(true);
 
-      config.poultry.enabled = false;
-      const res = await server.inject({
-        url: "/",
-        auth: {
-          credentials: {},
-          strategy: "cookie",
-        },
-      });
-
-      expect(res.statusCode).toBe(302);
-      // Take into account that with no agreement, after this redirection
-      // in the running app there will be an additional redirection
-      expect(res.headers.location).toBe("/vet-visits");
-    });
-
-    test("check no agreements with poultry flag", async () => {
-      when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.confirmedDetails,
-          sessionKeys.confirmedDetails,
-        )
-        .mockReturnValue(true);
-
-      config.poultry.enabled = true;
       const res = await server.inject({
         url: "/",
         auth: {
@@ -75,39 +49,7 @@ describe("root / path", () => {
       expect(res.headers.location).toBe("/select-funding");
     });
 
-    test("check and livestock agreement no poultry flag", async () => {
-      config.poultry.enabled = false;
-
-      when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.latestEndemicsApplication,
-        )
-        .mockReturnValue({ status: "AGREED" });
-
-      when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.confirmedDetails,
-          sessionKeys.confirmedDetails,
-        )
-        .mockReturnValue(true);
-      const res = await server.inject({
-        url: "/",
-        auth: {
-          credentials: {},
-          strategy: "cookie",
-        },
-      });
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/vet-visits");
-    });
-
-    test("check and livestock agreement with poultry flag", async () => {
-      config.poultry.enabled = true;
-
+    test("check and livestock agreement", async () => {
       when(getSessionData)
         .calledWith(
           expect.anything(),
@@ -135,9 +77,7 @@ describe("root / path", () => {
       expect(res.headers.location).toBe("/select-funding");
     });
 
-    test("check and poultry agreement with poultry flag", async () => {
-      config.poultry.enabled = true;
-
+    test("check and poultry agreement", async () => {
       when(getSessionData)
         .calledWith(
           expect.anything(),

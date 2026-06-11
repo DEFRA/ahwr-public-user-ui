@@ -26,7 +26,6 @@ describe("/poultry/minimum-number-of-birds tests", () => {
   let crumb;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     setSessionData.mockImplementation(() => {});
     server = await createServer();
     await server.initialize();

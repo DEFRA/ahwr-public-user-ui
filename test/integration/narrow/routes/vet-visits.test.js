@@ -54,7 +54,6 @@ describe("GET /vet-visits", () => {
 
   beforeEach(async () => {
     server = await createServer();
-    config.poultry.enabled = false;
   });
 
   test("details not checked redirects to get them checked", async () => {
@@ -107,10 +106,6 @@ describe("GET /vet-visits", () => {
   });
 
   describe("Cattle/Pig/Sheep", () => {
-    beforeEach(() => {
-      config.poultry.enabled = false;
-    });
-
     test("new world, multiple businesses", async () => {
       const applicationReference = "IAHW-TEST-NEW1";
       const sbi = "106354662";
@@ -171,8 +166,8 @@ describe("GET /vet-visits", () => {
       const otherBiz = findLinkByText($, "Claim for a different business").first();
       expect(otherBiz.attr("href")).toContain("auth-code-url");
 
-      expect($("body").text().includes("Claim for a different agreement")).toBe(false);
-      expect($("body").text().includes("Species included in this agreement")).toBe(false);
+      expect($("body").text().includes("Claim for a different agreement")).toBe(true);
+      expect($("body").text().includes("Species included in this agreement")).toBe(true);
     });
 
     test("new world, sheep uses flock wording", async () => {
@@ -379,8 +374,6 @@ describe("GET /vet-visits", () => {
     });
 
     test("poultry enabled content", async () => {
-      config.poultry.enabled = true;
-
       const sbi = "106354662";
 
       await setServerState(server, {

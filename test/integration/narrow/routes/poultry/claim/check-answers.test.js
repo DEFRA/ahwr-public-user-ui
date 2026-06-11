@@ -10,7 +10,6 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
-import { config } from "../../../../../../app/config/index.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 
 jest.mock("../../../../../../app/session/index.js");
@@ -21,7 +20,6 @@ describe("Poultry check answers test", () => {
   let server;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     server = await createServer();
     await server.initialize();
   });

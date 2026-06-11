@@ -1,4 +1,3 @@
-import { config } from "../config/index.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import { dashboardRoutes, poultryClaimRoutes } from "../constants/routes.js";
 
@@ -11,7 +10,7 @@ export const redirectPoultryNoClaimReferencePlugin = {
     name: "redirect-poultry-no-claim-reference",
     register: (server) => {
       server.ext("onPreHandler", (request, h) => {
-        if (!config.poultry.enabled || request.method !== "get") {
+        if (request.method !== "get") {
           return h.continue;
         }
 

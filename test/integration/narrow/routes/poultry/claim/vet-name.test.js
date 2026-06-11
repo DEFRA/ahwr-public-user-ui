@@ -11,7 +11,6 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
-import { config } from "../../../../../../app/config/index.js";
 
 const errorMessages = {
   enterName: "Enter the vet's name",
@@ -28,8 +27,6 @@ describe("/poultry/vet-name", () => {
   let server;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
-
     server = await createServer();
     await server.initialize();
   });
@@ -195,7 +192,11 @@ describe("/poultry/vet-name", () => {
         error: errorMessages.nameLength,
         description: "name too long",
       },
-      { vetsName: "****", error: errorMessages.namePattern, description: "invalid characters" },
+      {
+        vetsName: "****",
+        error: errorMessages.namePattern,
+        description: "invalid characters",
+      },
     ])("returns 400 when vet name is invalid - $description", async ({ vetsName, error }) => {
       const options = {
         method: "POST",

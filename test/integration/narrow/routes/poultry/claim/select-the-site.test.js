@@ -22,7 +22,6 @@ describe("/poultry/select-site", () => {
   let server;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     setSessionData.mockImplementation(() => {});
     server = await createServer();
     await server.initialize();

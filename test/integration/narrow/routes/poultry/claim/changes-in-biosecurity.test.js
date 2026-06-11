@@ -9,7 +9,6 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
-import { config } from "../../../../../../app/config/index.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
@@ -29,7 +28,6 @@ describe("/poultry/changes-in-biosecurity", () => {
   });
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     server = await createServer();
     await server.initialize();
     setSessionData.mockImplementation(() => {});

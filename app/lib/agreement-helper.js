@@ -1,6 +1,5 @@
 import { APPLICATION_REFERENCE_PREFIX_POULTRY } from "ffc-ahwr-common-library";
 
-import { config } from "../config/index.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import {
   allPoultryRoutes,
@@ -10,10 +9,7 @@ import {
 } from "../constants/routes.js";
 
 export const checkIfPoultryAgreement = (latestEndemicsApplication) => {
-  return (
-    latestEndemicsApplication?.reference?.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY) &&
-    config.poultry.enabled
-  );
+  return latestEndemicsApplication?.reference?.startsWith(APPLICATION_REFERENCE_PREFIX_POULTRY);
 };
 
 const userHasLivestockAgreement = (request) => {

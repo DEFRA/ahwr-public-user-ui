@@ -11,7 +11,6 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
-import { config } from "../../../../../../app/config/index.js";
 import { getClaimsCount } from "../../../../../../app/api-requests/claim-api.js";
 import { POULTRY_SCHEME } from "ffc-ahwr-common-library";
 
@@ -29,7 +28,6 @@ describe("/enter-cph-number tests", () => {
 
   beforeAll(async () => {
     setSessionData.mockImplementation(() => {});
-    config.poultry.enabled = true;
     server = await createServer();
     await server.initialize();
   });

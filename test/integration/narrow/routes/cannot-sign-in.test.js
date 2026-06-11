@@ -5,7 +5,6 @@ import { getSignOutUrl } from "../../../../app/routes/sign-out.js";
 import { clearAuthCookie } from "../../../../app/auth/cookie-auth/cookie-auth.js";
 import { setSessionForErrorPage } from "../../../../app/routes/utils/check-login-valid.js";
 import { requestAuthorizationCodeUrl } from "../../../../app/auth/auth-code-grant/request-authorization-code-url.js";
-import { config } from "../../../../app/config/index.js";
 
 jest.mock("../../../../app/session/index.js");
 jest.mock("../../../../app/auth/cookie-auth/cookie-auth.js");
@@ -113,8 +112,7 @@ describe("GET /cannot-sign-in handler", () => {
     const error = "NoEligibleCphError";
     const hasMultipleBusinesses = false;
 
-    test("it does not show 9000 poultry text when poultry is enabled", async () => {
-      config.poultry.enabled = true;
+    test("it does not show 9000 poultry text", async () => {
       getSessionData.mockReturnValue({ error, hasMultipleBusinesses, organisation });
 
       const res = await server.inject({
@@ -127,22 +125,6 @@ describe("GET /cannot-sign-in handler", () => {
 
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(res.payload).not.toContain("a 9000 number used for poultry keepers");
-    });
-
-    test("it shows 9000 poultry text when poultry is disabled", async () => {
-      config.poultry.enabled = false;
-      getSessionData.mockReturnValue({ error, hasMultipleBusinesses, organisation });
-
-      const res = await server.inject({
-        url: "/cannot-sign-in",
-        auth: {
-          credentials: {},
-          strategy: "cookie",
-        },
-      });
-
-      expect(res.statusCode).toBe(StatusCodes.OK);
-      expect(res.payload).toContain("a 9000 number used for poultry keepers");
     });
   });
 });

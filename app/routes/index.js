@@ -1,4 +1,3 @@
-import { config } from "../config/index.js";
 import { dashboardRoutes } from "../constants/routes.js";
 
 export const entryPointHandlers = [
@@ -7,9 +6,7 @@ export const entryPointHandlers = [
     path: "/",
     options: {
       handler: async (_request, h) => {
-        return h.redirect(
-          config.poultry.enabled ? dashboardRoutes.selectFunding : dashboardRoutes.manageYourClaims,
-        );
+        return h.redirect(dashboardRoutes.selectFunding);
       },
     },
   },

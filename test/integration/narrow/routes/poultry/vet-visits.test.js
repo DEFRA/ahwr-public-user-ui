@@ -1,5 +1,4 @@
 import { setServerState } from "../../../../helpers/set-server-state.js";
-import { config } from "../../../../../app/config/index.js";
 import { createServer } from "../../../../../app/server.js";
 import { load } from "cheerio";
 import { getClaimsByApplicationReference } from "../../../../../app/api-requests/claim-api.js";
@@ -41,7 +40,6 @@ describe("GET /vet-visits", () => {
   let server;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     server = await createServer();
     await server.initialize();
   });
