@@ -2,7 +2,12 @@ import { when } from "jest-when";
 import { config } from "../config/index.js";
 import { checkIfPoultryAgreement, shouldShowManageYourClaims } from "./agreement-helper.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { applyRoutes, dashboardRoutes, poultryApplyRoutes } from "../constants/routes.js";
+import {
+  applyRoutes,
+  dashboardRoutes,
+  loginRoutes,
+  poultryApplyRoutes,
+} from "../constants/routes.js";
 
 jest.mock("../session/index.js");
 
@@ -74,6 +79,15 @@ describe("shouldShowManageYourClaims", () => {
 
   test("returns false when path is /select-funding", () => {
     const request = { path: dashboardRoutes.selectFunding };
+
+    const actual = shouldShowManageYourClaims(request);
+
+    expect(actual).toBe(false);
+    expect(getSessionData).not.toHaveBeenCalled();
+  });
+
+  test("returns false when path is /signin-oidc", () => {
+    const request = { path: loginRoutes.signInOidc };
 
     const actual = shouldShowManageYourClaims(request);
 
