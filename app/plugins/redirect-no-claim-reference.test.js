@@ -69,4 +69,21 @@ describe("redirectNoClaimReferencePlugin", () => {
 
     expect(response.statusCode).toBe(200);
   });
+
+  it("does not redirect on included route and method is POST", async () => {
+    server.route({
+      method: "POST",
+      path: claimRoutes.checkAnswers,
+      handler: () => "ok",
+    });
+
+    getSessionData.mockReturnValue(undefined);
+
+    const response = await server.inject({
+      method: "POST",
+      url: claimRoutes.checkAnswers,
+    });
+
+    expect(response.statusCode).toBe(200);
+  });
 });
