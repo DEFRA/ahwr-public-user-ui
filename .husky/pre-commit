@@ -1,2 +1,2 @@
-pre-commit run --all-files
-nano-staged
+pre-commit run
+nano-staged --quiet
