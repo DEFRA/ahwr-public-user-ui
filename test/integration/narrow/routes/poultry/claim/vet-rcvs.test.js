@@ -9,7 +9,6 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
-import { config } from "../../../../../../app/config/index.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/session/index.js");
@@ -26,7 +25,6 @@ describe("/poultry/vet-rcvs", () => {
   let server;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     setSessionData.mockImplementation(() => {});
     server = await createServer();
     await server.initialize();
@@ -149,7 +147,11 @@ describe("/poultry/vet-rcvs", () => {
     });
 
     test.each([
-      { vetRCVSNumber: undefined, errorMessage: errorMessages.enterRCVS, expectedVal: undefined },
+      {
+        vetRCVSNumber: undefined,
+        errorMessage: errorMessages.enterRCVS,
+        expectedVal: undefined,
+      },
       { vetRCVSNumber: null, errorMessage: errorMessages.enterRCVS, expectedVal: undefined },
       { vetRCVSNumber: "", errorMessage: errorMessages.enterRCVS, expectedVal: "" },
       {
@@ -157,8 +159,16 @@ describe("/poultry/vet-rcvs", () => {
         errorMessage: errorMessages.validRCVS,
         expectedVal: "not-valid-ref",
       },
-      { vetRCVSNumber: "123456A", errorMessage: errorMessages.validRCVS, expectedVal: "123456A" },
-      { vetRCVSNumber: "12345678", errorMessage: errorMessages.validRCVS, expectedVal: "12345678" },
+      {
+        vetRCVSNumber: "123456A",
+        errorMessage: errorMessages.validRCVS,
+        expectedVal: "123456A",
+      },
+      {
+        vetRCVSNumber: "12345678",
+        errorMessage: errorMessages.validRCVS,
+        expectedVal: "12345678",
+      },
     ])(
       "returns 400 when payload is invalid - %p",
       async ({ vetRCVSNumber, errorMessage, expectedVal }) => {

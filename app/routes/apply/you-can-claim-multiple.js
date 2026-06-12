@@ -11,7 +11,6 @@ import { getUserTypeByApplication } from "../../lib/get-user-type-by-application
 import { getApplicationsBySbi } from "../../api-requests/application-api.js";
 import { preApplyHandler } from "../../lib/pre-apply-handler.js";
 import { JOURNEY } from "../../constants/constants.js";
-import { config } from "../../config/index.js";
 
 export const claimMultipleRouteHandlers = [
   {
@@ -49,7 +48,6 @@ export const claimMultipleRouteHandlers = [
         return h.view(applyViews.youCanClaimMultiple, {
           backLink: dashboardRoutes.checkDetails,
           organisation,
-          poultryEnabled: config.poultry.enabled,
         });
       },
     },

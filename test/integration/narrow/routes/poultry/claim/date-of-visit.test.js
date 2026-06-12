@@ -1,6 +1,5 @@
 import * as cheerio from "cheerio";
 import { axe } from "../../../../../helpers/axe-helper.js";
-import { config } from "../../../../../../app/config/index.js";
 import { createServer } from "../../../../../../app/server.js";
 import expectPhaseBanner from "assert";
 import {
@@ -27,8 +26,6 @@ jest.mock("../../../../../../app/logging/logger.js", () => ({
   ...jest.requireActual("../../../../../../app/logging/logger.js"),
   trackEvent: jest.fn(),
 }));
-
-config.poultry.enabled = true;
 
 const auth = { credentials: {}, strategy: "cookie" };
 const url = "/poultry/date-of-visit";

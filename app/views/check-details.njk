@@ -23,9 +23,17 @@
       }) }}
     {% endif %}
     <h1 class="govuk-heading-l">Check your details</h1>
+    <p class="govuk-body">If these details are incorrect, you need to update them before you can get funding to Improve Animal Health and Welfare (IAHW).</p>
+    <h2 class="govuk-heading-m">Business details</h2>
     {{ govukSummaryList({
-      rows: listData.rows
+      rows: businessRows
     }) }}
+
+    <h2 class="govuk-heading-m">Personal details</h2>
+    {{ govukSummaryList({
+      rows: personalRows
+    }) }}
+
     <form method="POST" autocomplete="off" novalidate="novalidate">
       <input type="hidden" name="crumb" value="{{crumb}}"/>
       {{ govukRadios(radios) }}

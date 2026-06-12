@@ -2,7 +2,6 @@ import { healthHandlers } from "../routes/health.js";
 import { assetsRouteHandlers } from "../routes/assets.js";
 import { cookieHandlers } from "../routes/cookies.js";
 import { entryPointHandlers } from "../routes/index.js";
-import { checkDetailsHandlers } from "../routes/check-details.js";
 import { updateDetailsHandlers } from "../routes/update-details.js";
 import { signinRouteHandlers } from "../routes/signin-oidc.js";
 import { downloadApplicationHandlers } from "../routes/download-application.js";
@@ -77,7 +76,7 @@ import { poultryChangesInBiosecurityHandlers } from "../routes/poultry/claim/cha
 import { poultryBiosecurityCostOfChangesHandlers } from "../routes/poultry/claim/biosecurity-cost-of-changes.js";
 import { poultryInterviewHandlers } from "../routes/poultry/claim/interview.js";
 import { poultryConfirmationHandlers } from "../routes/poultry/claim/confirmation.js";
-import { poultryCheckDetailsHandlers } from "../routes/poultry/check-details.js";
+import { checkDetailsHandlers } from "../routes/check-details.js";
 
 const alwaysOnRoutes = [
   healthHandlers,
@@ -93,6 +92,7 @@ const alwaysOnRoutes = [
   cannotSignInExceptionHandlers,
   defraIdSignInHandlers,
   missingPagesRoutes,
+  checkDetailsHandlers,
   // Apply routes
   declarationRouteHandlers,
   numbersRouteHandlers,
@@ -161,20 +161,13 @@ const poultryRoutes = [
   poultryBiosecurityCostOfChangesHandlers,
   poultryInterviewHandlers,
   poultryConfirmationHandlers,
-  poultryCheckDetailsHandlers,
 ].flat();
-
-const livestockRoutes = [checkDetailsHandlers].flat();
 
 let routes;
 const mapRoutes = () => {
   routes = alwaysOnRoutes;
 
-  if (config.poultry.enabled) {
-    routes = routes.concat(poultryRoutes);
-  } else {
-    routes = routes.concat(livestockRoutes);
-  }
+  routes = routes.concat(poultryRoutes);
 
   if (config.devLogin.enabled) {
     routes = routes.concat(devLoginHandlers);

@@ -8,7 +8,6 @@ import {
 } from "../../../../../app/session/index.js";
 import { getCrumbs } from "../../../../utils/get-crumbs.js";
 import { when, resetAllWhenMocks } from "jest-when";
-import { config } from "../../../../../app/config/index.js";
 
 jest.mock("../../../../../app/session/index.js");
 jest.mock("../../../../../app/auth/cookie-auth/cookie-auth.js");
@@ -18,7 +17,6 @@ describe("/check-details", () => {
   let crumb;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     server = await createServer();
     crumb = await getCrumbs(server);
   });

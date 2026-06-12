@@ -11,7 +11,6 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
-import { config } from "../../../../../../app/config/index.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -25,7 +24,6 @@ describe("/site-others-on-sbi tests", () => {
   let crumb;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     setSessionData.mockImplementation(() => {});
     server = await createServer();
     await server.initialize();

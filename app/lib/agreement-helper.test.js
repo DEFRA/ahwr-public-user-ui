@@ -1,5 +1,4 @@
 import { when } from "jest-when";
-import { config } from "../config/index.js";
 import { checkIfPoultryAgreement, shouldShowManageYourClaims } from "./agreement-helper.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import {
@@ -42,18 +41,10 @@ describe("checkIfPoultryAgreement", () => {
     expect(actual).toBeFalsy();
   });
 
-  test("reference starts with POUL and flag is on", () => {
-    config.poultry.enabled = true;
+  test("reference starts with POUL", () => {
     const actual = checkIfPoultryAgreement({ reference: "POUL-83720-38287" });
 
     expect(actual).toBeTruthy();
-  });
-
-  test("reference starts with POUL and flag is off", () => {
-    config.poultry.enabled = false;
-    const actual = checkIfPoultryAgreement({ reference: "POUL-83720-38287" });
-
-    expect(actual).toBeFalsy();
   });
 
   test("reference starts with something else", () => {

@@ -8,7 +8,6 @@ import {
   sessionKeys,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
-import { config } from "../../../../../../app/config/index.js";
 
 jest.mock("../../../../../../app/session");
 
@@ -16,7 +15,6 @@ describe("Claim confirmation", () => {
   let server;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     server = await createServer();
     await server.initialize();
 

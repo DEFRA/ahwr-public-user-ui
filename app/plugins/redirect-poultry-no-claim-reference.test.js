@@ -1,7 +1,6 @@
 import Hapi from "@hapi/hapi";
 import { redirectPoultryNoClaimReferencePlugin } from "./redirect-poultry-no-claim-reference.js";
 import { dashboardRoutes, poultryClaimRoutes } from "../constants/routes.js";
-import { config } from "../config/index.js";
 
 import { getSessionData } from "../session/index.js";
 
@@ -21,7 +20,6 @@ describe("redirectPoultryNoClaimReferencePlugin", () => {
       handler: () => "ok",
     });
     await server.register(redirectPoultryNoClaimReferencePlugin);
-    config.poultry.enabled = true;
   });
 
   afterEach(async () => {
@@ -67,19 +65,6 @@ describe("redirectPoultryNoClaimReferencePlugin", () => {
     const response = await server.inject({
       method: "GET",
       url: poultryClaimRoutes.dateOfVisit,
-    });
-
-    expect(response.statusCode).toBe(200);
-  });
-
-  it("does not redirect when poultry feature is disabled", async () => {
-    config.poultry.enabled = false;
-
-    getSessionData.mockReturnValue(undefined);
-
-    const response = await server.inject({
-      method: "GET",
-      url: poultryClaimRoutes.checkAnswers,
     });
 
     expect(response.statusCode).toBe(200);

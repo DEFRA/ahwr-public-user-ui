@@ -3,7 +3,7 @@ import joi from "joi";
 import { StatusCodes } from "http-status-codes";
 import { getSessionData, sessionEntryKeys, setSessionEntry } from "../session/index.js";
 import { config } from "../config/index.js";
-import { applyRoutes } from "../constants/routes.js";
+import { dashboardRoutes } from "../constants/routes.js";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 
 export const checkDetailsHandlers = [
@@ -64,13 +64,7 @@ export const checkDetailsHandlers = [
         );
 
         if (confirmCheckDetails === "yes") {
-          const redirectToApply = getSessionData(request, sessionEntryKeys.signInRedirect);
-
-          if (redirectToApply === true) {
-            return h.redirect(applyRoutes.youCanClaimMultiple);
-          }
-
-          return h.redirect("/vet-visits");
+          return h.redirect(dashboardRoutes.selectFunding);
         }
 
         return h.view("update-details", {

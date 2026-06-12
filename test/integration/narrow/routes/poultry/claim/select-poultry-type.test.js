@@ -8,7 +8,6 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
-import { config } from "../../../../../../app/config/index.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
 
 const auth = { credentials: { reference: "1111", sbi: "111111111" }, strategy: "cookie" };
@@ -21,7 +20,6 @@ describe("/poultry/select-poultry-type", () => {
   let crumb;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     setSessionData.mockImplementation(() => {});
     server = await createServer();
     await server.initialize();

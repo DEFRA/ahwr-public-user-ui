@@ -10,7 +10,6 @@ import {
 } from "../../../../../../app/session/index.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
-import { config } from "../../../../../../app/config/index.js";
 
 const auth = { credentials: { reference: "1111", sbi: "111111111" }, strategy: "cookie" };
 const url = "/poultry/enter-site-name";
@@ -22,7 +21,6 @@ describe("/poultry/enter-site-name", () => {
   let crumb;
 
   beforeAll(async () => {
-    config.poultry.enabled = true;
     setSessionData.mockImplementation(() => {});
     server = await createServer();
     await server.initialize();

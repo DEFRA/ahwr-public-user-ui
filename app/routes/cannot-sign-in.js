@@ -69,7 +69,6 @@ export const cannotSignInExceptionHandlers = [
           organisationName: organisation.name,
           signOutLink,
           privacyPolicyUri: config.privacyPolicyUri,
-          poultryEnabled: config.poultry.enabled,
         });
       },
     },

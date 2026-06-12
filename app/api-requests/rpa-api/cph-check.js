@@ -1,5 +1,3 @@
-import { config } from "../../config/index.js";
-
 const between = (x, min, max) => {
   return x >= min && x <= max;
 };
@@ -28,10 +26,6 @@ const restrictedToCattlePigAndSheepLivestock = (cphNumber) => {
 };
 
 const restrictedToPoultry = (cphNumber) => {
-  if (!config.poultry.enabled) {
-    return false;
-  }
-
   const sliceNo = -4;
   const poultry = {
     MIN: 9000,
