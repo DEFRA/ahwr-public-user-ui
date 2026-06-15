@@ -191,6 +191,62 @@ describe("GET /date-of-visit handler", () => {
     expectPhaseBanner.ok($);
   });
 
+  test("shows the follow-up heading and links back to the old world review test results for an endemics cattle claim with no relevant new world claims", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        latestEndemicsApplication,
+        latestVetVisitApplication,
+        typeOfReview: "FOLLOW_UP",
+        typeOfLivestock: "beef",
+        previousClaims: [],
+        reference: "TEMP-6GSE-PIR8",
+      });
+    const options = {
+      method: "GET",
+      url,
+      auth,
+    };
+
+    const res = await server.inject(options);
+
+    expect(await axe(res.payload)).toHaveNoViolations();
+    expect(res.statusCode).toBe(200);
+    const $ = cheerio.load(res.payload);
+    expect($("h1").text().trim()).toBe("Date of follow-up");
+    expect($("title").text()).toMatch(/^Date of follow-up - /);
+    expect($(".govuk-back-link").attr("href")).toBe("/vet-visits-review-test-results");
+    expectPhaseBanner.ok($);
+  });
+
+  test("shows the review heading and links back to which-type-of-review for a review claim", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        latestEndemicsApplication,
+        latestVetVisitApplication,
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "beef",
+        previousClaims: [],
+        reference: "TEMP-6GSE-PIR8",
+      });
+    const options = {
+      method: "GET",
+      url,
+      auth,
+    };
+
+    const res = await server.inject(options);
+
+    expect(await axe(res.payload)).toHaveNoViolations();
+    expect(res.statusCode).toBe(200);
+    const $ = cheerio.load(res.payload);
+    expect($("h1").text().trim()).toBe("Date of review");
+    expect($("title").text()).toMatch(/^Date of review - /);
+    expect($(".govuk-back-link").attr("href")).toBe("/which-type-of-review");
+    expectPhaseBanner.ok($);
+  });
+
   test("when not logged in redirects to /sign-in", async () => {
     const options = {
       method: "GET",
@@ -1787,6 +1843,114 @@ describe("POST /date-of-visit handler", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/date-of-testing");
       expect(trackEvent).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("pigs sample data", () => {
+    test("clears the previously entered sample data when a pigs claim is before the pigs-and-payments release", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [],
+          typeOfLivestock: "pigs",
+          organisation: {
+            name: "Farmer Johns",
+            sbi: "12345",
+          },
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestVetVisitApplication,
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = {
+        method: "POST",
+        url,
+        payload: {
+          crumb,
+          /* before PIGS_AND_PAYMENTS_RELEASE_DATE (2026-01-22) */
+          "visit-date-day": "01",
+          "visit-date-month": "01",
+          "visit-date-year": "2025",
+        },
+        auth,
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "typeOfSamplesTaken",
+        undefined,
+        { shouldEmitEvent: false },
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "numberOfBloodSamples",
+        undefined,
+        { shouldEmitEvent: false },
+      );
+    });
+
+    test("does not clear the sample data when a pigs claim is on or after the pigs-and-payments release", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [],
+          typeOfLivestock: "pigs",
+          organisation: {
+            name: "Farmer Johns",
+            sbi: "12345",
+          },
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestVetVisitApplication,
+          /* flag rejecting MH T&Cs keeps us on the non-multiple-herds journey */
+          latestEndemicsApplication: {
+            ...latestEndemicsApplication,
+            flags: [{ appliesToMh: true }],
+          },
+          dateOfVisit: "2026-01-22",
+        });
+      const options = {
+        method: "POST",
+        url,
+        payload: {
+          crumb,
+          /* see PIGS_AND_PAYMENTS_RELEASE_DATE (2026-01-22) */
+          "visit-date-day": "22",
+          "visit-date-month": "01",
+          "visit-date-year": "2026",
+        },
+        auth,
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).not.toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "typeOfSamplesTaken",
+        undefined,
+        { shouldEmitEvent: false },
+      );
+      expect(setSessionData).not.toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "numberOfBloodSamples",
+        undefined,
+        { shouldEmitEvent: false },
+      );
     });
   });
 
