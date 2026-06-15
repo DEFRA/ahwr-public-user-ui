@@ -457,6 +457,57 @@ describe("Date of testing", () => {
     });
 
     describe("date checks", () => {
+      test.each([
+        {
+          scenario: "the date is incomplete",
+          day: "15",
+          month: "03",
+          year: "",
+          error: "Date of sampling must include a year",
+        },
+        {
+          scenario: "the day cannot exist for the month entered",
+          day: "31",
+          month: "02",
+          year: "2023",
+          error: "Date of sampling must be a real date",
+        },
+        {
+          scenario: "the year is out of range",
+          day: "15",
+          month: "03",
+          year: "10000",
+          error: "Year must include 4 numbers",
+        },
+      ])("redirects with an error when $scenario", async ({ day, month, year, error }) => {
+        getSessionData.mockImplementation(() => ({
+          dateOfVisit: "2024-01-01",
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "beef",
+          latestEndemicsApplication,
+        }));
+        const res = await server.inject({
+          method: "POST",
+          url,
+          payload: {
+            crumb,
+            whenTestingWasCarriedOut: "onAnotherDate",
+            dateOfVisit: "2024-01-01",
+            dateOfAgreementAccepted: "2022-01-01",
+            "on-another-date-day": day,
+            "on-another-date-month": month,
+            "on-another-date-year": year,
+          },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect($(".govuk-error-summary__list a").text()).toContain(error);
+      });
+
       test("redirects with an error if the sampling date is in the future", async () => {
         getSessionData.mockImplementation(() => ({
           dateOfVisit: "2024-01-01",

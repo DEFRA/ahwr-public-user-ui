@@ -213,12 +213,6 @@ const postHandler = {
                   }
 
                   if (
-                    value.whenTestingWasCarriedOut === "whenTheVetVisitedTheFarmToCarryOutTheReview"
-                  ) {
-                    return value;
-                  }
-
-                  if (
                     !isValidDate(
                       +helpers.state.ancestors[0][`${onAnotherDateInputId}-year`],
                       +helpers.state.ancestors[0][`${onAnotherDateInputId}-month`],
