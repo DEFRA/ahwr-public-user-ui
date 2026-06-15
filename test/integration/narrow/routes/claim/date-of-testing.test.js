@@ -198,7 +198,7 @@ describe("Date of testing", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("should redirect with an error if the user doesnt enter anything", async () => {
+    test("redirects with an error if the user doesnt enter anything", async () => {
       getSessionData.mockImplementation(() => ({
         dateOfVisit: "2024-01-01",
         typeOfReview: "FOLLOW_UP",
@@ -236,7 +236,7 @@ describe("Date of testing", () => {
       expect($("li > a").text().trim()).toContain(errorMessage);
     });
 
-    test("should redirect with an error if the user selects it was a different date, but doesnt enter a date", async () => {
+    test("redirects with an error if the user selects it was a different date, but doesnt enter a date", async () => {
       getSessionData.mockImplementation(() => ({
         dateOfVisit: "2024-01-01",
         typeOfReview: "FOLLOW_UP",
@@ -309,7 +309,7 @@ describe("Date of testing", () => {
       },
     );
 
-    test("should redirect to species numbers when endemics claim and previous review claim of different species with date of testing less than date of visit", async () => {
+    test("redirects to species numbers when endemics claim and previous review claim of different species with date of testing less than date of visit", async () => {
       getSessionData.mockRestore();
       getSessionData.mockImplementation(() => ({
         dateOfVisit: "2024-01-01",
@@ -347,45 +347,6 @@ describe("Date of testing", () => {
       expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
       expect(res.headers.location).toEqual("/species-numbers");
       expect(sendInvalidDataEvent).toHaveBeenCalledTimes(0);
-    });
-
-    test("should emit an invalid event when the date of visit is over 4 months away from the date of testing", async () => {
-      getSessionData.mockImplementation(() => ({
-        dateOfVisit: "2024-01-01",
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            type: "REVIEW",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-01-01",
-              testResults: "negative",
-            },
-          },
-        ],
-      }));
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          whenTestingWasCarriedOut: "onAnotherDate",
-          dateOfVisit: "2024-01-01",
-          dateOfAgreementAccepted: "2022-01-01",
-          "on-another-date-day": "01",
-          "on-another-date-month": "01",
-          "on-another-date-year": "2023",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(sendInvalidDataEvent).toHaveBeenCalled();
-      expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
-      expect(res.headers.location).toEqual("/species-numbers");
     });
 
     test("review claim proceeds to species numbers even when sampling date is before a previous review of the same species", async () => {
@@ -427,193 +388,236 @@ describe("Date of testing", () => {
       expect(sendInvalidDataEvent).toHaveBeenCalledTimes(0);
     });
 
-    test("saves the visit date as the sampling date when the vet-visit option is chosen", async () => {
-      getSessionData.mockImplementation(() => ({
-        dateOfVisit: today,
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "beef",
-      }));
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          whenTestingWasCarriedOut: "whenTheVetVisitedTheFarmToCarryOutTheReview",
+    describe("Saving information", () => {
+      test("saves the visit date as the sampling date when the vet-visit option is chosen", async () => {
+        getSessionData.mockImplementation(() => ({
           dateOfVisit: today,
-          dateOfAgreementAccepted: "2022-01-01",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
-      expect(setSessionData).toHaveBeenCalledWith(
-        expect.any(Object),
-        "endemicsClaim",
-        "dateOfTesting",
-        today,
-      );
-    });
-
-    test("saves the entered sampling date when another date is chosen", async () => {
-      getSessionData.mockImplementation(() => ({
-        dateOfVisit: "2024-01-01",
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            type: "REVIEW",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-01-01",
-              testResults: "negative",
-            },
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "beef",
+        }));
+        const options = {
+          method: "POST",
+          url,
+          payload: {
+            crumb,
+            whenTestingWasCarriedOut: "whenTheVetVisitedTheFarmToCarryOutTheReview",
+            dateOfVisit: today,
+            dateOfAgreementAccepted: "2022-01-01",
           },
-        ],
-      }));
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          whenTestingWasCarriedOut: "onAnotherDate",
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
+
+        const res = await server.inject(options);
+
+        expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
+        expect(setSessionData).toHaveBeenCalledWith(
+          expect.any(Object),
+          "endemicsClaim",
+          "dateOfTesting",
+          today,
+        );
+      });
+
+      test("saves the entered sampling date when another date is chosen", async () => {
+        getSessionData.mockImplementation(() => ({
           dateOfVisit: "2024-01-01",
-          dateOfAgreementAccepted: "2022-01-01",
-          "on-another-date-day": "01",
-          "on-another-date-month": "12",
-          "on-another-date-year": "2023",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
-      expect(setSessionData).toHaveBeenCalledWith(
-        expect.any(Object),
-        "endemicsClaim",
-        "dateOfTesting",
-        new Date(2023, 11, 1),
-      );
-    });
-
-    test("should redirect with an error if the sampling date is in the future", async () => {
-      getSessionData.mockImplementation(() => ({
-        dateOfVisit: "2024-01-01",
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        latestEndemicsApplication,
-      }));
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          whenTestingWasCarriedOut: "onAnotherDate",
-          dateOfVisit: "2024-01-01",
-          dateOfAgreementAccepted: "2022-01-01",
-          "on-another-date-day": `${tomorrow.getDate()}`,
-          "on-another-date-month": `${tomorrow.getMonth() + 1}`,
-          "on-another-date-year": `${tomorrow.getFullYear()}`,
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-
-      expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect($("li > a").text().trim()).toContain(
-        "The date samples were taken must be in the past",
-      );
-    });
-
-    test("should redirect with an error if the sampling date is before the agreement date", async () => {
-      getSessionData.mockImplementation(() => ({
-        dateOfVisit: "2024-01-01",
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        latestEndemicsApplication,
-      }));
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          whenTestingWasCarriedOut: "onAnotherDate",
-          dateOfVisit: "2024-01-01",
-          dateOfAgreementAccepted: "2022-01-01",
-          "on-another-date-day": "31",
-          "on-another-date-month": "12",
-          "on-another-date-year": "2021",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-
-      expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect($("li > a").text().trim()).toContain(
-        "The date samples were taken must be the same as or after the date of your agreement",
-      );
-    });
-
-    test("should redirect to date of testing exception when endemics claim and previous review claim of same species with date of testing less than date of visit", async () => {
-      getSessionData.mockRestore();
-      getSessionData.mockImplementation(() => ({
-        dateOfVisit: "2024-01-01",
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "sheep",
-        previousClaims: [
-          {
-            type: "REVIEW",
-            data: {
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2024-01-01",
-              testResults: "negative",
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              type: "REVIEW",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-01-01",
+                testResults: "negative",
+              },
             },
+          ],
+        }));
+        const options = {
+          method: "POST",
+          url,
+          payload: {
+            crumb,
+            whenTestingWasCarriedOut: "onAnotherDate",
+            dateOfVisit: "2024-01-01",
+            dateOfAgreementAccepted: "2022-01-01",
+            "on-another-date-day": "01",
+            "on-another-date-month": "12",
+            "on-another-date-year": "2023",
           },
-        ],
-      }));
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
 
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          whenTestingWasCarriedOut: "onAnotherDate",
+        const res = await server.inject(options);
+
+        expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
+        expect(setSessionData).toHaveBeenCalledWith(
+          expect.any(Object),
+          "endemicsClaim",
+          "dateOfTesting",
+          new Date(2023, 11, 1),
+        );
+      });
+    });
+
+    describe("date checks", () => {
+      test("redirects with an error if the sampling date is in the future", async () => {
+        getSessionData.mockImplementation(() => ({
           dateOfVisit: "2024-01-01",
-          dateOfAgreementAccepted: "2022-01-01",
-          "on-another-date-day": "01",
-          "on-another-date-month": "12",
-          "on-another-date-year": "2023",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "beef",
+          previousClaims: [],
+          latestEndemicsApplication,
+        }));
+        const options = {
+          method: "POST",
+          url,
+          payload: {
+            crumb,
+            whenTestingWasCarriedOut: "onAnotherDate",
+            dateOfVisit: "2024-01-01",
+            dateOfAgreementAccepted: "2022-01-01",
+            "on-another-date-day": `${tomorrow.getDate()}`,
+            "on-another-date-month": `${tomorrow.getMonth() + 1}`,
+            "on-another-date-year": `${tomorrow.getFullYear()}`,
+          },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
 
-      const res = await server.inject(options);
+        const res = await server.inject(options);
 
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
 
-      expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect(sendInvalidDataEvent).toHaveBeenCalledTimes(1);
-      expect($(".govuk-body").text()).toContain(
-        "You must do a review, including sampling, before you do the resulting follow-up.",
-      );
+        expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect($("li > a").text().trim()).toContain(
+          "The date samples were taken must be in the past",
+        );
+      });
+
+      test("redirects with an error if the sampling date is before the agreement date", async () => {
+        getSessionData.mockImplementation(() => ({
+          dateOfVisit: "2024-01-01",
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "beef",
+          previousClaims: [],
+          latestEndemicsApplication,
+        }));
+        const options = {
+          method: "POST",
+          url,
+          payload: {
+            crumb,
+            whenTestingWasCarriedOut: "onAnotherDate",
+            dateOfVisit: "2024-01-01",
+            dateOfAgreementAccepted: "2022-01-01",
+            "on-another-date-day": "31",
+            "on-another-date-month": "12",
+            "on-another-date-year": "2021",
+          },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
+
+        const res = await server.inject(options);
+
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
+
+        expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect($("li > a").text().trim()).toContain(
+          "The date samples were taken must be the same as or after the date of your agreement",
+        );
+      });
+
+      test("redirects to date of testing exception when endemics claim and previous review claim of same species with date of testing less than date of visit", async () => {
+        getSessionData.mockRestore();
+        getSessionData.mockImplementation(() => ({
+          dateOfVisit: "2024-01-01",
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              type: "REVIEW",
+              data: {
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2024-01-01",
+                testResults: "negative",
+              },
+            },
+          ],
+        }));
+
+        const options = {
+          method: "POST",
+          url,
+          payload: {
+            crumb,
+            whenTestingWasCarriedOut: "onAnotherDate",
+            dateOfVisit: "2024-01-01",
+            dateOfAgreementAccepted: "2022-01-01",
+            "on-another-date-day": "01",
+            "on-another-date-month": "12",
+            "on-another-date-year": "2023",
+          },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
+
+        const res = await server.inject(options);
+
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
+
+        expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(sendInvalidDataEvent).toHaveBeenCalledTimes(1);
+        expect($(".govuk-body").text()).toContain(
+          "You must do a review, including sampling, before you do the resulting follow-up.",
+        );
+      });
+
+      test("emits an invalid event when the date of visit is over 4 months away from the date of testing", async () => {
+        getSessionData.mockImplementation(() => ({
+          dateOfVisit: "2024-01-01",
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "sheep",
+          previousClaims: [
+            {
+              type: "REVIEW",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-01-01",
+                testResults: "negative",
+              },
+            },
+          ],
+        }));
+        const options = {
+          method: "POST",
+          url,
+          payload: {
+            crumb,
+            whenTestingWasCarriedOut: "onAnotherDate",
+            dateOfVisit: "2024-01-01",
+            dateOfAgreementAccepted: "2022-01-01",
+            "on-another-date-day": "01",
+            "on-another-date-month": "01",
+            "on-another-date-year": "2023",
+          },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
+
+        const res = await server.inject(options);
+
+        expect(sendInvalidDataEvent).toHaveBeenCalled();
+        expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
+        expect(res.headers.location).toEqual("/species-numbers");
+      });
     });
   });
 });
