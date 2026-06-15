@@ -299,141 +299,124 @@ describe("POST /date-of-visit handler", () => {
   });
 
   describe("date checks", () => {
-    test("redirect back to page with errors if the entered date is of an incorrect format", async () => {
+    test.each([
+      {
+        scenario: "the entered date is of an incorrect format",
+        day: "second",
+        month: "february",
+        year: "2000",
+        error: "Enter the date of review",
+        kind: "dateEntered: 2000-february-second, dateOfAgreement: 2025-01-01",
+      },
+      {
+        scenario: "the entered date is of a correct format, but the date isn't real",
+        day: "31",
+        month: "2",
+        year: "2025",
+        error: "The date of review must be a real date",
+        kind: "dateEntered: 2025-2-31, dateOfAgreement: 2025-01-01",
+      },
+      {
+        scenario: "the entered date is before the agreement date",
+        day: "1",
+        month: "12",
+        year: "2024",
+        error: "The date of review must be the same as or after the date of your agreement",
+        kind: "dateEntered: 2024-12-1, dateOfAgreement: 2025-01-01",
+      },
+      {
+        scenario: "the entered date is in the future",
+        day: "2",
+        month: "2",
+        year: "2040",
+        error: "The date of review must be today or in the past",
+        kind: "dateEntered: 2040-2-2, dateOfAgreement: 2025-01-01",
+      },
+    ])(
+      "redirect back to page with errors if $scenario",
+      async ({ day, month, year, error, kind }) => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
+            typeOfReview: "REVIEW",
+            previousClaims: [],
+            typeOfLivestock: "beef",
+            organisation,
+            reviewTestResults: "positive",
+            reference: "TEMP-6GSE-PIR8",
+            latestEndemicsApplication,
+          });
+        const options = postOptions({ day, month, year });
+
+        const res = await server.inject(options);
+
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(400);
+        expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(error);
+        expect(trackEvent).toHaveBeenCalledWith(
+          expect.any(Object),
+          "claim-invalid-date-of-visit",
+          "review",
+          {
+            kind,
+            reason: error,
+            reference: "TEMP-6GSE-PIR8",
+          },
+        );
+      },
+    );
+
+    test("user makes a review claim and has a previous review claim for the same species within the last 10 months", async () => {
       // unhappy path
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockReturnValue({
           typeOfReview: "REVIEW",
-          previousClaims: [],
+          previousClaims: [
+            {
+              reference: "REBC-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "AGREED",
+              type: "REVIEW",
+              createdAt: "2024-12-12T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-12-12",
+              },
+            },
+          ],
           typeOfLivestock: "beef",
           organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
         });
-      const options = postOptions({ day: "second", month: "february", year: "2000" });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
+
       expect(res.statusCode).toBe(400);
-      expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
-        "Enter the date of review",
+      expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
+
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 1),
       );
       expect(trackEvent).toHaveBeenCalledWith(
         expect.any(Object),
         "claim-invalid-date-of-visit",
         "review",
         {
-          kind: "dateEntered: 2000-february-second, dateOfAgreement: 2025-01-01",
-          reason: "Enter the date of review",
-          reference: "TEMP-6GSE-PIR8",
-        },
-      );
-    });
-
-    test("redirect back to page with errors if the entered date is of a correct format, but the date isn't real", async () => {
-      // unhappy path
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValue({
-          typeOfReview: "REVIEW",
-          previousClaims: [],
-          typeOfLivestock: "beef",
-          organisation,
-          reviewTestResults: "positive",
-          reference: "TEMP-6GSE-PIR8",
-          latestEndemicsApplication,
-        });
-      const options = postOptions({ day: "31", month: "2", year: "2025" });
-
-      const res = await server.inject(options);
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
-        "The date of review must be a real date",
-      );
-      expect(trackEvent).toHaveBeenCalledWith(
-        expect.any(Object),
-        "claim-invalid-date-of-visit",
-        "review",
-        {
-          kind: "dateEntered: 2025-2-31, dateOfAgreement: 2025-01-01",
-          reason: "The date of review must be a real date",
-          reference: "TEMP-6GSE-PIR8",
-        },
-      );
-    });
-
-    test("redirect back to page with errors if the entered date is before the agreement date", async () => {
-      // unhappy path
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValue({
-          typeOfReview: "REVIEW",
-          previousClaims: [],
-          typeOfLivestock: "beef",
-          organisation,
-          reviewTestResults: "positive",
-          reference: "TEMP-6GSE-PIR8",
-          latestEndemicsApplication,
-        });
-      const options = postOptions({ day: "1", month: "12", year: "2024" });
-
-      const res = await server.inject(options);
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
-        "The date of review must be the same as or after the date of your agreement",
-      );
-      expect(trackEvent).toHaveBeenCalledWith(
-        expect.any(Object),
-        "claim-invalid-date-of-visit",
-        "review",
-        {
-          kind: "dateEntered: 2024-12-1, dateOfAgreement: 2025-01-01",
-          reason: "The date of review must be the same as or after the date of your agreement",
-          reference: "TEMP-6GSE-PIR8",
-        },
-      );
-    });
-
-    test("redirect back to page with errors if the entered date is in the future", async () => {
-      // unhappy path
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValue({
-          typeOfReview: "REVIEW",
-          previousClaims: [],
-          typeOfLivestock: "beef",
-          organisation,
-          reviewTestResults: "positive",
-          reference: "TEMP-6GSE-PIR8",
-          latestEndemicsApplication,
-        });
-      const options = postOptions({ day: "2", month: "2", year: "2040" });
-
-      const res = await server.inject(options);
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
-        "The date of review must be today or in the past",
-      );
-      expect(trackEvent).toHaveBeenCalledWith(
-        expect.any(Object),
-        "claim-invalid-date-of-visit",
-        "review",
-        {
-          kind: "dateEntered: 2040-2-2, dateOfAgreement: 2025-01-01",
-          reason: "The date of review must be today or in the past",
+          kind: "2025-01-01 is invalid",
+          reason: "There must be at least 10 months between your reviews.",
           reference: "TEMP-6GSE-PIR8",
         },
       );
@@ -500,61 +483,6 @@ describe("POST /date-of-visit handler", () => {
         new Date(2025, 0, 1),
       );
       expect(trackEvent).not.toHaveBeenCalledWith();
-    });
-
-    test("user makes a review claim and has a previous review claim for the same species within the last 10 months", async () => {
-      // unhappy path
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValue({
-          typeOfReview: "REVIEW",
-          previousClaims: [
-            {
-              reference: "REBC-C2EA-C718",
-              applicationReference: "AHWR-2470-6BA9",
-              status: "AGREED",
-              type: "REVIEW",
-              createdAt: "2024-12-12T10:25:11.318Z",
-              data: {
-                typeOfLivestock: "beef",
-                dateOfVisit: "2024-12-12",
-              },
-            },
-          ],
-          typeOfLivestock: "beef",
-          organisation,
-          reviewTestResults: "positive",
-          reference: "TEMP-6GSE-PIR8",
-          latestEndemicsApplication,
-          dateOfVisit: "2025-01-01",
-        });
-      const options = postOptions({ day: "01", month: "01", year: "2025" });
-
-      const res = await server.inject(options);
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-
-      expect(res.statusCode).toBe(400);
-      expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-      expect(sendInvalidDataEvent).toHaveBeenCalled();
-
-      expect(setSessionData).toHaveBeenCalledWith(
-        expect.any(Object),
-        "endemicsClaim",
-        "dateOfVisit",
-        new Date(2025, 0, 1),
-      );
-      expect(trackEvent).toHaveBeenCalledWith(
-        expect.any(Object),
-        "claim-invalid-date-of-visit",
-        "review",
-        {
-          kind: "2025-01-01 is invalid",
-          reason: "There must be at least 10 months between your reviews.",
-          reference: "TEMP-6GSE-PIR8",
-        },
-      );
     });
 
     test("user makes a review claim and has a previous review claim for the same species over 10 months ago", async () => {
