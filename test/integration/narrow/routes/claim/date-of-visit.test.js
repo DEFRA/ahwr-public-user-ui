@@ -440,7 +440,7 @@ describe("POST /date-of-visit handler", () => {
     });
   });
 
-  describe("makre review claims", () => {
+  describe("make review claims", () => {
     test("user makes a review claim and has zero previous claims", async () => {
       // happy path
       when(getSessionData)
