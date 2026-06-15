@@ -3,14 +3,13 @@ import { createServer } from "../../../../../app/server.js";
 import { load } from "cheerio";
 import { getClaimsByApplicationReference } from "../../../../../app/api-requests/claim-api.js";
 import { axe } from "../../../../helpers/axe-helper.js";
+import { findLinkByText } from "../../../../helpers/find-link-by-text.js";
 
 jest.mock("../../../../../app/api-requests/claim-api.js");
 jest.mock("../../../../../app/auth/auth-code-grant/request-authorization-code-url.js", () => ({
   requestAuthorizationCodeUrl: jest.fn().mockReturnValue("auth-code-url"),
 }));
 jest.mock("../../../../../app/lib/context-helper.js");
-
-const findLinkByText = ($, text) => $("a").filter((_, el) => $(el).text().trim() === text);
 
 const cleanText = (text) => text.replace(/\s+/g, " ").trim();
 
@@ -36,7 +35,36 @@ const getTableCells = ($) => {
   return rows;
 };
 
-describe("GET /vet-visits", () => {
+const TEST_SBI = "123123123";
+
+const baseOrganisation = {
+  sbi: TEST_SBI,
+  name: "TEST FARM",
+  farmerName: "Farmer Joe",
+};
+
+const agreedPoultryApplication = {
+  sbi: TEST_SBI,
+  type: "EE",
+  reference: "POUL-1LZ5-ELVQ",
+  createdAt: "2026-01-03",
+  redacted: false,
+  status: "AGREED",
+};
+
+const baseState = {
+  confirmedDetails: true,
+  customer: {
+    attachedToMultipleBusinesses: true,
+  },
+  poultryClaim: {
+    latestPoultryApplication: agreedPoultryApplication,
+  },
+  endemicsClaim: {},
+  organisation: baseOrganisation,
+};
+
+describe("GET /poultry/vet-visits", () => {
   let server;
 
   beforeAll(async () => {
@@ -58,79 +86,37 @@ describe("GET /vet-visits", () => {
 
   test("should redirect to check details when they have not been checked", async () => {
     const state = {
-      customer: {
-        attachedToMultipleBusinesses: false,
-      },
+      customer: baseState.customer,
       poultryClaim: {},
-      organisation: {
-        sbi: "106354662",
-        name: "PARTRIDGES",
-        farmerName: "Janice Harrison",
-      },
+      organisation: baseOrganisation,
     };
 
     await setServerState(server, state);
 
     const res = await server.inject(options);
 
+    expect(res.statusCode).toBe(302);
     expect(res.headers.location).toBe("/check-details");
   });
 
   test("should redirect to apply journey when no agreement", async () => {
     const state = {
       confirmedDetails: true,
-      customer: {
-        attachedToMultipleBusinesses: false,
-      },
+      customer: baseState.customer,
       poultryClaim: {},
-      organisation: {
-        sbi: "106354662",
-        name: "PARTRIDGES",
-        farmerName: "Janice Harrison",
-      },
+      organisation: baseOrganisation,
     };
 
     await setServerState(server, state);
 
     const res = await server.inject(options);
 
+    expect(res.statusCode).toBe(302);
     expect(res.headers.location).toBe("/poultry/you-can-claim-multiple");
   });
 
   test("should show no poultry claims when no claims have been made and has an agreement", async () => {
-    const sbi = "123123123";
-
-    const state = {
-      confirmedDetails: true,
-      customer: {
-        attachedToMultipleBusinesses: true,
-      },
-      poultryClaim: {
-        latestPoultryApplication: {
-          sbi,
-          type: "EE",
-          reference: "POUL-TEST-NEW2",
-          createdAt: "2026-01-03",
-          redacted: false,
-          status: "AGREED",
-        },
-      },
-      endemicsClaim: {
-        latestEndemicsApplication: {
-          sbi,
-          type: "EE",
-          reference: "IAHW-TEST-NEW2",
-          redacted: false,
-          status: "AGREED",
-        },
-        latestVetVisitApplication: undefined,
-      },
-      organisation: {
-        sbi,
-        name: "TEST FARM",
-        farmerName: "Farmer Joe",
-      },
-    };
+    const state = { ...baseState };
 
     await setServerState(server, state);
 
@@ -139,7 +125,7 @@ describe("GET /vet-visits", () => {
     const res = await server.inject(options);
     const $ = load(res.payload);
 
-    const startLink = $('a:contains("Start a new claim")');
+    const startLink = findLinkByText($, "Start a new claim").first();
     expect(startLink.length).toBeGreaterThan(0);
     expect(startLink.attr("href")).toContain("/poultry/date-of-visit");
 
@@ -154,39 +140,13 @@ describe("GET /vet-visits", () => {
   });
 
   test("should show poultry claims when claims exist", async () => {
-    const sbi = "123123123";
-
-    const state = {
-      confirmedDetails: true,
-      customer: {
-        attachedToMultipleBusinesses: true,
-      },
-      poultryClaim: {
-        latestPoultryApplication: {
-          sbi,
-          type: "EE",
-          reference: "POUL-1LZ5-ELVQ",
-          createdAt: "2026-01-03",
-          redacted: false,
-          status: "AGREED",
-        },
-      },
-      endemicsClaim: {},
-      organisation: {
-        sbi,
-        name: "TEST FARM",
-        farmerName: "Farmer Joe",
-      },
-    };
+    const state = { ...baseState };
 
     await setServerState(server, state);
 
     getClaimsByApplicationReference.mockResolvedValueOnce([
       {
         reference: "PORE-D51M-QLIJ",
-        applicationReference: "POUL-1LZ5-ELVQ",
-        createdAt: "2026-04-21T13:51:10.697Z",
-        type: "REVIEW",
         data: {
           dateOfVisit: "2026-04-21T00:00:00.000Z",
           typesOfPoultry: [
@@ -198,50 +158,21 @@ describe("GET /vet-visits", () => {
             "geese",
             "turkeys",
           ],
-          minimumNumberOfBirds: "yes",
-          vetsName: "Vet 1",
-          vetRCVSNumber: "1234567",
-          biosecurity: "yes",
-          biosecurityUsefulness: "very-useful",
-          changesInBiosecurity: "bird-handling",
-          costOfChanges: "3000-4500",
-          interview: "yes",
-          amount: 430,
-          claimType: "REVIEW",
         },
         status: "IN_CHECK",
         herd: {
-          id: "4ce60ae0-1cec-44de-a260-280bddc8ea7c",
-          cph: "22/123/4231",
           name: "site one",
-          version: 1,
         },
       },
       {
         reference: "PORE-D51M-ABCJ",
-        applicationReference: "POUL-2LZ5-ABVC",
-        createdAt: "2026-06-05T13:51:10.697Z",
-        type: "REVIEW",
         data: {
           dateOfVisit: "2026-06-04T00:00:00.000Z",
           typesOfPoultry: ["broilers", "laying-hens"],
-          minimumNumberOfBirds: "yes",
-          vetsName: "Vet 1",
-          vetRCVSNumber: "1234567",
-          biosecurity: "yes",
-          biosecurityUsefulness: "very-useful",
-          changesInBiosecurity: "bird-handling",
-          costOfChanges: "3000-4500",
-          interview: "yes",
-          amount: 430,
-          claimType: "REVIEW",
         },
         status: "PAID",
         herd: {
-          id: "4ce60ae0-1cec-44de-a260-280bddc8ea7c",
-          cph: "22/123/4231",
           name: "site two",
-          version: 1,
         },
       },
     ]);
@@ -252,12 +183,12 @@ describe("GET /vet-visits", () => {
     const otherBiz = findLinkByText($, "Claim for a different business").first();
     expect(otherBiz.attr("href")).toContain("auth-code-url");
 
-    const startLink = $('a:contains("Start a new claim")');
+    const startLink = findLinkByText($, "Start a new claim").first();
     expect(startLink.length).toBeGreaterThan(0);
     expect(startLink.attr("href")).toContain("/poultry/date-of-visit");
 
     const link = findLinkByText($, "Download agreement summary").first();
-    expect(link.attr("href")).toContain(`/download-application/${sbi}/POUL-1LZ5-ELVQ`);
+    expect(link.attr("href")).toContain(`/download-application/${TEST_SBI}/POUL-1LZ5-ELVQ`);
 
     expect($("body").text()).toContain("Claim for a different agreement");
 
