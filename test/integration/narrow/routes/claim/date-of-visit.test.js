@@ -59,6 +59,11 @@ const latestEndemicsApplication = {
   type: "EE",
 };
 
+const organisation = {
+  name: "Farmer Johns",
+  sbi: "12345",
+};
+
 const auth = { credentials: {}, strategy: "cookie" };
 const url = "/date-of-visit";
 
@@ -280,6 +285,19 @@ describe("POST /date-of-visit handler", () => {
     jest.clearAllMocks();
   });
 
+  const postOptions = ({ day, month, year }) => ({
+    method: "POST",
+    url,
+    payload: {
+      crumb,
+      "visit-date-day": day,
+      "visit-date-month": month,
+      "visit-date-year": year,
+    },
+    auth,
+    headers: { cookie: `crumb=${crumb}` },
+  });
+
   describe("date checks", () => {
     test("redirect back to page with errors if the entered date is of an incorrect format", async () => {
       // unhappy path
@@ -289,26 +307,12 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "second",
-          "visit-date-month": "february",
-          "visit-date-year": "2000",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "second", month: "february", year: "2000" });
 
       const res = await server.inject(options);
 
@@ -338,26 +342,12 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "31",
-          "visit-date-month": "2",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "31", month: "2", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -387,26 +377,12 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "1",
-          "visit-date-month": "12",
-          "visit-date-year": "2024",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "1", month: "12", year: "2024" });
 
       const res = await server.inject(options);
 
@@ -436,26 +412,12 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "2",
-          "visit-date-month": "2",
-          "visit-date-year": "2040",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "2", month: "2", year: "2040" });
 
       const res = await server.inject(options);
 
@@ -487,27 +449,13 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -530,10 +478,7 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication: {
@@ -542,18 +487,7 @@ describe("POST /date-of-visit handler", () => {
           },
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -588,27 +522,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -657,27 +577,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -712,27 +618,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-02-26",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "26",
-          "visit-date-month": "02",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "26", month: "02", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -768,27 +660,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -828,28 +706,14 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestVetVisitApplication,
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -872,28 +736,14 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "pigs",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestVetVisitApplication,
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -916,10 +766,7 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestVetVisitApplication: {
@@ -932,18 +779,7 @@ describe("POST /date-of-visit handler", () => {
           latestEndemicsApplication,
           dateOfVisit: "2025-01-02",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "02",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "02", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -980,10 +816,7 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestVetVisitApplication: {
@@ -996,18 +829,7 @@ describe("POST /date-of-visit handler", () => {
           latestEndemicsApplication,
           dateOfVisit: "2025-01-02",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "02",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "02", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1044,27 +866,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1099,27 +907,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "dairy",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-21",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "21",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "21", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1154,27 +948,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "dairy",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-20",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "20",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "20", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1234,27 +1014,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1325,27 +1091,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "pigs",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-02-27",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "27",
-          "visit-date-month": "02",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "27", month: "02", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1391,18 +1143,7 @@ describe("POST /date-of-visit handler", () => {
           name: "Farmer Johns",
           sbi: "12345",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1451,27 +1192,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1510,10 +1237,7 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "FOLLOW_UP",
           previousClaims: [],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestVetVisitApplication: {
@@ -1527,18 +1251,7 @@ describe("POST /date-of-visit handler", () => {
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
       expect(res.statusCode).toBe(302);
@@ -1571,27 +1284,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1638,26 +1337,12 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2024-10-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "27",
-          "visit-date-month": "02",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "27", month: "02", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1714,27 +1399,13 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "negative",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1764,28 +1435,14 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-21",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          /* see PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE */
-          "visit-date-day": "21",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      /* see PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE */
+      const options = postOptions({ day: "21", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1815,28 +1472,14 @@ describe("POST /date-of-visit handler", () => {
             },
           ],
           typeOfLivestock: "beef",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestEndemicsApplication,
           dateOfVisit: "2025-01-20",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          /* see PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE */
-          "visit-date-day": "20",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      /* see PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE */
+      const options = postOptions({ day: "20", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1854,29 +1497,15 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "pigs",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestVetVisitApplication,
           latestEndemicsApplication,
           dateOfVisit: "2025-01-01",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          /* before PIGS_AND_PAYMENTS_RELEASE_DATE (2026-01-22) */
-          "visit-date-day": "01",
-          "visit-date-month": "01",
-          "visit-date-year": "2025",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      /* before PIGS_AND_PAYMENTS_RELEASE_DATE (2026-01-22) */
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
 
@@ -1905,10 +1534,7 @@ describe("POST /date-of-visit handler", () => {
           typeOfReview: "REVIEW",
           previousClaims: [],
           typeOfLivestock: "pigs",
-          organisation: {
-            name: "Farmer Johns",
-            sbi: "12345",
-          },
+          organisation,
           reviewTestResults: "positive",
           reference: "TEMP-6GSE-PIR8",
           latestVetVisitApplication,
@@ -1919,19 +1545,8 @@ describe("POST /date-of-visit handler", () => {
           },
           dateOfVisit: "2026-01-22",
         });
-      const options = {
-        method: "POST",
-        url,
-        payload: {
-          crumb,
-          /* see PIGS_AND_PAYMENTS_RELEASE_DATE (2026-01-22) */
-          "visit-date-day": "22",
-          "visit-date-month": "01",
-          "visit-date-year": "2026",
-        },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
+      /* see PIGS_AND_PAYMENTS_RELEASE_DATE (2026-01-22) */
+      const options = postOptions({ day: "22", month: "01", year: "2026" });
 
       const res = await server.inject(options);
 
@@ -1974,27 +1589,13 @@ describe("POST /date-of-visit handler", () => {
           },
         ],
         typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
+        organisation,
         reviewTestResults: "positive",
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-05-13",
       });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "26",
-        "visit-date-month": "06",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+    const options = postOptions({ day: "26", month: "06", year: "2025" });
 
     const res = await server.inject(options);
 
@@ -2022,27 +1623,13 @@ describe("POST /date-of-visit handler", () => {
           },
         ],
         typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
+        organisation,
         reviewTestResults: "positive",
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-05-13",
       });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "26",
-        "visit-date-month": "06",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+    const options = postOptions({ day: "26", month: "06", year: "2025" });
 
     const res = await server.inject(options);
 
@@ -2083,27 +1670,13 @@ describe("POST /date-of-visit handler", () => {
           },
         ],
         typeOfLivestock: "dairy",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
+        organisation,
         reviewTestResults: "positive",
         reference: "TEMP-CBLH-C9CC",
         latestEndemicsApplication,
         dateOfVisit: "2025-04-30",
       });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "30",
-        "visit-date-month": "04",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+    const options = postOptions({ day: "30", month: "04", year: "2025" });
 
     const res = await server.inject(options);
 
@@ -2140,27 +1713,13 @@ describe("POST /date-of-visit handler", () => {
           },
         ],
         typeOfLivestock: "dairy",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
+        organisation,
         reviewTestResults: "positive",
         reference: "TEMP-CBLH-C9CC",
         latestEndemicsApplication,
         dateOfVisit: "2025-04-30",
       });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "30",
-        "visit-date-month": "04",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+    const options = postOptions({ day: "30", month: "04", year: "2025" });
 
     const res = await server.inject(options);
 

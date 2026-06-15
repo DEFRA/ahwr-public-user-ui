@@ -29,8 +29,6 @@ jest.mock("../../../../../app/lib/context-helper.js", () => ({
 
 let crumb;
 const today = new Date();
-const yesterday = new Date(today);
-yesterday.setDate(today.getDate() - 1);
 const tomorrow = new Date(today);
 tomorrow.setDate(today.getDate() + 1);
 const auth = { credentials: {}, strategy: "cookie" };
@@ -41,6 +39,28 @@ const latestEndemicsApplication = {
   createdAt: new Date("2022-01-01"),
   status: "AGREED",
   type: "EE",
+};
+
+const stubCommonSessionKeys = () => {
+  when(getSessionData)
+    .calledWith(
+      expect.anything(),
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.latestEndemicsApplication,
+    )
+    .mockReturnValue({ status: "AGREED" });
+
+  when(getSessionData)
+    .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
+    .mockReturnValue(true);
+
+  when(getSessionData)
+    .calledWith(
+      expect.anything(),
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.reference,
+    )
+    .mockReturnValue("IAHW-1LZ5-ELVQ");
 };
 
 describe("Date of testing", () => {
@@ -55,29 +75,7 @@ describe("Date of testing", () => {
   });
 
   beforeEach(() => {
-    when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.latestEndemicsApplication,
-      )
-      .mockReturnValue({ status: "AGREED" });
-
-    when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.confirmedDetails,
-        sessionKeys.confirmedDetails,
-      )
-      .mockReturnValue(true);
-
-    when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.reference,
-      )
-      .mockReturnValue("IAHW-1LZ5-ELVQ");
+    stubCommonSessionKeys();
   });
 
   afterEach(() => {
@@ -209,7 +207,6 @@ describe("Date of testing", () => {
             data: {
               typeOfLivestock: "beef",
               dateOfVisit: "2024-01-01",
-              testResults: "negative",
             },
           },
         ],
@@ -247,7 +244,6 @@ describe("Date of testing", () => {
             data: {
               typeOfLivestock: "beef",
               dateOfVisit: "2024-01-01",
-              testResults: "negative",
             },
           },
         ],
@@ -321,7 +317,6 @@ describe("Date of testing", () => {
             data: {
               typeOfLivestock: "beef",
               dateOfVisit: "2024-01-01",
-              testResults: "negative",
             },
           },
         ],
@@ -360,7 +355,6 @@ describe("Date of testing", () => {
             data: {
               typeOfLivestock: "beef",
               dateOfVisit: "2024-01-01",
-              testResults: "negative",
             },
           },
         ],
@@ -430,7 +424,6 @@ describe("Date of testing", () => {
               data: {
                 typeOfLivestock: "beef",
                 dateOfVisit: "2024-01-01",
-                testResults: "negative",
               },
             },
           ],
@@ -469,7 +462,6 @@ describe("Date of testing", () => {
           dateOfVisit: "2024-01-01",
           typeOfReview: "FOLLOW_UP",
           typeOfLivestock: "beef",
-          previousClaims: [],
           latestEndemicsApplication,
         }));
         const options = {
@@ -504,7 +496,6 @@ describe("Date of testing", () => {
           dateOfVisit: "2024-01-01",
           typeOfReview: "FOLLOW_UP",
           typeOfLivestock: "beef",
-          previousClaims: [],
           latestEndemicsApplication,
         }));
         const options = {
@@ -546,7 +537,6 @@ describe("Date of testing", () => {
               data: {
                 typeOfLivestock: "sheep",
                 dateOfVisit: "2024-01-01",
-                testResults: "negative",
               },
             },
           ],
@@ -591,7 +581,6 @@ describe("Date of testing", () => {
               data: {
                 typeOfLivestock: "beef",
                 dateOfVisit: "2024-01-01",
-                testResults: "negative",
               },
             },
           ],
@@ -632,29 +621,7 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
       return true;
     });
 
-    when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.latestEndemicsApplication,
-      )
-      .mockReturnValue({ status: "AGREED" });
-
-    when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.confirmedDetails,
-        sessionKeys.confirmedDetails,
-      )
-      .mockReturnValue(true);
-
-    when(getSessionData)
-      .calledWith(
-        expect.anything(),
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.reference,
-      )
-      .mockReturnValue("IAHW-1LZ5-ELVQ");
+    stubCommonSessionKeys();
   });
   afterAll(async () => {
     await server.stop();
