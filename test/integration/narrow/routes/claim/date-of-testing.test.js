@@ -473,11 +473,26 @@ describe("Date of testing", () => {
           error: "Date of sampling must be a real date",
         },
         {
+          scenario: "the day cannot be in the future",
+          day: `${tomorrow.getDate()}`,
+          month: `${tomorrow.getMonth() + 1}`,
+          year: `${tomorrow.getFullYear()}`,
+          error: "The date samples were taken must be in the past",
+        },
+        {
           scenario: "the year is out of range",
           day: "15",
           month: "03",
           year: "10000",
           error: "Year must include 4 numbers",
+        },
+        {
+          scenario: "the sampling date is before the agreement",
+          day: "31",
+          month: "12",
+          year: "2021",
+          error:
+            "The date samples were taken must be the same as or after the date of your agreement",
         },
       ])("redirects with an error when $scenario", async ({ day, month, year, error }) => {
         getSessionData.mockImplementation(() => ({
@@ -506,40 +521,6 @@ describe("Date of testing", () => {
         const $ = cheerio.load(res.payload);
         expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
         expect($(".govuk-error-summary__list a").text()).toContain(error);
-      });
-
-      test("redirects with an error if the sampling date is in the future", async () => {
-        getSessionData.mockImplementation(() => ({
-          dateOfVisit: "2024-01-01",
-          typeOfReview: "FOLLOW_UP",
-          typeOfLivestock: "beef",
-          latestEndemicsApplication,
-        }));
-        const options = {
-          method: "POST",
-          url,
-          payload: {
-            crumb,
-            whenTestingWasCarriedOut: "onAnotherDate",
-            dateOfVisit: "2024-01-01",
-            dateOfAgreementAccepted: "2022-01-01",
-            "on-another-date-day": `${tomorrow.getDate()}`,
-            "on-another-date-month": `${tomorrow.getMonth() + 1}`,
-            "on-another-date-year": `${tomorrow.getFullYear()}`,
-          },
-          auth,
-          headers: { cookie: `crumb=${crumb}` },
-        };
-
-        const res = await server.inject(options);
-
-        expect(await axe(res.payload)).toHaveNoViolations();
-        const $ = cheerio.load(res.payload);
-
-        expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
-        expect($("li > a").text().trim()).toContain(
-          "The date samples were taken must be in the past",
-        );
       });
 
       test("redirects with an error if the sampling date is before the agreement date", async () => {
