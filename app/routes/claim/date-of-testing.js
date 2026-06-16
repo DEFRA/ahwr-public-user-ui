@@ -211,70 +211,67 @@ const validateSamplingDate = (request, dateOfTesting) => {
   return undefined;
 };
 
+const postPayloadSchema = Joi.object({
+  dateOfAgreementAccepted: Joi.string().required(),
+  dateOfVisit: Joi.string().required(),
+  whenTestingWasCarriedOut: Joi.string()
+    .valid("whenTheVetVisitedTheFarmToCarryOutTheReview", "onAnotherDate")
+    .required()
+    .messages({
+      "any.required": "Enter the date samples were taken",
+    }),
+
+  [`${onAnotherDateInputId}-day`]: Joi.when("whenTestingWasCarriedOut", {
+    switch: [
+      {
+        is: "onAnotherDate",
+        then: validateDateInputDay(onAnotherDateInputId, dateOfSamplingText).messages({
+          "dateInputDay.ifNothingIsEntered": "Enter the date samples were taken",
+        }),
+      },
+      {
+        is: "whenTheVetVisitedTheFarmToCarryOutTheReview",
+        then: Joi.allow(""),
+      },
+    ],
+    otherwise: Joi.allow(""),
+  }),
+
+  [`${onAnotherDateInputId}-month`]: Joi.when("whenTestingWasCarriedOut", {
+    switch: [
+      {
+        is: "onAnotherDate",
+        then: validateDateInputMonth(onAnotherDateInputId, dateOfSamplingText),
+      },
+      {
+        is: "whenTheVetVisitedTheFarmToCarryOutTheReview",
+        then: Joi.allow(""),
+      },
+    ],
+    otherwise: Joi.allow(""),
+  }),
+
+  [`${onAnotherDateInputId}-year`]: Joi.when("whenTestingWasCarriedOut", {
+    switch: [
+      {
+        is: "onAnotherDate",
+        then: validateDateInputYear(onAnotherDateInputId, dateOfSamplingText, (value) => value, {}),
+      },
+      {
+        is: "whenTheVetVisitedTheFarmToCarryOutTheReview",
+        then: Joi.allow(""),
+      },
+    ],
+    otherwise: Joi.allow(""),
+  }),
+});
+
 const postHandler = {
   method: "POST",
   path: "/date-of-testing",
   options: {
     validate: {
-      payload: Joi.object({
-        dateOfAgreementAccepted: Joi.string().required(),
-        dateOfVisit: Joi.string().required(),
-        whenTestingWasCarriedOut: Joi.string()
-          .valid("whenTheVetVisitedTheFarmToCarryOutTheReview", "onAnotherDate")
-          .required()
-          .messages({
-            "any.required": "Enter the date samples were taken",
-          }),
-
-        [`${onAnotherDateInputId}-day`]: Joi.when("whenTestingWasCarriedOut", {
-          switch: [
-            {
-              is: "onAnotherDate",
-              then: validateDateInputDay(onAnotherDateInputId, dateOfSamplingText).messages({
-                "dateInputDay.ifNothingIsEntered": "Enter the date samples were taken",
-              }),
-            },
-            {
-              is: "whenTheVetVisitedTheFarmToCarryOutTheReview",
-              then: Joi.allow(""),
-            },
-          ],
-          otherwise: Joi.allow(""),
-        }),
-
-        [`${onAnotherDateInputId}-month`]: Joi.when("whenTestingWasCarriedOut", {
-          switch: [
-            {
-              is: "onAnotherDate",
-              then: validateDateInputMonth(onAnotherDateInputId, dateOfSamplingText),
-            },
-            {
-              is: "whenTheVetVisitedTheFarmToCarryOutTheReview",
-              then: Joi.allow(""),
-            },
-          ],
-          otherwise: Joi.allow(""),
-        }),
-
-        [`${onAnotherDateInputId}-year`]: Joi.when("whenTestingWasCarriedOut", {
-          switch: [
-            {
-              is: "onAnotherDate",
-              then: validateDateInputYear(
-                onAnotherDateInputId,
-                dateOfSamplingText,
-                (value) => value,
-                {},
-              ),
-            },
-            {
-              is: "whenTheVetVisitedTheFarmToCarryOutTheReview",
-              then: Joi.allow(""),
-            },
-          ],
-          otherwise: Joi.allow(""),
-        }),
-      }),
+      payload: postPayloadSchema,
       failAction: async (request, h, error) => {
         const errorSummary = [];
         if (error.details.find((e) => e.context.label === "whenTestingWasCarriedOut")) {
