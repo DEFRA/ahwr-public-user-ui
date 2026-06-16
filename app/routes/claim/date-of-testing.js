@@ -1,5 +1,4 @@
 import Joi from "joi";
-import { MAX_POSSIBLE_YEAR, MIN_POSSIBLE_YEAR } from "../../constants/claim-constants.js";
 import {
   getSessionData,
   setSessionData,
@@ -11,7 +10,6 @@ import {
   validateDateInputDay,
   validateDateInputMonth,
   validateDateInputYear,
-  isValidDate,
 } from "../../lib/date-validations.js";
 import { getReviewWithinLast10Months } from "../../lib/claim-helper.js";
 import {
@@ -154,6 +152,65 @@ const resolveDateOfTesting = (request, dateOfVisit) =>
         request.payload[`${onAnotherDateInputId}-day`],
       );
 
+const renderDateOfTestingError = (request, h, { errorSummary, whenTestingWasCarriedOut }) => {
+  const { dateOfVisit, typeOfReview, typeOfLivestock } = getSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+  );
+  const { questionText, questionHintText } = getTheQuestionAndHintText(
+    typeOfReview,
+    typeOfLivestock,
+  );
+
+  return h
+    .view(claimViews.dateOfTesting, {
+      ...request.payload,
+      dateOfVisit,
+      errorSummary,
+      questionText,
+      questionHintText,
+      optionSameReviewOrFollowUpDateText: optionSameReviewOrFollowUpDateText(typeOfReview),
+      whenTestingWasCarriedOut,
+      backLink: backLink(request),
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
+};
+
+const buildSamplingDateError = (request, errorMessage) => ({
+  errorSummary: [{ text: errorMessage, href: "#whenTestingWasCarriedOut" }],
+  whenTestingWasCarriedOut: {
+    value: request.payload.whenTestingWasCarriedOut,
+    errorMessage: undefined,
+    onAnotherDate: {
+      day: { value: request.payload[`${onAnotherDateInputId}-day`], error: true },
+      month: { value: request.payload[`${onAnotherDateInputId}-month`], error: true },
+      year: { value: request.payload[`${onAnotherDateInputId}-year`], error: true },
+      errorMessage,
+    },
+  },
+});
+
+const validateSamplingDate = (request, dateOfTesting) => {
+  if (request.payload.whenTestingWasCarriedOut !== "onAnotherDate") {
+    return undefined;
+  }
+
+  if (dateOfTesting > new Date()) {
+    return buildSamplingDateError(request, "The date samples were taken must be in the past");
+  }
+
+  const dateOfAgreementAccepted = new Date(request.payload.dateOfAgreementAccepted);
+  if (dateOfTesting < dateOfAgreementAccepted) {
+    return buildSamplingDateError(
+      request,
+      "The date samples were taken must be the same as or after the date of your agreement",
+    );
+  }
+
+  return undefined;
+};
+
 const postHandler = {
   method: "POST",
   path: "/date-of-testing",
@@ -206,56 +263,8 @@ const postHandler = {
               then: validateDateInputYear(
                 onAnotherDateInputId,
                 dateOfSamplingText,
-                (value, helpers) => {
-                  if (value > MAX_POSSIBLE_YEAR || value < MIN_POSSIBLE_YEAR) {
-                    // revisit this in the refactor date validation ticket
-                    return value;
-                  }
-
-                  if (
-                    !isValidDate(
-                      +helpers.state.ancestors[0][`${onAnotherDateInputId}-year`],
-                      +helpers.state.ancestors[0][`${onAnotherDateInputId}-month`],
-                      +helpers.state.ancestors[0][`${onAnotherDateInputId}-day`],
-                    )
-                  ) {
-                    return value;
-                  }
-
-                  const dateOfTesting = new Date(
-                    helpers.state.ancestors[0][`${onAnotherDateInputId}-year`],
-                    helpers.state.ancestors[0][`${onAnotherDateInputId}-month`] - 1,
-                    helpers.state.ancestors[0][`${onAnotherDateInputId}-day`],
-                  );
-
-                  const currentDate = new Date();
-                  if (dateOfTesting > currentDate) {
-                    return helpers.error("dateOfTesting.future");
-                  }
-
-                  const dateOfAgreementAccepted = new Date(
-                    helpers.state.ancestors[0].dateOfAgreementAccepted,
-                  );
-                  if (dateOfTesting < dateOfAgreementAccepted) {
-                    return helpers.error("dateOfTesting.beforeAgreementDate", {
-                      dateOfAgreementAccepted: new Date(dateOfAgreementAccepted).toLocaleString(
-                        "en-GB",
-                        {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        },
-                      ),
-                    });
-                  }
-
-                  return value;
-                },
-                {
-                  "dateOfTesting.future": "The date samples were taken must be in the past",
-                  "dateOfTesting.beforeAgreementDate":
-                    "The date samples were taken must be the same as or after the date of your agreement",
-                },
+                (value) => value,
+                {},
               ),
             },
             {
@@ -267,15 +276,6 @@ const postHandler = {
         }),
       }),
       failAction: async (request, h, error) => {
-        const { dateOfVisit, typeOfReview, typeOfLivestock } = getSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-        );
-        const { questionText, questionHintText } = getTheQuestionAndHintText(
-          typeOfReview,
-          typeOfLivestock,
-        );
-
         const errorSummary = [];
         if (error.details.find((e) => e.context.label === "whenTestingWasCarriedOut")) {
           errorSummary.push({
@@ -297,49 +297,30 @@ const postHandler = {
         const possibleErrorMessage = (labelStartsWith) =>
           error.details.find((e) => e.context.label.startsWith(labelStartsWith))?.message;
 
-        return h
-          .view(claimViews.dateOfTesting, {
-            ...request.payload,
-            dateOfVisit,
-            errorSummary,
-            questionText,
-            questionHintText,
-            optionSameReviewOrFollowUpDateText: optionSameReviewOrFollowUpDateText(typeOfReview),
-            whenTestingWasCarriedOut: {
-              value: request.payload.whenTestingWasCarriedOut,
-              errorMessage: possibleErrorMessage("whenTestingWasCarriedOut"),
-              onAnotherDate: {
-                day: {
-                  value: request.payload[`${onAnotherDateInputId}-day`],
-                  error: error.details.find(
-                    (e) =>
-                      e.context.label === `${onAnotherDateInputId}-day` ||
-                      e.type.startsWith("dateOfTesting"),
-                  ),
-                },
-                month: {
-                  value: request.payload[`${onAnotherDateInputId}-month`],
-                  error: error.details.find(
-                    (e) =>
-                      e.context.label === `${onAnotherDateInputId}-month` ||
-                      e.type.startsWith("dateOfTesting"),
-                  ),
-                },
-                year: {
-                  value: request.payload[`${onAnotherDateInputId}-year`],
-                  error: error.details.find(
-                    (e) =>
-                      e.context.label === `${onAnotherDateInputId}-year` ||
-                      e.type.startsWith("dateOfTesting"),
-                  ),
-                },
-                errorMessage: possibleErrorMessage(onAnotherDateInputId),
-              },
+        const fieldError = (input) =>
+          error.details.find((e) => e.context.label === `${onAnotherDateInputId}-${input}`);
+
+        const whenTestingWasCarriedOut = {
+          value: request.payload.whenTestingWasCarriedOut,
+          errorMessage: possibleErrorMessage("whenTestingWasCarriedOut"),
+          onAnotherDate: {
+            day: {
+              value: request.payload[`${onAnotherDateInputId}-day`],
+              error: fieldError("day"),
             },
-            backLink: backLink(request),
-          })
-          .code(HttpStatus.BAD_REQUEST)
-          .takeover();
+            month: {
+              value: request.payload[`${onAnotherDateInputId}-month`],
+              error: fieldError("month"),
+            },
+            year: {
+              value: request.payload[`${onAnotherDateInputId}-year`],
+              error: fieldError("year"),
+            },
+            errorMessage: possibleErrorMessage(onAnotherDateInputId),
+          },
+        };
+
+        return renderDateOfTestingError(request, h, { errorSummary, whenTestingWasCarriedOut });
       },
     },
     handler: async (request, h) => {
@@ -357,6 +338,11 @@ const postHandler = {
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock);
 
       const dateOfTesting = resolveDateOfTesting(request, dateOfVisit);
+
+      const samplingDateError = validateSamplingDate(request, dateOfTesting);
+      if (samplingDateError) {
+        return renderDateOfTestingError(request, h, samplingDateError);
+      }
 
       if (!isWithin4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
         await sendInvalidDataEvent({

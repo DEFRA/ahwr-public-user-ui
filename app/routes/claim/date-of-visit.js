@@ -105,77 +105,76 @@ const buildErrorSummary = ({ errorMessage, href, inputsInError }) => {
   };
 };
 
-const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
-  const dateSchema = joi
-    .object({
-      "visit-date-day": joi.number().max(MAX_POSSIBLE_DAY),
-      "visit-date-month": joi.number().max(MAX_POSSIBLE_MONTH),
-      "visit-date-year": joi.number(),
-    })
-    .options({ abortEarly: false }); // needed otherwise it doesn't check other fields if an error is found
+const visitDateDayAnchor = "#visit-date-day";
 
-  const { error } = dateSchema.validate(request.payload);
+const dateInputSchema = joi.object({
+  crumb: joi.any(),
+  "visit-date-day": joi.number().max(MAX_POSSIBLE_DAY),
+  "visit-date-month": joi.number().max(MAX_POSSIBLE_MONTH),
+  "visit-date-year": joi.number(),
+});
 
-  const inputsInError = {
-    day: false,
-    month: false,
-    year: false,
+const getInputsInError = (error) => {
+  const inputsInError = { day: false, month: false, year: false };
+  const errorKeys = error?.details?.map(({ context }) => context.key) || [];
+
+  if (errorKeys.includes("visit-date-day")) {
+    inputsInError.day = true;
+  }
+  if (errorKeys.includes("visit-date-month")) {
+    inputsInError.month = true;
+  }
+  if (errorKeys.includes("visit-date-year")) {
+    inputsInError.year = true;
+  }
+
+  return inputsInError;
+};
+
+const parseStoredDate = (storedDate) =>
+  storedDate
+    ? {
+        day: new Date(storedDate).getDate(),
+        month: new Date(storedDate).getMonth() + 1,
+        year: new Date(storedDate).getFullYear(),
+      }
+    : { day: "", month: "", year: "" };
+
+const respondWithDateError = (request, h, { errorSummary, inputsInError }) => {
+  const {
+    typeOfReview,
+    latestVetVisitApplication: oldWorldApplication,
+    previousClaims,
+    typeOfLivestock,
+    latestEndemicsApplication: newWorldApplication,
+    reference: tempClaimReference,
+  } = getSessionData(request, endemicsClaimEntry);
+
+  const { isReview } = getReviewType(typeOfReview);
+  const reviewOrFollowUpText = isReview ? "review" : "follow-up";
+
+  const dateOfVisit = {
+    day: request.payload[visitDateHtml.labels.day],
+    month: request.payload[visitDateHtml.labels.month],
+    year: request.payload[visitDateHtml.labels.year],
   };
 
-  const inputKeysInError = error?.details?.map(({ context }) => context.key) || [];
-
-  Object.keys(inputsInError).forEach((input) => {
-    if (inputKeysInError.includes(`visit-date-${input}`)) {
-      inputsInError[input] = true;
-    }
+  trackEvent(request.logger, INVALID_DATE_OF_VISIT_EVENT, reviewOrFollowUpText, {
+    reference: tempClaimReference,
+    kind: `dateEntered: ${dateOfVisit.year}-${dateOfVisit.month}-${dateOfVisit.day}, dateOfAgreement: ${getReadableDate(newWorldApplication.createdAt)}`,
+    reason: errorSummary[0].text,
   });
 
-  if (inputKeysInError.length > 0) {
-    const inputNameInError = inputKeysInError[0];
-    return buildErrorSummary({
-      errorMessage: `Enter the date of ${reviewOrFollowUpText}`,
-      href: `#${inputNameInError}`,
+  return h
+    .view(claimViews.dateOfVisit, {
+      reviewOrFollowUpText,
+      errorSummary,
+      dateOfVisit,
+      backLink: previousPageUrl(oldWorldApplication, typeOfReview, previousClaims, typeOfLivestock),
       inputsInError,
-    });
-  }
-
-  const [day, month, year] = Object.values(request.payload);
-  const dateEnteredIsValid = isValidDate(Number(year), Number(month), Number(day));
-  const visitDateDayHref = "#visit-date-day";
-
-  if (!dateEnteredIsValid) {
-    return buildErrorSummary({
-      errorMessage: `The date of ${reviewOrFollowUpText} must be a real date`,
-      href: visitDateDayHref,
-      inputsInError: { day: true, month: true, year: true },
-    });
-  }
-
-  const now = new Date();
-  const dateOfVisit = new Date(year, month - 1, day);
-
-  if (dateOfVisit > now) {
-    return buildErrorSummary({
-      errorMessage: `The date of ${reviewOrFollowUpText} must be today or in the past`,
-      href: visitDateDayHref,
-      inputsInError: { day: true, month: true, year: true },
-    });
-  }
-
-  const applicationCreatedTime = new Date(newWorldApplication.createdAt).setHours(0, 0, 0, 0);
-
-  if (applicationCreatedTime > dateOfVisit.getTime()) {
-    return buildErrorSummary({
-      errorMessage: `The date of ${reviewOrFollowUpText} must be the same as or after the date of your agreement`,
-      href: visitDateDayHref,
-      inputsInError: { day: true, month: true, year: true },
-    });
-  }
-
-  return {
-    errorSummary: [],
-    inputsInError: { day: false, month: false, year: false },
-  };
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
 };
 
 const getHandler = {
@@ -196,11 +195,7 @@ const getHandler = {
 
       return h.view(claimViews.dateOfVisit, {
         reviewOrFollowUpText,
-        dateOfVisit: {
-          day: dateOfVisit ? new Date(dateOfVisit).getDate() : "",
-          month: dateOfVisit ? new Date(dateOfVisit).getMonth() + 1 : "",
-          year: dateOfVisit ? new Date(dateOfVisit).getFullYear() : "",
-        },
+        dateOfVisit: parseStoredDate(dateOfVisit),
         backLink: previousPageUrl(
           oldWorldApplication,
           typeOfReview,
@@ -216,6 +211,26 @@ const postHandler = {
   method: "POST",
   path: "/date-of-visit",
   options: {
+    validate: {
+      payload: dateInputSchema,
+      options: { abortEarly: false }, // otherwise it doesn't check other fields once an error is found
+      failAction: async (request, h, error) => {
+        request.logger.error({ error });
+        const { typeOfReview } = getSessionData(request, endemicsClaimEntry);
+        const { isReview } = getReviewType(typeOfReview);
+        const reviewOrFollowUpText = isReview ? "review" : "follow-up";
+
+        return respondWithDateError(
+          request,
+          h,
+          buildErrorSummary({
+            errorMessage: `Enter the date of ${reviewOrFollowUpText}`,
+            href: `#${error.details[0].context.key}`,
+            inputsInError: getInputsInError(error),
+          }),
+        );
+      },
+    },
     handler: async (request, h) => {
       const endemicsClaimSession = getSessionData(request, endemicsClaimEntry);
       const organisation = getSessionData(request, organisationEntry);
@@ -233,46 +248,48 @@ const postHandler = {
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim);
       const reviewOrFollowUpText = isReview ? "review" : "follow-up";
 
-      const { errorSummary, inputsInError } = getInputErrors(
-        request,
-        reviewOrFollowUpText,
-        newWorldApplication,
-      );
+      const day = request.payload[visitDateHtml.labels.day];
+      const month = request.payload[visitDateHtml.labels.month];
+      const year = request.payload[visitDateHtml.labels.year];
 
-      if (errorSummary.length) {
-        const data = {
-          reviewOrFollowUpText,
-          errorSummary,
-          dateOfVisit: {
-            day: request.payload[visitDateHtml.labels.day],
-            month: request.payload[visitDateHtml.labels.month],
-            year: request.payload[visitDateHtml.labels.year],
-          },
-          backLink: previousPageUrl(
-            oldWorldApplication,
-            typeOfClaim,
-            previousClaims,
-            typeOfLivestock,
-          ),
-          inputsInError,
-        };
-
-        const readableApplicationCreatedDate = getReadableDate(newWorldApplication.createdAt);
-
-        trackEvent(request.logger, INVALID_DATE_OF_VISIT_EVENT, reviewOrFollowUpText, {
-          reference: tempClaimReference,
-          kind: `dateEntered: ${data.dateOfVisit.year}-${data.dateOfVisit.month}-${data.dateOfVisit.day}, dateOfAgreement: ${readableApplicationCreatedDate}`,
-          reason: errorSummary[0].text,
-        });
-
-        return h.view(claimViews.dateOfVisit, data).code(HttpStatus.BAD_REQUEST).takeover();
+      if (!isValidDate(Number(year), Number(month), Number(day))) {
+        return respondWithDateError(
+          request,
+          h,
+          buildErrorSummary({
+            errorMessage: `The date of ${reviewOrFollowUpText} must be a real date`,
+            href: visitDateDayAnchor,
+            inputsInError: { day: true, month: true, year: true },
+          }),
+        );
       }
 
-      const dateOfVisit = new Date(
-        request.payload[visitDateHtml.labels.year],
-        request.payload[visitDateHtml.labels.month] - 1,
-        request.payload[visitDateHtml.labels.day],
-      );
+      const dateOfVisit = new Date(year, month - 1, day);
+
+      if (dateOfVisit > new Date()) {
+        return respondWithDateError(
+          request,
+          h,
+          buildErrorSummary({
+            errorMessage: `The date of ${reviewOrFollowUpText} must be today or in the past`,
+            href: visitDateDayAnchor,
+            inputsInError: { day: true, month: true, year: true },
+          }),
+        );
+      }
+
+      const applicationCreatedTime = new Date(newWorldApplication.createdAt).setHours(0, 0, 0, 0);
+      if (applicationCreatedTime > dateOfVisit.getTime()) {
+        return respondWithDateError(
+          request,
+          h,
+          buildErrorSummary({
+            errorMessage: `The date of ${reviewOrFollowUpText} must be the same as or after the date of your agreement`,
+            href: visitDateDayAnchor,
+            inputsInError: { day: true, month: true, year: true },
+          }),
+        );
+      }
 
       await setSessionData(request, endemicsClaimEntry, dateOfVisitKey, dateOfVisit);
 
