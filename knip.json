@@ -1,4 +1,4 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignoreDependencies": ["aws4", "pino-pretty"]
+  "ignoreDependencies": ["@hapi/boom", "aws4", "pino-pretty"]
 }
