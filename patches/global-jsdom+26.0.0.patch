@@ -1,0 +1,54 @@
+diff --git a/node_modules/global-jsdom/commonjs/index.cjs b/node_modules/global-jsdom/commonjs/index.cjs
+index 6a52a40..f5478b0 100644
+--- a/node_modules/global-jsdom/commonjs/index.cjs
++++ b/node_modules/global-jsdom/commonjs/index.cjs
+@@ -9,6 +9,13 @@ const defaultHtml = '<!doctype html><html><head><meta charset="utf-8"></head><bo
+ 
+ const KEYS = []
+ 
++// Node provides these as global accessors that `(k in global)` cannot detect (notably in jest's
++// node test environment), so without this they wrongly get copied from the jsdom window on setup
++// and deleted on cleanup. jsdom 26 relies on the real Node timers/performance (e.g. Window.js calls
++// the global setTimeout to schedule timers and performance.now() while building the Window), so
++// they must be left untouched.
++const NODE_GLOBALS = new Set(['performance', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'queueMicrotask'])
++
+ module.exports = function globalJsdom(html = defaultHtml, options = {}) {
+   // Idempotency
+   if (global.navigator
+@@ -35,7 +42,7 @@ module.exports = function globalJsdom(html = defaultHtml, options = {}) {
+   // that node already defines
+ 
+   if (KEYS.length === 0) {
+-    KEYS.push(...Object.getOwnPropertyNames(window).filter((k) => !k.startsWith('_') && !(k in global)))
++    KEYS.push(...Object.getOwnPropertyNames(window).filter((k) => !k.startsWith('_') && !(k in global) && !NODE_GLOBALS.has(k)))
+     // going to add our jsdom instance, see below
+     KEYS.push('$jsdom')
+   }
+diff --git a/node_modules/global-jsdom/esm/index.mjs b/node_modules/global-jsdom/esm/index.mjs
+index 6bd8ab4..c57486a 100644
+--- a/node_modules/global-jsdom/esm/index.mjs
++++ b/node_modules/global-jsdom/esm/index.mjs
+@@ -9,6 +9,13 @@ const defaultHtml = '<!doctype html><html><head><meta charset="utf-8"></head><bo
+ 
+ const KEYS = []
+ 
++// Node provides these as global accessors that `(k in global)` cannot detect (notably in jest's
++// node test environment), so without this they wrongly get copied from the jsdom window on setup
++// and deleted on cleanup. jsdom 26 relies on the real Node timers/performance (e.g. Window.js calls
++// the global setTimeout to schedule timers and performance.now() while building the Window), so
++// they must be left untouched.
++const NODE_GLOBALS = new Set(['performance', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'queueMicrotask'])
++
+ export default function globalJsdom(html = defaultHtml, options = {}) {
+   // Idempotency
+   if (global.navigator
+@@ -35,7 +42,7 @@ export default function globalJsdom(html = defaultHtml, options = {}) {
+   // that node already defines
+ 
+   if (KEYS.length === 0) {
+-    KEYS.push(...Object.getOwnPropertyNames(window).filter((k) => !k.startsWith('_') && !(k in global)))
++    KEYS.push(...Object.getOwnPropertyNames(window).filter((k) => !k.startsWith('_') && !(k in global) && !NODE_GLOBALS.has(k)))
+     // going to add our jsdom instance, see below
+     KEYS.push('$jsdom')
+   }
