@@ -6,11 +6,7 @@ import {
   sessionKeys,
 } from "../../session/index.js";
 import { getReviewType, getLivestockTypes } from "../../lib/utils.js";
-import {
-  validateDateInputDay,
-  validateDateInputMonth,
-  validateDateInputYear,
-} from "../../lib/date-validations.js";
+import { validateDateParts } from "../../lib/date-validations.js";
 import { getReviewWithinLast10Months } from "../../lib/claim-helper.js";
 import {
   getReviewHerdId,
@@ -25,25 +21,6 @@ import { claimType } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
 const anchorTestingDate = "#whenTestingWasCarriedOut";
-
-const addError = (error, label, type, href) => {
-  if (
-    error.details
-      .filter((e) => e.context.label.startsWith(label))
-      .filter((e) => e.type.indexOf(type) !== -1).length
-  ) {
-    error.details = error.details.filter(
-      (e) => !e.context.label.startsWith(label) || e.type.indexOf(type) !== -1,
-    );
-  }
-  if (error.details.filter((e) => e.context.label.startsWith(label)).length) {
-    return {
-      text: error.details.find((e) => e.context.label.startsWith(label)).message,
-      href,
-    };
-  }
-  return {};
-};
 
 const backLink = (request) => {
   const { typeOfLivestock, typeOfReview, dateOfVisit, previousClaims, latestEndemicsApplication } =
@@ -93,6 +70,7 @@ const getTheQuestionAndHintText = (typeOfReview, typeOfLivestock) => {
 
 const onAnotherDateInputId = "on-another-date";
 const dateOfSamplingText = "Date of sampling";
+const DATE_PARTS_COUNT = 3;
 
 const getHandler = {
   method: "GET",
@@ -222,51 +200,40 @@ const postPayloadSchema = Joi.object({
     .messages({
       "any.required": "Enter the date samples were taken",
     }),
-
-  [`${onAnotherDateInputId}-day`]: Joi.when("whenTestingWasCarriedOut", {
-    switch: [
-      {
-        is: "onAnotherDate",
-        then: validateDateInputDay(onAnotherDateInputId, dateOfSamplingText).messages({
-          "dateInputDay.ifNothingIsEntered": "Enter the date samples were taken",
-        }),
-      },
-      {
-        is: "whenTheVetVisitedTheFarmToCarryOutTheReview",
-        then: Joi.allow(""),
-      },
-    ],
-    otherwise: Joi.allow(""),
-  }),
-
-  [`${onAnotherDateInputId}-month`]: Joi.when("whenTestingWasCarriedOut", {
-    switch: [
-      {
-        is: "onAnotherDate",
-        then: validateDateInputMonth(onAnotherDateInputId, dateOfSamplingText),
-      },
-      {
-        is: "whenTheVetVisitedTheFarmToCarryOutTheReview",
-        then: Joi.allow(""),
-      },
-    ],
-    otherwise: Joi.allow(""),
-  }),
-
-  [`${onAnotherDateInputId}-year`]: Joi.when("whenTestingWasCarriedOut", {
-    switch: [
-      {
-        is: "onAnotherDate",
-        then: validateDateInputYear(onAnotherDateInputId, dateOfSamplingText, (value) => value, {}),
-      },
-      {
-        is: "whenTheVetVisitedTheFarmToCarryOutTheReview",
-        then: Joi.allow(""),
-      },
-    ],
-    otherwise: Joi.allow(""),
-  }),
+  [`${onAnotherDateInputId}-day`]: Joi.string().allow("").default(""),
+  [`${onAnotherDateInputId}-month`]: Joi.string().allow("").default(""),
+  [`${onAnotherDateInputId}-year`]: Joi.string().allow("").default(""),
 });
+
+const datePartsMessage = ({ reason, missing }) => {
+  if (reason === "incomplete") {
+    return missing.length === DATE_PARTS_COUNT
+      ? "Enter the date samples were taken"
+      : `${dateOfSamplingText} must include a ${missing.join(" and a ")}`;
+  }
+  if (reason === "year") {
+    return "Year must include 4 numbers";
+  }
+  return `${dateOfSamplingText} must be a real date`;
+};
+
+const buildDatePartsError = (request, partsError) => {
+  const message = datePartsMessage(partsError);
+  const { day, month, year } = partsError.inputsInError;
+  return {
+    errorSummary: [{ text: message, href: anchorTestingDate }],
+    whenTestingWasCarriedOut: {
+      value: request.payload.whenTestingWasCarriedOut,
+      errorMessage: undefined,
+      onAnotherDate: {
+        day: { value: request.payload[`${onAnotherDateInputId}-day`], error: day },
+        month: { value: request.payload[`${onAnotherDateInputId}-month`], error: month },
+        year: { value: request.payload[`${onAnotherDateInputId}-year`], error: year },
+        errorMessage: message,
+      },
+    },
+  };
+};
 
 const postHandler = {
   method: "POST",
@@ -275,51 +242,16 @@ const postHandler = {
     validate: {
       payload: postPayloadSchema,
       failAction: async (request, h, error) => {
-        const errorSummary = [];
-        if (error.details.find((e) => e.context.label === "whenTestingWasCarriedOut")) {
-          errorSummary.push({
-            text: error.details.find((e) => e.context.label === "whenTestingWasCarriedOut").message,
-            href: anchorTestingDate,
-          });
-        }
-
-        const newError = addError(
-          error,
-          onAnotherDateInputId,
-          "ifTheDateIsIncomplete",
-          anchorTestingDate,
-        );
-        if (Object.keys(newError).length > 0 && newError.constructor === Object) {
-          errorSummary.push(newError);
-        }
-
-        const possibleErrorMessage = (labelStartsWith) =>
-          error.details.find((e) => e.context.label.startsWith(labelStartsWith))?.message;
-
-        const fieldError = (input) =>
-          error.details.find((e) => e.context.label === `${onAnotherDateInputId}-${input}`);
-
-        const whenTestingWasCarriedOut = {
-          value: request.payload.whenTestingWasCarriedOut,
-          errorMessage: possibleErrorMessage("whenTestingWasCarriedOut"),
-          onAnotherDate: {
-            day: {
-              value: request.payload[`${onAnotherDateInputId}-day`],
-              error: fieldError("day"),
-            },
-            month: {
-              value: request.payload[`${onAnotherDateInputId}-month`],
-              error: fieldError("month"),
-            },
-            year: {
-              value: request.payload[`${onAnotherDateInputId}-year`],
-              error: fieldError("year"),
-            },
-            errorMessage: possibleErrorMessage(onAnotherDateInputId),
+        const detail =
+          error.details.find((e) => e.context.label === "whenTestingWasCarriedOut") ??
+          error.details[0];
+        return renderDateOfTestingError(request, h, {
+          errorSummary: [{ text: detail.message, href: anchorTestingDate }],
+          whenTestingWasCarriedOut: {
+            value: request.payload.whenTestingWasCarriedOut,
+            errorMessage: detail.message,
           },
-        };
-
-        return renderDateOfTestingError(request, h, { errorSummary, whenTestingWasCarriedOut });
+        });
       },
     },
     handler: async (request, h) => {
@@ -335,6 +267,17 @@ const postHandler = {
 
       const { isEndemicsFollowUp } = getReviewType(typeOfReview);
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock);
+
+      if (request.payload.whenTestingWasCarriedOut === "onAnotherDate") {
+        const partsError = validateDateParts({
+          day: request.payload[`${onAnotherDateInputId}-day`],
+          month: request.payload[`${onAnotherDateInputId}-month`],
+          year: request.payload[`${onAnotherDateInputId}-year`],
+        });
+        if (partsError) {
+          return renderDateOfTestingError(request, h, buildDatePartsError(request, partsError));
+        }
+      }
 
       const dateOfTesting = resolveDateOfTesting(request, dateOfVisit);
 
