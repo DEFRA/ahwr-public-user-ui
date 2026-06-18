@@ -1,1 +1,1 @@
-npm run git:pre-push-hook
+npm run format:check && npm run lint && npm test && npm run lint:deps
