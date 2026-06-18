@@ -2,7 +2,7 @@
 
 {% block pageTitle %}{% if errorMessage %}Error: {% endif %}Are you claiming for a review or follow-up? - {{ serviceName }} - GOV.UK{% endblock %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {{ govukBackLink({
         text: "Back",
         href: backLink

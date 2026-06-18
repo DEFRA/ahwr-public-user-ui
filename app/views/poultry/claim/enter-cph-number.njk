@@ -2,7 +2,7 @@
 
 {% block pageTitle %}{% if errorMessage %}Error: {% endif %}Enter the CPH number for this site - {{ serviceName }} - GOV.UK{% endblock %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {{ govukBackLink({
     text: "Back",
     href: backLink,

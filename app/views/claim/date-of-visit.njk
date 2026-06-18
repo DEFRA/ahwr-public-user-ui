@@ -2,7 +2,7 @@
 
 {% block pageTitle %}{% if errorSummary.length %}Error: {% endif %}Date of {{ reviewOrFollowUpText }} - {{ serviceName }} - GOV.UK{% endblock %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {{ govukBackLink({
     text: "Back",
     href: backLink,

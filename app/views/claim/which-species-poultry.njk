@@ -2,7 +2,7 @@
 
 {% block pageTitle %}{% if errorMessage %}Error: {% endif %}Which species are you claiming for? - {{ serviceName }} - GOV.UK{% endblock %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {{ govukBackLink({
         text: "Back",
         href: backLink

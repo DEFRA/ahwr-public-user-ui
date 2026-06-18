@@ -2,7 +2,7 @@
 
 {% block pageTitle %}{% if errorMessage %}Error: {% endif %}What type of samples were taken? - {{ serviceName }} - GOV.UK{% endblock %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {{ govukBackLink({
     text: "Back",
     href: backLink,

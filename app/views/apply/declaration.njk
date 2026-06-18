@@ -3,7 +3,7 @@
 
 {% block pageTitle %}{% if errorMessage %}Error: {% endif %}Review your agreement offer - {{ serviceName }} - GOV.UK{% endblock %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {{ govukBackLink({
     text: "Back",
     href: backLink,
