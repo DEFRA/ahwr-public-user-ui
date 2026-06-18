@@ -24,6 +24,8 @@ import { claimRoutes, claimViews } from "../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../messaging/ineligibility-event-emission.js";
 
+const anchorTestingDate = "#whenTestingWasCarriedOut";
+
 const addError = (error, label, type, href) => {
   if (
     error.details
@@ -178,7 +180,7 @@ const renderDateOfTestingError = (request, h, { errorSummary, whenTestingWasCarr
 };
 
 const buildSamplingDateError = (request, errorMessage) => ({
-  errorSummary: [{ text: errorMessage, href: "#whenTestingWasCarriedOut" }],
+  errorSummary: [{ text: errorMessage, href: anchorTestingDate }],
   whenTestingWasCarriedOut: {
     value: request.payload.whenTestingWasCarriedOut,
     errorMessage: undefined,
@@ -277,7 +279,7 @@ const postHandler = {
         if (error.details.find((e) => e.context.label === "whenTestingWasCarriedOut")) {
           errorSummary.push({
             text: error.details.find((e) => e.context.label === "whenTestingWasCarriedOut").message,
-            href: "#whenTestingWasCarriedOut",
+            href: anchorTestingDate,
           });
         }
 
@@ -285,7 +287,7 @@ const postHandler = {
           error,
           onAnotherDateInputId,
           "ifTheDateIsIncomplete",
-          "#whenTestingWasCarriedOut",
+          anchorTestingDate,
         );
         if (Object.keys(newError).length > 0 && newError.constructor === Object) {
           errorSummary.push(newError);
