@@ -59,6 +59,11 @@ const latestEndemicsApplication = {
   type: "EE",
 };
 
+const organisation = {
+  name: "Farmer Johns",
+  sbi: "12345",
+};
+
 const auth = { credentials: {}, strategy: "cookie" };
 const url = "/date-of-visit";
 
@@ -191,6 +196,62 @@ describe("GET /date-of-visit handler", () => {
     expectPhaseBanner.ok($);
   });
 
+  test("shows the follow-up heading and links back to the old world review test results for an endemics cattle claim with no relevant new world claims", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        latestEndemicsApplication,
+        latestVetVisitApplication,
+        typeOfReview: "FOLLOW_UP",
+        typeOfLivestock: "beef",
+        previousClaims: [],
+        reference: "TEMP-6GSE-PIR8",
+      });
+    const options = {
+      method: "GET",
+      url,
+      auth,
+    };
+
+    const res = await server.inject(options);
+
+    expect(await axe(res.payload)).toHaveNoViolations();
+    expect(res.statusCode).toBe(200);
+    const $ = cheerio.load(res.payload);
+    expect($("h1").text().trim()).toBe("Date of follow-up");
+    expect($("title").text()).toMatch(/^Date of follow-up - /);
+    expect($(".govuk-back-link").attr("href")).toBe("/vet-visits-review-test-results");
+    expectPhaseBanner.ok($);
+  });
+
+  test("shows the review heading and links back to which-type-of-review for a review claim", async () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        latestEndemicsApplication,
+        latestVetVisitApplication,
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "beef",
+        previousClaims: [],
+        reference: "TEMP-6GSE-PIR8",
+      });
+    const options = {
+      method: "GET",
+      url,
+      auth,
+    };
+
+    const res = await server.inject(options);
+
+    expect(await axe(res.payload)).toHaveNoViolations();
+    expect(res.statusCode).toBe(200);
+    const $ = cheerio.load(res.payload);
+    expect($("h1").text().trim()).toBe("Date of review");
+    expect($("title").text()).toMatch(/^Date of review - /);
+    expect($(".govuk-back-link").attr("href")).toBe("/which-type-of-review");
+    expectPhaseBanner.ok($);
+  });
+
   test("when not logged in redirects to /sign-in", async () => {
     const options = {
       method: "GET",
@@ -224,1562 +285,1216 @@ describe("POST /date-of-visit handler", () => {
     jest.clearAllMocks();
   });
 
-  test("redirect back to page with errors if the entered date is of an incorrect format", async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "second",
-        "visit-date-month": "february",
-        "visit-date-year": "2000",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+  const postOptions = ({ day, month, year }) => ({
+    method: "POST",
+    url,
+    payload: {
+      crumb,
+      "visit-date-day": day,
+      "visit-date-month": month,
+      "visit-date-year": year,
+    },
+    auth,
+    headers: { cookie: `crumb=${crumb}` },
+  });
 
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-    expect(res.statusCode).toBe(400);
-    expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
-      "Enter the date of review",
-    );
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "review",
+  describe("date checks", () => {
+    test.each([
       {
+        scenario: "the entered date is of an incorrect format",
+        day: "second",
+        month: "february",
+        year: "2000",
+        error: "Enter the date of review",
         kind: "dateEntered: 2000-february-second, dateOfAgreement: 2025-01-01",
-        reason: "Enter the date of review",
-        reference: "TEMP-6GSE-PIR8",
       },
-    );
-  });
-
-  test("redirect back to page with errors if the entered date is of a correct format, but the date isn't real", async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "31",
-        "visit-date-month": "2",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-    expect(res.statusCode).toBe(400);
-    expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
-      "The date of review must be a real date",
-    );
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "review",
       {
+        scenario: "the entered date is of a correct format, but the date isn't real",
+        day: "31",
+        month: "2",
+        year: "2025",
+        error: "The date of review must be a real date",
         kind: "dateEntered: 2025-2-31, dateOfAgreement: 2025-01-01",
-        reason: "The date of review must be a real date",
-        reference: "TEMP-6GSE-PIR8",
       },
-    );
-  });
-
-  test("redirect back to page with errors if the entered date is before the agreement date", async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "1",
-        "visit-date-month": "12",
-        "visit-date-year": "2024",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-    expect(res.statusCode).toBe(400);
-    expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
-      "The date of review must be the same as or after the date of your agreement",
-    );
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "review",
       {
+        scenario: "the entered date is before the agreement date",
+        day: "1",
+        month: "12",
+        year: "2024",
+        error: "The date of review must be the same as or after the date of your agreement",
         kind: "dateEntered: 2024-12-1, dateOfAgreement: 2025-01-01",
-        reason: "The date of review must be the same as or after the date of your agreement",
-        reference: "TEMP-6GSE-PIR8",
       },
-    );
-  });
-
-  test("redirect back to page with errors if the entered date is in the future", async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "2",
-        "visit-date-month": "2",
-        "visit-date-year": "2040",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-    expect(res.statusCode).toBe(400);
-    expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(
-      "The date of review must be today or in the past",
-    );
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "review",
       {
+        scenario: "the entered date is in the future",
+        day: "2",
+        month: "2",
+        year: "2040",
+        error: "The date of review must be today or in the past",
         kind: "dateEntered: 2040-2-2, dateOfAgreement: 2025-01-01",
-        reason: "The date of review must be today or in the past",
-        reference: "TEMP-6GSE-PIR8",
       },
-    );
-  });
+    ])(
+      "redirect back to page with errors if $scenario",
+      async ({ day, month, year, error, kind }) => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue({
+            typeOfReview: "REVIEW",
+            previousClaims: [],
+            typeOfLivestock: "beef",
+            organisation,
+            reviewTestResults: "positive",
+            reference: "TEMP-6GSE-PIR8",
+            latestEndemicsApplication,
+          });
+        const options = postOptions({ day, month, year });
 
-  test("user makes a review claim and has zero previous claims", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+        const res = await server.inject(options);
 
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 1),
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
-
-  test("user makes a review claim and created an application on the same day", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication: {
-          ...latestEndemicsApplication,
-          createdAt: new Date("2025/01/01 14:30:00"),
-        },
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 1),
-    );
-    expect(trackEvent).not.toHaveBeenCalledWith();
-  });
-
-  test("user makes a review claim and has a previous review claim for the same species within the last 10 months", async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(400);
+        expect($(".govuk-error-summary__list > li > a").text().trim()).toEqual(error);
+        expect(trackEvent).toHaveBeenCalledWith(
+          expect.any(Object),
+          "claim-invalid-date-of-visit",
+          "review",
           {
-            reference: "REBC-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "AGREED",
-            type: "REVIEW",
-            createdAt: "2024-12-12T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-12-12",
+            kind,
+            reason: error,
+            reference: "TEMP-6GSE-PIR8",
+          },
+        );
+      },
+    );
+
+    test("user makes a review claim and has a previous review claim for the same species within the last 10 months", async () => {
+      // unhappy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [
+            {
+              reference: "REBC-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "AGREED",
+              type: "REVIEW",
+              createdAt: "2024-12-12T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-12-12",
+              },
             },
-          },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-
-    expect(res.statusCode).toBe(400);
-    expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-    expect(sendInvalidDataEvent).toHaveBeenCalled();
-
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 1),
-    );
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "review",
-      {
-        kind: "2025-01-01 is invalid",
-        reason: "There must be at least 10 months between your reviews.",
-        reference: "TEMP-6GSE-PIR8",
-      },
-    );
-  });
-
-  test("user makes a review claim and has a previous review claim for the same species over 10 months ago", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [
-          {
-            reference: "REBC-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "AGREED",
-            type: "REVIEW",
-            createdAt: "2024-12-12T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2023-12-12",
-            },
-          },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 1),
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
-
-  test("user makes a review claim and has a previous review claim for a different species, no others for same species and is after MS was enabled", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [
-          {
-            reference: "REBC-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "AGREED",
-            type: "REVIEW",
-            createdAt: "2024-12-12T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "dairy",
-              dateOfVisit: "2024-12-12",
-            },
-          },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-02-26",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "26",
-        "visit-date-month": "02",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 1, 26),
-    );
-    // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
-  });
-
-  test(`user makes a review claim and has a previous review claim for a different species, 
-    no others for same species and is before MS was enabled`, async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [
-          {
-            reference: "REBC-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "AGREED",
-            type: "REVIEW",
-            createdAt: "2024-12-12T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "dairy",
-              dateOfVisit: "2024-12-12",
-            },
-          },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-
-    expect(res.statusCode).toBe(400);
-    expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-    expect(sendInvalidDataEvent).toHaveBeenCalled();
-
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 1),
-    );
-
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "review",
-      {
-        reason:
-          "User is attempting to claim for MS with a date of visit of 2025-01-01 which is before MS was enabled.",
-        reference: "TEMP-6GSE-PIR8",
-      },
-    );
-  });
-
-  test("user has an old world claim, and makes a new world claim over 10 months later for the same species", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestVetVisitApplication,
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 1),
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
-
-  test("user has an old world claim, and makes a new world claim over 10 months later for a different species", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [],
-        typeOfLivestock: "pigs",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestVetVisitApplication,
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 1),
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
-
-  test("user has an old world claim, and makes a new world claim within 10 months for the same species", async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestVetVisitApplication: {
-          ...latestVetVisitApplication,
-          data: {
-            visitDate: "2024-12-01",
-            whichReview: "beef",
-          },
-        },
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-02",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "02",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-
-    expect(res.statusCode).toBe(400);
-    expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-    expect(sendInvalidDataEvent).toHaveBeenCalled();
-
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 2),
-    );
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "review",
-      {
-        kind: "2025-01-02 is invalid",
-        reason: "There must be at least 10 months between your reviews.",
-        reference: "TEMP-6GSE-PIR8",
-      },
-    );
-  });
-
-  test("user has an old world claim, and makes a new world claim within 10 months for a different species", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "REVIEW",
-        previousClaims: [],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestVetVisitApplication: {
-          ...latestVetVisitApplication,
-          data: {
-            visitDate: "2024-12-01",
-            whichReview: "pigs",
-          },
-        },
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-02",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "02",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 2),
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
-
-  test("user makes an endemics claim within 10 months of the same species of their initial review claim", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-09-01",
-            },
-          },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 1),
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
-
-  test("user makes an endemics dairy claim after dairy follow up release", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "dairy",
-              dateOfVisit: "2024-09-01",
-            },
-          },
-        ],
-        typeOfLivestock: "dairy",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-21",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "21",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/species-numbers");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 21),
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
-
-  test("user makes an endemics dairy claim before dairy follow up release", async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "dairy",
-              dateOfVisit: "2024-09-01",
-            },
-          },
-        ],
-        typeOfLivestock: "dairy",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-20",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "20",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-
-    expect(res.statusCode).toBe(400);
-    expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
-    expect(sendInvalidDataEvent).toHaveBeenCalled();
-
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 20),
-    );
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "follow-up",
-      {
-        reason:
-          "User is attempting to claim for dairy follow-up with a date of visit of 2025-01-20 which is before dairy follow-ups was enabled.",
-        reference: "TEMP-6GSE-PIR8",
-      },
-    );
-  });
-
-  test("user makes an endemics claim within 10 months of a previous endemics claim of the same species", async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-09-01",
-            },
-          },
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "FOLLOW_UP",
-            createdAt: "2024-10-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-10-01",
-            },
-          },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-
-    expect(res.statusCode).toBe(400);
-    expect($("title").text()).toMatch(
-      "You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-    );
-    const link = $('a.govuk-link[rel="external"]');
-    expect(link.attr("href")).toBe(
-      "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups",
-    );
-    expect(link.text()).toBe("There must be at least 10 months between your follow-ups.");
-    expect(sendInvalidDataEvent).toHaveBeenCalled();
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "follow-up",
-      {
-        kind: "2025-01-01 is invalid",
-        reason: "There must be at least 10 months between your follow-ups.",
-        reference: "TEMP-6GSE-PIR8",
-      },
-    );
-  });
-
-  test("user makes an endemics claim within 10 months of a previous endemics claim of a different species, assuming everything else otherwise ok", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-09-01",
-            },
-          },
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "FOLLOW_UP",
-            createdAt: "2024-10-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-10-01",
-            },
-          },
-          {
-            reference: "AHWR-4E4T-5TR3",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "pigs",
-              dateOfVisit: "2024-09-01",
-            },
-          },
-        ],
-        typeOfLivestock: "pigs",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-02-27",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "27",
-        "visit-date-month": "02",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 1, 27),
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
-
-  test("user makes an endemics claim and the review in question is rejected", async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "REJECTED",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-09-01",
-            },
-          },
-        ],
-        typeOfLivestock: "beef",
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.organisation)
-      .mockReturnValue({
-        name: "Farmer Johns",
-        sbi: "12345",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-
-    expect(res.statusCode).toBe(400);
-    expect($("title").text()).toMatch(
-      "You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-    );
-    const mainMessage = $("h1.govuk-heading-l").first().nextAll("p").first();
-    expect(mainMessage.text().trim()).toBe(
-      "Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.",
-    );
-    expect(sendInvalidDataEvent).toHaveBeenCalled();
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "follow-up",
-      {
-        kind: "2025-01-01 is invalid",
-        reason:
-          "Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.",
-        reference: "TEMP-6GSE-PIR8",
-      },
-    );
-  });
-
-  test("user makes an endemics claim and the review is not in READY_TO_PAY or PAID status", async () => {
-    // unhappy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "AGREED",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-09-01",
-            },
-          },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(await axe(res.payload)).toHaveNoViolations();
-    const $ = cheerio.load(res.payload);
-
-    expect(res.statusCode).toBe(400);
-    expect($("title").text()).toMatch(
-      "You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-    );
-    const link = $('a.govuk-link[rel="external"]');
-    expect(link.attr("href")).toBe(
-      "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups",
-    );
-    expect(link.text()).toBe(
-      "Your review claim must have been approved before you claim for the follow-up that happened after it.",
-    );
-    expect(trackEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      "claim-invalid-date-of-visit",
-      "follow-up",
-      {
-        kind: "2025-01-01 is invalid",
-        reason:
-          "Your review claim must have been approved before you claim for the follow-up that happened after it.",
-        reference: "TEMP-6GSE-PIR8",
-      },
-    );
-  });
-
-  test("user has an old world claim, and makes a new world endemics claim", async () => {
-    // happy path
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestVetVisitApplication: {
-          ...latestVetVisitApplication,
-          data: {
-            visitDate: "2024-12-01",
-            whichReview: "beef",
-          },
-          status: "READY_TO_PAY",
-        },
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date(2025, 0, 1),
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
-
-  test("for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-09-01",
-            },
-          },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toEqual("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "reviewTestResults",
-      "positive",
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
-
-  test("should redirect to endemics date of testing page when endemics claim is for beef or dairy, the previous review test results has not been set and there are multiple previous reviews of different species with different test results", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "sheep",
-              dateOfVisit: "2024-09-01",
-              testResults: "negative",
-            },
-          },
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-09-01",
-              testResults: "positive",
-            },
-          },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2024-10-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "27",
-        "visit-date-month": "02",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toEqual("/date-of-testing");
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "relevantReviewForEndemics",
-      {
-        reference: "AHWR-C2EA-C718",
-        applicationReference: "AHWR-2470-6BA9",
-        status: "READY_TO_PAY",
-        type: "REVIEW",
-        createdAt: "2024-09-01T10:25:11.318Z",
-        data: {
+          ],
           typeOfLivestock: "beef",
-          dateOfVisit: "2024-09-01",
-          testResults: "positive",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
+
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 1),
+      );
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.any(Object),
+        "claim-invalid-date-of-visit",
+        "review",
+        {
+          kind: "2025-01-01 is invalid",
+          reason: "There must be at least 10 months between your reviews.",
+          reference: "TEMP-6GSE-PIR8",
         },
-      },
-    );
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "dateOfVisit",
-      new Date("2025/02/27"),
-    );
-    expect(setSessionData).toHaveBeenCalledWith(
-      expect.any(Object),
-      "endemicsClaim",
-      "reviewTestResults",
-      "positive",
-    );
-    expect(trackEvent).not.toHaveBeenCalled();
+      );
+    });
   });
 
-  test("for an endemics claim, it redirects to endemics species numbers page when claim is for beef or dairy, and the previous review test results are negative", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
+  describe("make review claims", () => {
+    test("user makes a review claim and has zero previous claims", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 1),
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test("user makes a review claim and created an application on the same day", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication: {
+            ...latestEndemicsApplication,
+            createdAt: new Date("2025/01/01 14:30:00"),
+          },
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 1),
+      );
+      expect(trackEvent).not.toHaveBeenCalledWith();
+    });
+
+    test("user makes a review claim and has a previous review claim for the same species over 10 months ago", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [
+            {
+              reference: "REBC-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "AGREED",
+              type: "REVIEW",
+              createdAt: "2024-12-12T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2023-12-12",
+              },
+            },
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 1),
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test("user makes a review claim and has a previous review claim for a different species, no others for same species and is after MS was enabled", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [
+            {
+              reference: "REBC-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "AGREED",
+              type: "REVIEW",
+              createdAt: "2024-12-12T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "dairy",
+                dateOfVisit: "2024-12-12",
+              },
+            },
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-02-26",
+        });
+      const options = postOptions({ day: "26", month: "02", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 1, 26),
+      );
+      // expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+    });
+
+    test(`user makes a review claim and has a previous review claim for a different species, 
+    no others for same species and is before MS was enabled`, async () => {
+      // unhappy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [
+            {
+              reference: "REBC-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "AGREED",
+              type: "REVIEW",
+              createdAt: "2024-12-12T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "dairy",
+                dateOfVisit: "2024-12-12",
+              },
+            },
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
+
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 1),
+      );
+
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.any(Object),
+        "claim-invalid-date-of-visit",
+        "review",
+        {
+          reason:
+            "User is attempting to claim for MS with a date of visit of 2025-01-01 which is before MS was enabled.",
+          reference: "TEMP-6GSE-PIR8",
+        },
+      );
+    });
+  });
+
+  describe("old world claims", () => {
+    test("user has an old world claim, and makes a new world claim over 10 months later for the same species", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestVetVisitApplication,
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 1),
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test("user has an old world claim, and makes a new world claim over 10 months later for a different species", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [],
+          typeOfLivestock: "pigs",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestVetVisitApplication,
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 1),
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test("user has an old world claim, and makes a new world claim within 10 months for the same species", async () => {
+      // unhappy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
             data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-09-01",
+              visitDate: "2024-12-01",
+              whichReview: "beef",
             },
           },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-02",
+        });
+      const options = postOptions({ day: "02", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
+
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 2),
+      );
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.any(Object),
+        "claim-invalid-date-of-visit",
+        "review",
+        {
+          kind: "2025-01-02 is invalid",
+          reason: "There must be at least 10 months between your reviews.",
+          reference: "TEMP-6GSE-PIR8",
         },
-        reviewTestResults: "negative",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-01",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "01",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+      );
+    });
 
-    const res = await server.inject(options);
+    test("user has an old world claim, and makes a new world claim within 10 months for a different species", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
+            data: {
+              visitDate: "2024-12-01",
+              whichReview: "pigs",
+            },
+          },
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-02",
+        });
+      const options = postOptions({ day: "02", month: "01", year: "2025" });
 
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toEqual("/species-numbers");
-    expect(trackEvent).not.toHaveBeenCalled();
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 2),
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
   });
 
-  test(`for an endemics claim, it redirects to endemics species numbers page when claim 
+  describe("make follow up/endemic claim", () => {
+    test("user makes an endemics claim within 10 months of the same species of their initial review claim", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-09-01",
+              },
+            },
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 1),
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test("user makes an endemics dairy claim after dairy follow up release", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "dairy",
+                dateOfVisit: "2024-09-01",
+              },
+            },
+          ],
+          typeOfLivestock: "dairy",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-21",
+        });
+      const options = postOptions({ day: "21", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/species-numbers");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 21),
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test("user makes an endemics dairy claim before dairy follow up release", async () => {
+      // unhappy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "dairy",
+                dateOfVisit: "2024-09-01",
+              },
+            },
+          ],
+          typeOfLivestock: "dairy",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-20",
+        });
+      const options = postOptions({ day: "20", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
+
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 20),
+      );
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.any(Object),
+        "claim-invalid-date-of-visit",
+        "follow-up",
+        {
+          reason:
+            "User is attempting to claim for dairy follow-up with a date of visit of 2025-01-20 which is before dairy follow-ups was enabled.",
+          reference: "TEMP-6GSE-PIR8",
+        },
+      );
+    });
+
+    test("user makes an endemics claim within 10 months of a previous endemics claim of the same species", async () => {
+      // unhappy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-09-01",
+              },
+            },
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "FOLLOW_UP",
+              createdAt: "2024-10-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-10-01",
+              },
+            },
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("title").text()).toMatch(
+        "You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+      );
+      const link = $('a.govuk-link[rel="external"]');
+      expect(link.attr("href")).toBe(
+        "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups",
+      );
+      expect(link.text()).toBe("There must be at least 10 months between your follow-ups.");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.any(Object),
+        "claim-invalid-date-of-visit",
+        "follow-up",
+        {
+          kind: "2025-01-01 is invalid",
+          reason: "There must be at least 10 months between your follow-ups.",
+          reference: "TEMP-6GSE-PIR8",
+        },
+      );
+    });
+
+    test("user makes an endemics claim within 10 months of a previous endemics claim of a different species, assuming everything else otherwise ok", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-09-01",
+              },
+            },
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "FOLLOW_UP",
+              createdAt: "2024-10-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-10-01",
+              },
+            },
+            {
+              reference: "AHWR-4E4T-5TR3",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "pigs",
+                dateOfVisit: "2024-09-01",
+              },
+            },
+          ],
+          typeOfLivestock: "pigs",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-02-27",
+        });
+      const options = postOptions({ day: "27", month: "02", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 1, 27),
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test("user makes an endemics claim and the review in question is rejected", async () => {
+      // unhappy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "REJECTED",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-09-01",
+              },
+            },
+          ],
+          typeOfLivestock: "beef",
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({
+          name: "Farmer Johns",
+          sbi: "12345",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("title").text()).toMatch(
+        "You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+      );
+      const mainMessage = $("h1.govuk-heading-l").first().nextAll("p").first();
+      expect(mainMessage.text().trim()).toBe(
+        "Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.",
+      );
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.any(Object),
+        "claim-invalid-date-of-visit",
+        "follow-up",
+        {
+          kind: "2025-01-01 is invalid",
+          reason:
+            "Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.",
+          reference: "TEMP-6GSE-PIR8",
+        },
+      );
+    });
+
+    test("user makes an endemics claim and the review is not in READY_TO_PAY or PAID status", async () => {
+      // unhappy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "AGREED",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-09-01",
+              },
+            },
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("title").text()).toMatch(
+        "You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+      );
+      const link = $('a.govuk-link[rel="external"]');
+      expect(link.attr("href")).toBe(
+        "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups",
+      );
+      expect(link.text()).toBe(
+        "Your review claim must have been approved before you claim for the follow-up that happened after it.",
+      );
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.any(Object),
+        "claim-invalid-date-of-visit",
+        "follow-up",
+        {
+          kind: "2025-01-01 is invalid",
+          reason:
+            "Your review claim must have been approved before you claim for the follow-up that happened after it.",
+          reference: "TEMP-6GSE-PIR8",
+        },
+      );
+    });
+
+    test("user has an old world claim, and makes a new world endemics claim", async () => {
+      // happy path
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
+            data: {
+              visitDate: "2024-12-01",
+              whichReview: "beef",
+            },
+            status: "READY_TO_PAY",
+          },
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date(2025, 0, 1),
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test("for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-09-01",
+              },
+            },
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "reviewTestResults",
+        "positive",
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test("should redirect to endemics date of testing page when endemics claim is for beef or dairy, the previous review test results has not been set and there are multiple previous reviews of different species with different test results", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "sheep",
+                dateOfVisit: "2024-09-01",
+                testResults: "negative",
+              },
+            },
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-09-01",
+                testResults: "positive",
+              },
+            },
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2024-10-01",
+        });
+      const options = postOptions({ day: "27", month: "02", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "relevantReviewForEndemics",
+        {
+          reference: "AHWR-C2EA-C718",
+          applicationReference: "AHWR-2470-6BA9",
+          status: "READY_TO_PAY",
+          type: "REVIEW",
+          createdAt: "2024-09-01T10:25:11.318Z",
+          data: {
+            typeOfLivestock: "beef",
+            dateOfVisit: "2024-09-01",
+            testResults: "positive",
+          },
+        },
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "dateOfVisit",
+        new Date("2025/02/27"),
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "reviewTestResults",
+        "positive",
+      );
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test("for an endemics claim, it redirects to endemics species numbers page when claim is for beef or dairy, and the previous review test results are negative", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-09-01",
+              },
+            },
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "negative",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/species-numbers");
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+
+    test(`for an endemics claim, it redirects to endemics species numbers page when claim 
         is for beef or dairy, and the previous review test results are positive 
         BUT visit date post go live`, async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-09-01",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-09-01",
+              },
             },
-          },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-21",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        /* see PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE */
-        "visit-date-day": "21",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-21",
+        });
+      /* see PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE */
+      const options = postOptions({ day: "21", month: "01", year: "2025" });
 
-    const res = await server.inject(options);
+      const res = await server.inject(options);
 
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toEqual("/species-numbers");
-    expect(trackEvent).not.toHaveBeenCalled();
-  });
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/species-numbers");
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
 
-  test(`for an endemics claim, it redirects to endemics date of testing page when claim 
+    test(`for an endemics claim, it redirects to endemics date of testing page when claim 
     is for beef or dairy, and the previous review test results are positive 
     AND optional PI hunt is enabled BUT visit date pre go-live`, async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        typeOfReview: "FOLLOW_UP",
-        previousClaims: [
-          {
-            reference: "AHWR-C2EA-C718",
-            applicationReference: "AHWR-2470-6BA9",
-            status: "READY_TO_PAY",
-            type: "REVIEW",
-            createdAt: "2024-09-01T10:25:11.318Z",
-            data: {
-              typeOfLivestock: "beef",
-              dateOfVisit: "2024-09-01",
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          previousClaims: [
+            {
+              reference: "AHWR-C2EA-C718",
+              applicationReference: "AHWR-2470-6BA9",
+              status: "READY_TO_PAY",
+              type: "REVIEW",
+              createdAt: "2024-09-01T10:25:11.318Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-09-01",
+              },
             },
+          ],
+          typeOfLivestock: "beef",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-20",
+        });
+      /* see PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE */
+      const options = postOptions({ day: "20", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("pigs sample data", () => {
+    test("clears the previously entered sample data when a pigs claim is before the pigs-and-payments release", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [],
+          typeOfLivestock: "pigs",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestVetVisitApplication,
+          latestEndemicsApplication,
+          dateOfVisit: "2025-01-01",
+        });
+      /* before PIGS_AND_PAYMENTS_RELEASE_DATE (2026-01-22) */
+      const options = postOptions({ day: "01", month: "01", year: "2025" });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "typeOfSamplesTaken",
+        undefined,
+        { shouldEmitEvent: false },
+      );
+      expect(setSessionData).toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "numberOfBloodSamples",
+        undefined,
+        { shouldEmitEvent: false },
+      );
+    });
+
+    test("does not clear the sample data when a pigs claim is on or after the pigs-and-payments release", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "REVIEW",
+          previousClaims: [],
+          typeOfLivestock: "pigs",
+          organisation,
+          reviewTestResults: "positive",
+          reference: "TEMP-6GSE-PIR8",
+          latestVetVisitApplication,
+          /* flag rejecting MH T&Cs keeps us on the non-multiple-herds journey */
+          latestEndemicsApplication: {
+            ...latestEndemicsApplication,
+            flags: [{ appliesToMh: true }],
           },
-        ],
-        typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
-        reviewTestResults: "positive",
-        reference: "TEMP-6GSE-PIR8",
-        latestEndemicsApplication,
-        dateOfVisit: "2025-01-20",
-      });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        /* see PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE */
-        "visit-date-day": "20",
-        "visit-date-month": "01",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+          dateOfVisit: "2026-01-22",
+        });
+      /* see PIGS_AND_PAYMENTS_RELEASE_DATE (2026-01-22) */
+      const options = postOptions({ day: "22", month: "01", year: "2026" });
 
-    const res = await server.inject(options);
+      const res = await server.inject(options);
 
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toEqual("/date-of-testing");
-    expect(trackEvent).not.toHaveBeenCalled();
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/date-of-testing");
+      expect(setSessionData).not.toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "typeOfSamplesTaken",
+        undefined,
+        { shouldEmitEvent: false },
+      );
+      expect(setSessionData).not.toHaveBeenCalledWith(
+        expect.any(Object),
+        "endemicsClaim",
+        "numberOfBloodSamples",
+        undefined,
+        { shouldEmitEvent: false },
+      );
+    });
   });
 
   test("should redirect to select the herd page when there are previous herds and is multi herds journey", async () => {
@@ -1802,27 +1517,13 @@ describe("POST /date-of-visit handler", () => {
           },
         ],
         typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
+        organisation,
         reviewTestResults: "positive",
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-05-13",
       });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "26",
-        "visit-date-month": "06",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+    const options = postOptions({ day: "26", month: "06", year: "2025" });
 
     const res = await server.inject(options);
 
@@ -1850,27 +1551,13 @@ describe("POST /date-of-visit handler", () => {
           },
         ],
         typeOfLivestock: "beef",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
+        organisation,
         reviewTestResults: "positive",
         reference: "TEMP-6GSE-PIR8",
         latestEndemicsApplication,
         dateOfVisit: "2025-05-13",
       });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "26",
-        "visit-date-month": "06",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+    const options = postOptions({ day: "26", month: "06", year: "2025" });
 
     const res = await server.inject(options);
 
@@ -1911,27 +1598,13 @@ describe("POST /date-of-visit handler", () => {
           },
         ],
         typeOfLivestock: "dairy",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
+        organisation,
         reviewTestResults: "positive",
         reference: "TEMP-CBLH-C9CC",
         latestEndemicsApplication,
         dateOfVisit: "2025-04-30",
       });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "30",
-        "visit-date-month": "04",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+    const options = postOptions({ day: "30", month: "04", year: "2025" });
 
     const res = await server.inject(options);
 
@@ -1968,27 +1641,13 @@ describe("POST /date-of-visit handler", () => {
           },
         ],
         typeOfLivestock: "dairy",
-        organisation: {
-          name: "Farmer Johns",
-          sbi: "12345",
-        },
+        organisation,
         reviewTestResults: "positive",
         reference: "TEMP-CBLH-C9CC",
         latestEndemicsApplication,
         dateOfVisit: "2025-04-30",
       });
-    const options = {
-      method: "POST",
-      url,
-      payload: {
-        crumb,
-        "visit-date-day": "30",
-        "visit-date-month": "04",
-        "visit-date-year": "2025",
-      },
-      auth,
-      headers: { cookie: `crumb=${crumb}` },
-    };
+    const options = postOptions({ day: "30", month: "04", year: "2025" });
 
     const res = await server.inject(options);
 
