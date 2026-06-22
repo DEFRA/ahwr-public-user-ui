@@ -183,7 +183,7 @@ const buildSamplingDateError = (request, errorMessage) => ({
   errorSummary: [{ text: errorMessage, href: anchorTestingDate }],
   whenTestingWasCarriedOut: {
     value: request.payload.whenTestingWasCarriedOut,
-    errorMessage: undefined,
+    errorMessage: null,
     onAnotherDate: {
       day: { value: request.payload[`${onAnotherDateInputId}-day`], error: true },
       month: { value: request.payload[`${onAnotherDateInputId}-month`], error: true },
