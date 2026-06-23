@@ -1,20 +1,43 @@
+import { randomBytes } from "node:crypto";
 import { config } from "../config/index.js";
 
-const getSecurityPolicy = () =>
+const NONCE_BYTE_LENGTH = 16;
+
+const buildPolicy = ({ scriptSrc, styleSrc }) =>
   "default-src 'self';" +
   "object-src 'none';" +
-  "script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval';" +
+  scriptSrc +
   "form-action 'self';" +
   "base-uri 'self';" +
   "connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.com;" +
-  "style-src 'self' 'unsafe-inline' tagmanager.google.com *.googleapis.com;" +
+  styleSrc +
   "img-src 'self' *.google-analytics.com *.googletagmanager.com;" +
   "frame-ancestors 'none';";
+
+const getSecurityPolicy = () =>
+  buildPolicy({
+    scriptSrc:
+      "script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval';",
+    styleSrc: "style-src 'self' 'unsafe-inline' tagmanager.google.com *.googleapis.com;",
+  });
+
+export const getReportOnlyPolicy = (nonce) =>
+  buildPolicy({
+    scriptSrc: `script-src 'self' www.google-analytics.com *.googletagmanager.com 'nonce-${nonce}';`,
+    styleSrc: "style-src 'self' tagmanager.google.com *.googleapis.com;",
+  });
+
+const generateNonce = () => randomBytes(NONCE_BYTE_LENGTH).toString("base64");
 
 export const headerPlugin = {
   plugin: {
     name: "header",
     register: (server, options) => {
+      server.ext("onRequest", (request, h) => {
+        request.app.cspNonce = generateNonce();
+        return h.continue;
+      });
+
       server.ext("onPreResponse", (request, h) => {
         const response = request.response;
         options?.keys?.forEach((x) => {
@@ -22,6 +45,14 @@ export const headerPlugin = {
             response.header(x.key, x.value);
           }
         });
+
+        if (response.header && config.csp.reportOnly) {
+          response.header(
+            "Content-Security-Policy-Report-Only",
+            getReportOnlyPolicy(request.app.cspNonce),
+          );
+        }
+
         return h.continue;
       });
     },

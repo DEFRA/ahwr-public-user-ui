@@ -26,6 +26,7 @@ describe("View Context Plugin", () => {
     it("sets context when response is a view and template does not start with error-pages/", () => {
       const mockRequest = {
         path: "/test",
+        app: { cspNonce: "test-nonce" },
         auth: { isAuthenticated: true },
         response: {
           variety: "view",
@@ -40,6 +41,25 @@ describe("View Context Plugin", () => {
 
       expect(result).toBe(mockH.continue);
       expect(mockRequest.response.source.context.serviceName).toBeDefined();
+    });
+
+    it("exposes the request CSP nonce to the view context", () => {
+      const mockRequest = {
+        path: "/test",
+        app: { cspNonce: "test-nonce" },
+        auth: { isAuthenticated: true },
+        response: {
+          variety: "view",
+          source: {
+            template: "claim/check-answers",
+            context: {},
+          },
+        },
+      };
+
+      onPreResponseHandler(mockRequest, mockH);
+
+      expect(mockRequest.response.source.context.cspNonce).toBe("test-nonce");
     });
 
     it("does not set context when template starts with error-pages/", () => {
