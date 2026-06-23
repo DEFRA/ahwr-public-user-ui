@@ -3,12 +3,13 @@ import { config } from "../config/index.js";
 const getSecurityPolicy = () =>
   "default-src 'self';" +
   "object-src 'none';" +
-  "script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes';" +
+  "script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval';" +
   "form-action 'self';" +
   "base-uri 'self';" +
-  "connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.com" +
+  "connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.com;" +
   "style-src 'self' 'unsafe-inline' tagmanager.google.com *.googleapis.com;" +
-  "img-src 'self' *.google-analytics.com *.googletagmanager.com;";
+  "img-src 'self' *.google-analytics.com *.googletagmanager.com;" +
+  "frame-ancestors 'none';";
 
 export const headerPlugin = {
   plugin: {
@@ -33,7 +34,6 @@ export const headerPlugin = {
       { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
       { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
       { key: "X-Robots-Tag", value: "noindex, nofollow" },
-      { key: "X-XSS-Protection", value: "1; mode=block" },
       { key: "Strict-Transport-Security", value: "max-age=31536000;" },
       { key: "Cache-Control", value: "no-store" },
       { key: "Referrer-Policy", value: "no-referrer" },
