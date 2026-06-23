@@ -41,7 +41,7 @@ describe("Normalization of cph number", () => {
     expect(actual).toBe(expected);
   });
 
-  it("strips spaces at the middle", () => {
+  it("strips multiple spaces in the middle", () => {
     const actual = normalizeCphNumber("12 / 12   3/1 2 3 4");
 
     const expected = "12/123/1234";
@@ -49,7 +49,7 @@ describe("Normalization of cph number", () => {
     expect(actual).toBe(expected);
   });
 
-  it("strips spaces at the middle", () => {
+  it("strips single spaces in the middle", () => {
     const actual = normalizeCphNumber("12 / 12 3/1 2 3 4");
 
     const expected = "12/123/1234";
