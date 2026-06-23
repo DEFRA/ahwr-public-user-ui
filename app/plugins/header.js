@@ -4,15 +4,11 @@ import { config } from "../config/index.js";
 const NONCE_BYTE_LENGTH = 16;
 
 const buildPolicy = ({ scriptSrc, styleSrc }) =>
-  "default-src 'self';" +
-  "object-src 'none';" +
+  "default-src 'self';object-src 'none';" +
   scriptSrc +
-  "form-action 'self';" +
-  "base-uri 'self';" +
-  "connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.com;" +
+  "form-action 'self';base-uri 'self';connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.com;" +
   styleSrc +
-  "img-src 'self' *.google-analytics.com *.googletagmanager.com;" +
-  "frame-ancestors 'none';";
+  "img-src 'self' *.google-analytics.com *.googletagmanager.com;frame-ancestors 'none';";
 
 const getSecurityPolicy = () =>
   buildPolicy({
