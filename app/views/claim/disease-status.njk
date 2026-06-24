@@ -2,7 +2,7 @@
 
 {% block pageTitle %}{% if errorMessage %}Error: {% endif %}What is the disease status category? - {{ serviceName }} - GOV.UK{% endblock %}
 
-{%block beforeContent %}
+{% block containerStart %}
   {{ govukBackLink({
     text: "Back",
     href: backLink

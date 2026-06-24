@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %} {% block pageTitle %}{% if errorMessage
   %}Error: {% endif %}What was the result of the PCR test? - {{ serviceName }} - GOV.UK{% endblock %}
-  {%block beforeContent %}
+  {% block containerStart %}
   {{
     govukBackLink({
       text: "Back",
