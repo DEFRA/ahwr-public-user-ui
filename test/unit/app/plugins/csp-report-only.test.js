@@ -1,7 +1,7 @@
-import { getReportOnlyPolicy } from "../../../../app/plugins/header.js";
+import { getHardenedSecurityPolicy } from "../../../../app/plugins/header.js";
 import { createServer } from "../../../../app/server.js";
 
-const reportOnlyPolicy = (nonce) =>
+const hardenedPolicy = (nonce) =>
   "default-src 'self';" +
   "object-src 'none';" +
   `script-src 'self' www.google-analytics.com *.googletagmanager.com 'nonce-${nonce}';` +
@@ -28,27 +28,27 @@ const getHeaders = async () => {
 
 const nonceFrom = (header) => /'nonce-([^']+)'/.exec(header ?? "")?.[1];
 
-describe("report-only policy builder", () => {
-  test("builds the hardened candidate policy for a given nonce", () => {
-    expect(getReportOnlyPolicy("test-nonce")).toBe(reportOnlyPolicy("test-nonce"));
+describe("hardened policy builder", () => {
+  test("builds the hardened policy for a given nonce", () => {
+    expect(getHardenedSecurityPolicy("test-nonce")).toBe(hardenedPolicy("test-nonce"));
   });
 
   test("allows only self, the analytics hosts and the request nonce in script-src", () => {
-    expect(getReportOnlyPolicy("test-nonce")).toContain(
+    expect(getHardenedSecurityPolicy("test-nonce")).toContain(
       "script-src 'self' www.google-analytics.com *.googletagmanager.com 'nonce-test-nonce';",
     );
   });
 
   test("omits unsafe-inline and unsafe-eval", () => {
-    const policy = getReportOnlyPolicy("test-nonce");
+    const policy = getHardenedSecurityPolicy("test-nonce");
 
     expect(policy).not.toContain("'unsafe-inline'");
     expect(policy).not.toContain("'unsafe-eval'");
   });
 });
 
-describe("report-only header (enabled by default)", () => {
-  test("emits a Content-Security-Policy-Report-Only header unless explicitly disabled", async () => {
+describe("report-only candidate (default, not enforcing)", () => {
+  test("emits a Content-Security-Policy-Report-Only header by default", async () => {
     const headers = await getHeaders();
 
     expect(headers["content-security-policy-report-only"]).toBeDefined();
@@ -60,7 +60,7 @@ describe("report-only header (enabled by default)", () => {
     expect(candidate).toContain("'nonce-");
   });
 
-  test("still emits the enforced Content-Security-Policy unchanged", async () => {
+  test("leaves the enforced Content-Security-Policy permissive while not enforcing", async () => {
     const enforced = (await getHeaders())["content-security-policy"];
 
     expect(enforced).toContain("'unsafe-inline'");

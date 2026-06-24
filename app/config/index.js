@@ -76,7 +76,7 @@ const configSchema = joi.object({
     enabled: joi.bool().required(),
   },
   csp: {
-    reportOnly: joi.bool().required(),
+    enforce: joi.bool().required(),
   },
   latestTermsAndConditionsUri: joi.string().required(),
   reapplyTimeLimitMonths: joi.number(),
@@ -175,7 +175,7 @@ export const getConfig = () => {
       enabled: process.env.DEV_LOGIN_ENABLED === "true",
     },
     csp: {
-      reportOnly: process.env.CSP_REPORT_ONLY_ENABLED !== "false",
+      enforce: process.env.CSP_ENFORCE_POLICY === "true",
     },
     latestTermsAndConditionsUri: process.env.TERMS_AND_CONDITIONS_URL,
     reapplyTimeLimitMonths: 10,

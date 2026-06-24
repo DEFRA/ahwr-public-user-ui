@@ -6,7 +6,7 @@ jest.mock("../../../../app/config", () => {
     ...actual,
     config: {
       ...actual.config,
-      csp: { reportOnly: true },
+      csp: { enforce: true },
       googleTagManagerKey: "GTM-TEST",
     },
   };
@@ -21,7 +21,7 @@ jest.mock("../../../../app/cookies", () => ({
   })),
 }));
 
-test("renders the tag-manager script with a nonce matching the report-only header", async () => {
+test("renders the tag-manager script with a nonce matching the enforced policy", async () => {
   const server = await createServer();
 
   const { headers, payload } = await server.inject({
@@ -32,7 +32,7 @@ test("renders the tag-manager script with a nonce matching the report-only heade
     },
   });
 
-  const nonce = /'nonce-([^']+)'/.exec(headers["content-security-policy-report-only"] ?? "")?.[1];
+  const nonce = /'nonce-([^']+)'/.exec(headers["content-security-policy"] ?? "")?.[1];
 
   expect(nonce).toBeDefined();
   expect(payload).toContain(`<script nonce="${nonce}">`);

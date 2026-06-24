@@ -10,14 +10,14 @@ const buildPolicy = ({ scriptSrc, styleSrc }) =>
   styleSrc +
   "img-src 'self' *.google-analytics.com *.googletagmanager.com;frame-ancestors 'none';";
 
-const getSecurityPolicy = () =>
+const getPermissiveSecurityPolicy = () =>
   buildPolicy({
     scriptSrc:
       "script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval';",
     styleSrc: "style-src 'self' 'unsafe-inline' tagmanager.google.com *.googleapis.com;",
   });
 
-export const getReportOnlyPolicy = (nonce) =>
+export const getHardenedSecurityPolicy = (nonce) =>
   buildPolicy({
     scriptSrc: `script-src 'self' www.google-analytics.com *.googletagmanager.com 'nonce-${nonce}';`,
     styleSrc: "style-src 'self' tagmanager.google.com *.googleapis.com;",
@@ -36,17 +36,24 @@ export const headerPlugin = {
 
       server.ext("onPreResponse", (request, h) => {
         const response = request.response;
-        options?.keys?.forEach((x) => {
-          if (response.header) {
-            response.header(x.key, x.value);
-          }
-        });
 
-        if (response.header && config.csp.reportOnly) {
-          response.header(
-            "Content-Security-Policy-Report-Only",
-            getReportOnlyPolicy(request.app.cspNonce),
-          );
+        if (response.header) {
+          options?.keys?.forEach((x) => {
+            response.header(x.key, x.value);
+          });
+
+          if (config.csp.enforce) {
+            response.header(
+              "Content-Security-Policy",
+              getHardenedSecurityPolicy(request.app.cspNonce),
+            );
+          } else {
+            response.header("Content-Security-Policy", getPermissiveSecurityPolicy());
+            response.header(
+              "Content-Security-Policy-Report-Only",
+              getHardenedSecurityPolicy(request.app.cspNonce),
+            );
+          }
         }
 
         return h.continue;
@@ -65,10 +72,6 @@ export const headerPlugin = {
       { key: "Cache-Control", value: "no-store" },
       { key: "Referrer-Policy", value: "no-referrer" },
       { key: "Permissions-Policy", value: "Interest-Cohort=()" },
-      {
-        key: "Content-Security-Policy",
-        value: getSecurityPolicy(),
-      },
     ],
   },
 };
