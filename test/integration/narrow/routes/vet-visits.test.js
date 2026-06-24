@@ -373,7 +373,7 @@ describe("GET /vet-visits", () => {
       );
     });
 
-    test("poultry enabled content", async () => {
+    test("should show cattle, pigs and sheep content when user has a livestock agreement with no claims", async () => {
       const sbi = "106354662";
 
       await setServerState(server, {
