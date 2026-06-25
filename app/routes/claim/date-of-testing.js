@@ -225,7 +225,7 @@ const buildDatePartsError = (request, partsError) => {
     errorSummary: [{ text: message, href: anchorTestingDate }],
     whenTestingWasCarriedOut: {
       value: request.payload.whenTestingWasCarriedOut,
-      errorMessage: undefined,
+      errorMessage: null,
       onAnotherDate: {
         day: { value: request.payload[`${onAnotherDateInputId}-day`], error: day },
         month: { value: request.payload[`${onAnotherDateInputId}-month`], error: month },
