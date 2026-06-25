@@ -75,6 +75,9 @@ const configSchema = joi.object({
   devLogin: {
     enabled: joi.bool().required(),
   },
+  csp: {
+    enforce: joi.bool().required(),
+  },
   latestTermsAndConditionsUri: joi.string().required(),
   reapplyTimeLimitMonths: joi.number(),
   privacyPolicyUri: joi.string().uri(),
@@ -170,6 +173,9 @@ export const getConfig = () => {
     },
     devLogin: {
       enabled: process.env.DEV_LOGIN_ENABLED === "true",
+    },
+    csp: {
+      enforce: process.env.CSP_ENFORCE_POLICY === "true",
     },
     latestTermsAndConditionsUri: process.env.TERMS_AND_CONDITIONS_URL,
     reapplyTimeLimitMonths: 10,
