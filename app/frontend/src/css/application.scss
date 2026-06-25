@@ -1,7 +1,53 @@
-$govuk-assets-path: "~govuk-frontend/dist/govuk/assets/";
-$govuk-global-styles: true; // https://frontend.design-system.service.gov.uk/sass-api-reference/#global-styles
-@forward "@ministryofjustice/frontend/moj/components/sortable-table/sortable-table";
-@import "govuk-frontend/dist/govuk/index";
+/**
+ * `@use ... as *` loads GOV.UK via the modern Sass module API (replacing the deprecated `@import`) and exposes its
+ * functions/mixins/placeholders unqualified (e.g. govuk-colour() / %govuk-heading-xl used below).
+ *
+ * This `with()` is the app's ONLY configuration of GOV.UK settings: MoJ's component Sass is inlined below (not
+ * imported) because a second configurator of the same settings will not compile under the strict modern API.
+ *
+ * `$govuk-assets-path` is deliberately left at its default so GOV.UK fonts/images resolve at runtime from /assets
+ * (served by app/routes/assets.js), rather than being webpack-bundled.
+ */
+@use "govuk-frontend/dist/govuk/index" as * with (
+  /**
+   * Emit GOV.UK's base styling for raw <body>/<a>/<p>/heading elements; GOV.UK defaults this to false, so dropping it would strip the page's base styling
+   */
+  $govuk-global-styles: true
+);
+
+/**
+ * moj-sortable-table styles, inlined from @ministryofjustice/frontend v9 rather than imported (see the @use note
+ * above): MoJ's Sass would add a second GOV.UK settings configurator and fail under the modern Sass module API.
+ *
+ * Re-check this against MoJ on major version bumps.
+ */
+[aria-sort] button,
+[aria-sort] button:hover {
+  display: inline-flex;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  color: #005ea5;
+  background-color: transparent;
+  box-shadow: 0 0 0 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-size: 1em;
+  font-weight: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  align-items: center;
+}
+
+[aria-sort] button:focus {
+  outline: none;
+  color: govuk-functional-colour(focus-text);
+  background-color: govuk-functional-colour(focus);
+  box-shadow:
+    0 -2px govuk-functional-colour(focus),
+    0 4px govuk-functional-colour(focus-text);
+}
 
 .nojs-hidden {
   display: none;
@@ -137,7 +183,7 @@ $govuk-global-styles: true; // https://frontend.design-system.service.gov.uk/sas
 }
 
 .govuk-panel--blue {
-  background: $govuk-brand-colour !important;
+  background: govuk-colour("blue") !important;
 }
 
 .govuk-panel--confirmation .govuk-heading-xl {

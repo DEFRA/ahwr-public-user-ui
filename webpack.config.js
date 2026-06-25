@@ -28,7 +28,14 @@ export default {
               publicPath: "../",
             },
           },
-          "css-loader",
+          {
+            loader: "css-loader",
+            options: {
+              url: {
+                filter: (url) => !url.startsWith("/"),
+              },
+            },
+          },
           "resolve-url-loader",
           {
             loader: "sass-loader",
@@ -36,7 +43,6 @@ export default {
               sourceMap: true,
               sassOptions: {
                 outputStyle: "compressed",
-                includePaths: [path.resolve(__dirname, "node_modules")],
               },
             },
           },
