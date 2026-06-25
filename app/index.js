@@ -1,13 +1,9 @@
 import { startMessagingService, stopMessagingService } from "./messaging/fcp-messaging-service.js";
 import { createServer } from "./server.js";
 
-let server;
-
-const init = async () => {
-  server = await createServer();
-  await server.start();
-  await startMessagingService(server.logger);
-};
+const server = await createServer();
+await server.start();
+await startMessagingService(server.logger);
 
 process.on("unhandledRejection", async (err) => {
   console.log(err);
@@ -22,5 +18,3 @@ process.on("SIGINT", async () => {
   await stopMessagingService();
   process.exit(0);
 });
-
-init();
