@@ -256,15 +256,8 @@ const postHandler = {
       },
     },
     handler: async (request, h) => {
-      const {
-        dateOfVisit,
-        typeOfReview,
-        typeOfLivestock,
-        previousClaims,
-        latestVetVisitApplication,
-        herdId,
-        tempHerdId,
-      } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const sessionData = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const { dateOfVisit, typeOfReview, typeOfLivestock } = sessionData;
 
       const { isEndemicsFollowUp } = getReviewType(typeOfReview);
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock);
@@ -298,18 +291,10 @@ const postHandler = {
         // but instead report that samples older than 4 months
       }
 
-      const previousReviewClaim = getReviewWithinLast10Months(
-        dateOfVisit,
-        previousClaims,
-        latestVetVisitApplication,
-        typeOfLivestock,
-        getReviewHerdId({ herdId, tempHerdId }),
+      const isDateOfTestingBeforePreviousReview = checkForFollowUpBeforeReview(
+        sessionData,
+        dateOfTesting,
       );
-
-      const isDateOfTestingBeforePreviousReview =
-        typeOfReview === claimType.endemics &&
-        previousReviewClaim &&
-        new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit);
 
       if (isDateOfTestingBeforePreviousReview) {
         return await reviewBeforeFollowUpErrorHandler(request, dateOfTesting, h);
@@ -334,6 +319,33 @@ const postHandler = {
     },
   },
 };
+
+function checkForFollowUpBeforeReview(
+  {
+    dateOfVisit,
+    previousClaims,
+    latestVetVisitApplication,
+    typeOfLivestock,
+    herdId,
+    tempHerdId,
+    typeOfReview,
+  },
+  dateOfTesting,
+) {
+  const previousReviewClaim = getReviewWithinLast10Months(
+    dateOfVisit,
+    previousClaims,
+    latestVetVisitApplication,
+    typeOfLivestock,
+    getReviewHerdId({ herdId, tempHerdId }),
+  );
+
+  const isDateOfTestingBeforePreviousReview =
+    typeOfReview === claimType.endemics &&
+    previousReviewClaim &&
+    new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit);
+  return isDateOfTestingBeforePreviousReview;
+}
 
 async function reviewBeforeFollowUpErrorHandler(request, dateOfTesting, h) {
   const errorMessage =
