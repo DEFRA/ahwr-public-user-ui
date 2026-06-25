@@ -294,7 +294,7 @@ const postHandler = {
       );
 
       if (isDateOfTestingBeforePreviousReview) {
-        return await reviewBeforeFollowUpErrorHandler(request, dateOfTesting, h);
+        return reviewBeforeFollowUpErrorHandler(request, dateOfTesting, h);
       }
 
       await setSessionData(
