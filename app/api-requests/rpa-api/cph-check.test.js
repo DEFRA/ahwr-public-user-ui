@@ -1,11 +1,6 @@
 import { customerHasAtLeastOneValidCph } from "./cph-check.js";
-import { config } from "../../config/index.js";
 
 describe("cph check", () => {
-  beforeAll(() => {
-    config.poultry.enabled = true;
-  });
-
   test("customerHasAtLeastOneValidCph returns false if the users cph is slaughterhouse", async () => {
     expect(customerHasAtLeastOneValidCph(["33/333/8888"])).toBeFalsy();
   });
