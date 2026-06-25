@@ -257,10 +257,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const sessionData = getSessionData(request, sessionEntryKeys.endemicsClaim);
-      const { dateOfVisit, typeOfReview, typeOfLivestock } = sessionData;
-
-      const { isEndemicsFollowUp } = getReviewType(typeOfReview);
-      const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock);
+      const { dateOfVisit } = sessionData;
 
       if (request.payload.whenTestingWasCarriedOut === "onAnotherDate") {
         const partsError = validateDateParts({
@@ -307,11 +304,7 @@ const postHandler = {
         dateOfTesting,
       );
 
-      if (
-        isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) &&
-        isEndemicsFollowUp &&
-        (isBeef || isDairy)
-      ) {
+      if (isCattleFollowUp(sessionData)) {
         return h.redirect(claimRoutes.testUrn);
       }
 
@@ -366,6 +359,14 @@ async function reviewBeforeFollowUpErrorHandler(request, dateOfTesting, h) {
     })
     .code(HttpStatus.BAD_REQUEST)
     .takeover();
+}
+
+function isCattleFollowUp({ dateOfVisit, typeOfLivestock, typeOfReview }) {
+  const { isEndemicsFollowUp } = getReviewType(typeOfReview);
+  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock);
+  return (
+    isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) && isEndemicsFollowUp && (isBeef || isDairy)
+  );
 }
 
 export const dateOfTestingHandlers = [getHandler, postHandler];
