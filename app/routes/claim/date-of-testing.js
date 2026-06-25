@@ -307,28 +307,12 @@ const postHandler = {
       );
 
       const isDateOfTestingBeforePreviousReview =
+        typeOfReview === claimType.endemics &&
         previousReviewClaim &&
         new Date(dateOfTesting) < new Date(previousReviewClaim.data.dateOfVisit);
 
-      if (typeOfReview === claimType.endemics && isDateOfTestingBeforePreviousReview) {
-        const errorMessage =
-          "You must do a review, including sampling, before you do the resulting follow-up.";
-
-        await sendInvalidDataEvent({
-          request,
-          sessionKey: sessionKeys.endemicsClaim.dateOfTesting,
-          exception: `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`,
-        });
-
-        return h
-          .view(claimViews.dateOfTestingException, {
-            backLink: claimRoutes.dateOfTesting,
-            errorMessage,
-            errorLink:
-              "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups",
-          })
-          .code(HttpStatus.BAD_REQUEST)
-          .takeover();
+      if (isDateOfTestingBeforePreviousReview) {
+        return await reviewBeforeFollowUpErrorHandler(request, dateOfTesting, h);
       }
 
       await setSessionData(
@@ -350,5 +334,26 @@ const postHandler = {
     },
   },
 };
+
+async function reviewBeforeFollowUpErrorHandler(request, dateOfTesting, h) {
+  const errorMessage =
+    "You must do a review, including sampling, before you do the resulting follow-up.";
+
+  await sendInvalidDataEvent({
+    request,
+    sessionKey: sessionKeys.endemicsClaim.dateOfTesting,
+    exception: `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`,
+  });
+
+  return h
+    .view(claimViews.dateOfTestingException, {
+      backLink: claimRoutes.dateOfTesting,
+      errorMessage,
+      errorLink:
+        "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups",
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
+}
 
 export const dateOfTestingHandlers = [getHandler, postHandler];
