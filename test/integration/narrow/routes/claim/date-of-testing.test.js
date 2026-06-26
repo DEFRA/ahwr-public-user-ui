@@ -255,6 +255,8 @@ describe("Date of testing", () => {
         payload: {
           crumb,
           whenTestingWasCarriedOut: "onAnotherDate",
+          dateOfVisit: "2024-01-01",
+          dateOfAgreementAccepted: "2022-01-01",
           "on-another-date-day": undefined,
           "on-another-date-month": undefined,
           "on-another-date-year": undefined,
@@ -269,7 +271,7 @@ describe("Date of testing", () => {
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect($("li > a").text().trim()).toContain('"on-another-date-day" is required');
+      expect($("li > a").text().trim()).toContain("Enter the date samples were taken");
     });
 
     test.each([
