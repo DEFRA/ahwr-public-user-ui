@@ -3,6 +3,7 @@ import { createServer } from "../../../../app/server.js";
 import { setServerState } from "../../../helpers/set-server-state.js";
 import { randomUUID } from "node:crypto";
 import * as authModule from "../../../../app/auth/authenticate.js";
+import { setSessionData, sessionEntryKeys, sessionKeys } from "../../../../app/session/index.js";
 import * as apimModule from "../../../../app/auth/client-credential-grant/retrieve-apim-access-token.js";
 import * as personAndOrgModule from "../../../../app/api-requests/rpa-api/get-person-and-org.js";
 import * as checkLoginValidModule from "../../../../app/routes/utils/check-login-valid.js";
@@ -122,11 +123,13 @@ describe("signin-oidc", () => {
   });
 
   test("happy path", async () => {
+    const crn = "1100021396";
     const encodedState = await getEncodedTestState(server);
 
-    jest
-      .spyOn(authModule, "authenticate")
-      .mockResolvedValue({ accessToken: "access-token", authRedirectCallback: undefined });
+    jest.spyOn(authModule, "authenticate").mockImplementation(async (request) => {
+      await setSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn, crn);
+      return { accessToken: "access-token", authRedirectCallback: undefined };
+    });
     jest.spyOn(apimModule, "retrieveApimAccessToken").mockResolvedValue("Bearer abc123");
     jest.spyOn(personAndOrgModule, "getPersonAndOrg").mockResolvedValue(mockOrgAndPerson);
     jest
