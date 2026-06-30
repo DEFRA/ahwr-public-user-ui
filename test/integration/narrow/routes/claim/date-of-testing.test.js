@@ -189,11 +189,33 @@ describe("Date of testing", () => {
       expect($("#on-another-date-month").val()).toBe("3");
       expect($("#on-another-date-year").val()).toBe("2024");
     });
+
+    test("redirects to /sign-in when not authenticated", async () => {
+      const res = await server.inject({ method: "GET", url });
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/sign-in");
+    });
   });
 
   describe(`POST ${url} route`, () => {
     beforeEach(async () => {
       crumb = await getCrumbs(server);
+    });
+
+    test("redirects to /sign-in when not authenticated", async () => {
+      const res = await server.inject({ method: "POST", url });
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toBe("/sign-in");
+    });
+
+    test("returns 403 when CSRF crumb is missing", async () => {
+      const res = await server.inject({
+        method: "POST",
+        url,
+        payload: { whenTestingWasCarriedOut: "onAnotherDate" },
+        auth,
+      });
+      expect(res.statusCode).toBe(403);
     });
 
     test("redirects with an error if the user doesnt enter anything", async () => {
@@ -495,6 +517,48 @@ describe("Date of testing", () => {
           year: "2021",
           error:
             "The date samples were taken must be the same as or after the date of your agreement",
+        },
+        {
+          scenario: "day is missing",
+          day: "",
+          month: "03",
+          year: "2023",
+          error: "Date of sampling must include a day",
+        },
+        {
+          scenario: "month is missing",
+          day: "15",
+          month: "",
+          year: "2023",
+          error: "Date of sampling must include a month",
+        },
+        {
+          scenario: "day and month are missing",
+          day: "",
+          month: "",
+          year: "2023",
+          error: "Date of sampling must include a day and a month",
+        },
+        {
+          scenario: "day and year are missing",
+          day: "",
+          month: "03",
+          year: "",
+          error: "Date of sampling must include a day and a year",
+        },
+        {
+          scenario: "month and year are missing",
+          day: "15",
+          month: "",
+          year: "",
+          error: "Date of sampling must include a month and a year",
+        },
+        {
+          scenario: "year has only 2 digits",
+          day: "15",
+          month: "03",
+          year: "22",
+          error: "Year must include 4 numbers",
         },
       ])("redirects with an error when $scenario", async ({ day, month, year, error }) => {
         getSessionData.mockImplementation(() => ({
