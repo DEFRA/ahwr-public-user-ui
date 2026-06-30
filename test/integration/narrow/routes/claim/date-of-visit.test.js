@@ -285,6 +285,22 @@ describe("POST /date-of-visit handler", () => {
     jest.clearAllMocks();
   });
 
+  test("redirects to /sign-in when not authenticated", async () => {
+    const res = await server.inject({ method: "POST", url });
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe("/sign-in");
+  });
+
+  test("returns 403 when CSRF crumb is missing", async () => {
+    const res = await server.inject({
+      method: "POST",
+      url,
+      payload: { "visit-date-day": "15", "visit-date-month": "03", "visit-date-year": "2024" },
+      auth,
+    });
+    expect(res.statusCode).toBe(403);
+  });
+
   const postOptions = ({ day, month, year }) => ({
     method: "POST",
     url,
