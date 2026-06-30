@@ -7,6 +7,7 @@ import {
   sessionEntryKeys,
   removeSessionDataForSelectHerdChange,
   removeSessionDataForSameHerdChange,
+  removeSessionDataForLogin,
   removeMultipleHerdsSessionData,
   setSessionEntry,
   setSessionData,
@@ -361,6 +362,50 @@ describe("session", () => {
       };
 
       expect(yarMock.set).toHaveBeenCalledWith(sessionEntryKeys.endemicsClaim, expectedSession);
+    });
+  });
+
+  describe("removeSessionDataForLogin", () => {
+    test("clears all session data then restores pkcecodes and tokens", async () => {
+      const pkcecodes = { verifier: "code-verifier-123" };
+      const tokens = {
+        idToken: "id-token-123",
+        accessToken: "access-token-123",
+        refreshToken: "refresh-token-123",
+        state: "state-123",
+        nonce: "nonce-123",
+      };
+      const sessionId = 123;
+      const mockDropFn = jest.fn();
+
+      yarMock.get.mockImplementation((entryKey) => {
+        if (entryKey === sessionEntryKeys.pkcecodes) {
+          return pkcecodes;
+        }
+        if (entryKey === sessionEntryKeys.tokens) {
+          return tokens;
+        }
+        return undefined;
+      });
+
+      const request = {
+        yar: yarMock,
+        auth: { credentials: { sessionId } },
+        server: { app: { cache: { drop: mockDropFn } } },
+      };
+
+      await removeSessionDataForLogin(request);
+
+      const entryKeyValuePairs = Object.entries(sessionEntryKeys);
+      expect(yarMock.clear).toHaveBeenCalledTimes(entryKeyValuePairs.length);
+      entryKeyValuePairs.forEach(([, value]) => {
+        expect(yarMock.clear).toHaveBeenCalledWith(value);
+      });
+
+      expect(mockDropFn).toHaveBeenCalledWith(sessionId);
+
+      expect(yarMock.set).toHaveBeenCalledWith(sessionEntryKeys.pkcecodes, pkcecodes);
+      expect(yarMock.set).toHaveBeenCalledWith(sessionEntryKeys.tokens, tokens);
     });
   });
 

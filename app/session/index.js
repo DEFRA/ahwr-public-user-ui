@@ -331,6 +331,16 @@ export function removeSessionDataForSameHerdChange(request) {
   request.yar.set(sessionEntryKeys.endemicsClaim, furtherRemadeSession);
 }
 
+export async function removeSessionDataForLogin(request) {
+  const pkcecodes = getSessionData(request, sessionEntryKeys.pkcecodes);
+  const tokens = getSessionData(request, sessionEntryKeys.tokens);
+
+  await clearAllOfSession(request);
+
+  request.yar.set(sessionEntryKeys.pkcecodes, pkcecodes);
+  request.yar.set(sessionEntryKeys.tokens, tokens);
+}
+
 export const emitSessionEvent = async ({ request, entryKey, key, value, journey }) => {
   const organisation = getSessionData(request, sessionEntryKeys.organisation);
   if (!organisation) {
