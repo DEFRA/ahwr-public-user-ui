@@ -1,4 +1,3 @@
-import { ProxyAgent, setGlobalDispatcher } from "undici";
 import { bootstrap } from "global-agent";
 
 import { config } from "../config/index.js";
@@ -14,9 +13,6 @@ export function setupProxy() {
 
   if (proxyUrl) {
     getLogger().info("Setting up global proxies");
-
-    // Undici proxy
-    setGlobalDispatcher(new ProxyAgent(proxyUrl));
 
     // global-agent (axios/request/and others)
     bootstrap();
