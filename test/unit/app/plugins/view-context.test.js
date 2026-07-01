@@ -31,7 +31,7 @@ describe("View Context Plugin", () => {
         response: {
           variety: "view",
           source: {
-            template: "claim/check-answers",
+            template: "livestock/claim/check-answers",
             context: {},
           },
         },
@@ -51,7 +51,7 @@ describe("View Context Plugin", () => {
         response: {
           variety: "view",
           source: {
-            template: "claim/check-answers",
+            template: "livestock/claim/check-answers",
             context: {},
           },
         },

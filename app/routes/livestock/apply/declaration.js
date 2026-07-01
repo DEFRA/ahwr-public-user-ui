@@ -8,17 +8,25 @@ import {
 } from "../../../session/index.js";
 import { userType, JOURNEY } from "../../../constants/constants.js";
 import { config } from "../../../config/index.js";
-import { poultryApplyRoutes, poultryApplyViews } from "../../../constants/routes.js";
+import { applyRoutes, applyViews } from "../../../constants/routes.js";
 import { StatusCodes } from "http-status-codes";
+import { preApplyHandler } from "../../../lib/pre-apply-handler.js";
 import { createApplication } from "../../../api-requests/application-api.js";
 import { createTempReference } from "../../../lib/create-temp-ref.js";
 import { trackEvent } from "../../../logging/logger.js";
 import { refreshApplications } from "../../../lib/context-helper.js";
-import {
-  resetFarmerApplyDataBeforeApplication,
-  formatOrganisation,
-} from "../../livestock/apply/declaration.js";
-import { prePoultryApplyHandler } from "../../../lib/pre-poultry-apply-handler.js";
+
+export const resetFarmerApplyDataBeforeApplication = (application) => {
+  delete application.agreeSpeciesNumbers;
+  delete application.agreeSameSpecies;
+  delete application.agreeMultipleSpecies;
+  delete application.agreeVisitTimings;
+};
+
+export const formatOrganisation = (organisation) => ({
+  ...organisation,
+  address: organisation.address.split(",").map((line) => line.trim()),
+});
 
 const processRejectedApplication = async (h, request) => {
   // create new tempApplicationId as the current one has been used to create a rejected application
@@ -28,27 +36,28 @@ const processRejectedApplication = async (h, request) => {
 
   await setSessionData(
     request,
-    sessionEntryKeys.poultryApplyData,
-    sessionKeys.poultryApplyData.reference,
+    sessionEntryKeys.farmerApplyData,
+    sessionKeys.farmerApplyData.reference,
     tempApplicationId,
   );
 
-  return h.view(poultryApplyViews.offerRejected);
+  return h.view(applyViews.offerRejected, {
+    offerRejected: true,
+  });
 };
 
-export const poultryDeclarationRouteHandlers = [
+export const declarationRouteHandlers = [
   {
     method: "get",
-    path: "/poultry/declaration",
+    path: "/declaration",
     options: {
-      pre: [{ method: prePoultryApplyHandler }],
+      pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
-        return h.view(poultryApplyViews.declaration, {
-          backLink: poultryApplyRoutes.timings,
-          termsAndConditionsUri: config.poultry.termsAndConditionsUri,
-          vetSummaryTemplateUri: config.poultry.vetSummaryTemplateUri,
+        return h.view(applyViews.declaration, {
+          backLink: applyRoutes.timings,
+          latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${applyRoutes.declaration}`,
           organisation: formatOrganisation(organisation),
         });
       },
@@ -56,7 +65,7 @@ export const poultryDeclarationRouteHandlers = [
   },
   {
     method: "post",
-    path: "/poultry/declaration",
+    path: "/declaration",
     options: {
       validate: {
         payload: joi.object({
@@ -70,12 +79,11 @@ export const poultryDeclarationRouteHandlers = [
           const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
           return h
-            .view(poultryApplyViews.declaration, {
-              backLink: poultryApplyRoutes.timings,
-              termsAndConditionsUri: config.poultry.termsAndConditionsUri,
-              vetSummaryTemplateUri: config.poultry.vetSummaryTemplateUri,
+            .view(applyViews.declaration, {
+              backLink: applyRoutes.timings,
+              latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${applyRoutes.declaration}`,
               errorMessage: {
-                text: "Confirm you have read and agree to the terms and conditions",
+                text: "Select yes if you have read and agree to the terms and conditions",
               },
               organisation: formatOrganisation(organisation),
             })
@@ -86,37 +94,32 @@ export const poultryDeclarationRouteHandlers = [
       handler: async (request, h) => {
         await setSessionData(
           request,
-          sessionEntryKeys.poultryApplyData,
-          sessionKeys.poultryApplyData.declaration,
+          sessionEntryKeys.farmerApplyData,
+          sessionKeys.farmerApplyData.declaration,
           true,
         );
         await setSessionData(
           request,
-          sessionEntryKeys.poultryApplyData,
-          sessionKeys.poultryApplyData.offerStatus,
+          sessionEntryKeys.farmerApplyData,
+          sessionKeys.farmerApplyData.offerStatus,
           request.payload.offerStatus,
         );
         await setSessionData(
           request,
-          sessionEntryKeys.poultryApplyData,
-          sessionKeys.poultryApplyData.confirmCheckDetails,
+          sessionEntryKeys.farmerApplyData,
+          sessionKeys.farmerApplyData.confirmCheckDetails,
           "yes",
         );
-        const poultryApplyData = getSessionData(request, sessionEntryKeys.poultryApplyData);
-        const fundingSelectionType = getSessionData(
-          request,
-          sessionEntryKeys.fundingSelection,
-          sessionKeys.fundingSelection.selectedFunding,
-        );
+        const farmerApplyData = getSessionData(request, sessionEntryKeys.farmerApplyData);
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
-        const { reference: tempApplicationReference } = poultryApplyData;
+        const { reference: tempApplicationReference } = farmerApplyData;
 
         request.logger.info(`Temp application reference: ${tempApplicationReference}`);
 
-        resetFarmerApplyDataBeforeApplication(poultryApplyData);
+        resetFarmerApplyDataBeforeApplication(farmerApplyData);
 
         const { applicationReference } = await createApplication(
-          { ...poultryApplyData, type: fundingSelectionType, organisation },
+          { ...farmerApplyData, organisation },
           request.logger,
         );
 
@@ -134,8 +137,8 @@ export const poultryDeclarationRouteHandlers = [
         if (applicationReference) {
           await setSessionData(
             request,
-            sessionEntryKeys.poultryApplyData,
-            sessionKeys.poultryApplyData.reference,
+            sessionEntryKeys.farmerApplyData,
+            sessionKeys.farmerApplyData.reference,
             applicationReference,
           );
           await setSessionData(
@@ -143,7 +146,7 @@ export const poultryDeclarationRouteHandlers = [
             sessionEntryKeys.tempReference,
             sessionKeys.tempReference,
             tempApplicationReference,
-            { journey: JOURNEY.POULTRY_APPLY },
+            { journey: JOURNEY.APPLY },
           );
           clearApplyRedirect(request);
         }
@@ -159,11 +162,10 @@ export const poultryDeclarationRouteHandlers = [
         // refresh application
         await refreshApplications(organisation.sbi, request);
 
-        return h.view(poultryApplyViews.confirmation, {
+        return h.view(applyViews.confirmation, {
           reference: applicationReference,
           isNewUser: userType.NEW_USER === organisation.userType,
           latestTermsAndConditionsUri: config.latestTermsAndConditionsUri,
-          guidanceUri: config.poultry.guidanceUri,
         });
       },
     },
