@@ -6,6 +6,7 @@ import { retrieveApimAccessToken } from "../auth/client-credential-grant/retriev
 import {
   clearAllOfSession,
   getSessionData,
+  removeSessionDataForLogin,
   sessionEntryKeys,
   sessionKeys,
 } from "../session/index.js";
@@ -55,6 +56,8 @@ export const signinRouteHandlers = [
         await metricsCounter("process_sign_in");
         try {
           const { logger } = request;
+
+          await removeSessionDataForLogin(request);
           await generateNewCrumb(request, h);
 
           const { accessToken, authRedirectCallback } = await authenticate(request, h, logger);
