@@ -1,5 +1,19 @@
 # AHWR Public User UI
 
+## Table of contents
+
+- [Service purpose](#service-purpose)
+- [Service features](#service-features)
+- [Architecture](#architecture)
+- [User Authentication](#user-authentication)
+- [Prerequisites](#prerequisites)
+- [Running the application](#running-the-application)
+  - [Environment Variables](#environment-variables)
+  - [Start](#start)
+  - [Running tests](#running-tests)
+- [Licence](#licence)
+  - [About the licence](#about-the-licence)
+
 ## Service purpose
 
 AHWR Public User UI service, which contains the user dashboard as well as both the apply and claim user journeys.
@@ -16,8 +30,6 @@ displaying information, and facilitating the application and claim processes for
 - Accessibility: The UI is designed with accessibility in mind, ensuring that it can be used by a wide range of users, including those with disabilities.
 
 ## Architecture
-
-The service makes outbound requests to the following external services:
 
 ```mermaid
 architecture-beta
