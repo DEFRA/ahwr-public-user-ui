@@ -15,6 +15,35 @@ displaying information, and facilitating the application and claim processes for
 - Integration with backend services: The UI interacts with backend services to retrieve and submit data.
 - Accessibility: The UI is designed with accessibility in mind, ensuring that it can be used by a wide range of users, including those with disabilities.
 
+## Architecture
+
+The service makes outbound requests to the following external services:
+
+```mermaid
+architecture-beta
+    group cdp(cloud)[Core Delivery Platform]
+
+    service app(server)[Public User UI] in cdp
+
+    service defraid(internet)[DefraID Azure B2C]
+    service apim(internet)[Trade APIM]
+
+    service ahwrapi(server)[AHWR Application API] in cdp
+    service rpa(server)[RPA Microservices]
+
+    service redis(database)[Redis] in cdp
+    service s3(disk)[AWS S3 Documents] in cdp
+    service bus(database)[Service Bus Event Queue] in cdp
+
+    app:R --> L:ahwrapi
+    app:R --> L:defraid
+    app:R --> L:apim
+    app:R --> L:rpa
+    app:B --> T:redis
+    app:B --> T:s3
+    app:L --> R:bus
+```
+
 # User Authentication
 
 The AHWR Public User UI service does not handle user authentication directly.
