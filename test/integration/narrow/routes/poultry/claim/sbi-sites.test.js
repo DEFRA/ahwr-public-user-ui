@@ -14,8 +14,8 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
-describe("/site-others-on-sbi tests", () => {
-  const url = `/poultry/site-others-on-sbi`;
+describe("/sbi-sites tests", () => {
+  const url = `/poultry/sbi-sites`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",

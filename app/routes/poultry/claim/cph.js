@@ -95,7 +95,7 @@ const postHandler = {
         data: { herdId, herdVersion: 1, herdCph },
       });
 
-      return h.redirect(poultryClaimRoutes.siteOthersOnSbi);
+      return h.redirect(poultryClaimRoutes.sbiSites);
     },
   },
 };

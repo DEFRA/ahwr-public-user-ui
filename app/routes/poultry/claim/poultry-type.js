@@ -15,7 +15,7 @@ const chickenSubtypes = new Set([
   TYPE_OF_POULTRY.BREEDERS,
 ]);
 
-const backLink = poultryClaimRoutes.siteOthersOnSbi;
+const backLink = poultryClaimRoutes.sbiSites;
 
 const getHandler = {
   method: "GET",

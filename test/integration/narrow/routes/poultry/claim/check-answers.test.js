@@ -330,7 +330,7 @@ describe("Poultry check answers test", () => {
       );
       expect(siteOthersRow.find(".govuk-summary-list__value").text().trim()).toBe("No");
       expect(siteOthersRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/site-others-on-sbi",
+        "/poultry/sbi-sites",
       );
     });
 
