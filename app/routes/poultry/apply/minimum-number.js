@@ -10,14 +10,14 @@ import { prePoultryApplyHandler } from "../../../lib/pre-poultry-apply-handler.j
 export const poultryNumbersRouteHandlers = [
   {
     method: "GET",
-    path: "/poultry/numbers",
+    path: "/poultry/minimum-number",
     options: {
       pre: [{ method: prePoultryApplyHandler }],
       handler: async (request, h) => {
-        const backLink = poultryApplyRoutes.youCanClaimMultiple;
+        const backLink = poultryApplyRoutes.whatYouCanClaim;
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
-        return h.view(poultryApplyViews.numbers, {
+        return h.view(poultryApplyViews.minimumNumber, {
           backLink,
           organisation,
         });
@@ -26,7 +26,7 @@ export const poultryNumbersRouteHandlers = [
   },
   {
     method: "POST",
-    path: "/poultry/numbers",
+    path: "/poultry/minimum-number",
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {
@@ -48,7 +48,7 @@ export const poultryNumbersRouteHandlers = [
         );
 
         return h.view(poultryApplyViews.termsRejected, {
-          backLink: poultryApplyRoutes.numbers,
+          backLink: poultryApplyRoutes.minimumNumber,
         });
       },
     },
