@@ -142,7 +142,7 @@ describe("/site-others-on-sbi tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
       expect(setSessionData).toHaveBeenCalledTimes(1);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),

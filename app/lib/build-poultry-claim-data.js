@@ -49,7 +49,7 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
   const typesOfPoultryRow = createdHerdRowObject(
     "Types of poultry",
     formatTypesOfPoultry(poultryClaim.typesOfPoultry),
-    poultryClaimRoutes.selectPoultryType,
+    poultryClaimRoutes.poultryType,
     "species",
   );
 

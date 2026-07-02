@@ -77,7 +77,7 @@ const postHandler = {
         },
       });
 
-      return h.redirect(poultryClaimRoutes.selectPoultryType);
+      return h.redirect(poultryClaimRoutes.poultryType);
     },
   },
 };

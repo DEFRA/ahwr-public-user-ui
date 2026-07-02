@@ -93,7 +93,7 @@ describe("/poultry/minimum-number-of-birds tests", () => {
       expect($("title").text().trim()).toContain(
         "Minimum number of birds - Get funding to improve animal health and welfare - GOV.UK",
       );
-      expect($("#back").attr("href")).toContain("/select-poultry-type");
+      expect($("#back").attr("href")).toContain("/poultry-type");
       const legend = $(".govuk-fieldset__legend--l");
       expect(legend.text().trim()).toBe(
         "Has your vet confirmed that this site can hold the minimum number of birds?",

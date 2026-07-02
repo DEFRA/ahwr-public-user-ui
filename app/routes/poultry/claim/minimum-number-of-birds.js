@@ -24,7 +24,7 @@ const getHandler = {
         sessionEntryKeys.poultryClaim,
       )?.minimumNumberOfBirds;
       return h.view(poultryClaimViews.minimumNumberOfBirds, {
-        backLink: poultryClaimRoutes.selectPoultryType,
+        backLink: poultryClaimRoutes.poultryType,
         minimumNumberOfBirds,
       });
     },
@@ -49,7 +49,7 @@ const postHandler = {
               text: `Select if the vet has confirmed the minimum number of birds`,
               href: "#minimumNumberOfBirds",
             },
-            backLink: poultryClaimRoutes.selectPoultryType,
+            backLink: poultryClaimRoutes.poultryType,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
