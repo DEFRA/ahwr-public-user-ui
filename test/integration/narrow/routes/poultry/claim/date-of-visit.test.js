@@ -259,7 +259,7 @@ describe("POST /poultry/date-of-visit", () => {
     );
   });
 
-  test("when adding a correct date and no sites exist, redirects to enter-site-name", async () => {
+  test("when adding a correct date and no sites exist, redirects to site-name", async () => {
     getSites.mockResolvedValue({ herds: [] });
 
     const options = {
@@ -277,7 +277,7 @@ describe("POST /poultry/date-of-visit", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location.toString()).toEqual("/poultry/enter-site-name");
+    expect(res.headers.location.toString()).toEqual("/poultry/site-name");
     expect(setSessionData).toHaveBeenCalledWith(
       expect.anything(),
       sessionEntryKeys.poultryClaim,
@@ -460,6 +460,6 @@ describe("POST /poultry/date-of-visit", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location.toString()).toEqual("/poultry/enter-site-name");
+    expect(res.headers.location.toString()).toEqual("/poultry/site-name");
   });
 });

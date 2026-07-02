@@ -50,7 +50,7 @@ jest.mock("../../../../../../app/config/index.js", () => ({
   },
 }));
 
-describe("Declaration test", () => {
+describe("Timings test", () => {
   let server;
 
   beforeAll(async () => {

@@ -208,7 +208,7 @@ describe("Poultry check answers test", () => {
       expect(siteNameRow.find(".govuk-summary-list__key").text().trim()).toBe("Site name");
       expect(siteNameRow.find(".govuk-summary-list__value").text().trim()).toBe("North Farm Site");
       expect(siteNameRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/enter-site-name",
+        "/poultry/site-name",
       );
     });
 

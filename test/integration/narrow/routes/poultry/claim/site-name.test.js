@@ -12,11 +12,11 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 
 const auth = { credentials: { reference: "1111", sbi: "111111111" }, strategy: "cookie" };
-const url = "/poultry/enter-site-name";
+const url = "/poultry/site-name";
 
 jest.mock("../../../../../../app/session/index.js");
 
-describe("/poultry/enter-site-name", () => {
+describe("/poultry/site-name", () => {
   let server;
   let crumb;
 
