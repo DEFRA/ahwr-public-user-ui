@@ -76,7 +76,7 @@ const postHandler = {
           reference: `applicationReference: ${claimPayload.applicationReference}, claimReference: ${claim.reference}, tempClaimReference: ${claimPayload.reference}`,
         },
       );
-      return h.redirect(poultryClaimRoutes.confirmation);
+      return h.redirect(poultryClaimRoutes.claimConfirmation);
     },
   },
 };

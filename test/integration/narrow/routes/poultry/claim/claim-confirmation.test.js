@@ -33,7 +33,7 @@ describe("Claim confirmation", () => {
 
   const reference = "TBD-F021-723B";
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = `/poultry/confirmation`;
+  const url = `/poultry/claim-confirmation`;
 
   afterEach(() => {
     jest.clearAllMocks();

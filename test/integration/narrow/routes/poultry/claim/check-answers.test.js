@@ -678,7 +678,7 @@ describe("Poultry check answers test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/confirmation");
+      expect(res.headers.location).toEqual("/poultry/claim-confirmation");
       expect(Wreck.post).toHaveBeenCalledTimes(1);
     });
 
