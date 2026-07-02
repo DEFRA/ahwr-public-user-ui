@@ -153,7 +153,7 @@ const postHandler = {
 
       await setupSiteData(request, selectedSite);
 
-      return h.redirect(poultryClaimRoutes.selectPoultryType);
+      return h.redirect(poultryClaimRoutes.poultryType);
     },
   },
 };

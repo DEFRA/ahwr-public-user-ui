@@ -392,7 +392,7 @@ describe("Poultry check answers test", () => {
       expect(speciesRow.find(".govuk-summary-list__key").text().trim()).toBe("Types of poultry");
       expect(speciesRow.find(".govuk-summary-list__value").text().trim()).toBe("Laying hens");
       expect(speciesRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/select-poultry-type",
+        "/poultry/poultry-type",
       );
     });
 

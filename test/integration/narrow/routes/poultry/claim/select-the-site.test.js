@@ -783,7 +783,7 @@ describe("/poultry/select-site", () => {
       expect($("#siteSelected-error").text()).toContain("Select the site you are claiming for");
     });
 
-    test("stores site data and redirects to select-poultry-type when existing site is selected from single site view", async () => {
+    test("stores site data and redirects to poultry-type when existing site is selected from single site view", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
@@ -813,7 +813,7 @@ describe("/poultry/select-site", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -858,7 +858,7 @@ describe("/poultry/select-site", () => {
       );
     });
 
-    test("stores site data and redirects to select-poultry-type when existing site is selected from multiple sites view", async () => {
+    test("stores site data and redirects to poultry-type when existing site is selected from multiple sites view", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
@@ -900,7 +900,7 @@ describe("/poultry/select-site", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -1113,7 +1113,7 @@ describe("/poultry/select-site", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
     });
 
     test("does not apply timing rule when selecting a different site", async () => {
@@ -1159,7 +1159,7 @@ describe("/poultry/select-site", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
     });
   });
 });
