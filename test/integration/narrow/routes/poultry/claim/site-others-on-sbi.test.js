@@ -79,7 +79,7 @@ describe("/site-others-on-sbi tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the only site associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-cph-number");
+      expect($(".govuk-back-link").attr("href")).toContain("/cph");
       const legend = $(".govuk-fieldset__legend--l");
       expect(legend.text().trim()).toBe(
         "Is this the only site associated with this Single Business Identifier (SBI)?",

@@ -17,8 +17,8 @@ import { POULTRY_SCHEME } from "ffc-ahwr-common-library";
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/api-requests/claim-api.js");
 
-describe("/enter-cph-number tests", () => {
-  const url = `/poultry/enter-cph-number`;
+describe("/cph tests", () => {
+  const url = `/poultry/cph`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
