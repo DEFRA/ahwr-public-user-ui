@@ -180,18 +180,13 @@ function createSiteInformationRows(herds, poultryClaim) {
     : createdHerdRowObject(
         "Site name",
         poultryClaim.herdName,
-        poultryClaimRoutes.enterSiteName,
+        poultryClaimRoutes.siteName,
         "site name",
       );
 
   const cphNumberRow = isExistingSite
     ? createImmutableRowObject("Site CPH", poultryClaim.herdCph)
-    : createdHerdRowObject(
-        "Site CPH",
-        poultryClaim.herdCph,
-        poultryClaimRoutes.enterCphNumber,
-        "site CPH",
-      );
+    : createdHerdRowObject("Site CPH", poultryClaim.herdCph, poultryClaimRoutes.cph, "site CPH");
 
   const siteOthersRow = isExistingSite
     ? createImmutableRowObject(

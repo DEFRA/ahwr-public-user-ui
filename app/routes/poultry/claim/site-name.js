@@ -15,11 +15,11 @@ const getBackLink = (herds) =>
 
 const getHandler = {
   method: "GET",
-  path: poultryClaimRoutes.enterSiteName,
+  path: poultryClaimRoutes.siteName,
   options: {
     handler: async (request, h) => {
       const { herdName, herds } = getSessionData(request, sessionEntryKeys.poultryClaim);
-      return h.view(poultryClaimViews.enterSiteName, {
+      return h.view(poultryClaimViews.siteName, {
         backLink: getBackLink(herds),
         herdName,
       });
@@ -42,7 +42,7 @@ const isSiteNameEmpty = (errorType) =>
 
 const postHandler = {
   method: "POST",
-  path: poultryClaimRoutes.enterSiteName,
+  path: poultryClaimRoutes.siteName,
   options: {
     validate: {
       payload: Joi.object({
@@ -68,7 +68,7 @@ const postHandler = {
           : error.details[0].message;
 
         return h
-          .view(poultryClaimViews.enterSiteName, {
+          .view(poultryClaimViews.siteName, {
             ...request.payload,
             errorMessage: {
               text: errorText,
@@ -91,7 +91,7 @@ const postHandler = {
 
       if (previousClaims?.some((claim) => claim.herd?.name === herdName.trim())) {
         return h
-          .view(poultryClaimViews.enterSiteName, {
+          .view(poultryClaimViews.siteName, {
             ...request.payload,
             errorMessage: {
               text: ERROR_MESSAGES.NAME_UNIQUE,
@@ -122,7 +122,7 @@ const postHandler = {
         },
       });
 
-      return h.redirect(poultryClaimRoutes.enterCphNumber);
+      return h.redirect(poultryClaimRoutes.cph);
     },
   },
 };

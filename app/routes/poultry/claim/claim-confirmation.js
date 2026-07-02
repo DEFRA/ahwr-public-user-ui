@@ -1,6 +1,10 @@
 import { clearPoultryClaim, getSessionData, sessionEntryKeys } from "../../../session/index.js";
 import { config } from "../../../config/index.js";
-import { dashboardRoutes, poultryClaimViews } from "../../../constants/routes.js";
+import {
+  dashboardRoutes,
+  poultryClaimRoutes,
+  poultryClaimViews,
+} from "../../../constants/routes.js";
 
 const {
   customerSurvey,
@@ -9,7 +13,7 @@ const {
 
 const getHandler = {
   method: "GET",
-  path: "/poultry/claim-confirmation",
+  path: poultryClaimRoutes.claimConfirmation,
   options: {
     handler: async (request, h) => {
       const { reference, amount } = getSessionData(request, sessionEntryKeys.poultryClaim);
