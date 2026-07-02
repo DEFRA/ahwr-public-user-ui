@@ -39,6 +39,7 @@ export const poultryApplyRoutes = {
   timings: "/poultry/timings",
   minimumNumber: "/poultry/minimum-number",
   agreementOffer: "/poultry/agreement-offer",
+  confirmation: "/poultry/confirmation",
 };
 
 export const applyViews = {
@@ -169,7 +170,7 @@ export const poultryClaimRoutes = {
   biosecurityChanges: "/poultry/biosecurity-changes",
   checkAnswers: "/poultry/check-answers",
   checkSiteDetails: "/poultry/check-site-details",
-  confirmation: "/poultry/confirmation",
+  claimConfirmation: "/poultry/claim-confirmation",
   changesCost: "/poultry/changes-cost",
   dateOfVisit: "/poultry/date-of-visit",
   enterSiteName: "/poultry/site-name",
@@ -191,7 +192,7 @@ export const poultryClaimViews = {
   cannotContinueTimingRules: "poultry/claim/cannot-continue-timing-rules",
   biosecurityChanges: "poultry/claim/biosecurity-changes",
   checkAnswers: "poultry/claim/check-answers",
-  confirmation: "poultry/claim/confirmation",
+  claimConfirmation: "poultry/claim/claim-confirmation",
   changesCost: "poultry/claim/changes-cost",
   dateOfVisit: "poultry/claim/date-of-visit",
   interview: "poultry/claim/interview",

@@ -9,14 +9,14 @@ const {
 
 const getHandler = {
   method: "GET",
-  path: "/poultry/confirmation",
+  path: "/poultry/claim-confirmation",
   options: {
     handler: async (request, h) => {
       const { reference, amount } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
       clearPoultryClaim(request);
 
-      return h.view(poultryClaimViews.confirmation, {
+      return h.view(poultryClaimViews.claimConfirmation, {
         claimDashboard: dashboardRoutes.poultryManageYourClaims,
         reference,
         amount,
