@@ -19,7 +19,7 @@ const { requiredNumberBloodSamples } = thresholds;
 
 describe("Number of blood samples test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/number-of-blood-samples";
+  const url = "/livestock/blood-sample-number";
 
   let server;
 
@@ -165,7 +165,7 @@ describe("Number of blood samples test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual("/test-results");
+      expect(res.headers.location.toString()).toEqual("/livestock/test-results");
       expect(setSessionData).toHaveBeenCalled();
     });
   });

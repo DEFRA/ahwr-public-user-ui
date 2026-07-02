@@ -14,7 +14,7 @@ jest.mock("../../../../../../app/session/index.js");
 
 describe("Test Results test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/vet-visits-review-test-results";
+  const url = "/livestock/vet-visits-review-test-results";
   let server;
 
   beforeAll(async () => {
@@ -82,10 +82,10 @@ describe("Test Results test", () => {
     });
 
     test.each([
-      { typeOfLivestock: "beef", backlink: "/which-type-of-review" },
-      { typeOfLivestock: "dairy", backlink: "/which-type-of-review" },
-      { typeOfLivestock: "sheep", backlink: "/vet-rcvs" },
-      { typeOfLivestock: "pig", backlink: "/vet-rcvs" },
+      { typeOfLivestock: "beef", backlink: "/livestock/review-type" },
+      { typeOfLivestock: "dairy", backlink: "/livestock/review-type" },
+      { typeOfLivestock: "sheep", backlink: "/livestock/vet-rcvs" },
+      { typeOfLivestock: "pig", backlink: "/livestock/vet-rcvs" },
     ])("backLink test", async ({ typeOfLivestock, backlink }) => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
@@ -140,8 +140,8 @@ describe("Test Results test", () => {
     });
 
     test.each([
-      { typeOfLivestock: "beef", nextPageURL: "/date-of-visit" },
-      { typeOfLivestock: "pigs", nextPageURL: "/vaccination" },
+      { typeOfLivestock: "beef", nextPageURL: "/livestock/date-of-visit" },
+      { typeOfLivestock: "pigs", nextPageURL: "/livestock/vaccination" },
     ])(
       "Redirect $nextPageURL When species $typeOfLivestock",
       async ({ typeOfLivestock, nextPageURL }) => {

@@ -16,7 +16,7 @@ jest.mock("../../../../../../app/session/index.js");
 
 describe("Type of samples taken test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/type-of-samples-taken";
+  const url = "/livestock/samples-types";
 
   let server;
 
@@ -147,7 +147,7 @@ describe("Type of samples taken test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual("/number-of-blood-samples");
+      expect(res.headers.location.toString()).toEqual("/livestock/blood-sample-number");
       expect(setSessionData).toHaveBeenCalled();
     });
 
@@ -163,7 +163,7 @@ describe("Type of samples taken test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual("/number-of-fluid-oral-samples");
+      expect(res.headers.location.toString()).toEqual("/livestock/oral-sample-number");
       expect(setSessionData).toHaveBeenCalled();
     });
   });

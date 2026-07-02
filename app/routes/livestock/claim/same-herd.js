@@ -17,7 +17,7 @@ import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emi
 
 const getHandler = {
   method: "GET",
-  path: "/same-herd",
+  path: claimRoutes.sameHerd,
   options: {
     handler: async (request, h) => {
       const { typeOfLivestock, previousClaims, herdSame } = getSessionData(
@@ -39,7 +39,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/same-herd",
+  path: claimRoutes.sameHerd,
   options: {
     validate: {
       payload: Joi.object({

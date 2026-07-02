@@ -108,7 +108,7 @@ describe("shouldShowManageYourClaims", () => {
 
   describe("livestock urls", () => {
     test("false when latestEndemicsApplication is null", () => {
-      const request = { path: "/vet-visits" };
+      const request = { path: "/livestock/manage-claims" };
       mockEndemicsSessionData(request, null);
 
       const actual = shouldShowManageYourClaims(request);
@@ -117,7 +117,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when latestEndemicsApplication is undefined", () => {
-      const request = { path: "/vet-visits" };
+      const request = { path: "/livestock/manage-claims" };
       mockEndemicsSessionData(request, undefined);
 
       const actual = shouldShowManageYourClaims(request);
@@ -126,7 +126,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when latestEndemicsApplication has no status", () => {
-      const request = { path: "/vet-visits" };
+      const request = { path: "/livestock/manage-claims" };
       mockEndemicsSessionData(request, {});
 
       const actual = shouldShowManageYourClaims(request);
@@ -135,7 +135,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when status is not AGREED", () => {
-      const request = { path: "/vet-visits" };
+      const request = { path: "/livestock/manage-claims" };
       mockEndemicsSessionData(request, { status: "PENDING" });
 
       const actual = shouldShowManageYourClaims(request);
@@ -144,7 +144,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when status is not AGREED in endemics but agreed on poultry", () => {
-      const request = { path: "/vet-visits" };
+      const request = { path: "/livestock/manage-claims" };
       mockEndemicsSessionData(request, { status: "PENDING" });
       mockPoultrySessionData(request, { status: "AGREED" });
 
@@ -154,7 +154,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true when status is AGREED", () => {
-      const request = { path: "/vet-visits" };
+      const request = { path: "/livestock/manage-claims" };
       mockEndemicsSessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
@@ -163,7 +163,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true when status is AGREED on a claim route", () => {
-      const request = { path: "/date-of-visit" };
+      const request = { path: "/livestock/date-of-visit" };
       mockEndemicsSessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
@@ -172,7 +172,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true on post declaration (confirmation)", () => {
-      const request = { path: "/declaration", method: "post" };
+      const request = { path: "/livestock/agreement-offer", method: "post" };
       mockEndemicsSessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
@@ -181,7 +181,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false on get declaration (before confirmation)", () => {
-      const request = { path: "/declaration", method: "get" };
+      const request = { path: "/livestock/agreement-offer", method: "get" };
       mockEndemicsSessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);

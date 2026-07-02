@@ -21,7 +21,7 @@ jest.mock("../../../../../../app/session/index.js");
 
 describe("Vet name test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/vet-name";
+  const url = "/livestock/vet-name";
   let server;
 
   beforeAll(async () => {
@@ -168,7 +168,7 @@ describe("Vet name test", () => {
         const res = await server.inject(options);
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toEqual("/vet-rcvs");
+        expect(res.headers.location).toEqual("/livestock/vet-rcvs");
         expect(setSessionData).toHaveBeenCalledTimes(1);
         expect(setSessionData).toHaveBeenCalledWith(
           res.request,

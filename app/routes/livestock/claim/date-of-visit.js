@@ -179,7 +179,7 @@ const respondWithDateError = (request, h, { errorSummary, inputsInError }) => {
 
 const getHandler = {
   method: "GET",
-  path: "/date-of-visit",
+  path: claimRoutes.dateOfVisit,
   options: {
     handler: async (request, h) => {
       const {
@@ -209,7 +209,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/date-of-visit",
+  path: claimRoutes.dateOfVisit,
   options: {
     validate: {
       payload: dateInputSchema,

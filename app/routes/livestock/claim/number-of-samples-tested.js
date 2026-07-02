@@ -12,7 +12,7 @@ import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emi
 
 const getHandler = {
   method: "GET",
-  path: "/number-of-samples-tested",
+  path: claimRoutes.numberOfSamplesTested,
   options: {
     handler: async (request, h) => {
       const numberOfSamplesTested = getSessionData(
@@ -33,7 +33,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/number-of-samples-tested",
+  path: claimRoutes.numberOfSamplesTested,
   options: {
     validate: {
       payload: Joi.object({

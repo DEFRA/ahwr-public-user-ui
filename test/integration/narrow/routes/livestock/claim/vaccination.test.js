@@ -14,7 +14,7 @@ jest.mock("../../../../../../app/session/index.js");
 
 describe("Vaccination test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/vaccination";
+  const url = "/livestock/vaccination";
   let server;
 
   beforeAll(async () => {
@@ -91,8 +91,16 @@ describe("Vaccination test", () => {
     });
 
     test.each([
-      { typeOfLivestock: "pigs", vetVisitsReviewTestResults: false, backLink: "/vet-rcvs" },
-      { typeOfLivestock: "pigs", vetVisitsReviewTestResults: true, backLink: "/test-results" },
+      {
+        typeOfLivestock: "pigs",
+        vetVisitsReviewTestResults: false,
+        backLink: "/livestock/vet-rcvs",
+      },
+      {
+        typeOfLivestock: "pigs",
+        vetVisitsReviewTestResults: true,
+        backLink: "/livestock/test-results",
+      },
     ])(
       "backLink when species is pigs and application from old world is $vetVisitsReviewTestResults",
       async ({ typeOfLivestock, vetVisitsReviewTestResults, backLink }) => {
@@ -200,7 +208,7 @@ describe("Vaccination test", () => {
         const res = await server.inject(options);
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toEqual("/test-urn");
+        expect(res.headers.location).toEqual("/livestock/test-urn");
         expect(setSessionData).toHaveBeenCalled();
       },
     );

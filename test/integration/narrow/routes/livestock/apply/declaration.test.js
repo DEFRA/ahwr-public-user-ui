@@ -81,11 +81,11 @@ describe("Declaration test", () => {
 
   createApplication.mockResolvedValue({ applicationReference: "IAHW-PJ7E-WSI8" });
 
-  describe("GET /declaration route", () => {
+  describe("GET /livestock/agreement-offer route", () => {
     test("when not logged in redirects to dashboard /sign-in", async () => {
       const options = {
         method: "GET",
-        url: "/declaration",
+        url: "/livestock/agreement-offer",
       };
 
       const res = await server.inject(options);
@@ -97,7 +97,7 @@ describe("Declaration test", () => {
     test("returns 200 when organisation found in session", async () => {
       const options = {
         method: "GET",
-        url: "/declaration",
+        url: "/livestock/agreement-offer",
         auth,
       };
 
@@ -122,14 +122,14 @@ describe("Declaration test", () => {
     });
   });
 
-  describe("POST /declaration route", () => {
+  describe("POST /livestock/agreement-offer route", () => {
     test("returns 200, caches data and sends message for valid request", async () => {
       const applications = [{ organisation, reference: "TEMP-PJ7E-WSI8" }];
       getApplicationsBySbi.mockReturnValue(applications);
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/declaration",
+        url: "/livestock/agreement-offer",
         payload: { crumb, terms: "agree", offerStatus: "accepted" },
         auth,
         headers: { cookie: `crumb=${crumb}` },
@@ -166,7 +166,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/declaration",
+        url: "/livestock/agreement-offer",
         payload: { crumb, terms: "agree", offerStatus: "rejected" },
         auth,
         headers: { cookie: `crumb=${crumb}` },
@@ -211,7 +211,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/declaration",
+        url: "/livestock/agreement-offer",
         payload: { crumb, offerStatus: "accepted" },
         auth,
         headers: { cookie: `crumb=${crumb}` },
@@ -241,7 +241,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/declaration",
+        url: "/livestock/agreement-offer",
         payload: { crumb },
         headers: { cookie: `crumb=${crumb}` },
       };

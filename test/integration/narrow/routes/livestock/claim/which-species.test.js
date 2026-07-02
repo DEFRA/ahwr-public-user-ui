@@ -24,7 +24,7 @@ jest.mock("../../../../../../app/lib/context-helper", () => ({
 
 describe("Endemics which species test", () => {
   setSessionData.mockImplementation(() => {});
-  const url = `/which-species`;
+  const url = `/livestock/species`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -76,7 +76,7 @@ describe("Endemics which species test", () => {
       .mockReturnValue({ sbi: 123456789 });
   });
 
-  describe("GET /which-species", () => {
+  describe("GET /livestock/species", () => {
     test("should render page when no previous session exists", async () => {
       const options = {
         method: "GET",
@@ -93,7 +93,7 @@ describe("Endemics which species test", () => {
       );
       expect($("h1").text().trim()).toMatch("Which species are you claiming for?");
       expect($(".govuk-radios__item").length).toEqual(4);
-      expect($(".govuk-back-link").attr("href")).toContain("vet-visits");
+      expect($(".govuk-back-link").attr("href")).toContain("manage-claims");
 
       expect(resetEndemicsClaimSession).toHaveBeenCalled();
       expect(refreshApplications).toHaveBeenCalled();
@@ -176,7 +176,7 @@ describe("Endemics which species test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/which-type-of-review");
+      expect(res.headers.location).toEqual("/livestock/review-type");
       expect(setSessionData).toHaveBeenCalled();
       expect(resetEndemicsClaimSession).not.toHaveBeenCalled();
     });
@@ -200,7 +200,7 @@ describe("Endemics which species test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/which-type-of-review");
+      expect(res.headers.location).toEqual("/livestock/review-type");
       expect(setSessionData).toHaveBeenCalled();
       expect(resetEndemicsClaimSession).toHaveBeenCalledWith(
         expect.any(Object),

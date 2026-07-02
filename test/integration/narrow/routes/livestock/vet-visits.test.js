@@ -49,7 +49,7 @@ const getTableCells = ($) => {
   return rows;
 };
 
-describe("GET /vet-visits", () => {
+describe("GET /livestock/manage-claims", () => {
   let server;
 
   beforeEach(async () => {
@@ -73,7 +73,7 @@ describe("GET /vet-visits", () => {
     await setServerState(server, state);
 
     const { headers } = await server.inject({
-      url: "/vet-visits",
+      url: "/livestock/manage-claims",
       auth: { credentials: {}, strategy: "cookie" },
     });
 
@@ -98,11 +98,11 @@ describe("GET /vet-visits", () => {
     await setServerState(server, state);
 
     const { headers } = await server.inject({
-      url: "/vet-visits",
+      url: "/livestock/manage-claims",
       auth: { credentials: {}, strategy: "cookie" },
     });
 
-    expect(headers.location).toBe("/you-can-claim-multiple");
+    expect(headers.location).toBe("/livestock/what-you-can-claim");
   });
 
   describe("Cattle/Pig/Sheep", () => {
@@ -139,7 +139,7 @@ describe("GET /vet-visits", () => {
       ]);
 
       const { payload } = await server.inject({
-        url: "/vet-visits",
+        url: "/livestock/manage-claims",
         auth: { credentials: {}, strategy: "cookie" },
       });
 
@@ -161,7 +161,7 @@ describe("GET /vet-visits", () => {
       expect(link.attr("href")).toContain(`download-application/${sbi}/${applicationReference}`);
 
       const startBtn = findButtonLikeByText($, "Start a new claim").first();
-      expect(startBtn.attr("href")).toContain("/which-species");
+      expect(startBtn.attr("href")).toContain("/livestock/species");
 
       const otherBiz = findLinkByText($, "Claim for a different business").first();
       expect(otherBiz.attr("href")).toContain("auth-code-url");
@@ -205,7 +205,7 @@ describe("GET /vet-visits", () => {
       const $ = cheerio.load(
         (
           await server.inject({
-            url: "/vet-visits",
+            url: "/livestock/manage-claims",
             auth: { credentials: {}, strategy: "cookie" },
           })
         ).payload,
@@ -258,7 +258,7 @@ describe("GET /vet-visits", () => {
       const $ = cheerio.load(
         (
           await server.inject({
-            url: "/vet-visits",
+            url: "/livestock/manage-claims",
             auth: { credentials: {}, strategy: "cookie" },
           })
         ).payload,
@@ -293,7 +293,7 @@ describe("GET /vet-visits", () => {
       const $ = cheerio.load(
         (
           await server.inject({
-            url: "/vet-visits",
+            url: "/livestock/manage-claims",
             auth: { credentials: {}, strategy: "cookie" },
           })
         ).payload,
@@ -329,13 +329,13 @@ describe("GET /vet-visits", () => {
       });
 
       const { headers } = await server.inject({
-        url: "/vet-visits",
+        url: "/livestock/manage-claims",
         auth: { credentials: {}, strategy: "cookie" },
       });
 
       jest.useRealTimers();
 
-      expect(headers.location).toBe("/you-can-claim-multiple");
+      expect(headers.location).toBe("/livestock/what-you-can-claim");
     });
 
     test("redacted agreement", async () => {
@@ -358,7 +358,7 @@ describe("GET /vet-visits", () => {
       const $ = cheerio.load(
         (
           await server.inject({
-            url: "/vet-visits",
+            url: "/livestock/manage-claims",
             auth: { credentials: {}, strategy: "cookie" },
           })
         ).payload,
@@ -369,7 +369,7 @@ describe("GET /vet-visits", () => {
       );
 
       expect(findLinkByText($, "Apply for a new agreement").attr("href")).toBe(
-        "/you-can-claim-multiple",
+        "/livestock/what-you-can-claim",
       );
     });
 
@@ -393,7 +393,7 @@ describe("GET /vet-visits", () => {
       getClaimsByApplicationReference.mockResolvedValueOnce([]);
 
       const { payload } = await server.inject({
-        url: "/vet-visits",
+        url: "/livestock/manage-claims",
         auth: { credentials: {}, strategy: "cookie" },
       });
 

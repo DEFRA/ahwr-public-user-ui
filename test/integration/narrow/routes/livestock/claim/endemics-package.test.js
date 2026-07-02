@@ -14,7 +14,7 @@ jest.mock("../../../../../../app/session/index.js");
 
 describe("Endemics package test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/sheep-endemics-package";
+  const url = "/livestock/sheep-endemics-package";
 
   let server;
 
@@ -98,7 +98,7 @@ describe("Endemics package test", () => {
 
       const res = await server.inject(options);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/vet-rcvs");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/vet-rcvs");
     });
   });
 
@@ -172,7 +172,7 @@ describe("Endemics package test", () => {
         const res = await server.inject(options);
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toEqual("/sheep-tests");
+        expect(res.headers.location).toEqual("/livestock/sheep-tests");
       },
     );
   });

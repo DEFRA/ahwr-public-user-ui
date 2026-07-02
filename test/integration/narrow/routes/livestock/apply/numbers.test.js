@@ -59,7 +59,7 @@ describe("Check review numbers page test", () => {
     jest.clearAllMocks();
   });
 
-  describe("GET /numbers route when logged in", () => {
+  describe("GET /livestock/minimum-number route when logged in", () => {
     test("returns 200 and has correct backLink", async () => {
       const res = await server.inject({ ...options, method: "GET" });
 
@@ -81,7 +81,7 @@ describe("Check review numbers page test", () => {
     });
   });
 
-  describe("POST /numbers route", () => {
+  describe("POST /livestock/minimum-number route", () => {
     let crumb;
 
     beforeEach(async () => {

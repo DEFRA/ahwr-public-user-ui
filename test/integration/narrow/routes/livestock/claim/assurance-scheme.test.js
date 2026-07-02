@@ -15,7 +15,7 @@ jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
 
-const url = `/assurance-scheme`;
+const url = `/livestock/assurance-scheme`;
 const auth = {
   credentials: { reference: "1111", sbi: "111111111" },
   strategy: "cookie",
@@ -130,7 +130,7 @@ describe("Assurance Scheme", () => {
       const response = await server.inject(options);
 
       expect(response.statusCode).toBe(302);
-      expect(response.headers.location).toEqual(`/species-numbers`);
+      expect(response.headers.location).toEqual(`/livestock/species-numbers`);
       expect(setSessionData).toHaveBeenCalled();
     });
 
@@ -148,7 +148,7 @@ describe("Assurance Scheme", () => {
       const response = await server.inject(options);
 
       expect(response.statusCode).toBe(302);
-      expect(response.headers.location).toEqual(`/species-numbers`);
+      expect(response.headers.location).toEqual(`/livestock/species-numbers`);
       expect(setSessionData).toHaveBeenCalled();
     });
   });

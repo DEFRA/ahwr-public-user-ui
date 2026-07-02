@@ -16,7 +16,7 @@ jest.mock("../../../../../../app/session/index.js");
 
 describe("Number of fluid oral samples test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/number-of-fluid-oral-samples";
+  const url = "/livestock/oral-sample-number";
 
   let server;
 
@@ -74,7 +74,7 @@ describe("Number of fluid oral samples test", () => {
       expect($("title").text()).toContain(
         "How many oral fluid samples were tested? - Get funding to improve animal health and welfare",
       );
-      expect($("#back").attr("href")).toBe("/test-urn");
+      expect($("#back").attr("href")).toBe("/livestock/test-urn");
       expectPhaseBanner.ok($);
     });
 
@@ -96,7 +96,7 @@ describe("Number of fluid oral samples test", () => {
       expect($("title").text()).toContain(
         "How many oral fluid samples were tested? - Get funding to improve animal health and welfare",
       );
-      expect($("#back").attr("href")).toBe("/type-of-samples-taken");
+      expect($("#back").attr("href")).toBe("/livestock/samples-types");
       expectPhaseBanner.ok($);
     });
 
@@ -185,7 +185,7 @@ describe("Number of fluid oral samples test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual("/test-results");
+      expect(res.headers.location.toString()).toEqual("/livestock/test-results");
       expect(setSessionData).toHaveBeenCalled();
     });
   });

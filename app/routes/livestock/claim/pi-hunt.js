@@ -15,7 +15,7 @@ import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emi
 
 const getHandler = {
   method: "GET",
-  path: "/pi-hunt",
+  path: claimRoutes.piHunt,
   options: {
     handler: async (request, h) => {
       const { piHunt: previousPiHuntAnswer, dateOfVisit } = getSessionData(
@@ -38,7 +38,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/pi-hunt",
+  path: claimRoutes.piHunt,
   options: {
     validate: {
       payload: Joi.object({

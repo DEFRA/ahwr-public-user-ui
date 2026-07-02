@@ -11,7 +11,7 @@ import { preApplyHandler } from "../../../lib/pre-apply-handler.js";
 export const timingsRouteHandlers = [
   {
     method: "GET",
-    path: "/timings",
+    path: applyRoutes.timings,
     options: {
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
@@ -28,7 +28,7 @@ export const timingsRouteHandlers = [
   },
   {
     method: "POST",
-    path: "/timings",
+    path: applyRoutes.timings,
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {

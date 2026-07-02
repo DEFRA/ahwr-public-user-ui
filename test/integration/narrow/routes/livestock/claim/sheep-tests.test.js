@@ -14,7 +14,7 @@ jest.mock("../../../../../../app/session/index.js");
 
 describe("Test Results test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/sheep-tests";
+  const url = "/livestock/sheep-tests";
 
   let server;
 
@@ -82,7 +82,7 @@ describe("Test Results test", () => {
       expect($("title").text()).toMatch(
         "Which disease or condition did the vet take samples to test for? - Get funding to improve animal health and welfare",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/sheep-endemics-package");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/sheep-endemics-package");
 
       expectPhaseBanner.ok($);
     });
@@ -142,7 +142,7 @@ describe("Test Results test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/sheep-test-results");
+      expect(res.headers.location).toEqual("/livestock/sheep-test-results");
       expect(setSessionData).toHaveBeenCalled();
     });
 
@@ -162,7 +162,7 @@ describe("Test Results test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/sheep-test-results");
+      expect(res.headers.location).toEqual("/livestock/sheep-test-results");
       expect(setSessionData).toHaveBeenCalled();
     });
   });

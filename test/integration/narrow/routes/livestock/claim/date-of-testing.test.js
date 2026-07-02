@@ -32,7 +32,7 @@ const today = new Date();
 const tomorrow = new Date(today);
 tomorrow.setDate(today.getDate() + 1);
 const auth = { credentials: {}, strategy: "cookie" };
-const url = "/date-of-testing";
+const url = "/livestock/test-date";
 
 const latestEndemicsApplication = {
   reference: "AHWR-2470-6BA9",
@@ -112,7 +112,7 @@ describe("Date of testing", () => {
         expect(await axe(res.payload)).toHaveNoViolations();
         expect(res.statusCode).toBe(HttpStatus.OK);
         const $ = cheerio.load(res.payload);
-        expect($(".govuk-back-link").attr("href")).toMatch("/pi-hunt-all-animals");
+        expect($(".govuk-back-link").attr("href")).toMatch("/livestock/pi-hunt-all-animals");
         expectPhaseBanner.ok($);
         expect($("#whenTestingWasCarriedOut-hint").text()).toMatch(
           "This is the date samples were last taken for this follow-up. You can find it on the summary the vet gave you.",
@@ -325,7 +325,7 @@ describe("Date of testing", () => {
 
         const res = await server.inject(options);
         expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
-        expect(res.headers.location).toEqual("/test-urn");
+        expect(res.headers.location).toEqual("/livestock/test-urn");
       },
     );
 
@@ -364,7 +364,7 @@ describe("Date of testing", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
-      expect(res.headers.location).toEqual("/species-numbers");
+      expect(res.headers.location).toEqual("/livestock/species-numbers");
       expect(sendInvalidDataEvent).toHaveBeenCalledTimes(0);
     });
 
@@ -402,7 +402,7 @@ describe("Date of testing", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
-      expect(res.headers.location).toEqual("/species-numbers");
+      expect(res.headers.location).toEqual("/livestock/species-numbers");
       expect(sendInvalidDataEvent).toHaveBeenCalledTimes(0);
     });
 
@@ -703,7 +703,7 @@ describe("Date of testing", () => {
 
         expect(sendInvalidDataEvent).toHaveBeenCalled();
         expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY);
-        expect(res.headers.location).toEqual("/species-numbers");
+        expect(res.headers.location).toEqual("/livestock/species-numbers");
       });
     });
   });
@@ -742,7 +742,7 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(HttpStatus.OK);
     const $ = cheerio.load(res.payload);
-    expect($(".govuk-back-link").attr("href")).toMatch("/check-herd-details");
+    expect($(".govuk-back-link").attr("href")).toMatch("/livestock/check-herd-details");
   });
 
   test("returns 200 and correct backlink when skipSameHerdPage=false", async () => {
@@ -761,7 +761,7 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(HttpStatus.OK);
     const $ = cheerio.load(res.payload);
-    expect($(".govuk-back-link").attr("href")).toMatch("/same-herd");
+    expect($(".govuk-back-link").attr("href")).toMatch("/livestock/same-herd");
   });
 
   test("returns 200 and correct backlink when beef follow-up post PIHuntAndDairy golive", async () => {
@@ -785,6 +785,6 @@ describe("Date of testing when isMultipleHerdsUserJourney=true", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(HttpStatus.OK);
     const $ = cheerio.load(res.payload);
-    expect($(".govuk-back-link").attr("href")).toMatch("/pi-hunt-all-animals");
+    expect($(".govuk-back-link").attr("href")).toMatch("/livestock/pi-hunt-all-animals");
   });
 });

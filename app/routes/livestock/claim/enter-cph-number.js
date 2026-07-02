@@ -18,7 +18,7 @@ const getBackLink = (herdVersion) =>
 
 const getHandler = {
   method: "GET",
-  path: "/enter-cph-number",
+  path: claimRoutes.enterCphNumber,
   options: {
     tags: ["mh"],
     handler: async (request, h) => {
@@ -38,7 +38,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/enter-cph-number",
+  path: claimRoutes.enterCphNumber,
   options: {
     validate: {
       payload: Joi.object({

@@ -14,8 +14,8 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
-describe("/enter-herd-name tests", () => {
-  const url = `/enter-herd-name`;
+describe("/livestock/herd-name tests", () => {
+  const url = `/livestock/herd-name`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -108,7 +108,7 @@ describe("/enter-herd-name tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/select-herd");
       expectHerdText($);
       expectPhaseBanner.ok($);
     });
@@ -134,7 +134,7 @@ describe("/enter-herd-name tests", () => {
       expect(res.statusCode).toBe(200);
 
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/select-herd");
       expectHerdText($);
       expectPhaseBanner.ok($);
     });
@@ -158,7 +158,7 @@ describe("/enter-herd-name tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/select-herd");
       expectFlockText($);
       expectPhaseBanner.ok($);
     });
@@ -178,7 +178,7 @@ describe("/enter-herd-name tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/date-of-visit");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expectFlockText($);
       expectPhaseBanner.ok($);
     });
@@ -205,7 +205,7 @@ describe("/enter-herd-name tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/enter-cph-number");
+      expect(res.headers.location).toEqual("/livestock/cph");
       expect(setSessionData).toHaveBeenCalled();
       expect(emitHerdEvent).toHaveBeenCalled();
     });
@@ -238,7 +238,7 @@ describe("/enter-herd-name tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/enter-cph-number");
+      expect(res.headers.location).toEqual("/livestock/cph");
       expect(setSessionData).toHaveBeenCalled();
       expect(emitHerdEvent).toHaveBeenCalled();
     });
@@ -264,7 +264,7 @@ describe("/enter-herd-name tests", () => {
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
       expect($('a[href="#herdName"]').text()).toContain("Enter the herd name");
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/select-herd");
       expectHerdText($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
@@ -290,7 +290,7 @@ describe("/enter-herd-name tests", () => {
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
       expect($('a[href="#herdName"]').text()).toContain("Name must be between 2 and 30 characters");
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/select-herd");
       expectHerdText($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
@@ -316,7 +316,7 @@ describe("/enter-herd-name tests", () => {
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
       expect($('a[href="#herdName"]').text()).toContain("Name must be between 2 and 30 characters");
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/select-herd");
       expectHerdText($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
@@ -344,7 +344,7 @@ describe("/enter-herd-name tests", () => {
       expect($('a[href="#herdName"]').text()).toContain(
         "Name must only include letters a to z, numbers and special characters such as hyphens, spaces and apostrophes.",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/select-herd");
       expectHerdText($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
@@ -379,7 +379,7 @@ describe("/enter-herd-name tests", () => {
       expect($('a[href="#herdName"]').text()).toContain(
         "You have already used this name, the name must be unique",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/select-herd");
       expectHerdText($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
@@ -404,7 +404,7 @@ describe("/enter-herd-name tests", () => {
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
       expect($('a[href="#herdName"]').text()).toContain("Enter the flock name");
-      expect($(".govuk-back-link").attr("href")).toContain("/date-of-visit");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expectFlockText($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });

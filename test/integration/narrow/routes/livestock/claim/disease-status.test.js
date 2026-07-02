@@ -12,7 +12,7 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 jest.mock("../../../../../../app/session/index.js");
 
 describe("Disease status test", () => {
-  const url = `/disease-status`;
+  const url = `/livestock/disease-status`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -161,7 +161,7 @@ describe("Disease status test", () => {
       const response = await server.inject(options);
 
       expect(response.statusCode).toBe(302);
-      expect(response.headers.location).toEqual("/biosecurity");
+      expect(response.headers.location).toEqual("/livestock/biosecurity-assessment");
     });
   });
 });

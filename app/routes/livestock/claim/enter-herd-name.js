@@ -15,7 +15,7 @@ const getBackLink = (herds) =>
 
 const getHandler = {
   method: "GET",
-  path: "/enter-herd-name",
+  path: claimRoutes.enterHerdName,
   options: {
     tags: ["mh"],
     handler: async (request, h) => {
@@ -47,7 +47,7 @@ const isHerdNameEmpty = (errorType) =>
 
 const postHandler = {
   method: "POST",
-  path: "/enter-herd-name",
+  path: claimRoutes.enterHerdName,
   options: {
     validate: {
       payload: Joi.object({

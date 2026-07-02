@@ -15,8 +15,8 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
-describe("/enter-herd-details tests", () => {
-  const url = `/enter-herd-details`;
+describe("/livestock/enter-herd-details tests", () => {
+  const url = `/livestock/enter-herd-details`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -82,7 +82,7 @@ describe("/enter-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/herd-others-on-sbi");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect($(".govuk-heading-l").text().trim()).toBe("Enter the herd details");
       expect($(".govuk-hint").text().trim()).toContain("Tell us about this herd");
       const legendText = $(".govuk-fieldset__legend--m").text().trim();
@@ -122,7 +122,7 @@ describe("/enter-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/herd-others-on-sbi");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect($('.govuk-checkboxes__input[value="differentBreed"]').is(":checked")).toBeTruthy();
       expect($('.govuk-checkboxes__input[value="keptSeparate"]').is(":checked")).toBeTruthy();
       expectPhaseBanner.ok($);
@@ -145,7 +145,7 @@ describe("/enter-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Enter the flock details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/herd-others-on-sbi");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect($(".govuk-heading-l").text().trim()).toBe("Enter the flock details");
       expect($(".govuk-hint").text().trim()).toContain("Tell us about this flock");
       const legendText = $(".govuk-fieldset__legend--m").text().trim();
@@ -174,7 +174,7 @@ describe("/enter-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-cph-number");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($(".govuk-heading-l").text().trim()).toBe("Enter the herd details");
       expect($(".govuk-hint").text().trim()).toContain("Tell us about this herd");
       const legendText = $(".govuk-fieldset__legend--m").text().trim();
@@ -203,7 +203,7 @@ describe("/enter-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/herd-others-on-sbi");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect($(".govuk-heading-l").text().trim()).toBe("Enter the herd details");
       expect($(".govuk-hint").text().trim()).toContain("Tell us about this herd");
       const legendText = $(".govuk-fieldset__legend--m").text().trim();
@@ -236,7 +236,7 @@ describe("/enter-herd-details tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/check-herd-details");
+      expect(res.headers.location).toEqual("/livestock/check-herd-details");
       expect(setSessionData).toHaveBeenCalled();
       expect(emitHerdEvent).toHaveBeenCalled();
     });
@@ -264,7 +264,7 @@ describe("/enter-herd-details tests", () => {
       expect($('a[href="#herdReasons"]').text()).toContain(
         "Select the reasons for this separate herd",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/herd-others-on-sbi");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
@@ -291,7 +291,7 @@ describe("/enter-herd-details tests", () => {
       expect($('a[href="#herdReasons"]').text()).toContain(
         "Select the reasons for this separate herd",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/herd-others-on-sbi");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect($('.govuk-checkboxes__input[value="differentBreed"]').is(":checked")).toBeFalsy();
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
@@ -347,7 +347,7 @@ describe("/enter-herd-details tests", () => {
     expect($('a[href="#herdReasons"]').text()).toContain(
       "Select the reasons for this separate flock",
     );
-    expect($(".govuk-back-link").attr("href")).toContain("/enter-cph-number");
+    expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
     expect(emitHerdEvent).not.toHaveBeenCalled();
   });
 });

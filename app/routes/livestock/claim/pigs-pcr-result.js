@@ -11,7 +11,7 @@ import { claimRoutes, claimViews } from "../../../constants/routes.js";
 
 const getHandler = {
   method: "GET",
-  path: "/pigs-pcr-result",
+  path: claimRoutes.pigsPcrResult,
   options: {
     handler: async (request, h) => {
       const testResult = getSessionData(
@@ -30,7 +30,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/pigs-pcr-result",
+  path: claimRoutes.pigsPcrResult,
   options: {
     validate: {
       payload: Joi.object({

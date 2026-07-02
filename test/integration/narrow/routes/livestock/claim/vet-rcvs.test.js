@@ -21,7 +21,7 @@ const errorMessages = {
 
 describe("Vet rcvs test when Optional PI Hunt is OFF", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/vet-rcvs";
+  const url = "/livestock/vet-rcvs";
   let server;
 
   beforeAll(async () => {
@@ -158,9 +158,21 @@ describe("Vet rcvs test when Optional PI Hunt is OFF", () => {
     );
 
     test.each([
-      { vetRCVSNumber: "1234567", reviewTestResults: "positive", nextPageURL: "/pi-hunt" },
-      { vetRCVSNumber: "123456X", reviewTestResults: "negative", nextPageURL: "/biosecurity" },
-      { vetRCVSNumber: "123456X", reviewTestResults: undefined, nextPageURL: "/test-urn" },
+      {
+        vetRCVSNumber: "1234567",
+        reviewTestResults: "positive",
+        nextPageURL: "/livestock/pi-hunt",
+      },
+      {
+        vetRCVSNumber: "123456X",
+        reviewTestResults: "negative",
+        nextPageURL: "/livestock/biosecurity-assessment",
+      },
+      {
+        vetRCVSNumber: "123456X",
+        reviewTestResults: undefined,
+        nextPageURL: "/livestock/test-urn",
+      },
     ])(
       "returns 200 when payload is valid and stores in session (vetRCVSNumber= $vetRCVSNumber)",
       async ({ vetRCVSNumber, reviewTestResults, nextPageURL }) => {
@@ -188,67 +200,67 @@ describe("Vet rcvs test when Optional PI Hunt is OFF", () => {
         typeOfLivestock: "beef",
         typeOfReview: "FOLLOW_UP",
         relevantReviewForEndemics: { type: "VV" },
-        nextPageURL: "/test-urn",
+        nextPageURL: "/livestock/test-urn",
       },
       {
         typeOfLivestock: "sheep",
         typeOfReview: "FOLLOW_UP",
         relevantReviewForEndemics: { type: "VV" },
-        nextPageURL: "/sheep-endemics-package",
+        nextPageURL: "/livestock/sheep-endemics-package",
       },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "FOLLOW_UP",
         relevantReviewForEndemics: { type: "VV" },
-        nextPageURL: "/vet-visits-review-test-results",
+        nextPageURL: "/livestock/vet-visits-review-test-results",
       },
       {
         typeOfLivestock: "beef",
         typeOfReview: "FOLLOW_UP",
         relevantReviewForEndemics: { type: undefined },
-        nextPageURL: "/test-urn",
+        nextPageURL: "/livestock/test-urn",
       },
       {
         typeOfLivestock: "dairy",
         typeOfReview: "FOLLOW_UP",
         relevantReviewForEndemics: { type: undefined },
-        nextPageURL: "/test-urn",
+        nextPageURL: "/livestock/test-urn",
       },
       {
         typeOfLivestock: "sheep",
         typeOfReview: "FOLLOW_UP",
         relevantReviewForEndemics: { type: undefined },
-        nextPageURL: "/sheep-endemics-package",
+        nextPageURL: "/livestock/sheep-endemics-package",
       },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "FOLLOW_UP",
         relevantReviewForEndemics: { type: undefined },
-        nextPageURL: "/vaccination",
+        nextPageURL: "/livestock/vaccination",
       },
       {
         typeOfLivestock: "beef",
         typeOfReview: "REVIEW",
         relevantReviewForEndemics: undefined,
-        nextPageURL: "/test-urn",
+        nextPageURL: "/livestock/test-urn",
       },
       {
         typeOfLivestock: "dairy",
         typeOfReview: "REVIEW",
         relevantReviewForEndemics: undefined,
-        nextPageURL: "/test-urn",
+        nextPageURL: "/livestock/test-urn",
       },
       {
         typeOfLivestock: "sheep",
         typeOfReview: "REVIEW",
         relevantReviewForEndemics: undefined,
-        nextPageURL: "/test-urn",
+        nextPageURL: "/livestock/test-urn",
       },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "REVIEW",
         relevantReviewForEndemics: undefined,
-        nextPageURL: "/test-urn",
+        nextPageURL: "/livestock/test-urn",
       },
     ])(
       "Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and application from old world is $relevantReviewForEndemics ",
@@ -276,7 +288,7 @@ describe("Vet rcvs test when Optional PI Hunt is OFF", () => {
 
 describe("Vet rcvs test when Optional PI Hunt is ON", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/vet-rcvs";
+  const url = "/livestock/vet-rcvs";
   let server;
 
   beforeAll(async () => {
@@ -323,7 +335,7 @@ describe("Vet rcvs test when Optional PI Hunt is ON", () => {
         const res = await server.inject(options);
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toEqual("/pi-hunt");
+        expect(res.headers.location).toEqual("/livestock/pi-hunt");
         expect(setSessionData).toHaveBeenCalled();
       },
     );

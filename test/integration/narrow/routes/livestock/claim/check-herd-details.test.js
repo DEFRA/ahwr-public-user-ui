@@ -22,8 +22,8 @@ const assertLinkExistsFor = ($, spanText) => {
   return link.length > 0;
 };
 
-describe("/check-herd-details tests", () => {
-  const url = `/check-herd-details`;
+describe("/livestock/check-herd-details tests", () => {
+  const url = `/livestock/check-herd-details`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -95,7 +95,7 @@ describe("/check-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-herd-details");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "herd details")).toBeTruthy();
       expect($("h1").text().trim()).toBe("Check herd details");
@@ -126,7 +126,7 @@ describe("/check-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Check flock details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-herd-details");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "flock details")).toBeTruthy();
       expect(assertLinkExistsFor($, "Only flock associated with SBI")).toBeTruthy();
@@ -157,7 +157,7 @@ describe("/check-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/herd-others-on-sbi");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "Only herd associated with SBI")).toBeTruthy();
       expect(assertLinkExistsFor($, "herd details")).toBeFalsy();
@@ -187,7 +187,7 @@ describe("/check-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-herd-details");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "Only herd associated with SBI")).toBeTruthy();
       expect(assertLinkExistsFor($, "herd details")).toBeTruthy();
@@ -223,7 +223,7 @@ describe("/check-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-herd-details");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "herd details")).toBeTruthy();
       expect($("h1").text().trim()).toBe("Check herd details");
@@ -255,7 +255,7 @@ describe("/check-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-herd-details");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "herd details")).toBeTruthy();
       expect($("h1").text().trim()).toBe("Check herd details");
@@ -291,7 +291,7 @@ describe("/check-herd-details tests", () => {
       expect($("title").text().trim()).toContain(
         "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-herd-details");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "herd details")).toBeTruthy();
       expect($("h1").text().trim()).toBe("Check herd details");
@@ -335,7 +335,7 @@ describe("/check-herd-details tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/same-herd");
+      expect(res.headers.location).toEqual("/livestock/same-herd");
     });
 
     test("navigates to date-of-testing page when no previous claims", async () => {
@@ -343,7 +343,7 @@ describe("/check-herd-details tests", () => {
         ...validPayloadWithPreviousClaimsWithoutHerd,
         previousClaims: [],
       });
-      getNextMultipleHerdsPage.mockResolvedValue("/date-of-testing");
+      getNextMultipleHerdsPage.mockResolvedValue("/livestock/test-date");
 
       const res = await server.inject({
         method: "POST",
@@ -354,7 +354,7 @@ describe("/check-herd-details tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(res.headers.location).toEqual("/livestock/test-date");
     });
 
     test("navigates to date-of-testing page when at least one previous claim has herd", async () => {
@@ -376,7 +376,7 @@ describe("/check-herd-details tests", () => {
           },
         ],
       });
-      getNextMultipleHerdsPage.mockResolvedValue("/date-of-testing");
+      getNextMultipleHerdsPage.mockResolvedValue("/livestock/test-date");
 
       const res = await server.inject({
         method: "POST",
@@ -387,7 +387,7 @@ describe("/check-herd-details tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(res.headers.location).toEqual("/livestock/test-date");
     });
   });
 });

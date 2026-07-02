@@ -23,7 +23,7 @@ const getSpeciesGroupText = (typeOfLivestock) => {
 
 const getHandler = {
   method: "GET",
-  path: "/herd-others-on-sbi",
+  path: claimRoutes.herdOthersOnSbi,
   options: {
     handler: async (request, h) => {
       const { isOnlyHerdOnSbi, typeOfLivestock } = getSessionData(
@@ -42,7 +42,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/herd-others-on-sbi",
+  path: claimRoutes.herdOthersOnSbi,
   options: {
     validate: {
       payload: Joi.object({

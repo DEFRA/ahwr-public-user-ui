@@ -21,7 +21,7 @@ jest.mock("../../../../../../app/lib/claim-helper.js");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 
 describe("select-the-herd tests", () => {
-  const url = "/same-herd";
+  const url = "/livestock/same-herd";
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -112,7 +112,7 @@ describe("select-the-herd tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the same flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/check-herd-details");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/check-herd-details");
       expectPhaseBanner.ok($);
 
       const valueInTypeColumn = $(".govuk-summary-list__row")
@@ -143,7 +143,7 @@ describe("select-the-herd tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the same herd you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/check-herd-details");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/check-herd-details");
       expect($('.govuk-radios__input[value="yes"]').is(":checked")).toBeTruthy();
       expectPhaseBanner.ok($);
     });
@@ -193,7 +193,7 @@ describe("select-the-herd tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(res.headers.location).toEqual("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledTimes(1);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
@@ -256,7 +256,7 @@ describe("select-the-herd tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(res.headers.location).toEqual("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledTimes(2);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
@@ -315,7 +315,7 @@ describe("select-the-herd tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(res.headers.location).toEqual("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledTimes(1);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),

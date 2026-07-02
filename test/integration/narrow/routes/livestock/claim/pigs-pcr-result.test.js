@@ -14,7 +14,7 @@ jest.mock("../../../../../../app/session/index.js");
 
 describe("pigs pcr result test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/pigs-pcr-result";
+  const url = "/livestock/pigs-pcr-result";
 
   let server;
 
@@ -141,7 +141,7 @@ describe("pigs pcr result test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual("/pigs-genetic-sequencing");
+      expect(res.headers.location.toString()).toEqual("/livestock/pigs-genetic-sequencing");
       expect(setSessionData).toHaveBeenCalledTimes(1);
     });
 
@@ -157,7 +157,7 @@ describe("pigs pcr result test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual("/biosecurity");
+      expect(res.headers.location.toString()).toEqual("/livestock/biosecurity-assessment");
       expect(setSessionData).toHaveBeenCalledTimes(2);
     });
   });

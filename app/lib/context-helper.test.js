@@ -478,7 +478,7 @@ describe("context-helper", () => {
     });
 
     describe("livestock urls", () => {
-      it("returns the agreement survey uri when path is /declaration and method is post", () => {
+      it("returns the agreement survey uri when path is /livestock/agreement-offer and method is post", () => {
         const mockRequest = { path: applyRoutes.declaration, method: "post" };
         const result = getSurveyUri(mockRequest);
 
@@ -513,7 +513,7 @@ describe("context-helper", () => {
         expect(result).toBe(config.customerSurvey.applyUri);
       });
 
-      it("returns claimUri when path is /declaration but method is get and latestEndemicsApplication exists", () => {
+      it("returns claimUri when path is /livestock/agreement-offer but method is get and latestEndemicsApplication exists", () => {
         const mockRequest = { path: applyRoutes.declaration, method: "get" };
         mockEndemicsSessionData(mockRequest, { reference: "IAHW-1111-2222" });
 

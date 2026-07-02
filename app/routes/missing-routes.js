@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { config } from "../config/index.js";
+import { dashboardRoutes } from "../constants/routes.js";
 import { getSessionData, sessionEntryKeys } from "../session/index.js";
 
 export const missingPagesRoutes = [
@@ -14,7 +15,7 @@ export const missingPagesRoutes = [
         return h
           .view("error-pages/404", {
             signInLink: !userIsSignedIn ? `${config.serviceUri}sign-in` : undefined,
-            dashboardLink: `${config.serviceUri}vet-visits`,
+            dashboardLink: `${config.serviceUri}${dashboardRoutes.manageYourClaims.slice(1)}`,
           })
           .code(StatusCodes.NOT_FOUND);
       },

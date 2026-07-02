@@ -16,7 +16,7 @@ jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
 
-const url = `/biosecurity`;
+const url = `/livestock/biosecurity-assessment`;
 const auth = {
   credentials: { reference: "1111", sbi: "111111111" },
   strategy: "cookie",
@@ -182,7 +182,7 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
       expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
 
-      expect($(".govuk-back-link").attr().href).toMatch("/pigs-genetic-sequencing");
+      expect($(".govuk-back-link").attr().href).toMatch("/livestock/pigs-genetic-sequencing");
     });
 
     test("back link for pigs when pcr test value set", async () => {
@@ -206,7 +206,7 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
       expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
 
-      expect($(".govuk-back-link").attr().href).toMatch("/pigs-pcr-result");
+      expect($(".govuk-back-link").attr().href).toMatch("/livestock/pigs-pcr-result");
     });
   });
   describe(`POST ${url}`, () => {
@@ -263,7 +263,7 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
       const response = await server.inject(options);
 
       expect(response.statusCode).toBe(302);
-      expect(response.headers.location).toEqual(`/check-answers`);
+      expect(response.headers.location).toEqual(`/livestock/check-answers`);
       expect(setSessionData).toHaveBeenCalled();
     });
     test('continue to next page when biosecurity is "yes" for other journeys besides pig', async () => {
@@ -280,7 +280,7 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
       const response = await server.inject(options);
 
       expect(response.statusCode).toBe(302);
-      expect(response.headers.location).toEqual(`/check-answers`);
+      expect(response.headers.location).toEqual(`/livestock/check-answers`);
       expect(setSessionData).toHaveBeenCalled();
     });
     test('continue to Exception page when biosecurity  is "no" for any journey', async () => {
@@ -336,7 +336,7 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
       const response = await server.inject(options);
 
       expect(response.statusCode).toBe(302);
-      expect(response.headers.location).toEqual(`/check-answers`);
+      expect(response.headers.location).toEqual(`/livestock/check-answers`);
       expect(setSessionData).toHaveBeenCalled();
     });
     test.each([
@@ -429,7 +429,7 @@ describe("Biosecurity test when Optional PI Hunt is ON", () => {
         piHuntRecommended: "no",
         piHuntAllAnimals: "no",
         reviewTestResults: "negative",
-        backLink: "/pi-hunt",
+        backLink: "/livestock/pi-hunt",
       },
       {
         typeOfLivestock: "beef",
@@ -437,7 +437,7 @@ describe("Biosecurity test when Optional PI Hunt is ON", () => {
         piHuntRecommended: "no",
         piHuntAllAnimals: "no",
         reviewTestResults: "negative",
-        backLink: "/pi-hunt-recommended",
+        backLink: "/livestock/pi-hunt-recommended",
       },
       {
         typeOfLivestock: "beef",
@@ -445,7 +445,7 @@ describe("Biosecurity test when Optional PI Hunt is ON", () => {
         piHuntRecommended: "yes",
         piHuntAllAnimals: "no",
         reviewTestResults: "negative",
-        backLink: "/pi-hunt-all-animals",
+        backLink: "/livestock/pi-hunt-all-animals",
       },
       {
         typeOfLivestock: "beef",
@@ -453,7 +453,7 @@ describe("Biosecurity test when Optional PI Hunt is ON", () => {
         piHuntRecommended: "yes",
         piHuntAllAnimals: "yes",
         reviewTestResults: "negative",
-        backLink: "/test-results",
+        backLink: "/livestock/test-results",
       },
       {
         typeOfLivestock: "beef",
@@ -461,7 +461,7 @@ describe("Biosecurity test when Optional PI Hunt is ON", () => {
         piHuntRecommended: "yes",
         piHuntAllAnimals: "yes",
         reviewTestResults: "positive",
-        backLink: "/test-results",
+        backLink: "/livestock/test-results",
       },
     ])(
       "return 200",
