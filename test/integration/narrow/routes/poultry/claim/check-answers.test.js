@@ -269,9 +269,7 @@ describe("Poultry check answers test", () => {
       const cphRow = $(".govuk-summary-list__row").eq(3);
       expect(cphRow.find(".govuk-summary-list__key").text().trim()).toBe("Site CPH");
       expect(cphRow.find(".govuk-summary-list__value").text().trim()).toBe("12/345/6789");
-      expect(cphRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/enter-cph-number",
-      );
+      expect(cphRow.find(".govuk-summary-list__actions a").attr("href")).toBe("/poultry/cph");
     });
 
     test("displays site CPH without change link for existing site", async () => {

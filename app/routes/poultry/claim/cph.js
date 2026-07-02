@@ -19,7 +19,7 @@ const getBackLink = (herdVersion) =>
 
 const getHandler = {
   method: "GET",
-  path: "/poultry/enter-cph-number",
+  path: "/poultry/cph",
   options: {
     handler: async (request, h) => {
       const { herdCph, herdVersion } = getSessionData(request, sessionEntryKeys.poultryClaim);
@@ -34,7 +34,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/poultry/enter-cph-number",
+  path: "/poultry/cph",
   options: {
     validate: {
       payload: Joi.object({

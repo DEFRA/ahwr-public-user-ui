@@ -153,7 +153,7 @@ describe("/poultry/site-name", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/enter-cph-number");
+      expect(res.headers.location).toEqual("/poultry/cph");
       expect(setSessionData).toHaveBeenCalled();
       expect(emitHerdEvent).toHaveBeenCalled();
     });
@@ -184,7 +184,7 @@ describe("/poultry/site-name", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/enter-cph-number");
+      expect(res.headers.location).toEqual("/poultry/cph");
       expect(setSessionData).toHaveBeenCalled();
       expect(emitHerdEvent).toHaveBeenCalled();
     });
