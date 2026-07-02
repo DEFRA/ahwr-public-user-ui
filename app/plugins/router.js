@@ -72,7 +72,7 @@ import { poultryBiosecurityHandlers } from "../routes/poultry/claim/biosecurity-
 import { poultryVetsNameHandlers } from "../routes/poultry/claim/vet-name.js";
 import { poultryCheckAnswersHandlers } from "../routes/poultry/claim/check-answers.js";
 import { poultryBiosecurityUsefulnessHandlers } from "../routes/poultry/claim/biosecurity-usefulness.js";
-import { poultryChangesInBiosecurityHandlers } from "../routes/poultry/claim/changes-in-biosecurity.js";
+import { poultryChangesInBiosecurityHandlers } from "../routes/poultry/claim/biosecurity-changes.js";
 import { poultryBiosecurityCostOfChangesHandlers } from "../routes/poultry/claim/biosecurity-cost-of-changes.js";
 import { poultryInterviewHandlers } from "../routes/poultry/claim/interview.js";
 import { poultryConfirmationHandlers } from "../routes/poultry/claim/confirmation.js";

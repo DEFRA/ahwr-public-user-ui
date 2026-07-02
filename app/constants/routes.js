@@ -189,7 +189,7 @@ export const claimViews = {
 export const poultryClaimRoutes = {
   biosecurityAssessment: "/poultry/biosecurity-assessment",
   biosecurityUsefulness: "/poultry/biosecurity-usefulness",
-  changesInBiosecurity: "/poultry/changes-in-biosecurity",
+  biosecurityChanges: "/poultry/biosecurity-changes",
   checkAnswers: "/poultry/check-answers",
   checkSiteDetails: "/poultry/check-site-details",
   confirmation: "/poultry/confirmation",
@@ -212,7 +212,7 @@ export const poultryClaimViews = {
   biosecurityException: "poultry/claim/biosecurity-exception",
   biosecurityUsefulness: "poultry/claim/biosecurity-usefulness",
   cannotContinueTimingRules: "poultry/claim/cannot-continue-timing-rules",
-  changesInBiosecurity: "poultry/claim/changes-in-biosecurity",
+  biosecurityChanges: "poultry/claim/biosecurity-changes",
   checkAnswers: "poultry/claim/check-answers",
   confirmation: "poultry/claim/confirmation",
   costOfChanges: "poultry/claim/biosecurity-cost-of-changes",

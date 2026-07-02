@@ -596,7 +596,7 @@ describe("Poultry check answers test", () => {
         "Housing, buildings, infrastructure and wild bird control",
       );
       expect(changesInBiosecurityRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/changes-in-biosecurity",
+        "/poultry/biosecurity-changes",
       );
     });
 

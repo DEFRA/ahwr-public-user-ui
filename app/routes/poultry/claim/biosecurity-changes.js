@@ -12,12 +12,12 @@ const INVALID_VALUE_TEXT = "Select the vet's priority recommendation";
 
 const getHandler = {
   method: "GET",
-  path: poultryClaimRoutes.changesInBiosecurity,
+  path: poultryClaimRoutes.biosecurityChanges,
   options: {
     handler: async (request, h) => {
       const { changesInBiosecurity } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
-      return h.view(poultryClaimViews.changesInBiosecurity, {
+      return h.view(poultryClaimViews.biosecurityChanges, {
         previousAnswer: changesInBiosecurity,
         backLink: poultryClaimRoutes.biosecurityUsefulness,
       });
@@ -27,7 +27,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: poultryClaimRoutes.changesInBiosecurity,
+  path: poultryClaimRoutes.biosecurityChanges,
   options: {
     validate: {
       payload: Joi.object({
@@ -54,7 +54,7 @@ const postHandler = {
         };
 
         return h
-          .view(poultryClaimViews.changesInBiosecurity, {
+          .view(poultryClaimViews.biosecurityChanges, {
             backLink: poultryClaimRoutes.biosecurityUsefulness,
             ...errors,
             previousAnswer: changesInBiosecurity,
