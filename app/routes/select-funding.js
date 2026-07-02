@@ -129,7 +129,7 @@ export const selectFundingRouteHandlers = [
           return h.redirect(
             latestPoultryApplication
               ? dashboardRoutes.poultryManageYourClaims
-              : poultryApplyRoutes.youCanClaimMultiple,
+              : poultryApplyRoutes.whatYouCanClaim,
           );
         }
       },

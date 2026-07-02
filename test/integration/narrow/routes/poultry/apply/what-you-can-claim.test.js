@@ -127,7 +127,7 @@ describe("what-you-can-claim page", () => {
         sessionKeys.poultryApplyData.agreeMultipleSpecies,
         "yes",
       );
-      expect(res.headers.location).toEqual(poultryApplyRoutes.numbers);
+      expect(res.headers.location).toEqual(poultryApplyRoutes.minimumNumber);
     });
 
     test("returns 200 and navigates to the terms rejected page with back link when user disagrees", async () => {

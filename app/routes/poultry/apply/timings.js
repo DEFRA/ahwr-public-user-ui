@@ -20,7 +20,7 @@ export const poultryTimingsRouteHandlers = [
 
         return h.view(poultryApplyViews.timings, {
           hasOldWorldApplication,
-          backLink: poultryApplyRoutes.numbers,
+          backLink: poultryApplyRoutes.minimumNumber,
           organisation,
         });
       },

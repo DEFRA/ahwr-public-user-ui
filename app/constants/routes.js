@@ -38,7 +38,7 @@ export const applyRoutes = {
 export const poultryApplyRoutes = {
   whatYouCanClaim: "/poultry/what-you-can-claim",
   timings: "/poultry/timings",
-  numbers: "/poultry/numbers",
+  minimumNumber: "/poultry/minimum-number",
   declaration: "/poultry/declaration",
 };
 
@@ -54,7 +54,7 @@ export const applyViews = {
 export const poultryApplyViews = {
   youCanClaimMultiple: "poultry/apply/what-you-can-claim",
   timings: "poultry/apply/timings",
-  numbers: "poultry/apply/numbers",
+  minimumNumber: "poultry/apply/minimum-number",
   declaration: "poultry/apply/declaration",
   offerRejected: "poultry/apply/offer-rejected",
   termsRejected: "poultry/apply/terms-rejected",
