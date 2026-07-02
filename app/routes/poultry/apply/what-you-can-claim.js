@@ -19,7 +19,7 @@ import { prePoultryApplyHandler } from "../../../lib/pre-poultry-apply-handler.j
 export const poultryClaimMultipleRouteHandlers = [
   {
     method: "GET",
-    path: "/poultry/what-you-can-claim",
+    path: poultryApplyRoutes.whatYouCanClaim,
     options: {
       pre: [{ method: prePoultryApplyHandler }],
       handler: async (request, h) => {
@@ -58,7 +58,7 @@ export const poultryClaimMultipleRouteHandlers = [
   },
   {
     method: "POST",
-    path: "/poultry/what-you-can-claim",
+    path: poultryApplyRoutes.whatYouCanClaim,
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {

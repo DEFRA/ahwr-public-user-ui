@@ -1,7 +1,7 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
 import { requestAuthorizationCodeUrl } from "../../auth/auth-code-grant/request-authorization-code-url.js";
 import { config } from "../../config/index.js";
-import { poultryClaimRoutes } from "../../constants/routes.js";
+import { dashboardRoutes, poultryClaimRoutes } from "../../constants/routes.js";
 import { refreshApplications } from "../../lib/context-helper.js";
 import nunjucks from "nunjucks";
 import { getClaimsByApplicationReference } from "../../api-requests/claim-api.js";
@@ -113,7 +113,7 @@ const getOrRefreshApplication = async (request, sbi) => {
 export const poultryVetVisitsHandlers = [
   {
     method: "GET",
-    path: "/poultry/manage-claims",
+    path: dashboardRoutes.poultryManageYourClaims,
     options: {
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);

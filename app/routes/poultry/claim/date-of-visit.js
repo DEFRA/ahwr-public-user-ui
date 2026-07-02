@@ -197,7 +197,7 @@ const postHandler = {
         await setSessionData(request, poultryClaimEntry, herdIdKey, tempHerdId, {
           shouldEmitEvent: false,
         });
-        return h.redirect(poultryClaimRoutes.enterSiteName);
+        return h.redirect(poultryClaimRoutes.siteName);
       }
     },
   },

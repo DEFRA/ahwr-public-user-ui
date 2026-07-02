@@ -39,7 +39,7 @@ const processRejectedApplication = async (h, request) => {
 export const poultryDeclarationRouteHandlers = [
   {
     method: "get",
-    path: "/poultry/agreement-offer",
+    path: poultryApplyRoutes.agreementOffer,
     options: {
       pre: [{ method: prePoultryApplyHandler }],
       handler: async (request, h) => {
@@ -56,7 +56,7 @@ export const poultryDeclarationRouteHandlers = [
   },
   {
     method: "post",
-    path: "/poultry/agreement-offer",
+    path: poultryApplyRoutes.agreementOffer,
     options: {
       validate: {
         payload: joi.object({

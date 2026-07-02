@@ -10,7 +10,7 @@ import { prePoultryApplyHandler } from "../../../lib/pre-poultry-apply-handler.j
 export const poultryNumbersRouteHandlers = [
   {
     method: "GET",
-    path: "/poultry/minimum-number",
+    path: poultryApplyRoutes.minimumNumber,
     options: {
       pre: [{ method: prePoultryApplyHandler }],
       handler: async (request, h) => {
@@ -26,7 +26,7 @@ export const poultryNumbersRouteHandlers = [
   },
   {
     method: "POST",
-    path: "/poultry/minimum-number",
+    path: poultryApplyRoutes.minimumNumber,
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {

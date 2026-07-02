@@ -16,7 +16,7 @@ const getHandler = {
     handler: async (request, h) => {
       const { isOnlyHerdOnSbi } = getSessionData(request, sessionEntryKeys.poultryClaim);
       return h.view(poultryClaimViews.sbiSites, {
-        backLink: poultryClaimRoutes.enterCphNumber,
+        backLink: poultryClaimRoutes.cph,
         isOnlyHerdOnSbi,
       });
     },
@@ -41,7 +41,7 @@ const postHandler = {
               text: `Select if this is the only site associated with this SBI`,
               href: "#isOnlyHerdOnSbi",
             },
-            backLink: poultryClaimRoutes.enterCphNumber,
+            backLink: poultryClaimRoutes.cph,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();

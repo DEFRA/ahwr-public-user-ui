@@ -14,17 +14,17 @@ import { getClaimsCount } from "../../../api-requests/claim-api.js";
 
 const getBackLink = (herdVersion) =>
   !herdVersion || herdVersion === 1
-    ? poultryClaimRoutes.enterSiteName
+    ? poultryClaimRoutes.siteName
     : poultryClaimRoutes.selectTheSite;
 
 const getHandler = {
   method: "GET",
-  path: "/poultry/cph",
+  path: poultryClaimRoutes.cph,
   options: {
     handler: async (request, h) => {
       const { herdCph, herdVersion } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
-      return h.view(poultryClaimViews.enterCphNumber, {
+      return h.view(poultryClaimViews.cph, {
         backLink: getBackLink(herdVersion),
         herdCph,
       });
@@ -34,7 +34,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/poultry/cph",
+  path: poultryClaimRoutes.cph,
   options: {
     validate: {
       payload: Joi.object({
@@ -48,7 +48,7 @@ const postHandler = {
         const { herdVersion } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
         return h
-          .view(poultryClaimViews.enterCphNumber, {
+          .view(poultryClaimViews.cph, {
             ...request.payload,
             errorMessage: {
               text: "Enter the CPH for this site in the format 12/345/6789",
@@ -68,7 +68,7 @@ const postHandler = {
 
       if (response.count > 0) {
         return h
-          .view(poultryClaimViews.enterCphNumber, {
+          .view(poultryClaimViews.cph, {
             ...request.payload,
             errorMessage: {
               text: "Enter a CPH that you have not used for a different site",

@@ -124,7 +124,7 @@ const postHandler = {
 
       if (siteSelected === radioValueNewSite) {
         await cleanSiteData(request, tempHerdId);
-        return h.redirect(poultryClaimRoutes.enterSiteName);
+        return h.redirect(poultryClaimRoutes.siteName);
       }
 
       const sites = getUniqueSites(previousClaims);
