@@ -187,7 +187,7 @@ export const claimViews = {
 };
 
 export const poultryClaimRoutes = {
-  biosecurity: "/poultry/biosecurity",
+  biosecurityAssessment: "/poultry/biosecurity-assessment",
   biosecurityUsefulness: "/poultry/biosecurity-usefulness",
   changesInBiosecurity: "/poultry/changes-in-biosecurity",
   checkAnswers: "/poultry/check-answers",
@@ -208,7 +208,7 @@ export const poultryClaimRoutes = {
 };
 
 export const poultryClaimViews = {
-  biosecurity: "poultry/claim/biosecurity",
+  biosecurityAssessment: "poultry/claim/biosecurity-assessment",
   biosecurityException: "poultry/claim/biosecurity-exception",
   biosecurityUsefulness: "poultry/claim/biosecurity-usefulness",
   cannotContinueTimingRules: "poultry/claim/cannot-continue-timing-rules",

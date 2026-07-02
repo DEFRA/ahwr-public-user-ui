@@ -68,7 +68,7 @@ import { poultrySelectPoultryTypeHandlers } from "../routes/poultry/claim/poultr
 import { poultrySiteOthersOnSbiHandlers } from "../routes/poultry/claim/sbi-sites.js";
 import { poultryMinimumNumberOfBirdsHandlers } from "../routes/poultry/claim/minimum-birds.js";
 import { poultryVetRCVSHandlers } from "../routes/poultry/claim/vet-rcvs.js";
-import { poultryBiosecurityHandlers } from "../routes/poultry/claim/biosecurity.js";
+import { poultryBiosecurityHandlers } from "../routes/poultry/claim/biosecurity-assessment.js";
 import { poultryVetsNameHandlers } from "../routes/poultry/claim/vet-name.js";
 import { poultryCheckAnswersHandlers } from "../routes/poultry/claim/check-answers.js";
 import { poultryBiosecurityUsefulnessHandlers } from "../routes/poultry/claim/biosecurity-usefulness.js";

@@ -140,7 +140,7 @@ function createBiosecurityRows(poultryClaim) {
   const biosecurityAssessmentRow = createdHerdRowObject(
     "Biosecurity assessment",
     upperFirstLetter(poultryClaim.biosecurity),
-    poultryClaimRoutes.biosecurity,
+    poultryClaimRoutes.biosecurityAssessment,
     "biosecurity assessment",
   );
 

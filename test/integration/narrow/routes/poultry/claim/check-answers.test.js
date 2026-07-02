@@ -550,7 +550,7 @@ describe("Poultry check answers test", () => {
       );
       expect(biosecurityRow.find(".govuk-summary-list__value").text().trim()).toBe("Yes");
       expect(biosecurityRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/biosecurity",
+        "/poultry/biosecurity-assessment",
       );
     });
 
