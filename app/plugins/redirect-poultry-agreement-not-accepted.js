@@ -19,7 +19,7 @@ export const redirectPoultryAgreementNotAcceptedPlugin = {
           );
 
           if (latestPoultryApplication?.status !== "AGREED") {
-            return h.redirect(poultryApplyRoutes.youCanClaimMultiple).takeover();
+            return h.redirect(poultryApplyRoutes.whatYouCanClaim).takeover();
           }
         }
         return h.continue;
