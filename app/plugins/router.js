@@ -62,7 +62,7 @@ import { whichReviewHandlers } from "../routes/livestock/claim/which-type-of-rev
 import { assuranceSchemeHandlers } from "../routes/livestock/claim/assurance-scheme.js";
 import { poultryVetVisitsHandlers } from "../routes/poultry/manage-claims.js";
 import { poultrySelectTheSiteHandlers } from "../routes/poultry/claim/select-the-site.js";
-import { poultryEnterSiteNameHandlers } from "../routes/poultry/claim/enter-site-name.js";
+import { poultryEnterSiteNameHandlers } from "../routes/poultry/claim/site-name.js";
 import { poultryEnterCphNumberHandlers } from "../routes/poultry/claim/enter-cph-number.js";
 import { poultrySelectPoultryTypeHandlers } from "../routes/poultry/claim/select-poultry-type.js";
 import { poultrySiteOthersOnSbiHandlers } from "../routes/poultry/claim/site-others-on-sbi.js";

@@ -88,7 +88,7 @@ describe("/enter-cph-number tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-site-name");
+      expect($(".govuk-back-link").attr("href")).toContain("/site-name");
       expectSiteText($);
       expectPhaseBanner.ok($);
     });
@@ -106,7 +106,7 @@ describe("/enter-cph-number tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-site-name");
+      expect($(".govuk-back-link").attr("href")).toContain("/site-name");
       expect($("input#herdCph").val()).toBe("22/333/4444");
       expectSiteText($);
       expectPhaseBanner.ok($);
