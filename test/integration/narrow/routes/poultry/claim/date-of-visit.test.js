@@ -150,7 +150,7 @@ describe("GET /poultry/date-of-visit", () => {
 
     const res = await server.inject(options);
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location.toString()).toEqual(`/poultry/you-can-claim-multiple`);
+    expect(res.headers.location.toString()).toEqual(`/poultry/what-you-can-claim`);
   });
 
   test("without previous data, shows the screen with empty date boxes", async () => {

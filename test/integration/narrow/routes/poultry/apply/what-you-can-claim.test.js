@@ -51,13 +51,13 @@ when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
   .mockReturnValue(true);
 
-describe("you-can-claim-multiple page", () => {
+describe("what-you-can-claim page", () => {
   const optionsBase = {
     auth: {
       strategy: "cookie",
       credentials: { reference: "1111", sbi: "111111111" },
     },
-    url: poultryApplyRoutes.youCanClaimMultiple,
+    url: poultryApplyRoutes.whatYouCanClaim,
   };
 
   let server;
@@ -153,7 +153,7 @@ describe("you-can-claim-multiple page", () => {
 
       const $ = cheerio.load(res.payload);
       const backLinkHref = $(".govuk-back-link").attr("href");
-      expect(backLinkHref).toContain(poultryApplyRoutes.youCanClaimMultiple);
+      expect(backLinkHref).toContain(poultryApplyRoutes.whatYouCanClaim);
     });
   });
 });

@@ -160,7 +160,7 @@ describe("/poultry/vet-name", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/poultry/you-can-claim-multiple");
+      expect(res.headers.location).toBe("/poultry/what-you-can-claim");
     });
   });
 

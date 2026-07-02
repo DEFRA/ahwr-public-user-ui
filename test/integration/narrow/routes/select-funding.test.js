@@ -316,7 +316,7 @@ describe("select-funding", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-      expect(res.headers.location).toEqual(poultryApplyRoutes.youCanClaimMultiple);
+      expect(res.headers.location).toEqual(poultryApplyRoutes.whatYouCanClaim);
       expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),

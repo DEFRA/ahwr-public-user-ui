@@ -20,7 +20,7 @@ import { claimMultipleRouteHandlers } from "../routes/livestock/apply/you-can-cl
 import { poultryDeclarationRouteHandlers } from "../routes/poultry/apply/declaration.js";
 import { poultryNumbersRouteHandlers } from "../routes/poultry/apply/numbers.js";
 import { poultryTimingsRouteHandlers } from "../routes/poultry/apply/timings.js";
-import { poultryClaimMultipleRouteHandlers } from "../routes/poultry/apply/you-can-claim-multiple.js";
+import { poultryClaimMultipleRouteHandlers } from "../routes/poultry/apply/what-you-can-claim.js";
 import { poultryDateOfVisitHandlers } from "../routes/poultry/claim/date-of-visit.js";
 import { selectFundingRouteHandlers } from "../routes/select-funding.js";
 import { biosecurityHandlers } from "../routes/livestock/claim/biosecurity.js";

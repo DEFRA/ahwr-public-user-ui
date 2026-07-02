@@ -19,7 +19,7 @@ import { prePoultryApplyHandler } from "../../../lib/pre-poultry-apply-handler.j
 export const poultryClaimMultipleRouteHandlers = [
   {
     method: "GET",
-    path: "/poultry/you-can-claim-multiple",
+    path: "/poultry/what-you-can-claim",
     options: {
       pre: [{ method: prePoultryApplyHandler }],
       handler: async (request, h) => {
@@ -58,7 +58,7 @@ export const poultryClaimMultipleRouteHandlers = [
   },
   {
     method: "POST",
-    path: "/poultry/you-can-claim-multiple",
+    path: "/poultry/what-you-can-claim",
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {
@@ -69,7 +69,7 @@ export const poultryClaimMultipleRouteHandlers = [
             "yes",
           );
 
-          return h.redirect(poultryApplyRoutes.numbers);
+          return h.redirect(poultryApplyRoutes.minimumNumber);
         }
 
         await setSessionData(
@@ -80,7 +80,7 @@ export const poultryClaimMultipleRouteHandlers = [
         );
 
         return h.view(poultryApplyViews.termsRejected, {
-          backLink: poultryApplyRoutes.youCanClaimMultiple,
+          backLink: poultryApplyRoutes.whatYouCanClaim,
         });
       },
     },
