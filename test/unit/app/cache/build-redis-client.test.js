@@ -44,6 +44,7 @@ describe("buildRedisClient", () => {
       host: "test-host",
       db: 0,
       keyPrefix: "test-keyprefix",
+      enableReadyCheck: false,
     });
 
     expect(Cluster).not.toHaveBeenCalled();
