@@ -13,12 +13,12 @@ const YES_TO_ASSESSMENT_TEXT = "Select if the vet did a biosecurity assessment";
 
 const getHandler = {
   method: "GET",
-  path: poultryClaimRoutes.biosecurity,
+  path: poultryClaimRoutes.biosecurityAssessment,
   options: {
     handler: async (request, h) => {
       const { biosecurity } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
-      return h.view(poultryClaimViews.biosecurity, {
+      return h.view(poultryClaimViews.biosecurityAssessment, {
         previousAnswer: biosecurity,
         backLink: poultryClaimRoutes.vetRcvs,
       });
@@ -28,7 +28,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: poultryClaimRoutes.biosecurity,
+  path: poultryClaimRoutes.biosecurityAssessment,
   options: {
     validate: {
       payload: Joi.object({
@@ -48,7 +48,7 @@ const postHandler = {
         };
 
         return h
-          .view(poultryClaimViews.biosecurity, {
+          .view(poultryClaimViews.biosecurityAssessment, {
             backLink: poultryClaimRoutes.vetRcvs,
             ...errors,
             previousAnswer: biosecurity,
@@ -76,7 +76,7 @@ const postHandler = {
 
         return h
           .view(poultryClaimViews.biosecurityException, {
-            backLink: poultryClaimRoutes.biosecurity,
+            backLink: poultryClaimRoutes.biosecurityAssessment,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
