@@ -73,7 +73,7 @@ const postHandler = {
         changesInBiosecurity,
       );
 
-      return h.redirect(poultryClaimRoutes.costOfChanges);
+      return h.redirect(poultryClaimRoutes.changesCost);
     },
   },
 };

@@ -19,7 +19,7 @@ const getHandler = {
 
       return h.view(poultryClaimViews.interview, {
         previousAnswer: interview,
-        backLink: poultryClaimRoutes.costOfChanges,
+        backLink: poultryClaimRoutes.changesCost,
       });
     },
   },
@@ -48,7 +48,7 @@ const postHandler = {
 
         return h
           .view(poultryClaimViews.interview, {
-            backLink: poultryClaimRoutes.costOfChanges,
+            backLink: poultryClaimRoutes.changesCost,
             ...errors,
             previousAnswer: interview,
           })

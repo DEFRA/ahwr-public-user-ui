@@ -619,7 +619,7 @@ describe("Poultry check answers test", () => {
         "Up to £1,500",
       );
       expect(costOfChangesRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/cost-of-changes",
+        "/poultry/changes-cost",
       );
     });
 
