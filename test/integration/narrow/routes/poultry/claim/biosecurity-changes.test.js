@@ -157,7 +157,7 @@ describe("/poultry/biosecurity-changes", () => {
         const response = await server.inject(options);
 
         expect(response.statusCode).toBe(302);
-        expect(response.headers.location).toEqual(`/poultry/cost-of-changes`);
+        expect(response.headers.location).toEqual(`/poultry/changes-cost`);
         expect(setSessionData).toHaveBeenCalledWith(
           expect.any(Object),
           "poultryClaim",

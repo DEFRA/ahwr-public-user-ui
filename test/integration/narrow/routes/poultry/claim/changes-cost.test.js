@@ -13,14 +13,14 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
 
-const url = `/poultry/cost-of-changes`;
+const url = `/poultry/changes-cost`;
 const auth = {
   credentials: { reference: "1111", sbi: "111111111" },
   strategy: "cookie",
 };
 let crumb;
 
-describe("/poultry/cost-of-changes", () => {
+describe("/poultry/changes-cost", () => {
   let server;
 
   beforeEach(async () => {

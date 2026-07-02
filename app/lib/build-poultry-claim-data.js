@@ -161,7 +161,7 @@ function createBiosecurityRows(poultryClaim) {
   const costOfChangesRow = createdHerdRowObject(
     "Expected cost for biosecurity changes",
     costOfChangesLabels[poultryClaim.costOfChanges],
-    poultryClaimRoutes.costOfChanges,
+    poultryClaimRoutes.changesCost,
     "expected cost for biosecurity changes",
   );
   return {
