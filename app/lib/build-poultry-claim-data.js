@@ -154,7 +154,7 @@ function createBiosecurityRows(poultryClaim) {
   const changesInBiosecurityRow = createdHerdRowObject(
     "Biosecurity recommended changes",
     changesInBiosecurityLabels[poultryClaim.changesInBiosecurity],
-    poultryClaimRoutes.changesInBiosecurity,
+    poultryClaimRoutes.biosecurityChanges,
     "biosecurity recommended changes",
   );
 
