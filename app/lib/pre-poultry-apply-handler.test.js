@@ -154,7 +154,7 @@ describe("prePoultryApplyHandler", () => {
       },
       "User attempted to use apply journey despite already having an agreed agreement.",
     );
-    expect(h.redirect).toHaveBeenCalledWith("/poultry/vet-visits");
+    expect(h.redirect).toHaveBeenCalledWith("/poultry/manage-claims");
   });
 
   test("allows apply journey if application is agreed but redacted", async () => {

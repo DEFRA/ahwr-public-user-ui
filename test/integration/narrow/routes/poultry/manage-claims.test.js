@@ -64,7 +64,7 @@ const baseState = {
   organisation: baseOrganisation,
 };
 
-describe("GET /poultry/vet-visits", () => {
+describe("GET /poultry/manage-claims", () => {
   let server;
 
   beforeAll(async () => {
@@ -77,7 +77,7 @@ describe("GET /poultry/vet-visits", () => {
   });
 
   const options = {
-    url: "/poultry/vet-visits",
+    url: "/poultry/manage-claims",
     auth: {
       credentials: {},
       strategy: "cookie",
@@ -112,7 +112,7 @@ describe("GET /poultry/vet-visits", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/poultry/you-can-claim-multiple");
+    expect(res.headers.location).toBe("/poultry/what-you-can-claim");
   });
 
   test("should show no poultry claims when no claims have been made and has an agreement", async () => {

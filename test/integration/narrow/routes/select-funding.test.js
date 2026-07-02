@@ -333,7 +333,7 @@ describe("select-funding", () => {
       );
     });
 
-    test("redirects to vet-visits when user selects poultry with an agreement", async () => {
+    test("redirects to manage-claims when user selects poultry with an agreement", async () => {
       when(getSessionData)
         .calledWith(
           expect.anything(),

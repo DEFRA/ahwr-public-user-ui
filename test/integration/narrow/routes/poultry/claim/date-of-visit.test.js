@@ -159,7 +159,7 @@ describe("GET /poultry/date-of-visit", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, "/poultry/vet-visits");
+    expectPageContentOk($, "/poultry/manage-claims");
     expectPhaseBanner.ok($);
   });
 
@@ -366,7 +366,7 @@ describe("POST /poultry/date-of-visit", () => {
       expect($("h1").text().trim()).toBe("Date of visit");
       expect($(".govuk-error-summary")).toHaveLength(1);
       expect($(".govuk-error-summary").text()).toContain(expectedError);
-      expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
+      expect($(".govuk-back-link").attr("href")).toBe("/poultry/manage-claims");
     },
   );
 
@@ -392,7 +392,7 @@ describe("POST /poultry/date-of-visit", () => {
     expect($("h1").text().trim()).toBe("Date of visit");
     expect($(".govuk-error-summary")).toHaveLength(1);
     expect($(".govuk-error-summary").text()).toContain("Enter a date that is not in the future");
-    expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
+    expect($(".govuk-back-link").attr("href")).toBe("/poultry/manage-claims");
   });
 
   test("when date is before latestPoultryApplication.createdAt, shows error and calls trackEvent and sendInvalidDataPoultryEvent", async () => {
@@ -430,7 +430,7 @@ describe("POST /poultry/date-of-visit", () => {
     expect($("h1").text().trim()).toBe("Date of visit");
     expect($(".govuk-error-summary")).toHaveLength(1);
     expect($(".govuk-error-summary").text()).toContain(expectedError);
-    expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
+    expect($(".govuk-back-link").attr("href")).toBe("/poultry/manage-claims");
   });
 
   test("when date is the same day as latestPoultryApplication.createdAt (with time component), should succeed", async () => {

@@ -113,7 +113,7 @@ const getOrRefreshApplication = async (request, sbi) => {
 export const poultryVetVisitsHandlers = [
   {
     method: "GET",
-    path: "/poultry/vet-visits",
+    path: "/poultry/manage-claims",
     options: {
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
@@ -134,7 +134,7 @@ export const poultryVetVisitsHandlers = [
 
         const downloadedDocument = `/download-application/${organisation.sbi}/${application.reference}`;
 
-        return h.view("poultry/vet-visits", {
+        return h.view("poultry/manage-claims", {
           attachedToMultipleBusinesses,
           claimJourneyStartPointUri: poultryClaimRoutes.dateOfVisit + "?journey=new",
           ...organisation,
