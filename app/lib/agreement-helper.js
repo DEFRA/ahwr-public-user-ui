@@ -29,7 +29,7 @@ const userHasLivestockAgreement = (request) => {
 
 const userHasPoultryAgreement = (request) => {
   // Technically, this should never happen, because of redirection plugin.
-  if (request.path === poultryApplyRoutes.declaration && request.method === "get") {
+  if (request.path === poultryApplyRoutes.agreementOffer && request.method === "get") {
     return false;
   }
 

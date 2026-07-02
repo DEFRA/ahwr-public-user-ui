@@ -274,7 +274,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true on post declaration post (confirmation)", () => {
-      const request = { path: "/poultry/declaration", method: "post" };
+      const request = { path: "/poultry/agreement-offer", method: "post" };
       mockPoultrySessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
@@ -283,7 +283,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false on get declaration (before confirmation)", () => {
-      const request = { path: "/poultry/declaration", method: "get" };
+      const request = { path: "/poultry/agreement-offer", method: "get" };
       mockPoultrySessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);

@@ -40,7 +40,7 @@ jest.mock("../../../../../../app/config/index.js", () => ({
   },
 }));
 
-describe("Declaration test", () => {
+describe("Agreement offer test", () => {
   const organisation = {
     id: "organisation",
     name: "org-name",
@@ -88,11 +88,11 @@ describe("Declaration test", () => {
 
   createApplication.mockResolvedValue({ applicationReference: "POUL-PJ7E-WSI8" });
 
-  describe("GET /declaration route", () => {
+  describe("GET /agreement-offer route", () => {
     test("when not logged in redirects to dashboard /sign-in", async () => {
       const options = {
         method: "GET",
-        url: "/poultry/declaration",
+        url: "/poultry/agreement-offer",
       };
 
       const res = await server.inject(options);
@@ -104,7 +104,7 @@ describe("Declaration test", () => {
     test("returns 200 when organisation found in session", async () => {
       const options = {
         method: "GET",
-        url: "/poultry/declaration",
+        url: "/poultry/agreement-offer",
         auth,
       };
 
@@ -223,7 +223,7 @@ describe("Declaration test", () => {
 
       const options = {
         method: "GET",
-        url: "/poultry/declaration",
+        url: "/poultry/agreement-offer",
         auth,
       };
 
@@ -234,7 +234,7 @@ describe("Declaration test", () => {
     });
   });
 
-  describe("POST /declaration route", () => {
+  describe("POST /agreement-offer route", () => {
     test("returns 200, caches data and sends message for valid request", async () => {
       when(getSessionData)
         .calledWith(
@@ -248,7 +248,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/poultry/declaration",
+        url: "/poultry/agreement-offer",
         payload: { crumb, terms: "agree", offerStatus: "accepted" },
         auth,
         headers: { cookie: `crumb=${crumb}` },
@@ -294,7 +294,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/poultry/declaration",
+        url: "/poultry/agreement-offer",
         payload: { crumb, terms: "agree", offerStatus: "rejected" },
         auth,
         headers: { cookie: `crumb=${crumb}` },
@@ -358,7 +358,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/poultry/declaration",
+        url: "/poultry/agreement-offer",
         payload: { crumb, offerStatus: "accepted" },
         auth,
         headers: { cookie: `crumb=${crumb}` },
@@ -398,7 +398,7 @@ describe("Declaration test", () => {
       const crumb = await getCrumbs(server);
       const options = {
         method: "POST",
-        url: "/poultry/declaration",
+        url: "/poultry/agreement-offer",
         payload: { crumb },
         headers: { cookie: `crumb=${crumb}` },
       };

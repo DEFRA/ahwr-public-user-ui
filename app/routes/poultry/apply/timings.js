@@ -39,7 +39,7 @@ export const poultryTimingsRouteHandlers = [
             "yes",
           );
 
-          return h.redirect(poultryApplyRoutes.declaration);
+          return h.redirect(poultryApplyRoutes.agreementOffer);
         }
 
         await setSessionData(
