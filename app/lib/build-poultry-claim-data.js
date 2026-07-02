@@ -56,7 +56,7 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
   const minimumNumberOfBirdsRow = createdHerdRowObject(
     "Minimum number of birds",
     upperFirstLetter(poultryClaim.minimumNumberOfBirds),
-    poultryClaimRoutes.minimumNumberOfBirds,
+    poultryClaimRoutes.minimumBirds,
     "minimum number of birds",
   );
 

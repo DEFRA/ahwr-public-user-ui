@@ -209,7 +209,7 @@ describe("/poultry/poultry-type", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/minimum-number-of-birds");
+      expect(res.headers.location).toEqual("/poultry/minimum-birds");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -236,7 +236,7 @@ describe("/poultry/poultry-type", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/minimum-number-of-birds");
+      expect(res.headers.location).toEqual("/poultry/minimum-birds");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
