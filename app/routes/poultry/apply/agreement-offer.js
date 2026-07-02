@@ -39,13 +39,13 @@ const processRejectedApplication = async (h, request) => {
 export const poultryDeclarationRouteHandlers = [
   {
     method: "get",
-    path: "/poultry/declaration",
+    path: "/poultry/agreement-offer",
     options: {
       pre: [{ method: prePoultryApplyHandler }],
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
-        return h.view(poultryApplyViews.declaration, {
+        return h.view(poultryApplyViews.agreementOffer, {
           backLink: poultryApplyRoutes.timings,
           termsAndConditionsUri: config.poultry.termsAndConditionsUri,
           vetSummaryTemplateUri: config.poultry.vetSummaryTemplateUri,
@@ -56,7 +56,7 @@ export const poultryDeclarationRouteHandlers = [
   },
   {
     method: "post",
-    path: "/poultry/declaration",
+    path: "/poultry/agreement-offer",
     options: {
       validate: {
         payload: joi.object({
@@ -70,7 +70,7 @@ export const poultryDeclarationRouteHandlers = [
           const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
           return h
-            .view(poultryApplyViews.declaration, {
+            .view(poultryApplyViews.agreementOffer, {
               backLink: poultryApplyRoutes.timings,
               termsAndConditionsUri: config.poultry.termsAndConditionsUri,
               vetSummaryTemplateUri: config.poultry.vetSummaryTemplateUri,

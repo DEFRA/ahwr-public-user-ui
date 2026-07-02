@@ -120,7 +120,7 @@ describe("Declaration test", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual(poultryApplyRoutes.declaration);
+      expect(res.headers.location).toEqual(poultryApplyRoutes.agreementOffer);
     });
 
     test("returns 200 to terms rejected page with back link when rejected answer given", async () => {

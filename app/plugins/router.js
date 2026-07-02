@@ -17,7 +17,7 @@ import { declarationRouteHandlers } from "../routes/livestock/apply/declaration.
 import { numbersRouteHandlers } from "../routes/livestock/apply/numbers.js";
 import { timingsRouteHandlers } from "../routes/livestock/apply/timings.js";
 import { claimMultipleRouteHandlers } from "../routes/livestock/apply/you-can-claim-multiple.js";
-import { poultryDeclarationRouteHandlers } from "../routes/poultry/apply/declaration.js";
+import { poultryDeclarationRouteHandlers } from "../routes/poultry/apply/agreement-offer.js";
 import { poultryNumbersRouteHandlers } from "../routes/poultry/apply/minimum-number.js";
 import { poultryTimingsRouteHandlers } from "../routes/poultry/apply/timings.js";
 import { poultryClaimMultipleRouteHandlers } from "../routes/poultry/apply/what-you-can-claim.js";

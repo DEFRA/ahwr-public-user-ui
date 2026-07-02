@@ -527,7 +527,7 @@ describe("context-helper", () => {
       it.each([...Object.values(poultryApplyRoutes)])(
         "returns the agreement survey uri on %s route",
         (url) => {
-          const mockRequest = { path: poultryApplyRoutes.declaration, method: "post" };
+          const mockRequest = { path: poultryApplyRoutes.agreementOffer, method: "post" };
           const result = getSurveyUri(mockRequest);
 
           expect(result).toBe(config.customerSurvey.applyUri);
