@@ -86,7 +86,7 @@ describe("/poultry/poultry-type", () => {
       expect(res.statusCode).toBe(200);
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
-      expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
+      expect($("#back").attr("href")).toEqual("/poultry/sbi-sites");
     });
 
     test("shows the updated heading", async () => {
@@ -152,7 +152,7 @@ describe("/poultry/poultry-type", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
+      expect($("#back").attr("href")).toEqual("/poultry/sbi-sites");
     });
 
     test("shows back link to select-the-site when herds exist", async () => {
@@ -168,7 +168,7 @@ describe("/poultry/poultry-type", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
+      expect($("#back").attr("href")).toEqual("/poultry/sbi-sites");
     });
 
     test("handles undefined typesOfPoultry in session", async () => {

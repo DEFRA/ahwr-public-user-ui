@@ -201,7 +201,7 @@ function createSiteInformationRows(herds, poultryClaim) {
     : createdHerdRowObject(
         "Only site within the SBI",
         upperFirstLetter(poultryClaim.isOnlyHerdOnSbi),
-        poultryClaimRoutes.siteOthersOnSbi,
+        poultryClaimRoutes.sbiSites,
         "only site within the SBI",
       );
   return { siteNameRow, cphNumberRow, siteOthersRow };

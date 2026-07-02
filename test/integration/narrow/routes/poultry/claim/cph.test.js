@@ -155,7 +155,7 @@ describe("/cph tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/site-others-on-sbi");
+      expect(res.headers.location).toEqual("/poultry/sbi-sites");
       expect(setSessionData).toHaveBeenCalled();
       expect(emitHerdEvent).toHaveBeenCalled();
     });
@@ -231,7 +231,7 @@ describe("/cph tests", () => {
         });
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toEqual("/poultry/site-others-on-sbi");
+        expect(res.headers.location).toEqual("/poultry/sbi-sites");
         expect(setSessionData).toHaveBeenCalled();
         expect(emitHerdEvent).toHaveBeenCalled();
       });
