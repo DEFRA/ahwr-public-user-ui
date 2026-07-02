@@ -62,7 +62,10 @@ describe("buildRedisClient", () => {
         keyPrefix: "test-keyprefix",
         slotsRefreshTimeout: 10000,
         dnsLookup: expect.any(Function),
-        redisOptions: expect.objectContaining({ db: 0 }),
+        redisOptions: expect.objectContaining({
+          db: 0,
+          enableReadyCheck: false,
+        }),
       }),
     );
 
