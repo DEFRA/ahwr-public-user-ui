@@ -14,7 +14,7 @@ jest.mock("../../../../../../app/session/index.js");
 
 describe("pigs genetic sequencing test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/pigs-genetic-sequencing";
+  const url = "/livestock/pigs-genetic-sequencing";
 
   let server;
 
@@ -157,7 +157,7 @@ describe("pigs genetic sequencing test", () => {
         const res = await server.inject(options);
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location.toString()).toEqual("/biosecurity");
+        expect(res.headers.location.toString()).toEqual("/livestock/biosecurity-assessment");
         expect(setSessionData).toHaveBeenCalledTimes(1);
         expect(setSessionData).toHaveBeenCalledWith(
           expect.anything(),

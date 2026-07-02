@@ -51,7 +51,7 @@ const getEnterHerdDetailsViewData = (request, ignoreHerdReasons = false) => {
 
 const getHandler = {
   method: "GET",
-  path: "/enter-herd-details",
+  path: claimRoutes.enterHerdDetails,
   options: {
     handler: async (request, h) => {
       const { backLink, checkboxItemsForHerdReasons, herdReasons, herdOrFlock } =
@@ -69,7 +69,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/enter-herd-details",
+  path: claimRoutes.enterHerdDetails,
   options: {
     validate: {
       payload: Joi.object({

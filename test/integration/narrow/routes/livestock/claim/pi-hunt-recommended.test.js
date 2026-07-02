@@ -17,7 +17,7 @@ jest.mock("ffc-ahwr-common-library");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 
 const auth = { credentials: {}, strategy: "cookie" };
-const url = "/pi-hunt-recommended";
+const url = "/livestock/pi-hunt-recommended";
 
 describe("PI Hunt recommended tests", () => {
   let server;
@@ -124,7 +124,7 @@ describe("PI Hunt recommended tests", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/pi-hunt-all-animals");
+      expect(res.headers.location).toEqual("/livestock/pi-hunt-all-animals");
       expect(setSessionData).toHaveBeenCalled();
     });
 

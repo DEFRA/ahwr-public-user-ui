@@ -17,7 +17,7 @@ const hintHtml = "You can find this on the summary the vet gave you.";
 
 const getHandler = {
   method: "GET",
-  path: "/pi-hunt-recommended",
+  path: claimRoutes.piHuntRecommended,
   options: {
     handler: async (request, h) => {
       const piHuntRecommended = getSessionData(
@@ -45,7 +45,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/pi-hunt-recommended",
+  path: claimRoutes.piHuntRecommended,
   options: {
     validate: {
       payload: Joi.object({

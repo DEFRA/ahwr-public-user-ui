@@ -128,7 +128,7 @@ export const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPerce
 
 const getHandler = {
   method: "GET",
-  path: "/biosecurity",
+  path: claimRoutes.biosecurity,
   options: {
     handler: async (request, h) => {
       const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -144,7 +144,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/biosecurity",
+  path: claimRoutes.biosecurity,
   options: {
     validate: {
       payload: Joi.object({

@@ -25,7 +25,7 @@ describe("Claim confirmation", () => {
 
   const reference = "TBD-F021-723B";
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = `/confirmation`;
+  const url = `/livestock/claim-confirmation`;
 
   afterEach(() => {
     jest.clearAllMocks();

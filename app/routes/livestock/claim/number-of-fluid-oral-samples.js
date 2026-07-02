@@ -13,7 +13,7 @@ import { isPigsAndPaymentsUserJourney } from "../../../lib/context-helper.js";
 
 const getHandler = {
   method: "GET",
-  path: "/number-of-fluid-oral-samples",
+  path: claimRoutes.numberOfFluidOralSamples,
   options: {
     handler: async (request, h) => {
       const { numberOfOralFluidSamples, dateOfVisit } = getSessionData(
@@ -34,7 +34,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/number-of-fluid-oral-samples",
+  path: claimRoutes.numberOfFluidOralSamples,
   options: {
     validate: {
       payload: Joi.object({

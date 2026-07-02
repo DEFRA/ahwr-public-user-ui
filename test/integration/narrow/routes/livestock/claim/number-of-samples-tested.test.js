@@ -15,7 +15,7 @@ jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
 
 const auth = { credentials: {}, strategy: "cookie" };
-const url = "/number-of-samples-tested";
+const url = "/livestock/number-of-samples-tested";
 
 describe("Number of samples tested test", () => {
   let server;
@@ -211,21 +211,21 @@ describe("Number of samples tested test", () => {
         numberOfSamplesTested: "6",
         lastReviewTestResults: "positive",
         vaccinatedValue: "notvaccinated",
-        expectedLocation: "/pigs-pcr-result",
+        expectedLocation: "/livestock/pigs-pcr-result",
       },
       {
         screen: "ELISA",
         numberOfSamplesTested: "30",
         lastReviewTestResults: "negative",
         vaccinatedValue: "notvaccinated",
-        expectedLocation: "/pigs-elisa-result",
+        expectedLocation: "/livestock/pigs-elisa-result",
       },
       {
         screen: "PCR",
         numberOfSamplesTested: "6",
         lastReviewTestResults: "positive",
         vaccinatedValue: "vaccinated",
-        expectedLocation: "/pigs-pcr-result",
+        expectedLocation: "/livestock/pigs-pcr-result",
       },
     ])(
       "redirects to $screen page if valid sample numbers, $vaccinatedValue and $lastReviewTestResults",

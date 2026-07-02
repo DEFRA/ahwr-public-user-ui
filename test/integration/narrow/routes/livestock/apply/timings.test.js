@@ -53,7 +53,7 @@ describe("Declaration test", () => {
     jest.resetAllMocks();
   });
 
-  describe("GET /timings route", () => {
+  describe("GET /livestock/timings route", () => {
     test("returns 200 when application found", async () => {
       getApplicationsBySbi.mockResolvedValueOnce([]);
 
@@ -88,7 +88,7 @@ describe("Declaration test", () => {
     });
   });
 
-  describe("POST /timings route", () => {
+  describe("POST /livestock/timings route", () => {
     let crumb;
 
     beforeEach(async () => {

@@ -65,9 +65,9 @@ const organisation = {
 };
 
 const auth = { credentials: {}, strategy: "cookie" };
-const url = "/date-of-visit";
+const url = "/livestock/date-of-visit";
 
-describe("GET /date-of-visit handler", () => {
+describe("GET /livestock/date-of-visit handler", () => {
   let server;
 
   beforeAll(async () => {
@@ -124,7 +124,7 @@ describe("GET /date-of-visit handler", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, "/which-type-of-review");
+    expectPageContentOk($, "/livestock/review-type");
     expectPhaseBanner.ok($);
   });
 
@@ -156,7 +156,7 @@ describe("GET /date-of-visit handler", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, "/which-type-of-review");
+    expectPageContentOk($, "/livestock/review-type");
     expectPhaseBanner.ok($);
   });
 
@@ -192,7 +192,7 @@ describe("GET /date-of-visit handler", () => {
     expect($("#visit-date-day")[0].attribs.value).toEqual("1");
     expect($("#visit-date-month")[0].attribs.value).toEqual("5");
     expect($("#visit-date-year")[0].attribs.value).toEqual("2024");
-    expectPageContentOk($, "/which-type-of-review");
+    expectPageContentOk($, "/livestock/review-type");
     expectPhaseBanner.ok($);
   });
 
@@ -220,7 +220,7 @@ describe("GET /date-of-visit handler", () => {
     const $ = cheerio.load(res.payload);
     expect($("h1").text().trim()).toBe("Date of follow-up");
     expect($("title").text()).toMatch(/^Date of follow-up - /);
-    expect($(".govuk-back-link").attr("href")).toBe("/vet-visits-review-test-results");
+    expect($(".govuk-back-link").attr("href")).toBe("/livestock/vet-visits-review-test-results");
     expectPhaseBanner.ok($);
   });
 
@@ -248,7 +248,7 @@ describe("GET /date-of-visit handler", () => {
     const $ = cheerio.load(res.payload);
     expect($("h1").text().trim()).toBe("Date of review");
     expect($("title").text()).toMatch(/^Date of review - /);
-    expect($(".govuk-back-link").attr("href")).toBe("/which-type-of-review");
+    expect($(".govuk-back-link").attr("href")).toBe("/livestock/review-type");
     expectPhaseBanner.ok($);
   });
 
@@ -265,7 +265,7 @@ describe("GET /date-of-visit handler", () => {
   });
 });
 
-describe("POST /date-of-visit handler", () => {
+describe("POST /livestock/date-of-visit handler", () => {
   let server;
 
   beforeAll(async () => {
@@ -459,7 +459,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -491,7 +491,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -532,7 +532,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -573,7 +573,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -662,7 +662,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -692,7 +692,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -778,7 +778,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -821,7 +821,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -862,7 +862,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/species-numbers");
+      expect(res.headers.location).toBe("/livestock/species-numbers");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1046,7 +1046,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1199,7 +1199,7 @@ describe("POST /date-of-visit handler", () => {
 
       const res = await server.inject(options);
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1239,7 +1239,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(res.headers.location).toEqual("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1291,7 +1291,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(res.headers.location).toEqual("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1354,7 +1354,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/species-numbers");
+      expect(res.headers.location).toEqual("/livestock/species-numbers");
       expect(trackEvent).not.toHaveBeenCalled();
     });
 
@@ -1391,7 +1391,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/species-numbers");
+      expect(res.headers.location).toEqual("/livestock/species-numbers");
       expect(trackEvent).not.toHaveBeenCalled();
     });
 
@@ -1428,7 +1428,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(res.headers.location).toEqual("/livestock/test-date");
       expect(trackEvent).not.toHaveBeenCalled();
     });
   });
@@ -1454,7 +1454,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1495,7 +1495,7 @@ describe("POST /date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/date-of-testing");
+      expect(res.headers.location).toBe("/livestock/test-date");
       expect(setSessionData).not.toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1544,7 +1544,7 @@ describe("POST /date-of-visit handler", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toEqual("/select-the-herd");
+    expect(res.headers.location).toEqual("/livestock/select-herd");
   });
 
   test("should redirect to enter herd name page when there are not previous herds and is multi herds journey", async () => {
@@ -1578,7 +1578,7 @@ describe("POST /date-of-visit handler", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toEqual("/enter-herd-name");
+    expect(res.headers.location).toEqual("/livestock/herd-name");
   });
 
   test("should redirect to species-numbers page when making a follow-up claim with visit date of pre-MH go-live, against a pre-MH review, and already made post-MH review for another herd", async () => {
@@ -1625,7 +1625,7 @@ describe("POST /date-of-visit handler", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/species-numbers");
+    expect(res.headers.location).toBe("/livestock/species-numbers");
     expect(setSessionData).toHaveBeenCalledWith(
       expect.any(Object),
       "endemicsClaim",
@@ -1701,7 +1701,7 @@ describe("previousPageUrl", () => {
 
     expect(
       previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock),
-    ).toBe("/vet-visits-review-test-results");
+    ).toBe("/livestock/vet-visits-review-test-results");
   });
 
   test("should return url of endemicsWhichTypeOfReview if claim type is review", () => {
@@ -1717,7 +1717,7 @@ describe("previousPageUrl", () => {
 
     expect(
       previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock),
-    ).toBe("/which-type-of-review");
+    ).toBe("/livestock/review-type");
   });
 
   test("should return url of endemicsWhichTypeOfReview if old world review type of livestock is not beef or dairy", () => {
@@ -1733,7 +1733,7 @@ describe("previousPageUrl", () => {
 
     expect(
       previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock),
-    ).toBe("/which-type-of-review");
+    ).toBe("/livestock/review-type");
   });
 
   test("should return url of endemicsWhichTypeOfReview if there are relevant new world claims (i.e. for the same species as the current journey)", () => {
@@ -1761,6 +1761,6 @@ describe("previousPageUrl", () => {
 
     expect(
       previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock),
-    ).toBe("/which-type-of-review");
+    ).toBe("/livestock/review-type");
   });
 });

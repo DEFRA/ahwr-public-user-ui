@@ -60,7 +60,7 @@ describe("Missing routes", () => {
       getByRole(document.body, "link", {
         name: "Go back home",
       }),
-    ).toHaveProperty("href", expect.stringContaining("vet-visits"));
+    ).toHaveProperty("href", expect.stringContaining("manage-claims"));
 
     expect(
       getByRole(document.body, "link", {
@@ -88,7 +88,7 @@ describe("Missing routes", () => {
       getByRole(document.body, "link", {
         name: "Go back home",
       }),
-    ).toHaveProperty("href", expect.stringContaining("vet-visits"));
+    ).toHaveProperty("href", expect.stringContaining("manage-claims"));
 
     expect(() => getByRole(document.body, "link", { name: "Sign in" })).toThrow(); // Proves the element is not there
   });

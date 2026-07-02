@@ -11,7 +11,7 @@ import { claimRoutes, claimViews } from "../../../constants/routes.js";
 
 const getHandler = {
   method: "GET",
-  path: "/disease-status",
+  path: claimRoutes.diseaseStatus,
   options: {
     handler: async (request, h) => {
       const endemicsClaimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -28,7 +28,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/disease-status",
+  path: claimRoutes.diseaseStatus,
   options: {
     validate: {
       payload: Joi.object({

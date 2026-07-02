@@ -12,7 +12,7 @@ const getHerdReasonsText = (herdReasons) => {
 
 const getHandler = {
   method: "GET",
-  path: "/check-herd-details",
+  path: claimRoutes.checkHerdDetails,
   options: {
     tags: ["mh"],
     handler: async (request, h) => {
@@ -41,7 +41,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/check-herd-details",
+  path: claimRoutes.checkHerdDetails,
   options: {
     handler: async (request, h) => {
       const { previousClaims, typeOfLivestock } = getSessionData(

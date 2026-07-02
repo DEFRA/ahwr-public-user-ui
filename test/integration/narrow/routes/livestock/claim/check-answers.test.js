@@ -50,7 +50,7 @@ jest.mock("../../../../../../app/logging/logger.js", () => ({
 
 describe("Check answers test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/check-answers";
+  const url = "/livestock/check-answers";
   const latestVetVisitApplicationWithInLastTenMonths = { createdAt: new Date().toISOString() };
   const latestVetVisitApplicationNotWithInLastTenMonths = { createdAt: "2023-01-01T00:00:01T00" };
 
@@ -558,49 +558,49 @@ describe("Check answers test", () => {
         typeOfLivestock: "beef",
         typeOfReview: "REVIEW",
         content: "11 or more beef cattle",
-        backLink: "/test-results",
+        backLink: "/livestock/test-results",
       },
       {
         typeOfLivestock: "dairy",
         typeOfReview: "REVIEW",
         content: "11 or more dairy cattle",
-        backLink: "/test-results",
+        backLink: "/livestock/test-results",
       },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "REVIEW",
         content: "51 or more pigs",
-        backLink: "/test-results",
+        backLink: "/livestock/test-results",
       },
       {
         typeOfLivestock: "sheep",
         typeOfReview: "REVIEW",
         content: "21 or more sheep",
-        backLink: "/test-urn",
+        backLink: "/livestock/test-urn",
       },
       {
         typeOfLivestock: "beef",
         typeOfReview: "FOLLOW_UP",
         content: "11 or more beef cattle",
-        backLink: "/biosecurity",
+        backLink: "/livestock/biosecurity-assessment",
       },
       {
         typeOfLivestock: "dairy",
         typeOfReview: "FOLLOW_UP",
         content: "11 or more dairy cattle",
-        backLink: "/biosecurity",
+        backLink: "/livestock/biosecurity-assessment",
       },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "FOLLOW_UP",
         content: "51 or more pigs",
-        backLink: "/biosecurity",
+        backLink: "/livestock/biosecurity-assessment",
       },
       {
         typeOfLivestock: "sheep",
         typeOfReview: "FOLLOW_UP",
         content: "21 or more sheep",
-        backLink: "/sheep-test-results",
+        backLink: "/livestock/sheep-test-results",
       },
     ])(
       "check species content and back links are correct for typeOfLivestock: $typeOfLivestock and typeOfReview: $typeOfReview}",
@@ -810,7 +810,9 @@ describe("Check answers test", () => {
         const res = await server.inject(options);
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location.toString()).toEqual(expect.stringContaining("/confirmation"));
+        expect(res.headers.location.toString()).toEqual(
+          expect.stringContaining("/livestock/claim-confirmation"),
+        );
 
         // verify data passed to submitNewClaim when not sheep follow-up or multiple herd claim
         expect(submitNewClaim).toHaveBeenCalledWith(
@@ -902,7 +904,9 @@ describe("Check answers test", () => {
         const res = await server.inject(options);
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location.toString()).toEqual(expect.stringContaining("/confirmation"));
+        expect(res.headers.location.toString()).toEqual(
+          expect.stringContaining("/livestock/claim-confirmation"),
+        );
 
         // verify data passed to submitNewClaim when is sheep follow-up but not multiple herd claim
         expect(submitNewClaim).toHaveBeenCalledWith(
@@ -1000,7 +1004,9 @@ describe("Check answers test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining("/confirmation"));
+      expect(res.headers.location.toString()).toEqual(
+        expect.stringContaining("/livestock/claim-confirmation"),
+      );
 
       // verify data passed to submitNewClaim when is sheep follow-up and multiple herd claim
       expect(submitNewClaim).toHaveBeenCalledWith(

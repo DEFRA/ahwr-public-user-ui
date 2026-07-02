@@ -19,7 +19,7 @@ jest.mock("../../../../../../app/lib/can-make-claim.js");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 
 describe("select-the-herd tests", () => {
-  const url = `/select-the-herd`;
+  const url = `/livestock/select-herd`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -110,7 +110,7 @@ describe("select-the-herd tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the same flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/date-of-visit");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expectPhaseBanner.ok($);
     });
 
@@ -135,7 +135,7 @@ describe("select-the-herd tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the same herd you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/date-of-visit");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expect($('.govuk-radios__input[value="NEW_HERD"]').is(":checked")).toBeTruthy();
       expectPhaseBanner.ok($);
     });
@@ -223,7 +223,7 @@ describe("select-the-herd tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the same flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/date-of-visit");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expectPhaseBanner.ok($);
 
       const valueInTypeColumn = $(".govuk-summary-list__row")
@@ -468,7 +468,7 @@ describe("select-the-herd tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/enter-herd-name");
+      expect(res.headers.location).toEqual("/livestock/herd-name");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -565,7 +565,7 @@ describe("select-the-herd tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/enter-herd-name");
+      expect(res.headers.location).toEqual("/livestock/herd-name");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -668,7 +668,7 @@ describe("select-the-herd tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/enter-herd-name");
+      expect(res.headers.location).toEqual("/livestock/herd-name");
       expect(setSessionData).toHaveBeenCalledTimes(5);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
@@ -780,7 +780,7 @@ describe("select-the-herd tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/check-herd-details");
+      expect(res.headers.location).toEqual("/livestock/check-herd-details");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -896,7 +896,7 @@ describe("select-the-herd tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/check-herd-details");
+      expect(res.headers.location).toEqual("/livestock/check-herd-details");
       expect(setSessionData).toHaveBeenCalledTimes(7);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
@@ -1084,7 +1084,7 @@ describe("select-the-herd tests", () => {
       expect(externalLink).toContain(
         "You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.",
       );
-      expect($('a.govuk-link[href*="type-of-review"]').text()).toContain("Claim for a review");
+      expect($('a.govuk-link[href*="review-type"]').text()).toContain("Claim for a review");
       expect($(".govuk-warning-text__text").text()).toContain(
         "Your claim will be checked by our team.",
       );
@@ -1150,11 +1150,13 @@ describe("select-the-herd tests", () => {
       expect($("p.govuk-body").eq(2).text().trim()).toBe(
         "Enter the date the vet last visited your farm for this review.",
       );
-      expect($("p.govuk-body").eq(2).find("a.govuk-link").attr("href")).toBe("/date-of-visit");
+      expect($("p.govuk-body").eq(2).find("a.govuk-link").attr("href")).toBe(
+        "/livestock/date-of-visit",
+      );
       expect($(".govuk-warning-text__text").text()).toContain(
         "Your claim will be checked by our team.",
       );
-      expect($("#back").attr("href")).toEqual("/select-the-herd");
+      expect($("#back").attr("href")).toEqual("/livestock/select-herd");
     });
 
     test("does call removeSessionDataForSelectHerdChange and sets herdId when herd selection changes", async () => {

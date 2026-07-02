@@ -49,7 +49,7 @@ const processRejectedApplication = async (h, request) => {
 export const declarationRouteHandlers = [
   {
     method: "get",
-    path: "/declaration",
+    path: applyRoutes.declaration,
     options: {
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
@@ -65,7 +65,7 @@ export const declarationRouteHandlers = [
   },
   {
     method: "post",
-    path: "/declaration",
+    path: applyRoutes.declaration,
     options: {
       validate: {
         payload: joi.object({

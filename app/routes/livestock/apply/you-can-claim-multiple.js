@@ -15,7 +15,7 @@ import { JOURNEY } from "../../../constants/constants.js";
 export const claimMultipleRouteHandlers = [
   {
     method: "GET",
-    path: "/you-can-claim-multiple",
+    path: applyRoutes.youCanClaimMultiple,
     options: {
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
@@ -54,7 +54,7 @@ export const claimMultipleRouteHandlers = [
   },
   {
     method: "POST",
-    path: "/you-can-claim-multiple",
+    path: applyRoutes.youCanClaimMultiple,
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {

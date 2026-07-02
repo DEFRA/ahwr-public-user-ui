@@ -22,7 +22,7 @@ jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
 
 const auth = { credentials: {}, strategy: "cookie" };
-const url = "/test-urn";
+const url = "/livestock/test-urn";
 
 describe("Test URN GET", () => {
   let server;
@@ -129,77 +129,77 @@ describe("Test URN GET", () => {
         typeOfLivestock: "beef",
         typeOfReview: "REVIEW",
         latestVetVisitApplication: false,
-        backLink: "/vet-rcvs",
+        backLink: "/livestock/vet-rcvs",
         visitDateAfterPIHuntLive: false,
       },
       {
         typeOfLivestock: "beef",
         typeOfReview: "FOLLOW_UP",
         latestVetVisitApplication: true,
-        backLink: "/vet-rcvs",
+        backLink: "/livestock/vet-rcvs",
         visitDateAfterPIHuntLive: false,
       },
       {
         typeOfLivestock: "beef",
         typeOfReview: "FOLLOW_UP",
         latestVetVisitApplication: true,
-        backLink: "/date-of-testing",
+        backLink: "/livestock/test-date",
         visitDateAfterPIHuntLive: true,
       },
       {
         typeOfLivestock: "beef",
         typeOfReview: "FOLLOW_UP",
         latestVetVisitApplication: false,
-        backLink: "/vet-rcvs",
+        backLink: "/livestock/vet-rcvs",
         visitDateAfterPIHuntLive: false,
       },
       {
         typeOfLivestock: "beef",
         typeOfReview: "FOLLOW_UP",
         latestVetVisitApplication: false,
-        backLink: "/date-of-testing",
+        backLink: "/livestock/test-date",
         visitDateAfterPIHuntLive: true,
       },
       {
         typeOfLivestock: "dairy",
         typeOfReview: "REVIEW",
         latestVetVisitApplication: false,
-        backLink: "/vet-rcvs",
+        backLink: "/livestock/vet-rcvs",
         visitDateAfterPIHuntLive: false,
       },
       {
         typeOfLivestock: "dairy",
         typeOfReview: "FOLLOW_UP",
         latestVetVisitApplication: false,
-        backLink: "/vet-rcvs",
+        backLink: "/livestock/vet-rcvs",
         visitDateAfterPIHuntLive: false,
       },
       {
         typeOfLivestock: "dairy",
         typeOfReview: "FOLLOW_UP",
         latestVetVisitApplication: false,
-        backLink: "/date-of-testing",
+        backLink: "/livestock/test-date",
         visitDateAfterPIHuntLive: true,
       },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "REVIEW",
         latestVetVisitApplication: false,
-        backLink: "/vet-rcvs",
+        backLink: "/livestock/vet-rcvs",
         visitDateAfterPIHuntLive: false,
       },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "FOLLOW_UP",
         latestVetVisitApplication: true,
-        backLink: "/vaccination",
+        backLink: "/livestock/vaccination",
         visitDateAfterPIHuntLive: false,
       },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "FOLLOW_UP",
         latestVetVisitApplication: false,
-        backLink: "/vaccination",
+        backLink: "/livestock/vaccination",
         visitDateAfterPIHuntLive: false,
       },
     ])(
@@ -272,18 +272,18 @@ describe("Test URN GET", () => {
     });
 
     test.each([
-      { typeOfLivestock: "beef", typeOfReview: "REVIEW", nextPageUrl: "/test-results" },
-      { typeOfLivestock: "dairy", typeOfReview: "REVIEW", nextPageUrl: "/test-results" },
-      { typeOfLivestock: "sheep", typeOfReview: "REVIEW", nextPageUrl: "/check-answers" },
+      { typeOfLivestock: "beef", typeOfReview: "REVIEW", nextPageUrl: "/livestock/test-results" },
+      { typeOfLivestock: "dairy", typeOfReview: "REVIEW", nextPageUrl: "/livestock/test-results" },
+      { typeOfLivestock: "sheep", typeOfReview: "REVIEW", nextPageUrl: "/livestock/check-answers" },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "REVIEW",
-        nextPageUrl: "/number-of-fluid-oral-samples",
+        nextPageUrl: "/livestock/oral-sample-number",
       },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "FOLLOW_UP",
-        nextPageUrl: "/number-of-samples-tested",
+        nextPageUrl: "/livestock/number-of-samples-tested",
       },
     ])(
       "redirects to $nextPageUrl page when payload is valid for $typeOfLivestock and $typeOfReview",
@@ -344,7 +344,7 @@ describe("Test URN GET", () => {
 
       expect(res.statusCode).toBe(302);
       expect(res.headers.location.toString()).toEqual(
-        expect.stringContaining("/type-of-samples-taken"),
+        expect.stringContaining("/livestock/samples-types"),
       );
       expect(setSessionData).toHaveBeenCalled();
     });

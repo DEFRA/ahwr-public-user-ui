@@ -14,7 +14,7 @@ jest.mock("../../../../../../app/session/index.js");
 
 describe("Test Results test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/test-results";
+  const url = "/livestock/test-results";
   let server;
 
   beforeAll(async () => {
@@ -87,16 +87,20 @@ describe("Test Results test", () => {
     });
 
     test.each([
-      { typeOfLivestock: "beef", typeOfReview: "REVIEW", backLink: "/test-urn" },
-      { typeOfLivestock: "dairy", typeOfReview: "REVIEW", backLink: "/test-urn" },
+      { typeOfLivestock: "beef", typeOfReview: "REVIEW", backLink: "/livestock/test-urn" },
+      { typeOfLivestock: "dairy", typeOfReview: "REVIEW", backLink: "/livestock/test-urn" },
       {
         typeOfLivestock: "pigs",
         typeOfReview: "REVIEW",
-        backLink: "/number-of-fluid-oral-samples",
+        backLink: "/livestock/oral-sample-number",
       },
-      { typeOfLivestock: "sheep", typeOfReview: "FOLLOW_UP", backLink: "/disease-status" },
-      { typeOfLivestock: "beef", typeOfReview: "FOLLOW_UP", backLink: "/test-urn" },
-      { typeOfLivestock: "dairy", typeOfReview: "FOLLOW_UP", backLink: "/test-urn" },
+      {
+        typeOfLivestock: "sheep",
+        typeOfReview: "FOLLOW_UP",
+        backLink: "/livestock/disease-status",
+      },
+      { typeOfLivestock: "beef", typeOfReview: "FOLLOW_UP", backLink: "/livestock/test-urn" },
+      { typeOfLivestock: "dairy", typeOfReview: "FOLLOW_UP", backLink: "/livestock/test-urn" },
     ])(
       "backLink when species $typeOfLivestock and type of review is $typeOfReview",
       async ({ typeOfLivestock, typeOfReview, backLink }) => {
@@ -136,7 +140,7 @@ describe("Test Results test", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/number-of-blood-samples");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/blood-sample-number");
       expectPhaseBanner.ok($);
     });
 
@@ -175,9 +179,17 @@ describe("Test Results test", () => {
     });
 
     test.each([
-      { typeOfLivestock: "beef", typeOfReview: "FOLLOW_UP", nextPageURL: "/biosecurity" },
-      { typeOfLivestock: "dairy", typeOfReview: "FOLLOW_UP", nextPageURL: "/biosecurity" },
-      { typeOfLivestock: "beef", typeOfReview: "REVIEW", nextPageURL: "/check-answers" },
+      {
+        typeOfLivestock: "beef",
+        typeOfReview: "FOLLOW_UP",
+        nextPageURL: "/livestock/biosecurity-assessment",
+      },
+      {
+        typeOfLivestock: "dairy",
+        typeOfReview: "FOLLOW_UP",
+        nextPageURL: "/livestock/biosecurity-assessment",
+      },
+      { typeOfLivestock: "beef", typeOfReview: "REVIEW", nextPageURL: "/livestock/check-answers" },
     ])(
       "Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview",
       async ({ typeOfLivestock, typeOfReview, nextPageURL }) => {

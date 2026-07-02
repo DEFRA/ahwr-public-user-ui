@@ -20,7 +20,7 @@ const getBackLink = (pigsFollowUpTest) => {
 
 const getHandler = {
   method: "GET",
-  path: "/pigs-genetic-sequencing",
+  path: claimRoutes.pigsGeneticSequencing,
   options: {
     handler: async (request, h) => {
       const { pigsGeneticSequencing, pigsFollowUpTest } = getSessionData(
@@ -42,7 +42,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/pigs-genetic-sequencing",
+  path: claimRoutes.pigsGeneticSequencing,
   options: {
     validate: {
       payload: Joi.object({

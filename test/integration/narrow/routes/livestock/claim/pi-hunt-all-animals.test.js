@@ -17,7 +17,7 @@ jest.mock("ffc-ahwr-common-library");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 
 const auth = { credentials: {}, strategy: "cookie" };
-const url = "/pi-hunt-all-animals";
+const url = "/livestock/pi-hunt-all-animals";
 
 describe("PI Hunt recommended tests", () => {
   let server;
@@ -65,13 +65,13 @@ describe("PI Hunt recommended tests", () => {
       {
         typeOfLivestock: "beef",
         reviewTestResults: "positive",
-        backLink: "/pi-hunt",
+        backLink: "/livestock/pi-hunt",
         expectedQuestion: "Was the PI hunt done on all beef cattle in the herd?",
       },
       {
         typeOfLivestock: "dairy",
         reviewTestResults: "negative",
-        backLink: "/pi-hunt-recommended",
+        backLink: "/livestock/pi-hunt-recommended",
         expectedQuestion: "Was the PI hunt done on all dairy cattle in the herd?",
       },
     ])(
@@ -148,7 +148,7 @@ describe("PI Hunt recommended tests", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-testing");
+      expect(res.headers.location).toEqual("/livestock/test-date");
       expect(setSessionData).toHaveBeenCalled();
     });
 

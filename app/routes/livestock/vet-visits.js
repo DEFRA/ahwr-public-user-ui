@@ -11,7 +11,7 @@ import {
   UNNAMED_HERD,
 } from "ffc-ahwr-common-library";
 import { isWithin10MonthsFromNow } from "../../lib/utils.js";
-import { claimRoutes } from "../../constants/routes.js";
+import { claimRoutes, dashboardRoutes } from "../../constants/routes.js";
 import { SHEEP } from "../../constants/claim-constants.js";
 import { refreshApplications } from "../../lib/context-helper.js";
 
@@ -152,7 +152,7 @@ const getOrRefreshApplications = async (request, sbi) => {
 export const vetVisitsHandlers = [
   {
     method: "GET",
-    path: "/vet-visits",
+    path: dashboardRoutes.manageYourClaims,
     options: {
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);

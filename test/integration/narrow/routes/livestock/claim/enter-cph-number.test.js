@@ -14,8 +14,8 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
-describe("/enter-cph-number tests", () => {
-  const url = `/enter-cph-number`;
+describe("/livestock/cph tests", () => {
+  const url = `/livestock/cph`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -98,7 +98,7 @@ describe("/enter-cph-number tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-herd-name");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/herd-name");
       expectHerdText($);
       expectPhaseBanner.ok($);
     });
@@ -118,7 +118,7 @@ describe("/enter-cph-number tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-herd-name");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/herd-name");
       expect($("input#herdCph").val()).toBe("22/333/4444");
       expectHerdText($);
       expectPhaseBanner.ok($);
@@ -138,7 +138,7 @@ describe("/enter-cph-number tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-herd-name");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/herd-name");
       expectFlockText($);
       expectPhaseBanner.ok($);
     });
@@ -159,7 +159,7 @@ describe("/enter-cph-number tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/select-herd");
       expectFlockText($);
       expectPhaseBanner.ok($);
     });
@@ -186,7 +186,7 @@ describe("/enter-cph-number tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/herd-others-on-sbi");
+      expect(res.headers.location).toEqual("/livestock/sbi-herds");
       expect(setSessionData).toHaveBeenCalled();
       expect(emitHerdEvent).toHaveBeenCalled();
     });
@@ -209,7 +209,7 @@ describe("/enter-cph-number tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/check-herd-details");
+      expect(res.headers.location).toEqual("/livestock/check-herd-details");
       expect(setSessionData).toHaveBeenCalled();
       expect(emitHerdEvent).toHaveBeenCalled();
     });
@@ -232,7 +232,7 @@ describe("/enter-cph-number tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/enter-herd-details");
+      expect(res.headers.location).toEqual("/livestock/enter-herd-details");
       expect(setSessionData).toHaveBeenCalled();
       expect(emitHerdEvent).toHaveBeenCalled();
     });
@@ -314,7 +314,7 @@ describe("/enter-cph-number tests", () => {
         });
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toEqual("/enter-herd-details");
+        expect(res.headers.location).toEqual("/livestock/enter-herd-details");
         expect(setSessionData).toHaveBeenCalled();
         expect(emitHerdEvent).toHaveBeenCalled();
       });
@@ -376,7 +376,7 @@ describe("/enter-cph-number tests", () => {
         "Enter the CPH for this herd, format should be nn/nnn/nnnn",
       );
       expectHerdText($);
-      expect($(".govuk-back-link").attr("href")).toContain("/select-the-herd");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/select-herd");
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
   });

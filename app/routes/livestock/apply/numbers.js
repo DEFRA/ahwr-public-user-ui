@@ -10,7 +10,7 @@ import { preApplyHandler } from "../../../lib/pre-apply-handler.js";
 export const numbersRouteHandlers = [
   {
     method: "GET",
-    path: "/numbers",
+    path: applyRoutes.numbers,
     options: {
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
@@ -26,7 +26,7 @@ export const numbersRouteHandlers = [
   },
   {
     method: "POST",
-    path: "/numbers",
+    path: applyRoutes.numbers,
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {

@@ -27,7 +27,7 @@ jest.mock("../../../../../../app/lib/context-helper.js", () => ({
 }));
 
 const auth = { credentials: {}, strategy: "cookie" };
-const url = "/species-numbers";
+const url = "/livestock/species-numbers";
 
 describe("Species numbers page", () => {
   let server;
@@ -87,13 +87,13 @@ describe("Species numbers page", () => {
         typeOfLivestock: "beef",
         typeOfReview: "FOLLOW_UP",
         reviewTestResults: "negative",
-        backLink: "/date-of-visit",
+        backLink: "/livestock/date-of-visit",
       },
       {
         typeOfLivestock: "dairy",
         typeOfReview: "REVIEW",
         reviewTestResults: "positive",
-        backLink: "/date-of-testing",
+        backLink: "/livestock/test-date",
       },
     ])(
       "returns 200 for non MH claim for $typeOfLivestock",
@@ -138,13 +138,13 @@ describe("Species numbers page", () => {
         typeOfLivestock: "beef",
         typeOfReview: "FOLLOW_UP",
         reviewTestResults: "negative",
-        backLink: "/date-of-visit",
+        backLink: "/livestock/date-of-visit",
       },
       {
         typeOfLivestock: "dairy",
         typeOfReview: "FOLLOW_UP",
         reviewTestResults: "positive",
-        backLink: "/date-of-visit",
+        backLink: "/livestock/date-of-visit",
       },
     ])(
       "returns 200 for non MH claim for $typeOfLivestock after PiHunt ",
@@ -225,7 +225,7 @@ describe("Species numbers page", () => {
           "You can find this on the summary the vet gave you.",
         );
         expect($(".govuk-radios__item").length).toEqual(2);
-        expect($(".govuk-back-link").attr("href")).toEqual("/same-herd");
+        expect($(".govuk-back-link").attr("href")).toEqual("/livestock/same-herd");
         expectPhaseBanner.ok($);
       },
     );
@@ -319,13 +319,13 @@ describe("Species numbers page", () => {
     });
 
     test.each([
-      { typeOfLivestock: "beef", nextPageUrl: "/number-of-species-tested" },
-      { typeOfLivestock: "dairy", nextPageUrl: "/vet-name" },
-      { typeOfLivestock: "sheep", nextPageUrl: "/number-of-species-tested" },
-      { typeOfLivestock: "pigs", nextPageUrl: "/number-of-species-tested" },
+      { typeOfLivestock: "beef", nextPageUrl: "/livestock/number-of-species-tested" },
+      { typeOfLivestock: "dairy", nextPageUrl: "/livestock/vet-name" },
+      { typeOfLivestock: "sheep", nextPageUrl: "/livestock/number-of-species-tested" },
+      { typeOfLivestock: "pigs", nextPageUrl: "/livestock/number-of-species-tested" },
       {
         typeOfLivestock: "beef",
-        nextPageUrl: "/vet-name",
+        nextPageUrl: "/livestock/vet-name",
         typeOfReview: "FOLLOW_UP",
         reviewTestResults: "negative",
       },
@@ -375,7 +375,7 @@ describe("Species numbers page", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/number-of-species-tested");
+      expect(res.headers.location).toEqual("/livestock/number-of-species-tested");
     });
 
     test("Continue to ineligible page if user selects no", async () => {
@@ -427,7 +427,7 @@ describe("Species numbers page", () => {
       expect($("#main-content > div > div > div > div > div > ul > li > a").text()).toMatch(
         `Select yes if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: "beef" }, true)} on the date of the follow-up`,
       );
-      expect($(".govuk-back-link").attr("href")).toEqual("/date-of-testing");
+      expect($(".govuk-back-link").attr("href")).toEqual("/livestock/test-date");
     });
 
     test("shows error when payload is invalid for multi herds claim", async () => {
@@ -456,7 +456,7 @@ describe("Species numbers page", () => {
       expect($("#main-content > div > div > div > div > div > ul > li > a").text()).toMatch(
         `Select yes if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: "beef" }, true)}in this herd on the date of the follow-up`,
       );
-      expect($(".govuk-back-link").attr("href")).toEqual("/same-herd");
+      expect($(".govuk-back-link").attr("href")).toEqual("/livestock/same-herd");
     });
 
     test("redirect the user to 500 page in fail action and no claim object", async () => {

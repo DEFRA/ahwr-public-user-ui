@@ -1,13 +1,13 @@
 import { clearEndemicsClaim, getSessionData, sessionEntryKeys } from "../../../session/index.js";
 import { config } from "../../../config/index.js";
 import { getReviewType } from "../../../lib/utils.js";
-import { claimViews, dashboardRoutes } from "../../../constants/routes.js";
+import { claimRoutes, claimViews, dashboardRoutes } from "../../../constants/routes.js";
 
 const { customerSurvey } = config;
 
 const getHandler = {
   method: "GET",
-  path: "/confirmation",
+  path: claimRoutes.confirmation,
   options: {
     handler: async (request, h) => {
       const { reference, amount, typeOfReview } = getSessionData(

@@ -42,7 +42,7 @@ when(getSessionData)
 
 describe("Number of species tested test", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/number-of-species-tested";
+  const url = "/livestock/number-of-species-tested";
 
   let server;
 
@@ -210,7 +210,7 @@ describe("Number of species tested test", () => {
         const res = await server.inject(options);
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toEqual("/vet-name");
+        expect(res.headers.location).toEqual("/livestock/vet-name");
         expect(setSessionData).toHaveBeenCalled();
       },
     );

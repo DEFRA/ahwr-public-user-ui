@@ -18,7 +18,7 @@ const sheepTestResultsMockData = [
 ];
 describe("Sheep test result tests", () => {
   const auth = { credentials: {}, strategy: "cookie" };
-  const url = "/sheep-test-results";
+  const url = "/livestock/sheep-test-results";
   setSessionData.mockImplementation(() => {});
 
   let server;
@@ -80,7 +80,9 @@ describe("Sheep test result tests", () => {
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
-      expect($(".govuk-back-link").attr("href")).toContain("/sheep-test-results?diseaseType=other");
+      expect($(".govuk-back-link").attr("href")).toContain(
+        "/livestock/sheep-test-results?diseaseType=other",
+      );
     });
   });
   describe(`POST ${url} route`, () => {
@@ -114,7 +116,7 @@ describe("Sheep test result tests", () => {
       expect(res.statusCode).toBe(400);
       expect($("h1").text()).toMatch("What was the Flystrike result?");
       expect($("#testResult-error").text()).toMatch("Select a result");
-      expect($(".govuk-back-link").attr("href")).toContain("/sheep-tests");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/sheep-tests");
     });
 
     test("Post Returns 302 when test result is selected", async () => {
@@ -238,7 +240,7 @@ describe("Sheep test result tests", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/check-answers");
+      expect(res.headers.location).toBe("/livestock/check-answers");
       expect(setSessionData).toHaveBeenCalled();
     });
     test("Post Returns 400 when disease type is Other and latest test is not provided and continue button pressed", async () => {
@@ -708,7 +710,7 @@ describe("Sheep test result tests", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/check-answers");
+      expect(res.headers.location).toBe("/livestock/check-answers");
       expect(setSessionData).toHaveBeenCalled();
     });
     test("Post Returns 200 when disease type is Other and test and test result is provided when add another button pressed", async () => {

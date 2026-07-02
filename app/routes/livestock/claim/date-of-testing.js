@@ -75,7 +75,7 @@ const DATE_PARTS_COUNT = 3;
 
 const getHandler = {
   method: "GET",
-  path: "/date-of-testing",
+  path: claimRoutes.dateOfTesting,
   options: {
     handler: async (request, h) => {
       const {
@@ -238,7 +238,7 @@ const buildDatePartsError = (request, partsError) => {
 
 const postHandler = {
   method: "POST",
-  path: "/date-of-testing",
+  path: claimRoutes.dateOfTesting,
   options: {
     validate: {
       payload: postPayloadSchema,

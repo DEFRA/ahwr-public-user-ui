@@ -19,7 +19,7 @@ jest.mock("../../../../../../app/lib/context-helper.js");
 jest.mock("../../../../../../app/lib/clear-pi-hunt-session-on-change.js");
 
 const auth = { credentials: {}, strategy: "cookie" };
-const url = "/pi-hunt";
+const url = "/livestock/pi-hunt";
 
 describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
   let server;
@@ -139,7 +139,7 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/test-urn");
+      expect(res.headers.location).toEqual("/livestock/test-urn");
       expect(setSessionData).toHaveBeenCalled();
     });
     test("Continue to ineligible page if user select no and clear PI Hunt data when relevantReviewForEndemics=REVIEW", async () => {
@@ -236,8 +236,8 @@ describe("PI Hunt tests when Optional PI Hunt is ON", () => {
       crumb = await getCrumbs(server);
     });
     test.each([
-      { reviewTestResults: "positive", expectedURL: "/pi-hunt-all-animals" },
-      { reviewTestResults: "negative", expectedURL: "/pi-hunt-recommended" },
+      { reviewTestResults: "positive", expectedURL: "/livestock/pi-hunt-all-animals" },
+      { reviewTestResults: "negative", expectedURL: "/livestock/pi-hunt-recommended" },
     ])(
       "Continue to eligible page if user select yes",
       async ({ reviewTestResults, expectedURL }) => {
@@ -275,7 +275,7 @@ describe("PI Hunt tests when Optional PI Hunt is ON", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/biosecurity");
+      expect(res.headers.location).toEqual("/livestock/biosecurity-assessment");
       expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
   });

@@ -39,7 +39,7 @@ const getTheQuestionText = (typeOfLivestock, typeOfReview) => {
 
 const getHandler = {
   method: "GET",
-  path: "/number-of-species-tested",
+  path: claimRoutes.numberOfSpeciesTested,
   options: {
     handler: async (request, h) => {
       const { numberAnimalsTested, typeOfLivestock, typeOfReview } = getSessionData(
@@ -58,7 +58,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: "/number-of-species-tested",
+  path: claimRoutes.numberOfSpeciesTested,
   options: {
     validate: {
       payload: Joi.object({

@@ -14,8 +14,8 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
-describe("/herd-others-on-sbi tests", () => {
-  const url = `/herd-others-on-sbi`;
+describe("/livestock/sbi-herds tests", () => {
+  const url = `/livestock/sbi-herds`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -81,7 +81,7 @@ describe("/herd-others-on-sbi tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the only beef cattle herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-cph-number");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($(".govuk-hint").text()).toContain("Tell us about this herd");
       const legend = $(".govuk-fieldset__legend--l");
       expect(legend.text().trim()).toBe(
@@ -108,7 +108,7 @@ describe("/herd-others-on-sbi tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the only beef cattle herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-cph-number");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($('.govuk-radios__input[value="no"]').is(":checked")).toBeTruthy();
       expectPhaseBanner.ok($);
     });
@@ -130,7 +130,7 @@ describe("/herd-others-on-sbi tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the only flock of sheep associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-cph-number");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($(".govuk-hint").text()).toContain("Tell us about this flock");
       const legend = $(".govuk-fieldset__legend--l");
       expect(legend.text().trim()).toBe(
@@ -156,7 +156,7 @@ describe("/herd-others-on-sbi tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the only dairy cattle herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-cph-number");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($(".govuk-hint").text()).toContain("Tell us about this herd");
       const legend = $(".govuk-fieldset__legend--l");
       expect(legend.text().trim()).toBe(
@@ -182,7 +182,7 @@ describe("/herd-others-on-sbi tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the only pigs herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-cph-number");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($(".govuk-hint").text()).toContain("Tell us about this herd");
       const legend = $(".govuk-fieldset__legend--l");
       expect(legend.text().trim()).toBe(
@@ -213,7 +213,7 @@ describe("/herd-others-on-sbi tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/check-herd-details");
+      expect(res.headers.location).toEqual("/livestock/check-herd-details");
       expect(setSessionData).toHaveBeenCalledTimes(2);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
@@ -248,7 +248,7 @@ describe("/herd-others-on-sbi tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/enter-herd-details");
+      expect(res.headers.location).toEqual("/livestock/enter-herd-details");
       expect(setSessionData).toHaveBeenCalledTimes(1);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),

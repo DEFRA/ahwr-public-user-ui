@@ -15,7 +15,7 @@ jest.mock("../../../../../../app/session");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 
 describe("Which type of review test", () => {
-  const url = `/which-type-of-review`;
+  const url = `/livestock/review-type`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -96,7 +96,7 @@ describe("Which type of review test", () => {
       expect($("title").text().trim()).toContain(
         "Are you claiming for a review or follow-up? - Get funding to improve animal health and welfare",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/which-species");
+      expect($(".govuk-back-link").attr("href")).toContain("/livestock/species");
       expectPhaseBanner.ok($);
     });
   });
@@ -155,7 +155,7 @@ describe("Which type of review test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/vet-visits-review-test-results");
+      expect(res.headers.location).toEqual("/livestock/vet-visits-review-test-results");
       expect(setSessionData).toHaveBeenCalled();
     });
 
@@ -175,7 +175,7 @@ describe("Which type of review test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-visit");
+      expect(res.headers.location).toEqual("/livestock/date-of-visit");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         "endemicsClaim",
@@ -215,7 +215,7 @@ describe("Which type of review test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-visit");
+      expect(res.headers.location).toEqual("/livestock/date-of-visit");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         "endemicsClaim",
@@ -254,7 +254,7 @@ describe("Which type of review test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/vet-visits-review-test-results"); // because of isCattleEndemicsClaimForOldWorldReview check
+      expect(res.headers.location).toEqual("/livestock/vet-visits-review-test-results"); // because of isCattleEndemicsClaimForOldWorldReview check
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         "endemicsClaim",
@@ -415,7 +415,7 @@ describe("Which type of review test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/date-of-visit");
+      expect(res.headers.location).toEqual("/livestock/date-of-visit");
       expect(setSessionData).toHaveBeenCalled();
     });
   });
