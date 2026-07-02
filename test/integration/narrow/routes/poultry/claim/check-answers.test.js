@@ -491,7 +491,7 @@ describe("Poultry check answers test", () => {
       );
       expect(minBirdsRow.find(".govuk-summary-list__value").text().trim()).toBe("Yes");
       expect(minBirdsRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/minimum-number-of-birds",
+        "/poultry/minimum-birds",
       );
     });
 

@@ -26,7 +26,7 @@ const getHandler = {
       );
       return h.view(poultryClaimViews.vetName, {
         vetsName,
-        backLink: poultryClaimRoutes.minimumNumberOfBirds,
+        backLink: poultryClaimRoutes.minimumBirds,
       });
     },
   },
@@ -45,7 +45,7 @@ const postHandler = {
         return h
           .view(poultryClaimViews.vetName, {
             ...request.payload,
-            backLink: poultryClaimRoutes.minimumNumberOfBirds,
+            backLink: poultryClaimRoutes.minimumBirds,
             errorMessage: {
               text: error.details[0].message,
               href: `#${sessionKeys.poultryClaim.vetsName}`,

@@ -86,7 +86,7 @@ const postHandler = {
         sessionKeys.poultryClaim.typesOfPoultry,
         combinedTypes,
       );
-      return h.redirect(poultryClaimRoutes.minimumNumberOfBirds);
+      return h.redirect(poultryClaimRoutes.minimumBirds);
     },
   },
 };

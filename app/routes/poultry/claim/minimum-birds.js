@@ -16,14 +16,14 @@ const {
 
 const getHandler = {
   method: "GET",
-  path: poultryClaimRoutes.minimumNumberOfBirds,
+  path: poultryClaimRoutes.minimumBirds,
   options: {
     handler: async (request, h) => {
       const minimumNumberOfBirds = getSessionData(
         request,
         sessionEntryKeys.poultryClaim,
       )?.minimumNumberOfBirds;
-      return h.view(poultryClaimViews.minimumNumberOfBirds, {
+      return h.view(poultryClaimViews.minimumBirds, {
         backLink: poultryClaimRoutes.poultryType,
         minimumNumberOfBirds,
       });
@@ -33,7 +33,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: poultryClaimRoutes.minimumNumberOfBirds,
+  path: poultryClaimRoutes.minimumBirds,
   options: {
     validate: {
       payload: Joi.object({
@@ -43,7 +43,7 @@ const postHandler = {
         request.logger.error({ error });
 
         return h
-          .view(poultryClaimViews.minimumNumberOfBirds, {
+          .view(poultryClaimViews.minimumBirds, {
             ...request.payload,
             errorMessage: {
               text: `Select if the vet has confirmed the minimum number of birds`,
@@ -73,8 +73,8 @@ const postHandler = {
           sessionKey: sessionKeys.endemicsClaim.speciesNumbers, // reusing existing mi report event type for minimumNumberOfBirds
           exception: `Value ${minimumNumberOfBirds} is not equal to required value yes`,
         });
-        return h.view(poultryClaimViews.minimumNumberOfBirdsException, {
-          backLink: poultryClaimRoutes.minimumNumberOfBirds,
+        return h.view(poultryClaimViews.minimumBirdsException, {
+          backLink: poultryClaimRoutes.minimumBirds,
           guidanceUri,
         });
       }
