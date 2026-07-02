@@ -1,6 +1,6 @@
 export const dashboardRoutes = {
   manageYourClaims: "/vet-visits",
-  poultryManageYourClaims: "/poultry/vet-visits",
+  poultryManageYourClaims: "/poultry/manage-claims",
   checkDetails: "/check-details",
   selectFunding: "/select-funding",
 };

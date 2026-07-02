@@ -60,7 +60,7 @@ import { vetVisitsReviewTestResultsHandlers } from "../routes/livestock/claim/ve
 import { whichSpeciesHandlers } from "../routes/livestock/claim/which-species.js";
 import { whichReviewHandlers } from "../routes/livestock/claim/which-type-of-review.js";
 import { assuranceSchemeHandlers } from "../routes/livestock/claim/assurance-scheme.js";
-import { poultryVetVisitsHandlers } from "../routes/poultry/vet-visits.js";
+import { poultryVetVisitsHandlers } from "../routes/poultry/manage-claims.js";
 import { poultrySelectTheSiteHandlers } from "../routes/poultry/claim/select-the-site.js";
 import { poultryEnterSiteNameHandlers } from "../routes/poultry/claim/enter-site-name.js";
 import { poultryEnterCphNumberHandlers } from "../routes/poultry/claim/enter-cph-number.js";

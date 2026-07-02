@@ -201,7 +201,7 @@ describe("shouldShowManageYourClaims", () => {
 
   describe("poultry urls", () => {
     test("false when latestPoultryApplication is null", () => {
-      const request = { path: "/poultry/vet-visits" };
+      const request = { path: "/poultry/manage-claims" };
       mockPoultrySessionData(request, null);
 
       const actual = shouldShowManageYourClaims(request);
@@ -210,7 +210,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when latestPoultryApplication is undefined", () => {
-      const request = { path: "/poultry/vet-visits" };
+      const request = { path: "/poultry/manage-claims" };
       mockPoultrySessionData(request, undefined);
 
       const actual = shouldShowManageYourClaims(request);
@@ -219,7 +219,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when latestPoultryApplication has no status", () => {
-      const request = { path: "/poultry/vet-visits" };
+      const request = { path: "/poultry/manage-claims" };
       mockPoultrySessionData(request, {});
 
       const actual = shouldShowManageYourClaims(request);
@@ -228,7 +228,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when status is not AGREED", () => {
-      const request = { path: "/poultry/vet-visits" };
+      const request = { path: "/poultry/manage-claims" };
       mockPoultrySessionData(request, { status: "PENDING" });
 
       const actual = shouldShowManageYourClaims(request);
@@ -237,7 +237,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when status is not AGREED in poultry but agreed on endemics", () => {
-      const request = { path: "/poultry/vet-visits" };
+      const request = { path: "/poultry/manage-claims" };
       mockPoultrySessionData(request, { status: "PENDING" });
       mockEndemicsSessionData(request, { status: "AGREED" });
 
@@ -247,7 +247,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true when status is AGREED", () => {
-      const request = { path: "/poultry/vet-visits" };
+      const request = { path: "/poultry/manage-claims" };
       mockPoultrySessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);
