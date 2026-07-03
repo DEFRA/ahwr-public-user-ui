@@ -265,7 +265,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true when status is AGREED on apply confirmation", () => {
-      const request = { path: "/poultry/confirmation" };
+      const request = { path: "/poultry/agreement-offer" };
       mockPoultrySessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);

@@ -40,7 +40,6 @@ export const poultryApplyRoutes = {
   timings: "/poultry/timings",
   minimumNumber: "/poultry/minimum-number",
   agreementOffer: "/poultry/agreement-offer",
-  confirmation: "/poultry/confirmation",
 };
 
 export const applyViews = {
