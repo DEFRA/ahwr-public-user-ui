@@ -17,8 +17,8 @@ import { POULTRY_SCHEME } from "ffc-ahwr-common-library";
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/api-requests/claim-api.js");
 
-describe("/enter-cph-number tests", () => {
-  const url = `/poultry/enter-cph-number`;
+describe("/cph tests", () => {
+  const url = `/poultry/cph`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -88,7 +88,7 @@ describe("/enter-cph-number tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-site-name");
+      expect($(".govuk-back-link").attr("href")).toContain("/site-name");
       expectSiteText($);
       expectPhaseBanner.ok($);
     });
@@ -106,7 +106,7 @@ describe("/enter-cph-number tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-site-name");
+      expect($(".govuk-back-link").attr("href")).toContain("/site-name");
       expect($("input#herdCph").val()).toBe("22/333/4444");
       expectSiteText($);
       expectPhaseBanner.ok($);
@@ -155,7 +155,7 @@ describe("/enter-cph-number tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/site-others-on-sbi");
+      expect(res.headers.location).toEqual("/poultry/sbi-sites");
       expect(setSessionData).toHaveBeenCalled();
       expect(emitHerdEvent).toHaveBeenCalled();
     });
@@ -231,7 +231,7 @@ describe("/enter-cph-number tests", () => {
         });
 
         expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toEqual("/poultry/site-others-on-sbi");
+        expect(res.headers.location).toEqual("/poultry/sbi-sites");
         expect(setSessionData).toHaveBeenCalled();
         expect(emitHerdEvent).toHaveBeenCalled();
       });

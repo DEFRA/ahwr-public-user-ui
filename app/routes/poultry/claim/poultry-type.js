@@ -15,11 +15,11 @@ const chickenSubtypes = new Set([
   TYPE_OF_POULTRY.BREEDERS,
 ]);
 
-const backLink = poultryClaimRoutes.siteOthersOnSbi;
+const backLink = poultryClaimRoutes.sbiSites;
 
 const getHandler = {
   method: "GET",
-  path: poultryClaimRoutes.selectPoultryType,
+  path: poultryClaimRoutes.poultryType,
   options: {
     handler: async (request, h) => {
       const { typesOfPoultry: storedTypes = [] } = getSessionData(
@@ -28,7 +28,7 @@ const getHandler = {
       );
       const typesOfPoultry = storedTypes.filter((t) => !chickenSubtypes.has(t));
       const typesOfChicken = storedTypes.filter((t) => chickenSubtypes.has(t));
-      return h.view(poultryClaimViews.selectPoultryType, {
+      return h.view(poultryClaimViews.poultryType, {
         backLink,
         typesOfPoultry,
         typesOfChicken,
@@ -45,7 +45,7 @@ const errorMessageChicken = {
 
 const postHandler = {
   method: "POST",
-  path: poultryClaimRoutes.selectPoultryType,
+  path: poultryClaimRoutes.poultryType,
   options: {
     validate: {
       payload: Joi.object({
@@ -55,7 +55,7 @@ const postHandler = {
       failAction: async (request, h, error) => {
         request.logger.error({ error });
         return h
-          .view(poultryClaimViews.selectPoultryType, {
+          .view(poultryClaimViews.poultryType, {
             backLink,
             errorMessageMain: errorMessage,
             errorMessage,
@@ -70,7 +70,7 @@ const postHandler = {
 
       if (hasChicken && typesOfChicken.length === 0) {
         return h
-          .view(poultryClaimViews.selectPoultryType, {
+          .view(poultryClaimViews.poultryType, {
             backLink,
             errorMessageMain: errorMessageChicken,
             errorMessageChicken,
@@ -86,7 +86,7 @@ const postHandler = {
         sessionKeys.poultryClaim.typesOfPoultry,
         combinedTypes,
       );
-      return h.redirect(poultryClaimRoutes.minimumNumberOfBirds);
+      return h.redirect(poultryClaimRoutes.minimumBirds);
     },
   },
 };

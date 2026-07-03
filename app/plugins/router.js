@@ -17,10 +17,10 @@ import { declarationRouteHandlers } from "../routes/livestock/apply/declaration.
 import { numbersRouteHandlers } from "../routes/livestock/apply/numbers.js";
 import { timingsRouteHandlers } from "../routes/livestock/apply/timings.js";
 import { claimMultipleRouteHandlers } from "../routes/livestock/apply/you-can-claim-multiple.js";
-import { poultryDeclarationRouteHandlers } from "../routes/poultry/apply/declaration.js";
-import { poultryNumbersRouteHandlers } from "../routes/poultry/apply/numbers.js";
+import { poultryDeclarationRouteHandlers } from "../routes/poultry/apply/agreement-offer.js";
+import { poultryNumbersRouteHandlers } from "../routes/poultry/apply/minimum-number.js";
 import { poultryTimingsRouteHandlers } from "../routes/poultry/apply/timings.js";
-import { poultryClaimMultipleRouteHandlers } from "../routes/poultry/apply/you-can-claim-multiple.js";
+import { poultryClaimMultipleRouteHandlers } from "../routes/poultry/apply/what-you-can-claim.js";
 import { poultryDateOfVisitHandlers } from "../routes/poultry/claim/date-of-visit.js";
 import { selectFundingRouteHandlers } from "../routes/select-funding.js";
 import { biosecurityHandlers } from "../routes/livestock/claim/biosecurity.js";
@@ -60,22 +60,22 @@ import { vetVisitsReviewTestResultsHandlers } from "../routes/livestock/claim/ve
 import { whichSpeciesHandlers } from "../routes/livestock/claim/which-species.js";
 import { whichReviewHandlers } from "../routes/livestock/claim/which-type-of-review.js";
 import { assuranceSchemeHandlers } from "../routes/livestock/claim/assurance-scheme.js";
-import { poultryVetVisitsHandlers } from "../routes/poultry/vet-visits.js";
+import { poultryVetVisitsHandlers } from "../routes/poultry/manage-claims.js";
 import { poultrySelectTheSiteHandlers } from "../routes/poultry/claim/select-the-site.js";
-import { poultryEnterSiteNameHandlers } from "../routes/poultry/claim/enter-site-name.js";
-import { poultryEnterCphNumberHandlers } from "../routes/poultry/claim/enter-cph-number.js";
-import { poultrySelectPoultryTypeHandlers } from "../routes/poultry/claim/select-poultry-type.js";
-import { poultrySiteOthersOnSbiHandlers } from "../routes/poultry/claim/site-others-on-sbi.js";
-import { poultryMinimumNumberOfBirdsHandlers } from "../routes/poultry/claim/minimum-number-of-birds.js";
+import { poultryEnterSiteNameHandlers } from "../routes/poultry/claim/site-name.js";
+import { poultryEnterCphNumberHandlers } from "../routes/poultry/claim/cph.js";
+import { poultrySelectPoultryTypeHandlers } from "../routes/poultry/claim/poultry-type.js";
+import { poultrySiteOthersOnSbiHandlers } from "../routes/poultry/claim/sbi-sites.js";
+import { poultryMinimumNumberOfBirdsHandlers } from "../routes/poultry/claim/minimum-birds.js";
 import { poultryVetRCVSHandlers } from "../routes/poultry/claim/vet-rcvs.js";
-import { poultryBiosecurityHandlers } from "../routes/poultry/claim/biosecurity.js";
+import { poultryBiosecurityHandlers } from "../routes/poultry/claim/biosecurity-assessment.js";
 import { poultryVetsNameHandlers } from "../routes/poultry/claim/vet-name.js";
 import { poultryCheckAnswersHandlers } from "../routes/poultry/claim/check-answers.js";
 import { poultryBiosecurityUsefulnessHandlers } from "../routes/poultry/claim/biosecurity-usefulness.js";
-import { poultryChangesInBiosecurityHandlers } from "../routes/poultry/claim/changes-in-biosecurity.js";
-import { poultryBiosecurityCostOfChangesHandlers } from "../routes/poultry/claim/biosecurity-cost-of-changes.js";
+import { poultryChangesInBiosecurityHandlers } from "../routes/poultry/claim/biosecurity-changes.js";
+import { poultryBiosecurityCostOfChangesHandlers } from "../routes/poultry/claim/changes-cost.js";
 import { poultryInterviewHandlers } from "../routes/poultry/claim/interview.js";
-import { poultryConfirmationHandlers } from "../routes/poultry/claim/confirmation.js";
+import { poultryConfirmationHandlers } from "../routes/poultry/claim/claim-confirmation.js";
 import { checkDetailsHandlers } from "../routes/check-details.js";
 
 const alwaysOnRoutes = [

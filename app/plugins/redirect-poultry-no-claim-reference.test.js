@@ -39,7 +39,7 @@ describe("redirectPoultryNoClaimReferencePlugin", () => {
     });
 
     expect(response.statusCode).toBe(302);
-    expect(response.headers.location).toBe(dashboardRoutes.poultryManageYourClaims);
+    expect(response.headers.location).toBe(dashboardRoutes.poultryManageClaims);
   });
 
   it("allows request when claim reference exists", async () => {

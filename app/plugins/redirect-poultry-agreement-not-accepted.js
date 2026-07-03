@@ -6,7 +6,7 @@ export const redirectPoultryAgreementNotAcceptedPlugin = {
     name: "redirect-poultry-agreement-not-accepted",
     register: (server, _) => {
       const includedPaths = [
-        dashboardRoutes.poultryManageYourClaims,
+        dashboardRoutes.poultryManageClaims,
         ...Object.values(poultryClaimRoutes),
       ];
       server.ext("onPreHandler", (request, h) => {
@@ -19,7 +19,7 @@ export const redirectPoultryAgreementNotAcceptedPlugin = {
           );
 
           if (latestPoultryApplication?.status !== "AGREED") {
-            return h.redirect(poultryApplyRoutes.youCanClaimMultiple).takeover();
+            return h.redirect(poultryApplyRoutes.whatYouCanClaim).takeover();
           }
         }
         return h.continue;

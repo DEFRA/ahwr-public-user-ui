@@ -69,7 +69,7 @@ const postHandler = {
         vetRCVSNumber,
       );
 
-      return h.redirect(poultryClaimRoutes.biosecurity);
+      return h.redirect(poultryClaimRoutes.biosecurityAssessment);
     },
   },
 };

@@ -65,7 +65,7 @@ const getHandler = {
 
       return h.view(poultryClaimViews.dateOfVisit, {
         dateOfVisit,
-        backLink: dashboardRoutes.poultryManageYourClaims,
+        backLink: dashboardRoutes.poultryManageClaims,
       });
     },
   },
@@ -127,7 +127,7 @@ const postHandler = {
               year: date.year || "",
               errorMessage: { text: errorMessage },
             },
-            backLink: dashboardRoutes.poultryManageYourClaims,
+            backLink: dashboardRoutes.poultryManageClaims,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -197,7 +197,7 @@ const postHandler = {
         await setSessionData(request, poultryClaimEntry, herdIdKey, tempHerdId, {
           shouldEmitEvent: false,
         });
-        return h.redirect(poultryClaimRoutes.enterSiteName);
+        return h.redirect(poultryClaimRoutes.siteName);
       }
     },
   },
@@ -256,7 +256,7 @@ async function handleTimingException(request, h, date, agreementDate, tempClaimR
         year: date.year,
         errorMessage: { text: errorMessage },
       },
-      backLink: dashboardRoutes.poultryManageYourClaims,
+      backLink: dashboardRoutes.poultryManageClaims,
     })
     .code(HttpStatus.BAD_REQUEST);
 }
@@ -272,7 +272,7 @@ async function handleValidationError(request, validationError, h, date) {
         year: date.year || "",
         errorMessage: { text: validationError.errorSummary[0].text },
       },
-      backLink: dashboardRoutes.poultryManageYourClaims,
+      backLink: dashboardRoutes.poultryManageClaims,
     })
     .code(HttpStatus.BAD_REQUEST);
 }

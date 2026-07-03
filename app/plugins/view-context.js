@@ -33,7 +33,7 @@ export const viewContextPlugin = {
           ctx.dashboardLink = dashboardRoutes.manageYourClaims;
           ctx.dashboardLink =
             getScheme(request) === POULTRY_SCHEME
-              ? dashboardRoutes.poultryManageYourClaims
+              ? dashboardRoutes.poultryManageClaims
               : dashboardRoutes.manageYourClaims;
 
           response.source.context = ctx;

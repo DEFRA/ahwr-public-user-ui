@@ -14,8 +14,8 @@ import { axe } from "../../../../../helpers/axe-helper.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
-describe("/site-others-on-sbi tests", () => {
-  const url = `/poultry/site-others-on-sbi`;
+describe("/sbi-sites tests", () => {
+  const url = `/poultry/sbi-sites`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -79,7 +79,7 @@ describe("/site-others-on-sbi tests", () => {
       expect($("title").text().trim()).toContain(
         "Is this the only site associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
-      expect($(".govuk-back-link").attr("href")).toContain("/enter-cph-number");
+      expect($(".govuk-back-link").attr("href")).toContain("/cph");
       const legend = $(".govuk-fieldset__legend--l");
       expect(legend.text().trim()).toBe(
         "Is this the only site associated with this Single Business Identifier (SBI)?",
@@ -142,7 +142,7 @@ describe("/site-others-on-sbi tests", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
       expect(setSessionData).toHaveBeenCalledTimes(1);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),

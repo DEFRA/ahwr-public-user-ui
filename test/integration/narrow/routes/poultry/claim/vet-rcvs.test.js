@@ -207,7 +207,7 @@ describe("/poultry/vet-rcvs", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/biosecurity");
+      expect(res.headers.location).toEqual("/poultry/biosecurity-assessment");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "poultryClaim",
@@ -228,7 +228,7 @@ describe("/poultry/vet-rcvs", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/biosecurity");
+      expect(res.headers.location).toEqual("/poultry/biosecurity-assessment");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "poultryClaim",

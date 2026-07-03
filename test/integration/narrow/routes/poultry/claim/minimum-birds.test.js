@@ -16,8 +16,8 @@ import { config } from "../../../../../../app/config/index.js";
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 
-describe("/poultry/minimum-number-of-birds tests", () => {
-  const url = `/poultry/minimum-number-of-birds`;
+describe("/poultry/minimum-birds tests", () => {
+  const url = `/poultry/minimum-birds`;
   const auth = {
     credentials: { reference: "1111", sbi: "111111111" },
     strategy: "cookie",
@@ -93,7 +93,7 @@ describe("/poultry/minimum-number-of-birds tests", () => {
       expect($("title").text().trim()).toContain(
         "Minimum number of birds - Get funding to improve animal health and welfare - GOV.UK",
       );
-      expect($("#back").attr("href")).toContain("/select-poultry-type");
+      expect($("#back").attr("href")).toContain("/poultry-type");
       const legend = $(".govuk-fieldset__legend--l");
       expect(legend.text().trim()).toBe(
         "Has your vet confirmed that this site can hold the minimum number of birds?",
@@ -231,7 +231,7 @@ describe("/poultry/minimum-number-of-birds tests", () => {
       );
       expect(guidanceLink.attr("href")).toEqual(config.poultry.guidanceUri);
 
-      const changeAnswerLink = $('a.govuk-link[href="/poultry/minimum-number-of-birds"]');
+      const changeAnswerLink = $('a.govuk-link[href="/poultry/minimum-birds"]');
       expect(changeAnswerLink.text().trim()).toEqual(
         "Change your answer if you had the minimum number of birds.",
       );

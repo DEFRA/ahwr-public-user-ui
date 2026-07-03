@@ -124,7 +124,7 @@ const postHandler = {
 
       if (siteSelected === radioValueNewSite) {
         await cleanSiteData(request, tempHerdId);
-        return h.redirect(poultryClaimRoutes.enterSiteName);
+        return h.redirect(poultryClaimRoutes.siteName);
       }
 
       const sites = getUniqueSites(previousClaims);
@@ -153,7 +153,7 @@ const postHandler = {
 
       await setupSiteData(request, selectedSite);
 
-      return h.redirect(poultryClaimRoutes.selectPoultryType);
+      return h.redirect(poultryClaimRoutes.poultryType);
     },
   },
 };

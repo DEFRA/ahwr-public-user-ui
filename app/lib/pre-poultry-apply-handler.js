@@ -36,7 +36,7 @@ export const prePoultryApplyHandler = async (request, h) => {
         "User attempted to use apply journey despite already having an agreed agreement.",
       );
 
-      return h.redirect(dashboardRoutes.poultryManageYourClaims).takeover();
+      return h.redirect(dashboardRoutes.poultryManageClaims).takeover();
     }
   }
 

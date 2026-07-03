@@ -546,7 +546,7 @@ describe("/poultry/select-site", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("redirects to enter-site-name when selecting new site from single site view", async () => {
+    test("redirects to site-name when selecting new site from single site view", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
@@ -577,7 +577,7 @@ describe("/poultry/select-site", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/enter-site-name");
+      expect(res.headers.location).toEqual("/poultry/site-name");
 
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
@@ -616,7 +616,7 @@ describe("/poultry/select-site", () => {
       );
     });
 
-    test("redirects to enter-site-name when selecting new site from multiple sites view", async () => {
+    test("redirects to site-name when selecting new site from multiple sites view", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
@@ -659,7 +659,7 @@ describe("/poultry/select-site", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/enter-site-name");
+      expect(res.headers.location).toEqual("/poultry/site-name");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -783,7 +783,7 @@ describe("/poultry/select-site", () => {
       expect($("#siteSelected-error").text()).toContain("Select the site you are claiming for");
     });
 
-    test("stores site data and redirects to select-poultry-type when existing site is selected from single site view", async () => {
+    test("stores site data and redirects to poultry-type when existing site is selected from single site view", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
@@ -813,7 +813,7 @@ describe("/poultry/select-site", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -858,7 +858,7 @@ describe("/poultry/select-site", () => {
       );
     });
 
-    test("stores site data and redirects to select-poultry-type when existing site is selected from multiple sites view", async () => {
+    test("stores site data and redirects to poultry-type when existing site is selected from multiple sites view", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({
@@ -900,7 +900,7 @@ describe("/poultry/select-site", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -1113,7 +1113,7 @@ describe("/poultry/select-site", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
     });
 
     test("does not apply timing rule when selecting a different site", async () => {
@@ -1159,7 +1159,7 @@ describe("/poultry/select-site", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/select-poultry-type");
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
     });
   });
 });

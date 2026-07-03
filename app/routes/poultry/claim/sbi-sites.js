@@ -11,12 +11,12 @@ import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes
 
 const getHandler = {
   method: "GET",
-  path: poultryClaimRoutes.siteOthersOnSbi,
+  path: poultryClaimRoutes.sbiSites,
   options: {
     handler: async (request, h) => {
       const { isOnlyHerdOnSbi } = getSessionData(request, sessionEntryKeys.poultryClaim);
-      return h.view(poultryClaimViews.siteOthersOnSbi, {
-        backLink: poultryClaimRoutes.enterCphNumber,
+      return h.view(poultryClaimViews.sbiSites, {
+        backLink: poultryClaimRoutes.cph,
         isOnlyHerdOnSbi,
       });
     },
@@ -25,7 +25,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: poultryClaimRoutes.siteOthersOnSbi,
+  path: poultryClaimRoutes.sbiSites,
   options: {
     validate: {
       payload: Joi.object({
@@ -35,13 +35,13 @@ const postHandler = {
         request.logger.error({ error });
 
         return h
-          .view(poultryClaimViews.siteOthersOnSbi, {
+          .view(poultryClaimViews.sbiSites, {
             ...request.payload,
             errorMessage: {
               text: `Select if this is the only site associated with this SBI`,
               href: "#isOnlyHerdOnSbi",
             },
-            backLink: poultryClaimRoutes.enterCphNumber,
+            backLink: poultryClaimRoutes.cph,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -77,7 +77,7 @@ const postHandler = {
         },
       });
 
-      return h.redirect(poultryClaimRoutes.selectPoultryType);
+      return h.redirect(poultryClaimRoutes.poultryType);
     },
   },
 };

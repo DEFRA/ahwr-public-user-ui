@@ -49,14 +49,14 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
   const typesOfPoultryRow = createdHerdRowObject(
     "Types of poultry",
     formatTypesOfPoultry(poultryClaim.typesOfPoultry),
-    poultryClaimRoutes.selectPoultryType,
+    poultryClaimRoutes.poultryType,
     "species",
   );
 
   const minimumNumberOfBirdsRow = createdHerdRowObject(
     "Minimum number of birds",
     upperFirstLetter(poultryClaim.minimumNumberOfBirds),
-    poultryClaimRoutes.minimumNumberOfBirds,
+    poultryClaimRoutes.minimumBirds,
     "minimum number of birds",
   );
 
@@ -140,7 +140,7 @@ function createBiosecurityRows(poultryClaim) {
   const biosecurityAssessmentRow = createdHerdRowObject(
     "Biosecurity assessment",
     upperFirstLetter(poultryClaim.biosecurity),
-    poultryClaimRoutes.biosecurity,
+    poultryClaimRoutes.biosecurityAssessment,
     "biosecurity assessment",
   );
 
@@ -154,14 +154,14 @@ function createBiosecurityRows(poultryClaim) {
   const changesInBiosecurityRow = createdHerdRowObject(
     "Biosecurity recommended changes",
     changesInBiosecurityLabels[poultryClaim.changesInBiosecurity],
-    poultryClaimRoutes.changesInBiosecurity,
+    poultryClaimRoutes.biosecurityChanges,
     "biosecurity recommended changes",
   );
 
   const costOfChangesRow = createdHerdRowObject(
     "Expected cost for biosecurity changes",
     costOfChangesLabels[poultryClaim.costOfChanges],
-    poultryClaimRoutes.costOfChanges,
+    poultryClaimRoutes.changesCost,
     "expected cost for biosecurity changes",
   );
   return {
@@ -180,18 +180,13 @@ function createSiteInformationRows(herds, poultryClaim) {
     : createdHerdRowObject(
         "Site name",
         poultryClaim.herdName,
-        poultryClaimRoutes.enterSiteName,
+        poultryClaimRoutes.siteName,
         "site name",
       );
 
   const cphNumberRow = isExistingSite
     ? createImmutableRowObject("Site CPH", poultryClaim.herdCph)
-    : createdHerdRowObject(
-        "Site CPH",
-        poultryClaim.herdCph,
-        poultryClaimRoutes.enterCphNumber,
-        "site CPH",
-      );
+    : createdHerdRowObject("Site CPH", poultryClaim.herdCph, poultryClaimRoutes.cph, "site CPH");
 
   const siteOthersRow = isExistingSite
     ? createImmutableRowObject(
@@ -201,7 +196,7 @@ function createSiteInformationRows(herds, poultryClaim) {
     : createdHerdRowObject(
         "Only site within the SBI",
         upperFirstLetter(poultryClaim.isOnlyHerdOnSbi),
-        poultryClaimRoutes.siteOthersOnSbi,
+        poultryClaimRoutes.sbiSites,
         "only site within the SBI",
       );
   return { siteNameRow, cphNumberRow, siteOthersRow };

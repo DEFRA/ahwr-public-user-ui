@@ -24,7 +24,7 @@ jest.mock("../../../../../../app/config/index.js", () => ({
   },
 }));
 
-describe("Check review numbers page test", () => {
+describe("Check review minimum number page test", () => {
   const auth = {
     strategy: "cookie",
     credentials: { reference: "1111", sbi: "111111111" },
@@ -54,7 +54,7 @@ describe("Check review numbers page test", () => {
 
   const options = {
     auth,
-    url: poultryApplyRoutes.numbers,
+    url: poultryApplyRoutes.minimumNumber,
   };
 
   let server;
@@ -67,7 +67,7 @@ describe("Check review numbers page test", () => {
     jest.clearAllMocks();
   });
 
-  describe("GET /numbers route when logged in", () => {
+  describe("GET /minimum-number route when logged in", () => {
     test("returns 200 with reviewed eligibility content and correct backLink", async () => {
       const res = await server.inject({ ...options, method: "GET" });
 
@@ -84,7 +84,7 @@ describe("Check review numbers page test", () => {
 
       expect(pageTitleByName).toContain(fullTitle);
       expect(pageTitleByClassName).toEqual(title);
-      expect(backLinkUrlByClassName).toContain(poultryApplyRoutes.youCanClaimMultiple);
+      expect(backLinkUrlByClassName).toContain(poultryApplyRoutes.whatYouCanClaim);
 
       expect(res.payload).toContain(
         "To be eligible for a review, each site must have the capacity to hold any of the following:",
@@ -115,7 +115,7 @@ describe("Check review numbers page test", () => {
     });
   });
 
-  describe("POST /poultry/numbers route", () => {
+  describe("POST /poultry/minimum-number route", () => {
     let crumb;
 
     beforeEach(async () => {
@@ -148,7 +148,7 @@ describe("Check review numbers page test", () => {
 
       const $ = cheerio.load(res.payload);
       const backLinkHref = $(".govuk-back-link").attr("href");
-      expect(backLinkHref).toContain(poultryApplyRoutes.numbers);
+      expect(backLinkHref).toContain(poultryApplyRoutes.minimumNumber);
     });
   });
 });

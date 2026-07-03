@@ -316,7 +316,7 @@ describe("select-funding", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-      expect(res.headers.location).toEqual(poultryApplyRoutes.youCanClaimMultiple);
+      expect(res.headers.location).toEqual(poultryApplyRoutes.whatYouCanClaim);
       expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
@@ -333,7 +333,7 @@ describe("select-funding", () => {
       );
     });
 
-    test("redirects to vet-visits when user selects poultry with an agreement", async () => {
+    test("redirects to manage-claims when user selects poultry with an agreement", async () => {
       when(getSessionData)
         .calledWith(
           expect.anything(),
@@ -353,7 +353,7 @@ describe("select-funding", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-      expect(res.headers.location).toEqual(dashboardRoutes.poultryManageYourClaims);
+      expect(res.headers.location).toEqual(dashboardRoutes.poultryManageClaims);
       expect(clearFundingSelection).toHaveBeenCalledWith(expect.anything());
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),

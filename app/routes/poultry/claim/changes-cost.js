@@ -12,14 +12,14 @@ const INVALID_VALUE_TEXT = "Select your estimate";
 
 const getHandler = {
   method: "GET",
-  path: poultryClaimRoutes.costOfChanges,
+  path: poultryClaimRoutes.changesCost,
   options: {
     handler: async (request, h) => {
       const { costOfChanges } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
-      return h.view(poultryClaimViews.costOfChanges, {
+      return h.view(poultryClaimViews.changesCost, {
         previousAnswer: costOfChanges,
-        backLink: poultryClaimRoutes.changesInBiosecurity,
+        backLink: poultryClaimRoutes.biosecurityChanges,
       });
     },
   },
@@ -27,7 +27,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: poultryClaimRoutes.costOfChanges,
+  path: poultryClaimRoutes.changesCost,
   options: {
     validate: {
       payload: Joi.object({
@@ -47,8 +47,8 @@ const postHandler = {
         };
 
         return h
-          .view(poultryClaimViews.costOfChanges, {
-            backLink: poultryClaimRoutes.changesInBiosecurity,
+          .view(poultryClaimViews.changesCost, {
+            backLink: poultryClaimRoutes.biosecurityChanges,
             ...errors,
             previousAnswer: costOfChanges,
           })

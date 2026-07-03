@@ -1,7 +1,7 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../session/index.js";
 import { requestAuthorizationCodeUrl } from "../../auth/auth-code-grant/request-authorization-code-url.js";
 import { config } from "../../config/index.js";
-import { poultryClaimRoutes } from "../../constants/routes.js";
+import { dashboardRoutes, dashboardViews, poultryClaimRoutes } from "../../constants/routes.js";
 import { refreshApplications } from "../../lib/context-helper.js";
 import nunjucks from "nunjucks";
 import { getClaimsByApplicationReference } from "../../api-requests/claim-api.js";
@@ -113,7 +113,7 @@ const getOrRefreshApplication = async (request, sbi) => {
 export const poultryVetVisitsHandlers = [
   {
     method: "GET",
-    path: "/poultry/vet-visits",
+    path: dashboardRoutes.poultryManageClaims,
     options: {
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
@@ -134,7 +134,7 @@ export const poultryVetVisitsHandlers = [
 
         const downloadedDocument = `/download-application/${organisation.sbi}/${application.reference}`;
 
-        return h.view("poultry/vet-visits", {
+        return h.view(dashboardViews.poultryManageClaims, {
           attachedToMultipleBusinesses,
           claimJourneyStartPointUri: poultryClaimRoutes.dateOfVisit + "?journey=new",
           ...organisation,

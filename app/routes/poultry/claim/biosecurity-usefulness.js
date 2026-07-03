@@ -19,7 +19,7 @@ const getHandler = {
 
       return h.view(poultryClaimViews.biosecurityUsefulness, {
         previousAnswer: biosecurityUsefulness,
-        backLink: poultryClaimRoutes.biosecurity,
+        backLink: poultryClaimRoutes.biosecurityAssessment,
       });
     },
   },
@@ -48,7 +48,7 @@ const postHandler = {
 
         return h
           .view(poultryClaimViews.biosecurityUsefulness, {
-            backLink: poultryClaimRoutes.biosecurity,
+            backLink: poultryClaimRoutes.biosecurityAssessment,
             ...errors,
             previousAnswer: biosecurityUsefulness,
           })
@@ -66,7 +66,7 @@ const postHandler = {
         biosecurityUsefulness,
       );
 
-      return h.redirect(poultryClaimRoutes.changesInBiosecurity);
+      return h.redirect(poultryClaimRoutes.biosecurityChanges);
     },
   },
 };

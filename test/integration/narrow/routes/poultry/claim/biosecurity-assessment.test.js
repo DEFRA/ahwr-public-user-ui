@@ -15,14 +15,14 @@ jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
 
-const url = `/poultry/biosecurity`;
+const url = `/poultry/biosecurity-assessment`;
 const auth = {
   credentials: { reference: "1111", sbi: "111111111" },
   strategy: "cookie",
 };
 let crumb;
 
-describe("/poultry/biosecurity", () => {
+describe("/poultry/biosecurity-assessment", () => {
   let server;
 
   beforeEach(async () => {

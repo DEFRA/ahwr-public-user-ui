@@ -128,8 +128,8 @@ export const selectFundingRouteHandlers = [
           );
           return h.redirect(
             latestPoultryApplication
-              ? dashboardRoutes.poultryManageYourClaims
-              : poultryApplyRoutes.youCanClaimMultiple,
+              ? dashboardRoutes.poultryManageClaims
+              : poultryApplyRoutes.whatYouCanClaim,
           );
         }
       },

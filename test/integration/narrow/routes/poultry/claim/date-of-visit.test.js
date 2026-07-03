@@ -150,7 +150,7 @@ describe("GET /poultry/date-of-visit", () => {
 
     const res = await server.inject(options);
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location.toString()).toEqual(`/poultry/you-can-claim-multiple`);
+    expect(res.headers.location.toString()).toEqual(`/poultry/what-you-can-claim`);
   });
 
   test("without previous data, shows the screen with empty date boxes", async () => {
@@ -159,7 +159,7 @@ describe("GET /poultry/date-of-visit", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, "/poultry/vet-visits");
+    expectPageContentOk($, "/poultry/manage-claims");
     expectPhaseBanner.ok($);
   });
 
@@ -259,7 +259,7 @@ describe("POST /poultry/date-of-visit", () => {
     );
   });
 
-  test("when adding a correct date and no sites exist, redirects to enter-site-name", async () => {
+  test("when adding a correct date and no sites exist, redirects to site-name", async () => {
     getSites.mockResolvedValue({ herds: [] });
 
     const options = {
@@ -277,7 +277,7 @@ describe("POST /poultry/date-of-visit", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location.toString()).toEqual("/poultry/enter-site-name");
+    expect(res.headers.location.toString()).toEqual("/poultry/site-name");
     expect(setSessionData).toHaveBeenCalledWith(
       expect.anything(),
       sessionEntryKeys.poultryClaim,
@@ -366,7 +366,7 @@ describe("POST /poultry/date-of-visit", () => {
       expect($("h1").text().trim()).toBe("Date of visit");
       expect($(".govuk-error-summary")).toHaveLength(1);
       expect($(".govuk-error-summary").text()).toContain(expectedError);
-      expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
+      expect($(".govuk-back-link").attr("href")).toBe("/poultry/manage-claims");
     },
   );
 
@@ -392,7 +392,7 @@ describe("POST /poultry/date-of-visit", () => {
     expect($("h1").text().trim()).toBe("Date of visit");
     expect($(".govuk-error-summary")).toHaveLength(1);
     expect($(".govuk-error-summary").text()).toContain("Enter a date that is not in the future");
-    expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
+    expect($(".govuk-back-link").attr("href")).toBe("/poultry/manage-claims");
   });
 
   test("when date is before latestPoultryApplication.createdAt, shows error and calls trackEvent and sendInvalidDataPoultryEvent", async () => {
@@ -430,7 +430,7 @@ describe("POST /poultry/date-of-visit", () => {
     expect($("h1").text().trim()).toBe("Date of visit");
     expect($(".govuk-error-summary")).toHaveLength(1);
     expect($(".govuk-error-summary").text()).toContain(expectedError);
-    expect($(".govuk-back-link").attr("href")).toBe("/poultry/vet-visits");
+    expect($(".govuk-back-link").attr("href")).toBe("/poultry/manage-claims");
   });
 
   test("when date is the same day as latestPoultryApplication.createdAt (with time component), should succeed", async () => {
@@ -460,6 +460,6 @@ describe("POST /poultry/date-of-visit", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location.toString()).toEqual("/poultry/enter-site-name");
+    expect(res.headers.location.toString()).toEqual("/poultry/site-name");
   });
 });

@@ -11,7 +11,7 @@ import { prePoultryApplyHandler } from "../../../lib/pre-poultry-apply-handler.j
 export const poultryTimingsRouteHandlers = [
   {
     method: "GET",
-    path: "/poultry/timings",
+    path: poultryApplyRoutes.timings,
     options: {
       pre: [{ method: prePoultryApplyHandler }],
       handler: async (request, h) => {
@@ -20,7 +20,7 @@ export const poultryTimingsRouteHandlers = [
 
         return h.view(poultryApplyViews.timings, {
           hasOldWorldApplication,
-          backLink: poultryApplyRoutes.numbers,
+          backLink: poultryApplyRoutes.minimumNumber,
           organisation,
         });
       },
@@ -28,7 +28,7 @@ export const poultryTimingsRouteHandlers = [
   },
   {
     method: "POST",
-    path: "/poultry/timings",
+    path: poultryApplyRoutes.timings,
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {
@@ -39,7 +39,7 @@ export const poultryTimingsRouteHandlers = [
             "yes",
           );
 
-          return h.redirect(poultryApplyRoutes.declaration);
+          return h.redirect(poultryApplyRoutes.agreementOffer);
         }
 
         await setSessionData(

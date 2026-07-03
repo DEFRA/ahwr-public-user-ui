@@ -51,13 +51,13 @@ when(getSessionData)
   .calledWith(expect.anything(), sessionEntryKeys.confirmedDetails, sessionKeys.confirmedDetails)
   .mockReturnValue(true);
 
-describe("you-can-claim-multiple page", () => {
+describe("what-you-can-claim page", () => {
   const optionsBase = {
     auth: {
       strategy: "cookie",
       credentials: { reference: "1111", sbi: "111111111" },
     },
-    url: poultryApplyRoutes.youCanClaimMultiple,
+    url: poultryApplyRoutes.whatYouCanClaim,
   };
 
   let server;
@@ -127,7 +127,7 @@ describe("you-can-claim-multiple page", () => {
         sessionKeys.poultryApplyData.agreeMultipleSpecies,
         "yes",
       );
-      expect(res.headers.location).toEqual(poultryApplyRoutes.numbers);
+      expect(res.headers.location).toEqual(poultryApplyRoutes.minimumNumber);
     });
 
     test("returns 200 and navigates to the terms rejected page with back link when user disagrees", async () => {
@@ -153,7 +153,7 @@ describe("you-can-claim-multiple page", () => {
 
       const $ = cheerio.load(res.payload);
       const backLinkHref = $(".govuk-back-link").attr("href");
-      expect(backLinkHref).toContain(poultryApplyRoutes.youCanClaimMultiple);
+      expect(backLinkHref).toContain(poultryApplyRoutes.whatYouCanClaim);
     });
   });
 });

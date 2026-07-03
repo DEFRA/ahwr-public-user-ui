@@ -208,7 +208,7 @@ describe("Poultry check answers test", () => {
       expect(siteNameRow.find(".govuk-summary-list__key").text().trim()).toBe("Site name");
       expect(siteNameRow.find(".govuk-summary-list__value").text().trim()).toBe("North Farm Site");
       expect(siteNameRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/enter-site-name",
+        "/poultry/site-name",
       );
     });
 
@@ -269,9 +269,7 @@ describe("Poultry check answers test", () => {
       const cphRow = $(".govuk-summary-list__row").eq(3);
       expect(cphRow.find(".govuk-summary-list__key").text().trim()).toBe("Site CPH");
       expect(cphRow.find(".govuk-summary-list__value").text().trim()).toBe("12/345/6789");
-      expect(cphRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/enter-cph-number",
-      );
+      expect(cphRow.find(".govuk-summary-list__actions a").attr("href")).toBe("/poultry/cph");
     });
 
     test("displays site CPH without change link for existing site", async () => {
@@ -332,7 +330,7 @@ describe("Poultry check answers test", () => {
       );
       expect(siteOthersRow.find(".govuk-summary-list__value").text().trim()).toBe("No");
       expect(siteOthersRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/site-others-on-sbi",
+        "/poultry/sbi-sites",
       );
     });
 
@@ -394,7 +392,7 @@ describe("Poultry check answers test", () => {
       expect(speciesRow.find(".govuk-summary-list__key").text().trim()).toBe("Types of poultry");
       expect(speciesRow.find(".govuk-summary-list__value").text().trim()).toBe("Laying hens");
       expect(speciesRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/select-poultry-type",
+        "/poultry/poultry-type",
       );
     });
 
@@ -493,7 +491,7 @@ describe("Poultry check answers test", () => {
       );
       expect(minBirdsRow.find(".govuk-summary-list__value").text().trim()).toBe("Yes");
       expect(minBirdsRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/minimum-number-of-birds",
+        "/poultry/minimum-birds",
       );
     });
 
@@ -552,7 +550,7 @@ describe("Poultry check answers test", () => {
       );
       expect(biosecurityRow.find(".govuk-summary-list__value").text().trim()).toBe("Yes");
       expect(biosecurityRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/biosecurity",
+        "/poultry/biosecurity-assessment",
       );
     });
 
@@ -598,7 +596,7 @@ describe("Poultry check answers test", () => {
         "Housing, buildings, infrastructure and wild bird control",
       );
       expect(changesInBiosecurityRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/changes-in-biosecurity",
+        "/poultry/biosecurity-changes",
       );
     });
 
@@ -621,7 +619,7 @@ describe("Poultry check answers test", () => {
         "Up to £1,500",
       );
       expect(costOfChangesRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/cost-of-changes",
+        "/poultry/changes-cost",
       );
     });
 
@@ -680,7 +678,7 @@ describe("Poultry check answers test", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/confirmation");
+      expect(res.headers.location).toEqual("/poultry/claim-confirmation");
       expect(Wreck.post).toHaveBeenCalledTimes(1);
     });
 

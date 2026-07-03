@@ -115,7 +115,7 @@ describe("/poultry/vet-name", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
     });
 
-    test("back link points to /poultry/minimum-number-of-birds", async () => {
+    test("back link points to /poultry/minimum-birds", async () => {
       const options = {
         method: "GET",
         url,
@@ -126,7 +126,7 @@ describe("/poultry/vet-name", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toBe("/poultry/minimum-number-of-birds");
+      expect($(".govuk-back-link").attr("href")).toBe("/poultry/minimum-birds");
       expect(await axe(res.payload)).toHaveNoViolations();
     });
 
@@ -160,7 +160,7 @@ describe("/poultry/vet-name", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/poultry/you-can-claim-multiple");
+      expect(res.headers.location).toBe("/poultry/what-you-can-claim");
     });
   });
 

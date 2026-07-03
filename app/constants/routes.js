@@ -1,12 +1,13 @@
 export const dashboardRoutes = {
   manageYourClaims: "/livestock/manage-claims",
-  poultryManageYourClaims: "/poultry/vet-visits",
+  poultryManageClaims: "/poultry/manage-claims",
   checkDetails: "/check-details",
   selectFunding: "/select-funding",
 };
 
 export const dashboardViews = {
   selectFunding: "select-funding",
+  poultryManageClaims: "poultry/manage-claims",
 };
 
 export const supportRoutes = {
@@ -35,10 +36,10 @@ export const applyRoutes = {
 };
 
 export const poultryApplyRoutes = {
-  youCanClaimMultiple: "/poultry/you-can-claim-multiple",
+  whatYouCanClaim: "/poultry/what-you-can-claim",
   timings: "/poultry/timings",
-  numbers: "/poultry/numbers",
-  declaration: "/poultry/declaration",
+  minimumNumber: "/poultry/minimum-number",
+  agreementOffer: "/poultry/agreement-offer",
 };
 
 export const applyViews = {
@@ -51,10 +52,10 @@ export const applyViews = {
 };
 
 export const poultryApplyViews = {
-  youCanClaimMultiple: "poultry/apply/you-can-claim-multiple",
+  youCanClaimMultiple: "poultry/apply/what-you-can-claim",
   timings: "poultry/apply/timings",
-  numbers: "poultry/apply/numbers",
-  declaration: "poultry/apply/declaration",
+  minimumNumber: "poultry/apply/minimum-number",
+  agreementOffer: "poultry/apply/agreement-offer",
   offerRejected: "poultry/apply/offer-rejected",
   termsRejected: "poultry/apply/terms-rejected",
   confirmation: "poultry/apply/confirmation",
@@ -164,44 +165,44 @@ export const claimViews = {
 };
 
 export const poultryClaimRoutes = {
-  biosecurity: "/poultry/biosecurity",
+  biosecurityAssessment: "/poultry/biosecurity-assessment",
   biosecurityUsefulness: "/poultry/biosecurity-usefulness",
-  changesInBiosecurity: "/poultry/changes-in-biosecurity",
+  biosecurityChanges: "/poultry/biosecurity-changes",
   checkAnswers: "/poultry/check-answers",
   checkSiteDetails: "/poultry/check-site-details",
-  confirmation: "/poultry/confirmation",
-  costOfChanges: "/poultry/cost-of-changes",
+  claimConfirmation: "/poultry/claim-confirmation",
+  changesCost: "/poultry/changes-cost",
   dateOfVisit: "/poultry/date-of-visit",
-  enterSiteName: "/poultry/enter-site-name",
-  enterCphNumber: "/poultry/enter-cph-number",
+  siteName: "/poultry/site-name",
+  cph: "/poultry/cph",
   enterSiteDetails: "/poultry/enter-site-details",
   interview: "/poultry/interview",
-  minimumNumberOfBirds: "/poultry/minimum-number-of-birds",
-  selectPoultryType: "/poultry/select-poultry-type",
+  minimumBirds: "/poultry/minimum-birds",
+  poultryType: "/poultry/poultry-type",
   selectTheSite: "/poultry/select-site",
-  siteOthersOnSbi: "/poultry/site-others-on-sbi",
+  sbiSites: "/poultry/sbi-sites",
   vetName: "/poultry/vet-name",
   vetRcvs: "/poultry/vet-rcvs",
 };
 
 export const poultryClaimViews = {
-  biosecurity: "poultry/claim/biosecurity",
+  biosecurityAssessment: "poultry/claim/biosecurity-assessment",
   biosecurityException: "poultry/claim/biosecurity-exception",
   biosecurityUsefulness: "poultry/claim/biosecurity-usefulness",
   cannotContinueTimingRules: "poultry/claim/cannot-continue-timing-rules",
-  changesInBiosecurity: "poultry/claim/changes-in-biosecurity",
+  biosecurityChanges: "poultry/claim/biosecurity-changes",
   checkAnswers: "poultry/claim/check-answers",
-  confirmation: "poultry/claim/confirmation",
-  costOfChanges: "poultry/claim/biosecurity-cost-of-changes",
+  claimConfirmation: "poultry/claim/claim-confirmation",
+  changesCost: "poultry/claim/changes-cost",
   dateOfVisit: "poultry/claim/date-of-visit",
   interview: "poultry/claim/interview",
-  enterSiteName: "poultry/claim/enter-site-name",
-  enterCphNumber: "poultry/claim/enter-cph-number",
-  minimumNumberOfBirds: "poultry/claim/minimum-number-of-birds",
-  minimumNumberOfBirdsException: "poultry/claim/minimum-number-of-birds-exception",
-  selectPoultryType: "poultry/claim/select-poultry-type",
+  siteName: "poultry/claim/site-name",
+  cph: "poultry/claim/cph",
+  minimumBirds: "poultry/claim/minimum-birds",
+  minimumBirdsException: "poultry/claim/minimum-birds-exception",
+  poultryType: "poultry/claim/poultry-type",
   selectTheSite: "poultry/claim/select-the-site",
-  siteOthersOnSbi: "poultry/claim/site-others-on-sbi",
+  sbiSites: "poultry/claim/sbi-sites",
   vetRcvs: "poultry/claim/vet-rcvs",
   vetName: "poultry/claim/vet-name",
 };
@@ -210,6 +211,6 @@ export const poultryApplyUrls = Object.values(poultryApplyRoutes);
 export const poultryClaimUrls = Object.values(poultryClaimRoutes);
 export const allPoultryRoutes = [
   ...poultryApplyUrls,
-  dashboardRoutes.poultryManageYourClaims,
+  dashboardRoutes.poultryManageClaims,
   ...poultryClaimUrls,
 ];

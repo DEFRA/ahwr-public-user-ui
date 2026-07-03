@@ -11,11 +11,11 @@ import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
 
 const auth = { credentials: { reference: "1111", sbi: "111111111" }, strategy: "cookie" };
-const url = "/poultry/select-poultry-type";
+const url = "/poultry/poultry-type";
 
 jest.mock("../../../../../../app/session/index.js");
 
-describe("/poultry/select-poultry-type", () => {
+describe("/poultry/poultry-type", () => {
   let server;
   let crumb;
 
@@ -86,7 +86,7 @@ describe("/poultry/select-poultry-type", () => {
       expect(res.statusCode).toBe(200);
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
-      expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
+      expect($("#back").attr("href")).toEqual("/poultry/sbi-sites");
     });
 
     test("shows the updated heading", async () => {
@@ -152,7 +152,7 @@ describe("/poultry/select-poultry-type", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
+      expect($("#back").attr("href")).toEqual("/poultry/sbi-sites");
     });
 
     test("shows back link to select-the-site when herds exist", async () => {
@@ -168,7 +168,7 @@ describe("/poultry/select-poultry-type", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("#back").attr("href")).toEqual("/poultry/site-others-on-sbi");
+      expect($("#back").attr("href")).toEqual("/poultry/sbi-sites");
     });
 
     test("handles undefined typesOfPoultry in session", async () => {
@@ -209,7 +209,7 @@ describe("/poultry/select-poultry-type", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/minimum-number-of-birds");
+      expect(res.headers.location).toEqual("/poultry/minimum-birds");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
@@ -236,7 +236,7 @@ describe("/poultry/select-poultry-type", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/minimum-number-of-birds");
+      expect(res.headers.location).toEqual("/poultry/minimum-birds");
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         sessionEntryKeys.poultryClaim,
