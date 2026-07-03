@@ -7,6 +7,7 @@ export const dashboardRoutes = {
 
 export const dashboardViews = {
   selectFunding: "select-funding",
+  poultryManageClaims: "poultry/manage-claims",
 };
 
 export const supportRoutes = {
