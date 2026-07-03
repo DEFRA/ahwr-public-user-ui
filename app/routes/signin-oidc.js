@@ -30,7 +30,7 @@ export const signinRouteHandlers = [
         query: joi
           .object({
             code: joi.string().required(),
-            state: joi.string().required(),
+            state: joi.string().base64().required(),
           })
           .options({
             stripUnknown: true,
