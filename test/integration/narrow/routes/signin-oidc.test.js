@@ -106,6 +106,24 @@ describe("signin-oidc", () => {
     );
   });
 
+  test("state is not valid base64, return 400", async () => {
+    const res = await server.inject({
+      url: `/signin-oidc?state=TESTSTATE&code=TESTCODE`,
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+    expect(trackError).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.any(Error),
+      "signin-oidc-validation-failed",
+      "Signin OIDC validation failed",
+    );
+  });
+
   test("state is not valid, 302 redirect user to defra id", async () => {
     const invalidEncodedState = await getEncodedTestState(server, { invalid: true });
 
