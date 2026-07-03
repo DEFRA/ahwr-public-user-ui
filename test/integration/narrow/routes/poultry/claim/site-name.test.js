@@ -60,17 +60,41 @@ describe("/poultry/site-name", () => {
     jest.resetAllMocks();
   });
 
-  const expectSiteText = ($) => {
-    expect($("title").text().trim()).toContain(
-      "Enter the site name - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-    );
-    expect($(".govuk-label--l").text().trim()).toBe("Enter the site name");
+  const expectSiteHint = ($) => {
     expect($(".govuk-hint").text().trim()).toContain(
       "Enter the site name from the ’Tell us about this poultry site’ section of the summary the vet gave you.",
     );
   };
 
   describe("GET", () => {
+    test("Shows the browser page title", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          herds: [{ id: "1" }],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Enter the site name");
+    });
+
+    test("Shows the page heading", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          herds: [{ id: "1" }],
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toBe("Enter the site name");
+    });
+
     test("returns 200 and displays page correctly", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -89,7 +113,7 @@ describe("/poultry/site-name", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteText($);
+      expectSiteHint($);
     });
 
     test("returns 200 and displays previously entered site name", async () => {
@@ -112,7 +136,7 @@ describe("/poultry/site-name", () => {
 
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteText($);
+      expectSiteHint($);
       expect($("#herdName").val()).toBe("Commercial Herd");
     });
 
@@ -130,7 +154,7 @@ describe("/poultry/site-name", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-visit");
-      expectSiteText($);
+      expectSiteHint($);
     });
   });
 
@@ -209,7 +233,7 @@ describe("/poultry/site-name", () => {
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
       expect($('a[href="#herdName"]').text()).toContain("Enter the site name");
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteText($);
+      expectSiteHint($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
@@ -235,7 +259,7 @@ describe("/poultry/site-name", () => {
         "Enter a site name of between 2 and 30 characters",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteText($);
+      expectSiteHint($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
@@ -261,7 +285,7 @@ describe("/poultry/site-name", () => {
         "Enter a site name of between 2 and 30 characters",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteText($);
+      expectSiteHint($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
@@ -287,7 +311,7 @@ describe("/poultry/site-name", () => {
         "Name must only include letters a to z, numbers and special characters such as hyphens, spaces and apostrophes.",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteText($);
+      expectSiteHint($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
@@ -320,7 +344,7 @@ describe("/poultry/site-name", () => {
         "You have already used this name, the name must be unique",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteText($);
+      expectSiteHint($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
 
@@ -343,7 +367,7 @@ describe("/poultry/site-name", () => {
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
       expect($('a[href="#herdName"]').text()).toContain("Enter the site name");
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-visit");
-      expectSiteText($);
+      expectSiteHint($);
       expect(emitHerdEvent).not.toHaveBeenCalled();
     });
   });

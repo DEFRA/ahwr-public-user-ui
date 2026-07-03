@@ -210,4 +210,26 @@ describe("GET /poultry/manage-claims", () => {
     expect($("body").text()).not.toContain("You have not submitted any claims yet.");
     expect(await axe(res.payload)).toHaveNoViolations();
   });
+
+  test("Shows the browser page title", async () => {
+    await setServerState(server, { ...baseState });
+
+    getClaimsByApplicationReference.mockResolvedValueOnce([]);
+
+    const res = await server.inject(options);
+    const $ = load(res.payload);
+
+    expect($("title").text()).toContain("Manage your claims");
+  });
+
+  test("Shows the page heading", async () => {
+    await setServerState(server, { ...baseState });
+
+    getClaimsByApplicationReference.mockResolvedValueOnce([]);
+
+    const res = await server.inject(options);
+    const $ = load(res.payload);
+
+    expect($("h1").text()).toBe("Manage your claims");
+  });
 });

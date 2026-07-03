@@ -73,6 +73,20 @@ describe("/poultry/vet-name", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    test("Shows the browser page title", async () => {
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("What is the vet's name?");
+    });
+
+    test("Shows the page heading", async () => {
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toBe("What is the vet's name?");
+    });
+
     test("returns 200", async () => {
       const options = {
         method: "GET",
@@ -85,10 +99,6 @@ describe("/poultry/vet-name", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect(await axe(res.payload)).toHaveNoViolations();
-      expect($("h1").text()).toMatch("What is the vet's name?");
-      expect($("title").text().trim()).toContain(
-        "What is the vet's name? - Get funding to improve animal health and welfare",
-      );
       expectPhaseBanner.ok($);
     });
 

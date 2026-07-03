@@ -64,6 +64,36 @@ describe("/sbi-sites tests", () => {
   });
 
   describe("GET", () => {
+    test("Shows the browser page title", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain(
+        "Is this the only site associated with this Single Business Identifier (SBI)?",
+      );
+    });
+
+    test("Shows the page heading", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toBe(
+        "Is this the only site associated with this Single Business Identifier (SBI)?",
+      );
+    });
+
     test("returns 200 and displays page correctly", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -76,14 +106,7 @@ describe("/sbi-sites tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Is this the only site associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/cph");
-      const legend = $(".govuk-fieldset__legend--l");
-      expect(legend.text().trim()).toBe(
-        "Is this the only site associated with this Single Business Identifier (SBI)?",
-      );
       expectPhaseBanner.ok($);
     });
 

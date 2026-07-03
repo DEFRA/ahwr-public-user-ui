@@ -89,7 +89,22 @@ describe("/poultry/poultry-type", () => {
       expect($("#back").attr("href")).toEqual("/poultry/sbi-sites");
     });
 
-    test("shows the updated heading", async () => {
+    test("Shows the browser page title", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ typesOfPoultry: [] });
+
+      const res = await server.inject({
+        method: "GET",
+        url,
+        auth,
+      });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Select poultry type");
+    });
+
+    test("Shows the page heading", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({ typesOfPoultry: [] });

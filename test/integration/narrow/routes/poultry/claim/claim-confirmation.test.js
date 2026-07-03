@@ -39,13 +39,7 @@ describe("Claim confirmation", () => {
     jest.clearAllMocks();
   });
 
-  test("GET endemicsConfirmation route %s", async () => {
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
-
+  const mockConfirmationSession = () => {
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
       .mockReturnValue({
@@ -68,6 +62,34 @@ describe("Claim confirmation", () => {
         sessionKeys.confirmedDetails,
       )
       .mockReturnValue(true);
+  };
+
+  test("Shows the browser page title", async () => {
+    mockConfirmationSession();
+
+    const res = await server.inject({ method: "GET", url, auth });
+
+    const $ = cheerio.load(res.payload);
+    expect($("title").text()).toContain("Claim submitted");
+  });
+
+  test("Shows the page heading", async () => {
+    mockConfirmationSession();
+
+    const res = await server.inject({ method: "GET", url, auth });
+
+    const $ = cheerio.load(res.payload);
+    expect($("h1").text().trim()).toBe("Claim submitted");
+  });
+
+  test("GET endemicsConfirmation route %s", async () => {
+    const options = {
+      method: "GET",
+      url,
+      auth,
+    };
+
+    mockConfirmationSession();
 
     const res = await server.inject(options);
 

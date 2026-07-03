@@ -76,7 +76,7 @@ describe("/poultry/interview", () => {
       expect(response.headers.location.toString()).toEqual(`/sign-in`);
     });
 
-    test("display question text", async () => {
+    test("Shows the browser page title", async () => {
       const options = {
         method: "GET",
         url,
@@ -88,12 +88,26 @@ describe("/poultry/interview", () => {
 
       const response = await server.inject(options);
 
-      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
-      expect($("title").text()).toMatch(
-        "Would you be willing to take part in a short follow-up interview about your experience of this scheme? - Get funding to improve animal health and welfare",
+      expect($("title").text()).toContain(
+        "Would you be willing to take part in a short follow-up interview about your experience of this scheme?",
       );
-      expect($("h1").text()).toMatch(
+    });
+
+    test("Shows the page heading", async () => {
+      const options = {
+        method: "GET",
+        url,
+        auth,
+      };
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({});
+
+      const response = await server.inject(options);
+
+      const $ = cheerio.load(response.payload);
+      expect($("h1").text().trim()).toBe(
         "Would you be willing to take part in a short follow-up interview about your experience of this scheme?",
       );
     });

@@ -31,10 +31,6 @@ const auth = { credentials: {}, strategy: "cookie" };
 const url = "/poultry/date-of-visit";
 
 function expectPageContentOk($, previousPageUrl) {
-  expect($("title").text()).toMatch(
-    "Date of visit - Get funding to improve animal health and welfare",
-  );
-  expect($("h1").text().trim()).toMatch("Date of visit");
   expect($("p").text()).toMatch("This is the date the vet last visited the site for this review.");
   expect($("#visit-date-hint").text()).toMatch("For example, 27 3 2022");
   expect($(`label[for=visit-date-day]`).text()).toMatch("Day");
@@ -151,6 +147,20 @@ describe("GET /poultry/date-of-visit", () => {
     const res = await server.inject(options);
     expect(res.statusCode).toBe(302);
     expect(res.headers.location.toString()).toEqual(`/poultry/what-you-can-claim`);
+  });
+
+  test("Shows the browser page title", async () => {
+    const res = await server.inject(options);
+
+    const $ = cheerio.load(res.payload);
+    expect($("title").text()).toContain("Date of visit");
+  });
+
+  test("Shows the page heading", async () => {
+    const res = await server.inject(options);
+
+    const $ = cheerio.load(res.payload);
+    expect($("h1").text().trim()).toBe("Date of visit");
   });
 
   test("without previous data, shows the screen with empty date boxes", async () => {

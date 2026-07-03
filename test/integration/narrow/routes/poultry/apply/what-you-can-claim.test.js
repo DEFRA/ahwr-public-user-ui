@@ -71,13 +71,26 @@ describe("what-you-can-claim page", () => {
   });
 
   describe("GET operation handler", () => {
+    test("Shows the browser page title", async () => {
+      const res = await server.inject({ ...optionsBase, method: "GET" });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("What you can claim for as part of this agreement");
+    });
+
+    test("Shows the page heading", async () => {
+      const res = await server.inject({ ...optionsBase, method: "GET" });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toBe("What you can claim for as part of this agreement");
+    });
+
     test("returns 200 and content is correct", async () => {
       const res = await server.inject({ ...optionsBase, method: "GET" });
 
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.payload).toContain("/select-funding"); // back-link
-      expect(res.payload).toContain("What you can claim for as part of this agreement");
       expect(res.payload).toContain(
         "Under this Poultry Biosecurity Review (PBR) agreement, you can claim funding for biosecurity reviews for every poultry site associated with your single business identifier (SBI).",
       );

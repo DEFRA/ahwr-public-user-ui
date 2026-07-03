@@ -62,6 +62,66 @@ describe("/poultry/select-site", () => {
   });
 
   describe("GET", () => {
+    const singleSitePreviousClaims = [
+      {
+        herd: { id: "herd-123", name: "Main Farm", cph: "12/345/6789" },
+        data: { typesOfPoultry: ["laying-hens"], dateOfVisit: "2024-03-15" },
+        createdAt: "2024-03-20",
+      },
+    ];
+    const multipleSitePreviousClaims = [
+      ...singleSitePreviousClaims,
+      {
+        herd: { id: "herd-456", name: "Second Farm", cph: "98/765/4321" },
+        data: { typesOfPoultry: ["broilers"], dateOfVisit: "2024-02-10" },
+        createdAt: "2024-02-15",
+      },
+    ];
+
+    test("Shows the browser page title for a single previous site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ siteSelected: null, previousClaims: singleSitePreviousClaims });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Your previous claim");
+    });
+
+    test("Shows the page heading for a single previous site", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ siteSelected: null, previousClaims: singleSitePreviousClaims });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text()).toContain("Your previous claim");
+    });
+
+    test("Shows the browser page title for multiple previous sites", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ siteSelected: null, previousClaims: multipleSitePreviousClaims });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Select the site you are claiming for");
+    });
+
+    test("Shows the page heading for multiple previous sites", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ siteSelected: null, previousClaims: multipleSitePreviousClaims });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text()).toContain("Select the site you are claiming for");
+    });
+
     test("returns 200 and displays page correctly with single previous site", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -89,8 +149,6 @@ describe("/poultry/select-site", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-visit");
-      expect($("title").text()).toContain("Your previous claim");
-      expect($("h1").text()).toContain("Your previous claim");
     });
 
     test("displays species, last visit date, and claim date for single site", async () => {
@@ -259,7 +317,6 @@ describe("/poultry/select-site", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/date-of-visit");
-      expect($("title").text()).toContain("Select the site you are claiming for");
     });
 
     test("displays CPH prefix in radio button hints for multiple sites", async () => {

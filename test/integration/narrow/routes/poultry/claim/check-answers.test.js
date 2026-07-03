@@ -101,6 +101,20 @@ describe("Poultry check answers test", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    test("Shows the browser page title", async () => {
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Check your answers");
+    });
+
+    test("Shows the page heading", async () => {
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toBe("Check your answers");
+    });
+
     test("returns 200", async () => {
       const options = {
         method: "GET",

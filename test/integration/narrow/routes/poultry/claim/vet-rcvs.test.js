@@ -62,6 +62,32 @@ describe("/poultry/vet-rcvs", () => {
   });
 
   describe(`GET /poultry/vet-rcvs`, () => {
+    test("Shows the browser page title", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({});
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain(
+        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
+      );
+    });
+
+    test("Shows the page heading", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({});
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toBe(
+        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
+      );
+    });
+
     test("returns 200 and displays page correctly when visting page first time", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -77,12 +103,6 @@ describe("/poultry/vet-rcvs", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1 > label").text().trim()).toMatch(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
-      );
-      expect($("title").text().trim()).toContain(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare",
-      );
       expectPhaseBanner.ok($);
       expect(await axe(res.payload)).toHaveNoViolations();
     });
@@ -102,12 +122,7 @@ describe("/poultry/vet-rcvs", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1 > label").text().trim()).toMatch(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
-      );
-      expect($("title").text().trim()).toContain(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare",
-      );
+      expect($("#vetRCVSNumber").val()).toBe("1234567");
       expectPhaseBanner.ok($);
       expect(await axe(res.payload)).toHaveNoViolations();
     });

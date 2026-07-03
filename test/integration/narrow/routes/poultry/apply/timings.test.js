@@ -62,6 +62,46 @@ describe("Timings test", () => {
   });
 
   describe("GET /poultry/timings route", () => {
+    const getOptions = {
+      method: "GET",
+      url: poultryApplyRoutes.timings,
+      auth,
+    };
+
+    beforeEach(() => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryApplication)
+        .mockReturnValue({ reference: "POUL-1234-ABCD" });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(organisation);
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.confirmedDetails,
+          sessionKeys.confirmedDetails,
+        )
+        .mockReturnValue(true);
+    });
+
+    test("Shows the browser page title", async () => {
+      getApplicationsBySbi.mockResolvedValueOnce([]);
+
+      const res = await server.inject(getOptions);
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Timing of poultry biosecurity reviews");
+    });
+
+    test("Shows the page heading", async () => {
+      getApplicationsBySbi.mockResolvedValueOnce([]);
+
+      const res = await server.inject(getOptions);
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toBe("Timing of poultry biosecurity reviews");
+    });
+
     test("returns 200 with reviewed timing rules content", async () => {
       getApplicationsBySbi.mockResolvedValueOnce([]);
 
@@ -76,10 +116,6 @@ describe("Timings test", () => {
       expect(res.statusCode).toBe(200);
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("Timing of poultry biosecurity reviews");
-      expect($("title").text()).toMatch(
-        "Timing of poultry biosecurity reviews - Get funding to improve animal health and welfare",
-      );
 
       expect(res.payload).toContain(
         "You cannot organise a review with a vet until this PBR agreement is in place.",

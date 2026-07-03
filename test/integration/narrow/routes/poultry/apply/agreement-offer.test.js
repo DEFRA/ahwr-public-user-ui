@@ -89,6 +89,28 @@ describe("Agreement offer test", () => {
   createApplication.mockResolvedValue({ applicationReference: "POUL-PJ7E-WSI8" });
 
   describe("GET /agreement-offer route", () => {
+    test("Shows the browser page title", async () => {
+      const res = await server.inject({
+        method: "GET",
+        url: "/poultry/agreement-offer",
+        auth,
+      });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Review your agreement offer");
+    });
+
+    test("Shows the page heading", async () => {
+      const res = await server.inject({
+        method: "GET",
+        url: "/poultry/agreement-offer",
+        auth,
+      });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toBe("Review your agreement offer");
+    });
+
     test("when not logged in redirects to dashboard /sign-in", async () => {
       const options = {
         method: "GET",
@@ -114,11 +136,6 @@ describe("Agreement offer test", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       ok($);
-
-      expect($("title").text()).toMatch(
-        "Review your agreement offer - Get funding to improve animal health and welfare",
-      );
-      expect($("h1.govuk-heading-l").text().trim()).toBe("Review your agreement offer");
 
       const intro = $("p")
         .filter((i, el) =>

@@ -76,6 +76,34 @@ describe("/cph tests", () => {
   };
 
   describe("GET", () => {
+    test("Shows the browser page title", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Enter the CPH number for this site");
+    });
+
+    test("Shows the page heading", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toBe(
+        "Enter the county parish holding (CPH) number for this site",
+      );
+    });
+
     test("displays page correctly when entering cph for first time", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -89,7 +117,6 @@ describe("/cph tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/site-name");
-      expectSiteText($);
       expectPhaseBanner.ok($);
     });
 
@@ -108,7 +135,6 @@ describe("/cph tests", () => {
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/site-name");
       expect($("input#herdCph").val()).toBe("22/333/4444");
-      expectSiteText($);
       expectPhaseBanner.ok($);
     });
 
@@ -127,7 +153,6 @@ describe("/cph tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-back-link").attr("href")).toContain("/select-site");
-      expectSiteText($);
       expectPhaseBanner.ok($);
     });
   });

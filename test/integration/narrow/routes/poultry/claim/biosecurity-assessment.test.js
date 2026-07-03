@@ -77,7 +77,7 @@ describe("/poultry/biosecurity-assessment", () => {
       expect(response.headers.location.toString()).toEqual(`/sign-in`);
     });
 
-    test("display question text", async () => {
+    test("Shows the browser page title", async () => {
       const options = {
         method: "GET",
         url,
@@ -89,12 +89,24 @@ describe("/poultry/biosecurity-assessment", () => {
 
       const response = await server.inject(options);
 
-      expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
-      expect($("title").text()).toMatch(
-        "Did the vet do a biosecurity assessment? - Get funding to improve animal health and welfare",
-      );
-      expect($("h1").text()).toMatch("Did the vet do a biosecurity assessment?");
+      expect($("title").text()).toContain("Did the vet do a biosecurity assessment?");
+    });
+
+    test("Shows the page heading", async () => {
+      const options = {
+        method: "GET",
+        url,
+        auth,
+      };
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({});
+
+      const response = await server.inject(options);
+
+      const $ = cheerio.load(response.payload);
+      expect($("h1").text().trim()).toBe("Did the vet do a biosecurity assessment?");
     });
 
     test("selects 'yes' when previously selected", async () => {

@@ -78,6 +78,34 @@ describe("/poultry/minimum-birds tests", () => {
       expect(res.headers.location.toString()).toEqual(`/sign-in`);
     });
 
+    test("Shows the browser page title", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("title").text()).toContain("Minimum number of birds");
+    });
+
+    test("Shows the page heading", async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+        });
+
+      const res = await server.inject({ method: "GET", url, auth });
+
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text().trim()).toBe(
+        "Has your vet confirmed that this site can hold the minimum number of birds?",
+      );
+    });
+
     test("returns 200 and displays page correctly", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -90,14 +118,7 @@ describe("/poultry/minimum-birds tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Minimum number of birds - Get funding to improve animal health and welfare - GOV.UK",
-      );
       expect($("#back").attr("href")).toContain("/poultry-type");
-      const legend = $(".govuk-fieldset__legend--l");
-      expect(legend.text().trim()).toBe(
-        "Has your vet confirmed that this site can hold the minimum number of birds?",
-      );
 
       const hint = $(".govuk-hint");
       expect(hint.text()).toContain("The minimum numbers of birds are:");
