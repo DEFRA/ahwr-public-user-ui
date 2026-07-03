@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorSummary.length %}Error: {% endif %}Date of {{ reviewOrFollowUpText }} - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorSummary.length %}Error: {% endif %}Date of livestock {{ reviewOrFollowUpText }} - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block containerStart %}
   {{ govukBackLink({

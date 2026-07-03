@@ -79,7 +79,7 @@ describe("/livestock/sbi-herds tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Is this the only beef cattle herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($(".govuk-hint").text()).toContain("Tell us about this herd");
@@ -106,7 +106,7 @@ describe("/livestock/sbi-herds tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Is this the only beef cattle herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($('.govuk-radios__input[value="no"]').is(":checked")).toBeTruthy();
@@ -128,7 +128,7 @@ describe("/livestock/sbi-herds tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Is this the only flock of sheep associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($(".govuk-hint").text()).toContain("Tell us about this flock");
@@ -154,7 +154,7 @@ describe("/livestock/sbi-herds tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Is this the only dairy cattle herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($(".govuk-hint").text()).toContain("Tell us about this herd");
@@ -180,7 +180,7 @@ describe("/livestock/sbi-herds tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Is this the only pigs herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($(".govuk-hint").text()).toContain("Tell us about this herd");
@@ -283,7 +283,7 @@ describe("/livestock/sbi-herds tests", () => {
         "Select yes if this is the only flock of sheep associated with this SBI",
       );
       expect($("title").text().trim()).toContain(
-        "Is this the only flock of sheep associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-hint").text()).toContain("Tell us about this flock");
       expect(emitHerdEvent).not.toHaveBeenCalled();
@@ -312,7 +312,7 @@ describe("/livestock/sbi-herds tests", () => {
         "Select yes if this is the only beef cattle herd associated with this SBI",
       );
       expect($("title").text().trim()).toContain(
-        "Is this the only beef cattle herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-hint").text()).toContain("Tell us about this herd");
       expect(emitHerdEvent).not.toHaveBeenCalled();

@@ -80,7 +80,7 @@ describe("/livestock/enter-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect($(".govuk-heading-l").text().trim()).toBe("Enter the herd details");
@@ -120,7 +120,7 @@ describe("/livestock/enter-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect($('.govuk-checkboxes__input[value="differentBreed"]').is(":checked")).toBeTruthy();
@@ -143,7 +143,7 @@ describe("/livestock/enter-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Enter the flock details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock flock details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect($(".govuk-heading-l").text().trim()).toBe("Enter the flock details");
@@ -172,7 +172,7 @@ describe("/livestock/enter-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($(".govuk-heading-l").text().trim()).toBe("Enter the herd details");
@@ -201,7 +201,7 @@ describe("/livestock/enter-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect($(".govuk-heading-l").text().trim()).toBe("Enter the herd details");

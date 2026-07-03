@@ -74,6 +74,9 @@ describe("PI Hunt recommended tests", () => {
       expect($(".govuk-fieldset__heading").text().trim()).toEqual(
         "Was the PI hunt recommended by the vet?",
       );
+      expect($("title").text()).toContain(
+        "PI hunt recommended for livestock - Get funding to improve animal health and welfare",
+      );
       expect($(".govuk-radios__item").length).toEqual(2);
       expectPhaseBanner.ok($);
     });

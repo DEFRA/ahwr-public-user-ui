@@ -80,7 +80,7 @@ describe("Test Results test", () => {
         "Which disease or condition did the vet take samples to test for?",
       );
       expect($("title").text()).toMatch(
-        "Which disease or condition did the vet take samples to test for? - Get funding to improve animal health and welfare",
+        "Sheep livestock disease or condition samples - Get funding to improve animal health and welfare",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sheep-endemics-package");
 
@@ -116,7 +116,7 @@ describe("Test Results test", () => {
         "Which disease or condition did the vet take samples to test for?",
       );
       expect($("title").text()).toMatch(
-        "Which disease or condition did the vet take samples to test for? - Get funding to improve animal health and welfare",
+        "Sheep livestock disease or condition samples - Get funding to improve animal health and welfare",
       );
       expect($("a").text()).toMatch("Select a disease or condition");
 

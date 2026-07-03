@@ -122,7 +122,7 @@ describe("Species numbers page", () => {
           `Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === "REVIEW" ? "review" : "follow-up"}?`,
         );
         expect($("title").text().trim()).toContain(
-          `Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === "REVIEW" ? "review" : "follow-up"}? - Get funding to improve animal health and welfare`,
+          `Minimum number of livestock on date of ${typeOfReview === "REVIEW" ? "review" : "follow-up"}? - Get funding to improve animal health and welfare`,
         );
         expect($(".govuk-hint").text().trim()).toEqual(
           "You can find this on the summary the vet gave you.",
@@ -177,7 +177,7 @@ describe("Species numbers page", () => {
           `Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === "REVIEW" ? "review" : "follow-up"}?`,
         );
         expect($("title").text().trim()).toContain(
-          `Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === "REVIEW" ? "review" : "follow-up"}? - Get funding to improve animal health and welfare`,
+          `Minimum number of livestock on date of ${typeOfReview === "REVIEW" ? "review" : "follow-up"}? - Get funding to improve animal health and welfare`,
         );
         expect($(".govuk-hint").text().trim()).toEqual(
           "You can find this on the summary the vet gave you.",
@@ -219,7 +219,7 @@ describe("Species numbers page", () => {
           `Did you have 11 or more ${typeOfLivestock} cattle in this herd on the date of the ${typeOfReview === "REVIEW" ? "review" : "follow-up"}?`,
         );
         expect($("title").text().trim()).toContain(
-          `Did you have 11 or more ${typeOfLivestock} cattle in this herd on the date of the ${typeOfReview === "REVIEW" ? "review" : "follow-up"}? - Get funding to improve animal health and welfare`,
+          `Minimum number of livestock on date of ${typeOfReview === "REVIEW" ? "review" : "follow-up"}? - Get funding to improve animal health and welfare`,
         );
         expect($(".govuk-hint").text().trim()).toEqual(
           "You can find this on the summary the vet gave you.",
@@ -256,7 +256,7 @@ describe("Species numbers page", () => {
         "Did you have 21 or more sheep in this flock on the date of the review?",
       );
       expect($("title").text().trim()).toContain(
-        "Did you have 21 or more sheep in this flock on the date of the review? - Get funding to improve animal health and welfare",
+        "Minimum number of livestock on date of review? - Get funding to improve animal health and welfare",
       );
       expect($(".govuk-hint").text().trim()).toEqual(
         "You can find this on the summary the vet gave you.",

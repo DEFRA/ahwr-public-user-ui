@@ -77,7 +77,7 @@ describe("Number of blood samples test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("How many blood samples were tested?");
       expect($("title").text()).toContain(
-        "How many blood samples were tested? - Get funding to improve animal health and welfare",
+        "Number of livestock blood samples - Get funding to improve animal health and welfare",
       );
       expectPhaseBanner.ok($);
     });

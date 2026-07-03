@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Is this the same {{herdOrFlock}} you have previously claimed for? - {{serviceName}} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Previous {{ herdOrFlock }} livestock claim - {{serviceName}} - GOV.UK{% endblock %}
 
 {% block containerStart %}
   {{ govukBackLink({

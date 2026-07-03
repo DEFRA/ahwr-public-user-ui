@@ -65,7 +65,7 @@ describe("/livestock/herd-name tests", () => {
 
   const expectHerdText = ($) => {
     expect($("title").text().trim()).toContain(
-      "Enter the herd name - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+      "Livestock herd name - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
     );
     expect($(".govuk-label--l").text().trim()).toBe("Enter the herd name");
     expect($(".govuk-hint").text().trim()).toContain("Tell us about this herd");
@@ -78,7 +78,7 @@ describe("/livestock/herd-name tests", () => {
 
   const expectFlockText = ($) => {
     expect($("title").text().trim()).toContain(
-      "Enter the flock name - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+      "Livestock flock name - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
     );
     expect($(".govuk-label--l").text().trim()).toBe("Enter the flock name");
     expect($(".govuk-hint").text().trim()).toContain("Tell us about this flock");

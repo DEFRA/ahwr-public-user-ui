@@ -72,6 +72,10 @@ describe("you-can-claim-multiple page", () => {
 
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(res.payload).toContain(
+        "What you can claim for a livestock agreement - Get funding to improve animal health and welfare",
+      );
+      expect(res.payload).toContain("What you can claim for as part of this agreement"); // h1 unchanged
       expect(res.payload).toContain("/check-details"); // back-link
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),

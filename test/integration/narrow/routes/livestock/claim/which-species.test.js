@@ -89,7 +89,7 @@ describe("Endemics which species test", () => {
 
       expect(res.statusCode).toBe(200);
       expect($("title").text().trim()).toContain(
-        "Which species are you claiming for? - Get funding to improve animal health and welfare - GOV.UK",
+        "Which livestock species are you claiming for? - Get funding to improve animal health and welfare - GOV.UK",
       );
       expect($("h1").text().trim()).toMatch("Which species are you claiming for?");
       expect($(".govuk-radios__item").length).toEqual(4);

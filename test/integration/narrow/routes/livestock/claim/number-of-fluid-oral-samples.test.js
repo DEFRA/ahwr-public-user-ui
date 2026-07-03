@@ -72,7 +72,7 @@ describe("Number of fluid oral samples test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("How many oral fluid samples were tested?");
       expect($("title").text()).toContain(
-        "How many oral fluid samples were tested? - Get funding to improve animal health and welfare",
+        "Number of livestock oral fluid samples - Get funding to improve animal health and welfare",
       );
       expect($("#back").attr("href")).toBe("/livestock/test-urn");
       expectPhaseBanner.ok($);
@@ -94,7 +94,7 @@ describe("Number of fluid oral samples test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("How many oral fluid samples were tested?");
       expect($("title").text()).toContain(
-        "How many oral fluid samples were tested? - Get funding to improve animal health and welfare",
+        "Number of livestock oral fluid samples - Get funding to improve animal health and welfare",
       );
       expect($("#back").attr("href")).toBe("/livestock/samples-types");
       expectPhaseBanner.ok($);

@@ -155,7 +155,7 @@ describe("Check answers test", () => {
 
       expect($("h1").text()).toMatch("Check your answers");
       expect($("title").text()).toMatch(
-        "Check your answers - Get funding to improve animal health and welfare",
+        "Check your answers before submitting your livestock claim - Get funding to improve animal health and welfare",
       );
       expect(res.statusCode).toBe(200);
 
@@ -639,7 +639,7 @@ describe("Check answers test", () => {
 
         expect($("h1").text()).toMatch("Check your answers");
         expect($("title").text()).toMatch(
-          "Check your answers - Get funding to improve animal health and welfare",
+          "Check your answers before submitting your livestock claim - Get funding to improve animal health and welfare",
         );
         expect($(".govuk-summary-list__key").text()).toContain(content);
         expect($(".govuk-summary-list__value").text()).toContain("SpeciesNumbers");
@@ -680,7 +680,7 @@ describe("Check answers test", () => {
 
       expect($("h1").text()).toMatch("Check your answers");
       expect($("title").text()).toMatch(
-        "Check your answers - Get funding to improve animal health and welfare",
+        "Check your answers before submitting your livestock claim - Get funding to improve animal health and welfare",
       );
       expect($(".govuk-summary-list__key").text()).not.toContain("Test results\n");
       expect($(".govuk-summary-list__value").text()).not.toContain("TestResults");
@@ -729,7 +729,7 @@ describe("Check answers test", () => {
 
         expect($("h1").text()).toMatch("Check your answers");
         expect($("title").text()).toMatch(
-          "Check your answers - Get funding to improve animal health and welfare",
+          "Check your answers before submitting your livestock claim - Get funding to improve animal health and welfare",
         );
         expect($(".govuk-summary-list__key").text()).toContain("Review test result");
         expect($(".govuk-summary-list__value").text()).toContain("VetVisitsReviewTestResults");

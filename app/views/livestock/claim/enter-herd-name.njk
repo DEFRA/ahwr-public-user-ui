@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Enter the {{ herdOrFlock }} name - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Livestock {{ herdOrFlock }} name - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block containerStart %}
   {{ govukBackLink({

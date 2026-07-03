@@ -112,6 +112,10 @@ describe("Date of testing", () => {
         expect(await axe(res.payload)).toHaveNoViolations();
         expect(res.statusCode).toBe(HttpStatus.OK);
         const $ = cheerio.load(res.payload);
+        expect($("h1").text()).toMatch("When were samples taken?");
+        expect($("title").text()).toContain(
+          "When livestock samples were taken - Get funding to improve animal health and welfare",
+        );
         expect($(".govuk-back-link").attr("href")).toMatch("/livestock/pi-hunt-all-animals");
         expectPhaseBanner.ok($);
         expect($("#whenTestingWasCarriedOut-hint").text()).toMatch(

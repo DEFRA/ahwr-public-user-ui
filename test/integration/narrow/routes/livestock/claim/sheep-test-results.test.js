@@ -80,6 +80,8 @@ describe("Sheep test result tests", () => {
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
+      expect($("h1").text()).toMatch("What was the Sheep scab result?");
+      expect($("title").text()).toContain("Sheep livestock test result");
       expect($(".govuk-back-link").attr("href")).toContain(
         "/livestock/sheep-test-results?diseaseType=other",
       );

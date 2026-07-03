@@ -103,6 +103,9 @@ describe("Disease status test", () => {
       expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       expect($("h1").text()).toMatch("What is the disease status category?");
+      expect($("title").text()).toContain(
+        "Livestock disease status - Get funding to improve animal health and welfare",
+      );
     });
 
     test("select '1' when diseaseStatus is '1'", async () => {

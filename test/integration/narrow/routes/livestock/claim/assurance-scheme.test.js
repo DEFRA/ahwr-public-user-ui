@@ -92,6 +92,11 @@ describe("Assurance Scheme", () => {
 
       expect(await axe(response.payload)).toHaveNoViolations();
       expect(response.statusCode).toBe(200);
+      const $ = cheerio.load(response.payload);
+      expect($("title").text().trim()).toContain(
+        "Livestock biosecurity assessment - Get funding to improve animal health and welfare",
+      );
+      expect($("h1").text().trim()).toBe("Is this flock part of an Assurance Scheme?");
     });
   });
 

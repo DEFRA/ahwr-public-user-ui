@@ -74,7 +74,7 @@ describe("Type of samples taken test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("What type of samples were taken?");
       expect($("title").text()).toContain(
-        "What type of samples were taken? - Get funding to improve animal health and welfare",
+        "Type of livestock samples - Get funding to improve animal health and welfare",
       );
       expectPhaseBanner.ok($);
     });

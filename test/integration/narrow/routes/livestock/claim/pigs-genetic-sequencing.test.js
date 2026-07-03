@@ -71,7 +71,7 @@ describe("pigs genetic sequencing test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch(" What was the result of the genetic sequencing?");
       expect($("title").text()).toContain(
-        "What was the result of the genetic sequencing? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Pig livestock genetic sequencing result - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
 
       expectPhaseBanner.ok($);

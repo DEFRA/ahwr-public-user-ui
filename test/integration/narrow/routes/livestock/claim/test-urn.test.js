@@ -117,7 +117,7 @@ describe("Test URN GET", () => {
         const $ = cheerio.load(res.payload);
         expect($("h1").text()).toMatch(title);
         expect($("title").text()).toContain(
-          `${title} - Get funding to improve animal health and welfare`,
+          "Livestock laboratory's unique reference number - Get funding to improve animal health and welfare",
         );
 
         expectPhaseBanner.ok($);

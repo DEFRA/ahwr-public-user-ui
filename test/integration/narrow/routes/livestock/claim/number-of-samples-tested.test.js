@@ -72,7 +72,7 @@ describe("Number of samples tested test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("How many samples were tested?");
       expect($("title").text()).toContain(
-        "How many samples were tested? - Get funding to improve animal health and welfare",
+        "Number of livestock samples tested - Get funding to improve animal health and welfare",
       );
       expect($(".govuk-hint").text().trim()).toEqual(
         "Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.",

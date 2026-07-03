@@ -110,7 +110,7 @@ describe("select-the-herd tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Is this the same flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Previous flock livestock claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/check-herd-details");
       expectPhaseBanner.ok($);
@@ -141,7 +141,7 @@ describe("select-the-herd tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Is this the same herd you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Previous herd livestock claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/check-herd-details");
       expect($('.govuk-radios__input[value="yes"]').is(":checked")).toBeTruthy();
