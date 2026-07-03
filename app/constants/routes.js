@@ -1,6 +1,6 @@
 export const dashboardRoutes = {
   manageYourClaims: "/livestock/manage-claims",
-  poultryManageYourClaims: "/poultry/manage-claims",
+  poultryManageClaims: "/poultry/manage-claims",
   checkDetails: "/check-details",
   selectFunding: "/select-funding",
 };
@@ -212,6 +212,6 @@ export const poultryApplyUrls = Object.values(poultryApplyRoutes);
 export const poultryClaimUrls = Object.values(poultryClaimRoutes);
 export const allPoultryRoutes = [
   ...poultryApplyUrls,
-  dashboardRoutes.poultryManageYourClaims,
+  dashboardRoutes.poultryManageClaims,
   ...poultryClaimUrls,
 ];

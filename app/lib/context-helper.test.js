@@ -548,7 +548,7 @@ describe("context-helper", () => {
       );
 
       it("returns claim routes on Manage your claims", () => {
-        const mockRequest = { path: dashboardRoutes.poultryManageYourClaims, method: "get" };
+        const mockRequest = { path: dashboardRoutes.poultryManageClaims, method: "get" };
         mockPoultrySessionData(mockRequest, null);
 
         const result = getSurveyUri(mockRequest);

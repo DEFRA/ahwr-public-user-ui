@@ -21,7 +21,7 @@ const getHandler = {
       clearPoultryClaim(request);
 
       return h.view(poultryClaimViews.claimConfirmation, {
-        claimDashboard: dashboardRoutes.poultryManageYourClaims,
+        claimDashboard: dashboardRoutes.poultryManageClaims,
         reference,
         amount,
         claimSurveyUri: customerSurvey.claimUri,

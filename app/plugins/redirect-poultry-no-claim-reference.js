@@ -27,7 +27,7 @@ export const redirectPoultryNoClaimReferencePlugin = {
         );
 
         if (!claimReference) {
-          return h.redirect(dashboardRoutes.poultryManageYourClaims).takeover();
+          return h.redirect(dashboardRoutes.poultryManageClaims).takeover();
         }
 
         return h.continue;

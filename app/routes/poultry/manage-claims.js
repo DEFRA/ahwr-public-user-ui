@@ -113,7 +113,7 @@ const getOrRefreshApplication = async (request, sbi) => {
 export const poultryVetVisitsHandlers = [
   {
     method: "GET",
-    path: dashboardRoutes.poultryManageYourClaims,
+    path: dashboardRoutes.poultryManageClaims,
     options: {
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
