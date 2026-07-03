@@ -133,7 +133,7 @@ describe("Agreement offer test", () => {
       expect($("#organisation-sbi").text()).toEqual(organisation.sbi);
 
       const eitherHeading = $("h2:contains('You can either:')").first();
-      expect(eitherHeading.length).toBe(1);
+      expect(eitherHeading).toExistOnce();
       const eitherBullets = eitherHeading
         .nextAll("ul")
         .first()
@@ -143,7 +143,7 @@ describe("Agreement offer test", () => {
       expect(eitherBullets).toEqual(["accept this offer", "reject this offer"]);
 
       const mustHeading = $("h2:contains('For each review you must:')").first();
-      expect(mustHeading.length).toBe(1);
+      expect(mustHeading).toExistOnce();
       const mustBullets = mustHeading
         .nextAll("ul")
         .first()
@@ -157,7 +157,7 @@ describe("Agreement offer test", () => {
       ]);
 
       const askedHeading = $("h2:contains('If asked, you must provide the RPA with:')").first();
-      expect(askedHeading.length).toBe(1);
+      expect(askedHeading).toExistOnce();
       const askedBullets = askedHeading
         .nextAll("ul")
         .first()
@@ -172,9 +172,9 @@ describe("Agreement offer test", () => {
       const vetSummaryPara = $("p")
         .filter((i, el) => $(el).text().trim() === "This information will be on your vet summary.")
         .first();
-      expect(vetSummaryPara.length).toBe(1);
+      expect(vetSummaryPara).toExistOnce();
 
-      expect($("h2:contains('Declaration')").length).toBe(1);
+      expect($("h2:contains('Declaration')")).toExistOnce();
       const confirmPara = $("p")
         .filter((i, el) => $(el).text().trim().startsWith("Confirm that you have read"))
         .first();
@@ -183,7 +183,7 @@ describe("Agreement offer test", () => {
       );
 
       const vetLink = $("#vetSummaryTemplateUri");
-      expect(vetLink.length).toBe(1);
+      expect(vetLink).toExistOnce();
       expect(vetLink.attr("href")).toBe("https://example.gov.uk/poultry-vet-summary");
       expect(vetLink.attr("target")).toBe("_blank");
       expect(vetLink.attr("rel")).toMatch(/noopener/);
@@ -193,7 +193,7 @@ describe("Agreement offer test", () => {
       );
 
       const termsLink = $("#termsAndConditionsUri");
-      expect(termsLink.length).toBe(1);
+      expect(termsLink).toExistOnce();
       expect(termsLink.attr("href")).toBe("https://example.gov.uk/poultry-terms");
       expect(termsLink.attr("target")).toBe("_blank");
       expect(termsLink.attr("rel")).toMatch(/noopener/);
@@ -329,10 +329,10 @@ describe("Agreement offer test", () => {
       ]);
 
       const callChargesLink = $("a:contains('Find out about call charges')");
-      expect(callChargesLink.length).toBe(1);
+      expect(callChargesLink).toExistOnce();
       expect(callChargesLink.text().trim()).toBe("Find out about call charges (opens in new tab)");
 
-      expect($(".govuk-back-link").length).toBe(0);
+      expect($(".govuk-back-link")).toBeAbsent();
 
       ok($);
       expect(createApplication).toHaveBeenCalledWith(
