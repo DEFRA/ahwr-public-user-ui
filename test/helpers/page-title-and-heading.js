@@ -11,7 +11,9 @@ import { load } from "cheerio";
 export const testBrowserPageTitle = ({ title, getResponse }) => {
   test("Shows the browser page title", async () => {
     const $ = load((await getResponse()).payload);
-    expect($("title").text()).toContain(title);
+    expect($("title").text()).toContain(
+      `${title} - Get funding to improve animal health and welfare - GOV.UK`,
+    );
   });
 };
 
