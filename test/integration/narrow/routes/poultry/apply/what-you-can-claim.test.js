@@ -13,6 +13,10 @@ import { poultryApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { when } from "jest-when";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/config/index.js", () => ({
   config: {
@@ -71,19 +75,10 @@ describe("what-you-can-claim page", () => {
   });
 
   describe("GET operation handler", () => {
-    test("Shows the browser page title", async () => {
-      const res = await server.inject({ ...optionsBase, method: "GET" });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("What you can claim for as part of this agreement");
-    });
-
-    test("Shows the page heading", async () => {
-      const res = await server.inject({ ...optionsBase, method: "GET" });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toBe("What you can claim for as part of this agreement");
-    });
+    const getResponse = () => server.inject({ ...optionsBase, method: "GET" });
+    const pageText = "What you can claim for as part of this agreement";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test("returns 200 and content is correct", async () => {
       const res = await server.inject({ ...optionsBase, method: "GET" });

@@ -1,6 +1,10 @@
 import * as cheerio from "cheerio";
 import Wreck from "@hapi/wreck";
 import { createServer } from "../../../../../../app/server.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 import expectPhaseBanner from "assert";
 import {
   getSessionData,
@@ -101,19 +105,10 @@ describe("Poultry check answers test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("Shows the browser page title", async () => {
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Check your answers");
-    });
-
-    test("Shows the page heading", async () => {
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toBe("Check your answers");
-    });
+    const getResponse = () => server.inject({ method: "GET", url, auth });
+    const pageText = "Check your answers";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test("returns 200", async () => {
       const options = {

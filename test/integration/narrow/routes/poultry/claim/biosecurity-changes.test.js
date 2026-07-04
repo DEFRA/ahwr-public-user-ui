@@ -9,6 +9,10 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
@@ -75,41 +79,15 @@ describe("/poultry/biosecurity-changes", () => {
       expect(response.headers.location.toString()).toEqual(`/sign-in`);
     });
 
-    test("Shows the browser page title", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({});
-
-      const response = await server.inject(options);
-
-      const $ = cheerio.load(response.payload);
-      expect($("title").text()).toContain(
-        "Which recommendation did the vet say should be your top priority?",
-      );
-    });
-
-    test("Shows the page heading", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({});
-
-      const response = await server.inject(options);
-
-      const $ = cheerio.load(response.payload);
-      expect($("h1").text().trim()).toBe(
-        "Which recommendation did the vet say should be your top priority?",
-      );
-    });
+      return server.inject({ method: "GET", url, auth });
+    };
+    const pageText = "Which recommendation did the vet say should be your top priority?";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test.each([
       { previousAnswer: "infra-and-control" },

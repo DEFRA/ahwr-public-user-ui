@@ -20,6 +20,10 @@ import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { refreshApplications } from "../../../../../../app/lib/context-helper.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { dashboardRoutes } from "../../../../../../app/constants/routes.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/lib/context-helper");
 jest.mock("../../../../../../app/session/index");
@@ -89,27 +93,11 @@ describe("Agreement offer test", () => {
   createApplication.mockResolvedValue({ applicationReference: "POUL-PJ7E-WSI8" });
 
   describe("GET /agreement-offer route", () => {
-    test("Shows the browser page title", async () => {
-      const res = await server.inject({
-        method: "GET",
-        url: "/poultry/agreement-offer",
-        auth,
-      });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Review your agreement offer");
-    });
-
-    test("Shows the page heading", async () => {
-      const res = await server.inject({
-        method: "GET",
-        url: "/poultry/agreement-offer",
-        auth,
-      });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toBe("Review your agreement offer");
-    });
+    const getResponse = () =>
+      server.inject({ method: "GET", url: "/poultry/agreement-offer", auth });
+    const pageText = "Review your agreement offer";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test("when not logged in redirects to dashboard /sign-in", async () => {
       const options = {

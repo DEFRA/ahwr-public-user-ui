@@ -12,6 +12,10 @@ import { poultryApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/api-requests/application-api");
 jest.mock("../../../../../../app/session/index.js");
@@ -68,19 +72,10 @@ describe("Check review minimum number page test", () => {
   });
 
   describe("GET /minimum-number route when logged in", () => {
-    test("Shows the browser page title", async () => {
-      const res = await server.inject({ ...options, method: "GET" });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Minimum number of poultry on the site");
-    });
-
-    test("Shows the page heading", async () => {
-      const res = await server.inject({ ...options, method: "GET" });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toBe("Minimum number of poultry on the site");
-    });
+    const getResponse = () => server.inject({ ...options, method: "GET" });
+    const pageText = "Minimum number of poultry on the site";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test("returns 200 with reviewed eligibility content and correct backLink", async () => {
       const res = await server.inject({ ...options, method: "GET" });

@@ -1,5 +1,9 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import {
@@ -62,31 +66,15 @@ describe("/poultry/vet-rcvs", () => {
   });
 
   describe(`GET /poultry/vet-rcvs`, () => {
-    test("Shows the browser page title", async () => {
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({});
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
-      );
-    });
-
-    test("Shows the page heading", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({});
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toBe(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
-      );
-    });
+      return server.inject({ method: "GET", url, auth });
+    };
+    const pageText = "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test("returns 200 and displays page correctly when visting page first time", async () => {
       when(getSessionData)

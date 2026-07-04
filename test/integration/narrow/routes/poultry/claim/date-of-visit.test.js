@@ -1,6 +1,10 @@
 import * as cheerio from "cheerio";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { createServer } from "../../../../../../app/server.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 import expectPhaseBanner from "assert";
 import {
   getSessionData,
@@ -149,19 +153,10 @@ describe("GET /poultry/date-of-visit", () => {
     expect(res.headers.location.toString()).toEqual(`/poultry/what-you-can-claim`);
   });
 
-  test("Shows the browser page title", async () => {
-    const res = await server.inject(options);
-
-    const $ = cheerio.load(res.payload);
-    expect($("title").text()).toContain("Date of visit");
-  });
-
-  test("Shows the page heading", async () => {
-    const res = await server.inject(options);
-
-    const $ = cheerio.load(res.payload);
-    expect($("h1").text().trim()).toBe("Date of visit");
-  });
+  const getResponse = () => server.inject(options);
+  const pageText = "Date of visit";
+  testBrowserPageTitle({ title: pageText, getResponse });
+  testPageHeading({ heading: pageText, getResponse });
 
   test("without previous data, shows the screen with empty date boxes", async () => {
     const res = await server.inject(options);

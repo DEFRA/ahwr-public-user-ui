@@ -2,6 +2,10 @@ import * as cheerio from "cheerio";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { createServer } from "../../../../../../app/server.js";
 import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import {
   clearPoultryClaim,
   getSessionData,
   sessionEntryKeys,
@@ -64,23 +68,13 @@ describe("Claim confirmation", () => {
       .mockReturnValue(true);
   };
 
-  test("Shows the browser page title", async () => {
+  const getResponse = () => {
     mockConfirmationSession();
-
-    const res = await server.inject({ method: "GET", url, auth });
-
-    const $ = cheerio.load(res.payload);
-    expect($("title").text()).toContain("Claim submitted");
-  });
-
-  test("Shows the page heading", async () => {
-    mockConfirmationSession();
-
-    const res = await server.inject({ method: "GET", url, auth });
-
-    const $ = cheerio.load(res.payload);
-    expect($("h1").text().trim()).toBe("Claim submitted");
-  });
+    return server.inject({ method: "GET", url, auth });
+  };
+  const pageText = "Claim submitted";
+  testBrowserPageTitle({ title: pageText, getResponse });
+  testPageHeading({ heading: pageText, getResponse });
 
   test("GET endemicsConfirmation route %s", async () => {
     const options = {

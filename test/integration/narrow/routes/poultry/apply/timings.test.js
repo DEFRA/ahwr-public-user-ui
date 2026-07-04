@@ -11,6 +11,10 @@ import { poultryApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 const auth = {
   credentials: { reference: "1111", sbi: "111111111" },
@@ -84,23 +88,13 @@ describe("Timings test", () => {
         .mockReturnValue(true);
     });
 
-    test("Shows the browser page title", async () => {
+    const getResponse = () => {
       getApplicationsBySbi.mockResolvedValueOnce([]);
-
-      const res = await server.inject(getOptions);
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Timing of poultry biosecurity reviews");
-    });
-
-    test("Shows the page heading", async () => {
-      getApplicationsBySbi.mockResolvedValueOnce([]);
-
-      const res = await server.inject(getOptions);
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toBe("Timing of poultry biosecurity reviews");
-    });
+      return server.inject(getOptions);
+    };
+    const pageText = "Timing of poultry biosecurity reviews";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test("returns 200 with reviewed timing rules content", async () => {
       getApplicationsBySbi.mockResolvedValueOnce([]);

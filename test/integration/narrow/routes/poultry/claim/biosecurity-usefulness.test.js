@@ -9,6 +9,10 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
@@ -75,41 +79,15 @@ describe("/poultry/biosecurity-usefulness", () => {
       expect(response.headers.location.toString()).toEqual(`/sign-in`);
     });
 
-    test("Shows the browser page title", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({});
-
-      const response = await server.inject(options);
-
-      const $ = cheerio.load(response.payload);
-      expect($("title").text()).toContain(
-        "How useful was the vet's advice for improving your farm's biosecurity?",
-      );
-    });
-
-    test("Shows the page heading", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({});
-
-      const response = await server.inject(options);
-
-      const $ = cheerio.load(response.payload);
-      expect($("h1").text().trim()).toBe(
-        "How useful was the vet's advice for improving your farm's biosecurity?",
-      );
-    });
+      return server.inject({ method: "GET", url, auth });
+    };
+    const pageText = "How useful was the vet's advice for improving your farm's biosecurity?";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test.each([
       { previousAnswer: "very-useful" },

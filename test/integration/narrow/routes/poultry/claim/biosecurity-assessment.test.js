@@ -10,6 +10,10 @@ import {
 import { sendInvalidDataPoultryEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
@@ -77,37 +81,15 @@ describe("/poultry/biosecurity-assessment", () => {
       expect(response.headers.location.toString()).toEqual(`/sign-in`);
     });
 
-    test("Shows the browser page title", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({});
-
-      const response = await server.inject(options);
-
-      const $ = cheerio.load(response.payload);
-      expect($("title").text()).toContain("Did the vet do a biosecurity assessment?");
-    });
-
-    test("Shows the page heading", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({});
-
-      const response = await server.inject(options);
-
-      const $ = cheerio.load(response.payload);
-      expect($("h1").text().trim()).toBe("Did the vet do a biosecurity assessment?");
-    });
+      return server.inject({ method: "GET", url, auth });
+    };
+    const pageText = "Did the vet do a biosecurity assessment?";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test("selects 'yes' when previously selected", async () => {
       const options = {

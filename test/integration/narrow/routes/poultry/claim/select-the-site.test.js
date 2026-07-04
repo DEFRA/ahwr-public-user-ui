@@ -2,6 +2,10 @@ import * as cheerio from "cheerio";
 import { when } from "jest-when";
 import { createServer } from "../../../../../../app/server.js";
 import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import {
   getSessionData,
   setSessionData,
   sessionEntryKeys,
@@ -78,48 +82,28 @@ describe("/poultry/select-site", () => {
       },
     ];
 
-    test("Shows the browser page title for a single previous site", async () => {
+    const getSingleSiteResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({ siteSelected: null, previousClaims: singleSitePreviousClaims });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Your previous claim");
-    });
-
-    test("Shows the page heading for a single previous site", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({ siteSelected: null, previousClaims: singleSitePreviousClaims });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toContain("Your previous claim");
-    });
-
-    test("Shows the browser page title for multiple previous sites", async () => {
+      return server.inject({ method: "GET", url, auth });
+    };
+    const getMultipleSiteResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({ siteSelected: null, previousClaims: multipleSitePreviousClaims });
+      return server.inject({ method: "GET", url, auth });
+    };
 
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Select the site you are claiming for");
+    describe("with a single previous site", () => {
+      testBrowserPageTitle({ title: "Your previous claim", getResponse: getSingleSiteResponse });
+      testPageHeading({ heading: "Your previous claim", getResponse: getSingleSiteResponse });
     });
 
-    test("Shows the page heading for multiple previous sites", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({ siteSelected: null, previousClaims: multipleSitePreviousClaims });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toContain("Select the site you are claiming for");
+    describe("with multiple previous sites", () => {
+      const pageText = "Select the site you are claiming for";
+      testBrowserPageTitle({ title: pageText, getResponse: getMultipleSiteResponse });
+      testPageHeading({ heading: pageText, getResponse: getMultipleSiteResponse });
     });
 
     test("returns 200 and displays page correctly with single previous site", async () => {

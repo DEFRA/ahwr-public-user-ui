@@ -2,6 +2,10 @@ import * as cheerio from "cheerio";
 import { when } from "jest-when";
 import { createServer } from "../../../../../../app/server.js";
 import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import {
   getSessionData,
   sessionEntryKeys,
   sessionKeys,
@@ -89,34 +93,16 @@ describe("/poultry/poultry-type", () => {
       expect($("#back").attr("href")).toEqual("/poultry/sbi-sites");
     });
 
-    test("Shows the browser page title", async () => {
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({ typesOfPoultry: [] });
-
-      const res = await server.inject({
-        method: "GET",
-        url,
-        auth,
-      });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Select poultry type");
-    });
-
-    test("Shows the page heading", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({ typesOfPoultry: [] });
-
-      const res = await server.inject({
-        method: "GET",
-        url,
-        auth,
-      });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toEqual("Which types of poultry do you keep on this site?");
+      return server.inject({ method: "GET", url, auth });
+    };
+    testBrowserPageTitle({ title: "Select poultry type", getResponse });
+    testPageHeading({
+      heading: "Which types of poultry do you keep on this site?",
+      getResponse,
     });
 
     test("shows the updated hint", async () => {

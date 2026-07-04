@@ -4,6 +4,10 @@ import { load } from "cheerio";
 import { getClaimsByApplicationReference } from "../../../../../app/api-requests/claim-api.js";
 import { axe } from "../../../../helpers/axe-helper.js";
 import { findLinkByText } from "../../../../helpers/find-link-by-text.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../app/api-requests/claim-api.js");
 jest.mock("../../../../../app/auth/auth-code-grant/request-authorization-code-url.js", () => ({
@@ -211,25 +215,12 @@ describe("GET /poultry/manage-claims", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
   });
 
-  test("Shows the browser page title", async () => {
+  const getResponse = async () => {
     await setServerState(server, { ...baseState });
-
     getClaimsByApplicationReference.mockResolvedValueOnce([]);
-
-    const res = await server.inject(options);
-    const $ = load(res.payload);
-
-    expect($("title").text()).toContain("Manage your claims");
-  });
-
-  test("Shows the page heading", async () => {
-    await setServerState(server, { ...baseState });
-
-    getClaimsByApplicationReference.mockResolvedValueOnce([]);
-
-    const res = await server.inject(options);
-    const $ = load(res.payload);
-
-    expect($("h1").text()).toBe("Manage your claims");
-  });
+    return server.inject(options);
+  };
+  const pageText = "Manage your claims";
+  testBrowserPageTitle({ title: pageText, getResponse });
+  testPageHeading({ heading: pageText, getResponse });
 });

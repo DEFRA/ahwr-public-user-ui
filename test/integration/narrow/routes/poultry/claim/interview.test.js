@@ -9,6 +9,10 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
@@ -76,41 +80,16 @@ describe("/poultry/interview", () => {
       expect(response.headers.location.toString()).toEqual(`/sign-in`);
     });
 
-    test("Shows the browser page title", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({});
-
-      const response = await server.inject(options);
-
-      const $ = cheerio.load(response.payload);
-      expect($("title").text()).toContain(
-        "Would you be willing to take part in a short follow-up interview about your experience of this scheme?",
-      );
-    });
-
-    test("Shows the page heading", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({});
-
-      const response = await server.inject(options);
-
-      const $ = cheerio.load(response.payload);
-      expect($("h1").text().trim()).toBe(
-        "Would you be willing to take part in a short follow-up interview about your experience of this scheme?",
-      );
-    });
+      return server.inject({ method: "GET", url, auth });
+    };
+    const pageText =
+      "Would you be willing to take part in a short follow-up interview about your experience of this scheme?";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test("selects 'yes' when previously selected", async () => {
       const options = {

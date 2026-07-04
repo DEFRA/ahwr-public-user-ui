@@ -1,5 +1,9 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
 import {
@@ -76,32 +80,16 @@ describe("/cph tests", () => {
   };
 
   describe("GET", () => {
-    test("Shows the browser page title", async () => {
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          reference: "TEMP-6GSE-PIR8",
-        });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Enter the CPH number for this site");
-    });
-
-    test("Shows the page heading", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          reference: "TEMP-6GSE-PIR8",
-        });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toBe(
-        "Enter the county parish holding (CPH) number for this site",
-      );
+        .mockReturnValue({ reference: "TEMP-6GSE-PIR8" });
+      return server.inject({ method: "GET", url, auth });
+    };
+    testBrowserPageTitle({ title: "Enter the CPH number for this site", getResponse });
+    testPageHeading({
+      heading: "Enter the county parish holding (CPH) number for this site",
+      getResponse,
     });
 
     test("displays page correctly when entering cph for first time", async () => {

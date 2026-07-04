@@ -1,5 +1,9 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
 import {
@@ -64,35 +68,15 @@ describe("/sbi-sites tests", () => {
   });
 
   describe("GET", () => {
-    test("Shows the browser page title", async () => {
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          reference: "TEMP-6GSE-PIR8",
-        });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain(
-        "Is this the only site associated with this Single Business Identifier (SBI)?",
-      );
-    });
-
-    test("Shows the page heading", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          reference: "TEMP-6GSE-PIR8",
-        });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toBe(
-        "Is this the only site associated with this Single Business Identifier (SBI)?",
-      );
-    });
+        .mockReturnValue({ reference: "TEMP-6GSE-PIR8" });
+      return server.inject({ method: "GET", url, auth });
+    };
+    const pageText = "Is this the only site associated with this Single Business Identifier (SBI)?";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test("returns 200 and displays page correctly", async () => {
       when(getSessionData)

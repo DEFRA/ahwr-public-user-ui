@@ -2,6 +2,10 @@ import * as cheerio from "cheerio";
 import { when } from "jest-when";
 import { createServer } from "../../../../../../app/server.js";
 import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import {
   emitHerdEvent,
   getSessionData,
   sessionEntryKeys,
@@ -67,33 +71,15 @@ describe("/poultry/site-name", () => {
   };
 
   describe("GET", () => {
-    test("Shows the browser page title", async () => {
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          reference: "TEMP-6GSE-PIR8",
-          herds: [{ id: "1" }],
-        });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Enter the site name");
-    });
-
-    test("Shows the page heading", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          reference: "TEMP-6GSE-PIR8",
-          herds: [{ id: "1" }],
-        });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toBe("Enter the site name");
-    });
+        .mockReturnValue({ reference: "TEMP-6GSE-PIR8", herds: [{ id: "1" }] });
+      return server.inject({ method: "GET", url, auth });
+    };
+    const pageText = "Enter the site name";
+    testBrowserPageTitle({ title: pageText, getResponse });
+    testPageHeading({ heading: pageText, getResponse });
 
     test("returns 200 and displays page correctly", async () => {
       when(getSessionData)
