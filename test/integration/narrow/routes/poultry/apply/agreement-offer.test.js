@@ -95,9 +95,10 @@ describe("Agreement offer test", () => {
   describe("GET /agreement-offer route", () => {
     const getResponse = () =>
       server.inject({ method: "GET", url: "/poultry/agreement-offer", auth });
-    const pageText = "Review your agreement offer";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "Review poultry agreement offer";
+    const pageHeader = "Review your agreement offer";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test("when not logged in redirects to dashboard /sign-in", async () => {
       const options = {
@@ -356,6 +357,25 @@ describe("Agreement offer test", () => {
       );
     });
 
+    const getErrorResponse = async () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(organisation);
+      const crumb = await getCrumbs(server);
+      const options = {
+        method: "POST",
+        url: "/poultry/agreement-offer",
+        payload: { crumb, offerStatus: "accepted" },
+        auth,
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      return server.inject(options);
+    };
+
+    const errorTitle = "Error: Review poultry agreement offer";
+    testBrowserPageTitle({ title: errorTitle, getResponse: getErrorResponse });
+
     test("returns 400 when request is not valid", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.organisation)
@@ -375,9 +395,6 @@ describe("Agreement offer test", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       expect($("h1.govuk-heading-l").text()).toEqual("Review your agreement offer");
-      expect($("title").text()).toMatch(
-        "Review your agreement offer - Get funding to improve animal health and welfare",
-      );
       expect($("#organisation-name").text()).toEqual(organisation.name);
       expect($("#organisation-address").text()).toContain("1 fake street");
       expect($("#organisation-sbi").text()).toEqual(organisation.sbi);
