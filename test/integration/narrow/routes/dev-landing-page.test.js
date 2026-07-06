@@ -189,4 +189,101 @@ describe("Dev landing page test", () => {
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location).toEqual("/cannot-sign-in");
   });
+
+  test("GET dev landing page renders the sign-in view", async () => {
+    config.devLogin.enabled = true;
+    const server = await createServer();
+
+    const res = await server.inject({
+      url: "/dev-landing-page",
+      method: "GET",
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.OK);
+  });
+
+  test("POST dev landing page forwards to cannot sign in when the sbi does not start with 1", async () => {
+    config.devLogin.enabled = true;
+    const sbi = "223456789l";
+    const server = await createServer();
+
+    refreshApplications.mockResolvedValueOnce({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: undefined,
+    });
+
+    const res = await server.inject({
+      url: "/dev-landing-page",
+      payload: {
+        sbi,
+      },
+      method: "POST",
+      auth,
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
+    expect(res.headers.location).toEqual("/cannot-sign-in");
+  });
+
+  test("POST dev landing page shows verify-login-failed for an unexpected error", async () => {
+    config.devLogin.enabled = true;
+    const sbi = "123456789";
+    const server = await createServer();
+
+    refreshApplications.mockRejectedValueOnce(new Error("something went wrong"));
+
+    const res = await server.inject({
+      url: "/dev-landing-page",
+      payload: {
+        sbi,
+      },
+      method: "POST",
+      auth,
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+    expect(res.payload).toContain("something went wrong");
+  });
+
+  test("POST dev landing page handles a missing sbi via the default", async () => {
+    config.devLogin.enabled = true;
+    const server = await createServer();
+
+    refreshApplications.mockResolvedValueOnce({
+      latestEndemicsApplication: undefined,
+      latestVetVisitApplication: undefined,
+    });
+
+    const res = await server.inject({
+      url: "/dev-landing-page",
+      payload: {},
+      method: "POST",
+      auth,
+    });
+
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe("/check-details");
+  });
+
+  test("POST dev landing page shows the payload message when the error carries one", async () => {
+    config.devLogin.enabled = true;
+    const sbi = "123456789";
+    const server = await createServer();
+
+    const error = new Error("fallback message");
+    error.data = { payload: { message: "specific payload message" } };
+    refreshApplications.mockRejectedValueOnce(error);
+
+    const res = await server.inject({
+      url: "/dev-landing-page",
+      payload: {
+        sbi,
+      },
+      method: "POST",
+      auth,
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+    expect(res.payload).toContain("specific payload message");
+  });
 });
