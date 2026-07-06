@@ -73,9 +73,10 @@ describe("Check review minimum number page test", () => {
 
   describe("GET /minimum-number route when logged in", () => {
     const getResponse = () => server.inject({ ...options, method: "GET" });
-    const pageText = "Minimum number of poultry on the site";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "Minimum number of poultry";
+    const pageHeader = "Minimum number of poultry on the site";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test("returns 200 with reviewed eligibility content and correct backLink", async () => {
       const res = await server.inject({ ...options, method: "GET" });
