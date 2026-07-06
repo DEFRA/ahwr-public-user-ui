@@ -78,9 +78,10 @@ describe("/poultry/changes-cost", () => {
         .mockReturnValue({});
       return server.inject({ method: "GET", url, auth });
     };
-    const pageText = "How much do you expect to spend on recommended biosecurity changes?";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "Expected spend for poultry biosecurity changes";
+    const pageHeader = "How much do you expect to spend on recommended biosecurity changes?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test.each([
       { previousAnswer: "0-1500" },
