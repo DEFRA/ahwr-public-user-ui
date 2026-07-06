@@ -78,9 +78,10 @@ describe("/poultry/biosecurity-changes", () => {
         .mockReturnValue({});
       return server.inject({ method: "GET", url, auth });
     };
-    const pageText = "Which recommendation did the vet say should be your top priority?";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "Vet’s top poultry biosecurity recommendation";
+    const pageHeader = "Which recommendation did the vet say should be your top priority?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test.each([
       { previousAnswer: "infra-and-control" },
