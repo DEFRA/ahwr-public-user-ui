@@ -80,9 +80,10 @@ describe("/poultry/biosecurity-assessment", () => {
         .mockReturnValue({});
       return server.inject({ method: "GET", url, auth });
     };
-    const pageText = "Did the vet do a biosecurity assessment?";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "Poultry biosecurity assessment?";
+    const pageHeader = "Did the vet do a biosecurity assessment?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test("selects 'yes' when previously selected", async () => {
       const options = {
