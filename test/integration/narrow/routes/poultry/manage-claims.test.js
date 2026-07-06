@@ -220,7 +220,8 @@ describe("GET /poultry/manage-claims", () => {
     getClaimsByApplicationReference.mockResolvedValueOnce([]);
     return server.inject(options);
   };
-  const pageText = "Manage your claims";
-  testBrowserPageTitle({ title: pageText, getResponse });
-  testPageHeading({ heading: pageText, getResponse });
+  const pageTitle = "Manage poultry biosecurity claims";
+  const pageHeader = "Manage your claims";
+  testBrowserPageTitle({ title: pageTitle, getResponse });
+  testPageHeading({ heading: pageHeader, getResponse });
 });
