@@ -72,9 +72,11 @@ describe("Claim confirmation", () => {
     mockConfirmationSession();
     return server.inject({ method: "GET", url, auth });
   };
-  const pageText = "Claim submitted";
-  testBrowserPageTitle({ title: pageText, getResponse });
-  testPageHeading({ heading: pageText, getResponse });
+
+  const browserTitle = "Poultry biosecurity claim submitted";
+  const pageHeader = "Claim submitted";
+  testBrowserPageTitle({ title: browserTitle, getResponse });
+  testPageHeading({ heading: pageHeader, getResponse });
 
   test("GET endemicsConfirmation route %s", async () => {
     const options = {
