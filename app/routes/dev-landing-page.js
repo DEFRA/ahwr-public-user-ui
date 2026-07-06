@@ -15,8 +15,7 @@ import HttpStatus from "http-status-codes";
 import { RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 import { setSessionForErrorPage } from "./utils/check-login-valid.js";
 import { refreshApplications } from "../lib/context-helper.js";
-
-const devLandingPageUrl = "/dev-landing-page";
+import { loginRoutes } from "../constants/routes.js";
 
 const createDevDetails = (sbi) => {
   const organisationSummary = {
@@ -59,10 +58,10 @@ function throwErrorBasedOnSuffix(sbi = "") {
 export const devLoginHandlers = [
   {
     method: "GET",
-    path: devLandingPageUrl,
+    path: loginRoutes.devLandingPage,
     options: {
       auth: false,
-      handler: async (request, h) => {
+      handler: async (_request, h) => {
         // Removing this for now, some issues were seen in perf tests, but real user generating real MI report events won't go via here anyway
         // await clearAllOfSession(request);
         return h.view("dev-landing-page");
@@ -71,7 +70,7 @@ export const devLoginHandlers = [
   },
   {
     method: "POST",
-    path: devLandingPageUrl,
+    path: loginRoutes.devLandingPage,
     options: {
       auth: false,
       plugins: {
@@ -151,7 +150,7 @@ export const devLoginHandlers = [
 
           return h
             .view("verify-login-failed", {
-              backLink: devLandingPageUrl,
+              backLink: loginRoutes.devLandingPage,
               ruralPaymentsAgency: RPA_CONTACT_DETAILS,
               message: error.data?.payload?.message ?? error.message,
             })

@@ -7,7 +7,6 @@ export const redirectAgreementRedactedPlugin = {
     register: (server, _) => {
       const excludedPaths = [
         loginRoutes.cannotSignIn,
-        loginRoutes.devSignIn,
         supportRoutes.health,
         supportRoutes.assets,
         applyRoutes.declaration,

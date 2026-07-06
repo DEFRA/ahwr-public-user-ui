@@ -6,7 +6,7 @@ import { updateDetailsHandlers } from "../routes/update-details.js";
 import { signinRouteHandlers } from "../routes/signin-oidc.js";
 import { downloadApplicationHandlers } from "../routes/download-application.js";
 import { vetVisitsHandlers } from "../routes/livestock/vet-visits.js";
-import { devLoginHandlers } from "../routes/dev-sign-in.js";
+import { devLoginHandlers } from "../routes/dev-landing-page.js";
 import { accessibilityRouteHandlers } from "../routes/accessibility.js";
 import { signOutHandlers } from "../routes/sign-out.js";
 import { config } from "../config/index.js";

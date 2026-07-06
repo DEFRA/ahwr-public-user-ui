@@ -8,7 +8,6 @@ export const redirectNoCheckDetailsPlugin = {
       const excludedPaths = [
         loginRoutes.signIn,
         loginRoutes.devLandingPage,
-        loginRoutes.devSignIn,
         loginRoutes.signOut,
         loginRoutes.signInOidc,
         loginRoutes.cannotSignIn,
