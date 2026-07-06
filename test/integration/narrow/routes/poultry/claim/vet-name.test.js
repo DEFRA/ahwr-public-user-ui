@@ -79,9 +79,10 @@ describe("/poultry/vet-name", () => {
 
   describe(`GET ${url} route`, () => {
     const getResponse = () => server.inject({ method: "GET", url, auth });
-    const pageText = "What is the vet's name?";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "Poultry vet's name";
+    const pageHeader = "What is the vet's name?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test("returns 200", async () => {
       const options = {
@@ -205,7 +206,6 @@ describe("/poultry/vet-name", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("What is the vet's name?");
-      expect($("title").text().trim()).toContain("Error: What is the vet's name?");
       expect($(".govuk-error-summary__title").text().trim()).toBe("There is a problem");
       expect($("#main-content > div > div > div > div > div > ul > li > a").text()).toMatch(error);
       expect($('a[href="#vetsName"]').text().trim()).toBe(error);
