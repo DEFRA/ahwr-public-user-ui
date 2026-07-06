@@ -88,6 +88,7 @@ describe("/poultry/select-site", () => {
         .mockReturnValue({ siteSelected: null, previousClaims: singleSitePreviousClaims });
       return server.inject({ method: "GET", url, auth });
     };
+
     const getMultipleSiteResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -96,14 +97,15 @@ describe("/poultry/select-site", () => {
     };
 
     describe("with a single previous site", () => {
-      testBrowserPageTitle({ title: "Your previous claim", getResponse: getSingleSiteResponse });
+      testBrowserPageTitle({ title: "Previous poultry claim", getResponse: getSingleSiteResponse });
       testPageHeading({ heading: "Your previous claim", getResponse: getSingleSiteResponse });
     });
 
     describe("with multiple previous sites", () => {
-      const pageText = "Select the site you are claiming for";
-      testBrowserPageTitle({ title: pageText, getResponse: getMultipleSiteResponse });
-      testPageHeading({ heading: pageText, getResponse: getMultipleSiteResponse });
+      const browserTitle = "Select the poultry site you are claiming for";
+      const pageHeader = "Select the site you are claiming for";
+      testBrowserPageTitle({ title: browserTitle, getResponse: getMultipleSiteResponse });
+      testPageHeading({ heading: pageHeader, getResponse: getMultipleSiteResponse });
     });
 
     test("returns 200 and displays page correctly with single previous site", async () => {
@@ -371,161 +373,165 @@ describe("/poultry/select-site", () => {
       expect(res.statusCode).toBe(200);
     });
 
-    test("filters out claims without herd name", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          siteSelected: null,
-          previousClaims: [
-            {
-              herd: {
-                id: "herd-123",
-                name: "Main Farm",
-                cph: "12/345/6789",
+    describe("filters out claims without herd name", () => {
+      const getResponse = () => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+          .mockReturnValue({
+            siteSelected: null,
+            previousClaims: [
+              {
+                herd: {
+                  id: "herd-123",
+                  name: "Main Farm",
+                  cph: "12/345/6789",
+                },
+                data: {
+                  typesOfPoultry: ["laying-hens"],
+                  dateOfVisit: "2024-03-15",
+                },
+                createdAt: "2024-03-20",
               },
-              data: {
-                typesOfPoultry: ["laying-hens"],
-                dateOfVisit: "2024-03-15",
+              {
+                herd: {
+                  id: "herd-456",
+                  cph: "98/765/4321",
+                },
+                data: {
+                  typesOfPoultry: ["broilers"],
+                },
               },
-              createdAt: "2024-03-20",
-            },
-            {
-              herd: {
-                id: "herd-456",
-                cph: "98/765/4321",
-              },
-              data: {
-                typesOfPoultry: ["broilers"],
-              },
-            },
-          ],
-        });
+            ],
+          });
 
-      const res = await server.inject({ method: "GET", url, auth });
+        return server.inject({ method: "GET", url, auth });
+      };
 
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Your previous claim");
+      testBrowserPageTitle({ title: "Previous poultry claim", getResponse });
+      testPageHeading({ heading: "Your previous claim", getResponse });
     });
 
-    test("filters out claims without herd cph", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          siteSelected: null,
-          previousClaims: [
-            {
-              herd: {
-                id: "herd-123",
-                name: "Main Farm",
-                cph: "12/345/6789",
+    describe("filters out claims without herd cph", () => {
+      const getResponse = () => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+          .mockReturnValue({
+            siteSelected: null,
+            previousClaims: [
+              {
+                herd: {
+                  id: "herd-123",
+                  name: "Main Farm",
+                  cph: "12/345/6789",
+                },
+                data: {
+                  typesOfPoultry: ["laying-hens"],
+                  dateOfVisit: "2024-03-15",
+                },
+                createdAt: "2024-03-20",
               },
-              data: {
-                typesOfPoultry: ["laying-hens"],
-                dateOfVisit: "2024-03-15",
+              {
+                herd: {
+                  id: "herd-456",
+                  name: "Second Farm",
+                },
+                data: {
+                  typesOfPoultry: ["broilers"],
+                },
               },
-              createdAt: "2024-03-20",
-            },
-            {
-              herd: {
-                id: "herd-456",
-                name: "Second Farm",
-              },
-              data: {
-                typesOfPoultry: ["broilers"],
-              },
-            },
-          ],
-        });
+            ],
+          });
 
-      const res = await server.inject({ method: "GET", url, auth });
+        return server.inject({ method: "GET", url, auth });
+      };
 
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Your previous claim");
+      testBrowserPageTitle({ title: "Previous poultry claim", getResponse });
+      testPageHeading({ heading: "Your previous claim", getResponse });
     });
 
-    test("returns unique sites when duplicate name/cph combinations exist", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          siteSelected: null,
-          previousClaims: [
-            {
-              herd: {
-                id: "herd-123",
-                name: "Main Farm",
-                cph: "12/345/6789",
+    describe("returns unique sites when duplicate name/cph combinations exist", () => {
+      const getResponse = () => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+          .mockReturnValue({
+            siteSelected: null,
+            previousClaims: [
+              {
+                herd: {
+                  id: "herd-123",
+                  name: "Main Farm",
+                  cph: "12/345/6789",
+                },
+                data: {
+                  typesOfPoultry: ["laying-hens"],
+                  dateOfVisit: "2024-03-15",
+                },
+                createdAt: "2024-03-20",
               },
-              data: {
-                typesOfPoultry: ["laying-hens"],
-                dateOfVisit: "2024-03-15",
+              {
+                herd: {
+                  id: "herd-456",
+                  name: "Main Farm",
+                  cph: "12/345/6789",
+                },
+                data: {
+                  typesOfPoultry: ["laying-hens"],
+                  dateOfVisit: "2024-01-10",
+                },
+                createdAt: "2024-01-15",
               },
-              createdAt: "2024-03-20",
-            },
-            {
-              herd: {
-                id: "herd-456",
-                name: "Main Farm",
-                cph: "12/345/6789",
+              {
+                herd: {
+                  id: "herd-789",
+                  name: "Second Farm",
+                  cph: "98/765/4321",
+                },
+                data: {
+                  typesOfPoultry: ["broilers"],
+                  dateOfVisit: "2024-02-10",
+                },
+                createdAt: "2024-02-15",
               },
-              data: {
-                typesOfPoultry: ["laying-hens"],
-                dateOfVisit: "2024-01-10",
-              },
-              createdAt: "2024-01-15",
-            },
-            {
-              herd: {
-                id: "herd-789",
-                name: "Second Farm",
-                cph: "98/765/4321",
-              },
-              data: {
-                typesOfPoultry: ["broilers"],
-                dateOfVisit: "2024-02-10",
-              },
-              createdAt: "2024-02-15",
-            },
-          ],
-        });
+            ],
+          });
 
-      const res = await server.inject({ method: "GET", url, auth });
+        return server.inject({ method: "GET", url, auth });
+      };
 
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Select the site you are claiming for");
+      testBrowserPageTitle({ title: "Select the poultry site you are claiming for", getResponse });
+      testPageHeading({ heading: "Select the site you are claiming for", getResponse });
     });
 
-    test("filters out claims without herd object", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          siteSelected: null,
-          previousClaims: [
-            {
-              herd: {
-                id: "herd-123",
-                name: "Main Farm",
-                cph: "12/345/6789",
+    describe("filters out claims without herd object", () => {
+      const getResponse = () => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+          .mockReturnValue({
+            siteSelected: null,
+            previousClaims: [
+              {
+                herd: {
+                  id: "herd-123",
+                  name: "Main Farm",
+                  cph: "12/345/6789",
+                },
+                data: {
+                  typesOfPoultry: ["laying-hens"],
+                  dateOfVisit: "2024-03-15",
+                },
+                createdAt: "2024-03-20",
               },
-              data: {
-                typesOfPoultry: ["laying-hens"],
-                dateOfVisit: "2024-03-15",
+              {
+                data: { typesOfPoultry: ["broilers"] },
               },
-              createdAt: "2024-03-20",
-            },
-            {
-              data: { typesOfPoultry: ["broilers"] },
-            },
-          ],
-        });
+            ],
+          });
 
-      const res = await server.inject({ method: "GET", url, auth });
+        return server.inject({ method: "GET", url, auth });
+      };
 
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Your previous claim");
+      testBrowserPageTitle({ title: "Previous poultry claim", getResponse });
+      testPageHeading({ heading: "Your previous claim", getResponse });
     });
 
     test("preserves previously selected site", async () => {
@@ -554,29 +560,51 @@ describe("/poultry/select-site", () => {
       expect(res.statusCode).toBe(200);
     });
 
-    test("handles claims with missing data fields gracefully", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
-        .mockReturnValue({
-          siteSelected: null,
-          previousClaims: [
-            {
-              herd: {
-                id: "herd-123",
-                name: "Main Farm",
-                cph: "12/345/6789",
+    describe(" missing data fields", () => {
+      const getSingleSiteResponse = () => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+          .mockReturnValue({
+            siteSelected: null,
+            previousClaims: [
+              {
+                herd: {
+                  id: "herd-123",
+                  name: "Main Farm",
+                  cph: "12/345/6789",
+                },
               },
-            },
-          ],
-        });
+            ],
+          });
 
-      const res = await server.inject({ method: "GET", url, auth });
+        return server.inject({ method: "GET", url, auth });
+      };
 
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain("Your previous claim");
-      expect(res.payload).toContain("Main Farm");
-      expect(res.payload).toContain("12/345/6789");
+      testBrowserPageTitle({ title: "Previous poultry claim", getResponse: getSingleSiteResponse });
+      testPageHeading({ heading: "Your previous claim", getResponse: getSingleSiteResponse });
+
+      test("handles claims with missing data fields gracefully", async () => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+          .mockReturnValue({
+            siteSelected: null,
+            previousClaims: [
+              {
+                herd: {
+                  id: "herd-123",
+                  name: "Main Farm",
+                  cph: "12/345/6789",
+                },
+              },
+            ],
+          });
+
+        const res = await server.inject({ method: "GET", url, auth });
+
+        expect(res.statusCode).toBe(200);
+        expect(res.payload).toContain("Main Farm");
+        expect(res.payload).toContain("12/345/6789");
+      });
     });
   });
 
@@ -772,7 +800,9 @@ describe("/poultry/select-site", () => {
       expect($(".govuk-error-summary__list").text()).toContain(
         "Select the site you are claiming for",
       );
-      expect($("#siteSelected-error").text()).toContain("Select the site you are claiming for");
+      expect($("#siteSelected-error").text()).toContain(
+        "Error: Select the site you are claiming for",
+      );
     });
 
     test("returns 400 and shows error when no site is selected from multiple sites view", async () => {

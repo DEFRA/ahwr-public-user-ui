@@ -66,6 +66,7 @@ const buildViewData = (previousClaims) => {
   if (previousSites.length > 1) {
     return {
       backLink: poultryClaimRoutes.dateOfVisit,
+      browserTitleText: "Select the poultry site you are claiming for",
       pageTitleText: "Select the site you are claiming for",
       sites: previousSites,
       radioValueNewSite,
@@ -75,6 +76,7 @@ const buildViewData = (previousClaims) => {
   const site = previousSites[0];
   return {
     backLink: poultryClaimRoutes.dateOfVisit,
+    browserTitleText: "Previous poultry claim",
     pageTitleText: "Your previous claim",
     siteId: site?.id,
     name: site?.name,
