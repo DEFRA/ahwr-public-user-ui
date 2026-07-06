@@ -25,7 +25,6 @@ export const loginRoutes = {
   signOut: "/sign-out",
   cannotSignIn: "/cannot-sign-in",
   devLandingPage: "/dev-landing-page",
-  devSignIn: "/dev-sign-in",
 };
 
 export const applyRoutes = {

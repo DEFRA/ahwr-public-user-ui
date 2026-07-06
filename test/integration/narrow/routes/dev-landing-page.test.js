@@ -13,7 +13,7 @@ jest.mock("../../../../app/lib/context-helper.js");
 
 const auth = { credentials: {}, strategy: "cookie" };
 
-describe("Dev sign in page test", () => {
+describe("Dev landing page test", () => {
   afterEach(() => {
     jest.resetAllMocks();
     jest.clearAllMocks();
