@@ -92,6 +92,9 @@ describe("PI Hunt recommended tests", () => {
 
         expect(res.statusCode).toBe(200);
         expect($(".govuk-fieldset__heading").text().trim()).toEqual(expectedQuestion);
+        expect($("title").text()).toContain(
+          "Persistently infected hunt done on all livestock in herd - Get funding to improve animal health and welfare",
+        );
         expect($(".govuk-radios__item").length).toEqual(2);
         expect($(".govuk-back-link").attr("href")).toContain(backLink);
         expectPhaseBanner.ok($);

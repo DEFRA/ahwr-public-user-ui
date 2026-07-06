@@ -70,7 +70,7 @@ describe("Vaccination test", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text()).toContain(
-        "Herd Vaccination Status - Get funding to improve animal health and welfare",
+        "Livestock vaccination - Get funding to improve animal health and welfare",
       );
       expect($("h1").text()).toMatch(
         "What is the herd porcine reproductive and respiratory syndrome (PRRS) vaccination status?",

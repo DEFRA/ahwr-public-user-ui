@@ -75,7 +75,7 @@ describe("Test Results test", () => {
         "What was the test result of your last animal health and welfare review?",
       );
       expect($("title").text()).toContain(
-        "Vet Visits Review Test Results - Get funding to improve animal health and welfare",
+        "Livestock test results - Get funding to improve animal health and welfare",
       );
 
       expectPhaseBanner.ok($);

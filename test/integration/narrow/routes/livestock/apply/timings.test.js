@@ -70,7 +70,7 @@ describe("Declaration test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Timing of reviews and follow-ups");
       expect($("title").text()).toMatch(
-        "Timing of reviews and follow-ups - Get funding to improve animal health and welfare",
+        "Timing of livestock reviews and follow-ups - Get funding to improve animal health and welfare",
       );
       expect($("main h2").length).toBe(2);
 

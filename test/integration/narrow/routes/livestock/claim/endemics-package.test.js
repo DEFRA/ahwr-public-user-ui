@@ -71,7 +71,7 @@ describe("Endemics package test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text().trim()).toMatch("Which sheep health package did you choose?");
       expect($("title").text()).toContain(
-        "Which sheep health package did you choose? - Get funding to improve animal health and welfare",
+        "Sheep livestock health package - Get funding to improve animal health and welfare",
       );
 
       expectPhaseBanner.ok($);

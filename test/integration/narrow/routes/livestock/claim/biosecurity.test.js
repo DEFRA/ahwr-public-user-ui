@@ -132,7 +132,7 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
       expect(await axe(response.payload)).toHaveNoViolations();
       const $ = cheerio.load(response.payload);
       expect($("title").text()).toMatch(
-        "Did the vet do a biosecurity assessment? - Get funding to improve animal health and welfare",
+        "Livestock biosecurity assessment - Get funding to improve animal health and welfare",
       );
       expect($("h1").text()).toMatch("Did the vet do a biosecurity assessment?");
     });

@@ -80,6 +80,10 @@ describe("Claim confirmation", () => {
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
+      expect($("h1").text()).toContain("Claim complete");
+      expect($("title").text()).toContain(
+        "Livestock claim submitted - Get funding to improve animal health and welfare",
+      );
       expect($("#amount").text()).toContain("55");
       expect($("#reference").text().trim()).toEqual(reference);
       expect($("#message").text().trim()).toContain(

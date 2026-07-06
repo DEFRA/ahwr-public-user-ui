@@ -25,7 +25,7 @@ jest.mock("../../../../../../app/logging/logger.js", () => ({
 
 function expectPageContentOk($, previousPageUrl) {
   expect($("title").text()).toMatch(
-    /Date of review|follow-up - Get funding to improve animal health and welfare/i,
+    /Date of livestock review|follow-up - Get funding to improve animal health and welfare/i,
   );
   expect($("h1").text().trim()).toMatch(/(Date of review | follow-up)/i);
   expect($("p").text()).toMatch(
@@ -219,7 +219,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
     expect($("h1").text().trim()).toBe("Date of follow-up");
-    expect($("title").text()).toMatch(/^Date of follow-up - /);
+    expect($("title").text()).toMatch(/^Date of livestock follow-up - /);
     expect($(".govuk-back-link").attr("href")).toBe("/livestock/vet-visits-review-test-results");
     expectPhaseBanner.ok($);
   });
@@ -247,7 +247,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
     expect($("h1").text().trim()).toBe("Date of review");
-    expect($("title").text()).toMatch(/^Date of review - /);
+    expect($("title").text()).toMatch(/^Date of livestock review - /);
     expect($(".govuk-back-link").attr("href")).toBe("/livestock/review-type");
     expectPhaseBanner.ok($);
   });

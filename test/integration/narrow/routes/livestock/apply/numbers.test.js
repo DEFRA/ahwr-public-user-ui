@@ -68,14 +68,15 @@ describe("Check review numbers page test", () => {
 
       const $ = cheerio.load(res.payload);
       const titleClassName = ".govuk-heading-l";
-      const title = "Minimum number of each species in each herd or flock";
+      const heading = "Minimum number of each species in each herd or flock";
+      const title = "Minimum number of livestock";
       const pageTitleByClassName = $(titleClassName).text();
       const pageTitleByName = $("title").text();
       const fullTitle = `${title} - Get funding to improve animal health and welfare`;
       const backLinkUrlByClassName = $(".govuk-back-link").attr("href");
 
       expect(pageTitleByName).toContain(fullTitle);
-      expect(pageTitleByClassName).toEqual(title);
+      expect(pageTitleByClassName).toEqual(heading);
       expect(backLinkUrlByClassName).toContain(applyRoutes.youCanClaimMultiple);
       ok($);
     });

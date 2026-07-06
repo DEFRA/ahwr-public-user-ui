@@ -40,6 +40,18 @@ const createUnnamedHerd = (claim, typeOfLivestock) => ({
   name: `Unnamed ${getHerdOrFlock(typeOfLivestock)} (Last claim: ${claim.type === claimType.review ? "review" : "follow-up"} visit on the ${formatDate(claim.data.dateOfVisit)})`,
 });
 
+const getSelectHerdTitles = (herds, herdOrFlock) => {
+  const multipleHerds = herds.length > 1;
+  return {
+    pageTitleText: multipleHerds
+      ? `Select the ${herdOrFlock} you are claiming for`
+      : `Is this the same ${herdOrFlock} you have previously claimed for?`,
+    browserTitle: multipleHerds
+      ? `Livestock ${herdOrFlock} you are claiming for`
+      : `Is this the same livestock ${herdOrFlock} you have previously claimed for?`,
+  };
+};
+
 const getHandler = {
   method: "GET",
   path: pageUrl,
@@ -57,10 +69,7 @@ const getHandler = {
 
       return h.view(claimViews.selectTheHerd, {
         backLink: claimRoutes.dateOfVisit,
-        pageTitleText:
-          herds.length > 1
-            ? `Select the ${herdOrFlock} you are claiming for`
-            : `Is this the same ${herdOrFlock} you have previously claimed for?`,
+        ...getSelectHerdTitles(herds, herdOrFlock),
         radioValueNewHerd,
         ...claimInfo,
         herds: claimWithoutHerd
@@ -162,10 +171,7 @@ const postHandler = {
               href: "#herdSelected",
             },
             backLink: claimRoutes.dateOfVisit,
-            pageTitleText:
-              herds.length > 1
-                ? `Select the ${herdOrFlock} you are claiming for`
-                : `Is this the same ${herdOrFlock} you have previously claimed for?`,
+            ...getSelectHerdTitles(herds, herdOrFlock),
             radioValueNewHerd,
             ...claimInfo,
             herds: claimWithoutHerd

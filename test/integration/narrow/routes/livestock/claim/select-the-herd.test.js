@@ -108,7 +108,7 @@ describe("select-the-herd tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Is this the same flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Is this the same livestock flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expectPhaseBanner.ok($);
@@ -133,7 +133,7 @@ describe("select-the-herd tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Is this the same herd you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Is this the same livestock herd you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expect($('.govuk-radios__input[value="NEW_HERD"]').is(":checked")).toBeTruthy();
@@ -172,7 +172,7 @@ describe("select-the-herd tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Select the herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expectPhaseBanner.ok($);
 
@@ -221,7 +221,7 @@ describe("select-the-herd tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Is this the same flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Is this the same livestock flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expectPhaseBanner.ok($);
@@ -296,7 +296,7 @@ describe("select-the-herd tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Select the herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expectPhaseBanner.ok($);
 
@@ -384,7 +384,7 @@ describe("select-the-herd tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Select the herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Livestock herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expectPhaseBanner.ok($);
 

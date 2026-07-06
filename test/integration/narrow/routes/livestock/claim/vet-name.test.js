@@ -91,7 +91,7 @@ describe("Vet name test", () => {
         const $ = cheerio.load(res.payload);
         expect($("h1").text()).toMatch("What is the vet's name?");
         expect($("title").text().trim()).toContain(
-          "What is the vet's name? - Get funding to improve animal health and welfare",
+          "Livestock vet's name - Get funding to improve animal health and welfare",
         );
         expectPhaseBanner.ok($);
       },

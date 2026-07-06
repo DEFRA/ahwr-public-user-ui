@@ -93,7 +93,7 @@ describe("/livestock/check-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
@@ -124,7 +124,7 @@ describe("/livestock/check-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Check flock details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Check livestock flock details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
@@ -155,7 +155,7 @@ describe("/livestock/check-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
@@ -185,7 +185,7 @@ describe("/livestock/check-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
@@ -221,7 +221,7 @@ describe("/livestock/check-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
@@ -253,7 +253,7 @@ describe("/livestock/check-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
@@ -289,7 +289,7 @@ describe("/livestock/check-herd-details tests", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($("title").text().trim()).toContain(
-        "Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();

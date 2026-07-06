@@ -79,7 +79,7 @@ describe("Number of species tested test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("How many animals were samples taken from?");
       expect($("title").text().trim()).toContain(
-        "How many animals were samples taken from? - Get funding to improve animal health and welfare",
+        "Number of animals livestock samples were taken from - Get funding to improve animal health and welfare",
       );
       expectPhaseBanner.ok($);
     });

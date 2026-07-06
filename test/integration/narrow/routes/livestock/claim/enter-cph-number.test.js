@@ -65,7 +65,7 @@ describe("/livestock/cph tests", () => {
 
   const expectHerdText = ($) => {
     expect($("title").text().trim()).toContain(
-      "Enter the CPH number for this herd - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+      "CPH number for livestock - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
     );
     expect($(".govuk-heading-l").text().trim()).toBe(
       "Enter the County Parish Holding (CPH) number for this herd",
@@ -75,7 +75,7 @@ describe("/livestock/cph tests", () => {
 
   const expectFlockText = ($) => {
     expect($("title").text().trim()).toContain(
-      "Enter the CPH number for this flock - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+      "CPH number for livestock - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
     );
     expect($(".govuk-heading-l").text().trim()).toBe(
       "Enter the County Parish Holding (CPH) number for this flock",

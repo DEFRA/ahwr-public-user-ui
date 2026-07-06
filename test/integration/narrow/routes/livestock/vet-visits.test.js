@@ -145,6 +145,10 @@ describe("GET /livestock/manage-claims", () => {
 
       const $ = cheerio.load(payload);
 
+      expect($("title").text()).toContain(
+        "Manage your livestock claims - Get funding to improve animal health and welfare",
+      );
+
       expect(findByText($, "Important").length).toBe(0);
 
       expect(getTableCells($)).toEqual([

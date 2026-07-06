@@ -82,7 +82,7 @@ describe("Vet rcvs test when Optional PI Hunt is OFF", () => {
         "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
       );
       expect($("title").text().trim()).toContain(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare",
+        "Livestock vet's RCVS number - Get funding to improve animal health and welfare",
       );
       expectPhaseBanner.ok($);
     });

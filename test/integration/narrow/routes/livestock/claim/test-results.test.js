@@ -80,7 +80,7 @@ describe("Test Results test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch(question);
       expect($("title").text()).toContain(
-        `${question} - Get funding to improve animal health and welfare`,
+        "Livestock test result - Get funding to improve animal health and welfare",
       );
 
       expectPhaseBanner.ok($);

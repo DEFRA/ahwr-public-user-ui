@@ -108,7 +108,7 @@ describe("Declaration test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Review your agreement offer");
       expect($("title").text()).toMatch(
-        "Review your agreement offer - Get funding to improve animal health and welfare",
+        "Review your livestock agreement offer - Get funding to improve animal health and welfare",
       );
       ok($);
       const expectedHerdsText = `If the RPA requests evidence that your reviews or follow-ups took place, or details of the herd or flocks you have, you must provide it. This will be on your vet summary.`;
@@ -142,7 +142,7 @@ describe("Declaration test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("Application complete");
       expect($("title").text()).toMatch(
-        "Application complete - Get funding to improve animal health and welfare",
+        "Livestock application complete - Get funding to improve animal health and welfare",
       );
       ok($);
       expect(clearApplyRedirect).toHaveBeenCalled();
@@ -185,7 +185,7 @@ describe("Declaration test", () => {
       );
       const $ = cheerio.load(res.payload);
       expect($("title").text()).toMatch(
-        "Agreement offer rejected - Get funding to improve animal health and welfare",
+        "Livestock agreement offer rejected - Get funding to improve animal health and welfare",
       );
       ok($);
       expect(createApplication).toHaveBeenCalledWith(
@@ -224,7 +224,7 @@ describe("Declaration test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1.govuk-heading-l").text()).toEqual("Review your agreement offer");
       expect($("title").text()).toMatch(
-        "Review your agreement offer - Get funding to improve animal health and welfare",
+        "Review your livestock agreement offer - Get funding to improve animal health and welfare",
       );
       expect($("#organisation-name").text()).toEqual(organisation.name);
       expect($("#organisation-address").text()).toContain("1 fake street");

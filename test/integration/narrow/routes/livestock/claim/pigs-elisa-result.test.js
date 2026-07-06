@@ -74,7 +74,7 @@ describe("pigs elisa result test", () => {
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("What was the result of the ELISA test?");
       expect($("title").text()).toContain(
-        "What was the result of the ELISA test? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
+        "Pig livestock ELISA result - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
 
       expectPhaseBanner.ok($);

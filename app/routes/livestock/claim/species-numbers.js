@@ -130,9 +130,12 @@ const getHandler = {
         claim.latestEndemicsApplication,
       );
 
+      const { isReview } = getReviewType(claim.typeOfReview);
+      const reviewOrFollowUp = isReview ? "review" : "follow-up";
+
       return h.view(claimViews.speciesNumbers, {
         backLink: backLink(request),
-        customisedTitle: questionText,
+        customisedTitle: `Minimum number of livestock on date of ${reviewOrFollowUp}?`,
         ...getYesNoRadios(
           questionText,
           sessionKeys.endemicsClaim.speciesNumbers,
