@@ -76,9 +76,10 @@ describe("what-you-can-claim page", () => {
 
   describe("GET operation handler", () => {
     const getResponse = () => server.inject({ ...optionsBase, method: "GET" });
-    const pageText = "What you can claim for as part of this agreement";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "What you can claim for a poultry biosecurity agreement";
+    const pageHeader = "What you can claim for as part of this agreement";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test("returns 200 and content is correct", async () => {
       const res = await server.inject({ ...optionsBase, method: "GET" });
