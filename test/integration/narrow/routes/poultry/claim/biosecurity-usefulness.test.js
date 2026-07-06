@@ -78,9 +78,10 @@ describe("/poultry/biosecurity-usefulness", () => {
         .mockReturnValue({});
       return server.inject({ method: "GET", url, auth });
     };
-    const pageText = "How useful was the vet's advice for improving your farm's biosecurity?";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "Vet's advice for improving poultry biosecurity";
+    const pageHeader = "How useful was the vet's advice for improving your farm's biosecurity?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test.each([
       { previousAnswer: "very-useful" },
