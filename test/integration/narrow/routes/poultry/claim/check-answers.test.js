@@ -107,9 +107,10 @@ describe("Poultry check answers test", () => {
 
   describe(`GET ${url} route`, () => {
     const getResponse = () => server.inject({ method: "GET", url, auth });
-    const pageText = "Check your answers";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "Check your answers before submitting your poultry biosecurity claim";
+    const pageHeader = "Check your answers";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test("returns 200", async () => {
       const options = {
