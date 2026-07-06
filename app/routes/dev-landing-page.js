@@ -61,7 +61,7 @@ export const devLoginHandlers = [
     path: loginRoutes.devLandingPage,
     options: {
       auth: false,
-      handler: async (request, h) => {
+      handler: async (_request, h) => {
         // Removing this for now, some issues were seen in perf tests, but real user generating real MI report events won't go via here anyway
         // await clearAllOfSession(request);
         return h.view("dev-landing-page");
