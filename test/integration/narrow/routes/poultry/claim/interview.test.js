@@ -79,10 +79,13 @@ describe("/poultry/interview", () => {
         .mockReturnValue({});
       return server.inject({ method: "GET", url, auth });
     };
-    const pageText =
+
+    const browserTitle =
+      "Follow-up interview about your experience of the poultry biosecurity review scheme";
+    const pageHeader =
       "Would you be willing to take part in a short follow-up interview about your experience of this scheme?";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test("selects 'yes' when previously selected", async () => {
       const options = {
