@@ -8,7 +8,7 @@ Accepted
 
 ## Context
 
-We need to rapidly develop the poultry scheme whilst avoiding any regressions to the existing livestock scheme.
+Due to time constraints, we need to rapidly develop the poultry scheme whilst avoiding any regressions to the existing livestock scheme.
 
 ## Decision
 
