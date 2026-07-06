@@ -241,6 +241,33 @@ describe("Agreement offer test", () => {
   });
 
   describe("POST /agreement-offer route", () => {
+    const getResponse = async () => {
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.fundingSelection,
+          sessionKeys.fundingSelection.selectedFunding,
+        )
+        .mockReturnValue("POUL");
+      const applications = [{ organisation, reference: "TEMP-PJ7E-WSI8" }];
+      getApplicationsBySbi.mockReturnValue(applications);
+      const crumb = await getCrumbs(server);
+      const options = {
+        method: "POST",
+        url: "/poultry/agreement-offer",
+        payload: { crumb, terms: "agree", offerStatus: "accepted" },
+        auth,
+        headers: { cookie: `crumb=${crumb}` },
+      };
+
+      return server.inject(options);
+    };
+    const pageHeader = "Application complete";
+    const browserTitle = "Poultry application complete";
+
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
+
     test("returns 200, caches data and sends message for valid request", async () => {
       when(getSessionData)
         .calledWith(
@@ -265,10 +292,6 @@ describe("Agreement offer test", () => {
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("Application complete");
-      expect($("title").text()).toMatch(
-        "Application complete - Get funding to improve animal health and welfare",
-      );
 
       const guidanceLinks = $("a").filter(
         (_, el) => $(el).text().trim() === "how to have a poultry biosecurity review",
