@@ -73,9 +73,10 @@ describe("/poultry/vet-rcvs", () => {
         .mockReturnValue({});
       return server.inject({ method: "GET", url, auth });
     };
-    const pageText = "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "Poultry vet’s RCVS number";
+    const pageHeader = "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test("returns 200 and displays page correctly when visting page first time", async () => {
       when(getSessionData)
