@@ -122,9 +122,13 @@ describe("Dev landing page test", () => {
     expect(res.headers.location).toEqual("/cannot-sign-in");
   });
 
-  test("POST dev sign-in route forwards to error page when forced to show CPH error", async () => {
+  test.each([
+    { scenario: "the business is locked", sbi: "123l" },
+    { scenario: "the person has invalid permissions", sbi: "123i" },
+    { scenario: "there is no eligible CPH", sbi: "123c" },
+    { scenario: "the sbi does not start with 1", sbi: "223456789l" },
+  ])("POST dev landing page forwards to cannot sign in when $scenario", async ({ sbi }) => {
     config.devLogin.enabled = true;
-    const sbi = "123c";
     const server = await createServer();
 
     refreshApplications.mockResolvedValueOnce({
@@ -139,51 +143,6 @@ describe("Dev landing page test", () => {
       },
       method: "POST",
       auth,
-    });
-
-    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-    expect(res.headers.location).toEqual("/cannot-sign-in");
-  });
-
-  test("POST dev sign-in route forwards to error page when forced to show Invalid permissions error", async () => {
-    config.devLogin.enabled = true;
-    const sbi = "123i";
-    const server = await createServer();
-
-    refreshApplications.mockResolvedValueOnce({
-      latestEndemicsApplication: undefined,
-      latestVetVisitApplication: undefined,
-    });
-
-    const res = await server.inject({
-      url: "/dev-landing-page",
-      payload: {
-        sbi,
-      },
-      method: "POST",
-      auth,
-    });
-
-    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-    expect(res.headers.location).toEqual("/cannot-sign-in");
-  });
-
-  test("POST dev sign-in route forwards to error page when forced to show locked business error", async () => {
-    config.devLogin.enabled = true;
-    const sbi = "123l";
-    const server = await createServer();
-
-    refreshApplications.mockResolvedValueOnce({
-      latestEndemicsApplication: undefined,
-      latestVetVisitApplication: undefined,
-    });
-
-    const res = await server.inject({
-      url: "/dev-landing-page",
-      payload: {
-        sbi,
-      },
-      method: "POST",
     });
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
@@ -200,29 +159,6 @@ describe("Dev landing page test", () => {
     });
 
     expect(res.statusCode).toBe(StatusCodes.OK);
-  });
-
-  test("POST dev landing page forwards to cannot sign in when the sbi does not start with 1", async () => {
-    config.devLogin.enabled = true;
-    const sbi = "223456789l";
-    const server = await createServer();
-
-    refreshApplications.mockResolvedValueOnce({
-      latestEndemicsApplication: undefined,
-      latestVetVisitApplication: undefined,
-    });
-
-    const res = await server.inject({
-      url: "/dev-landing-page",
-      payload: {
-        sbi,
-      },
-      method: "POST",
-      auth,
-    });
-
-    expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-    expect(res.headers.location).toEqual("/cannot-sign-in");
   });
 
   test("POST dev landing page shows verify-login-failed for an unexpected error", async () => {
