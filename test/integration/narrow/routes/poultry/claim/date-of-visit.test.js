@@ -154,9 +154,10 @@ describe("GET /poultry/date-of-visit", () => {
   });
 
   const getResponse = () => server.inject(options);
-  const pageText = "Date of visit";
-  testBrowserPageTitle({ title: pageText, getResponse });
-  testPageHeading({ heading: pageText, getResponse });
+  const browserTitle = "Date of visit for poultry";
+  const pageHeader = "Date of visit";
+  testBrowserPageTitle({ title: browserTitle, getResponse });
+  testPageHeading({ heading: pageHeader, getResponse });
 
   test("without previous data, shows the screen with empty date boxes", async () => {
     const res = await server.inject(options);
