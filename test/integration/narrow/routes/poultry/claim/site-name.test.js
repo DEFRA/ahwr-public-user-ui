@@ -77,9 +77,10 @@ describe("/poultry/site-name", () => {
         .mockReturnValue({ reference: "TEMP-6GSE-PIR8", herds: [{ id: "1" }] });
       return server.inject({ method: "GET", url, auth });
     };
-    const pageText = "Enter the site name";
-    testBrowserPageTitle({ title: pageText, getResponse });
-    testPageHeading({ heading: pageText, getResponse });
+    const browserTitle = "Poultry site name";
+    const pageHeader = "Enter the site name";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test("returns 200 and displays page correctly", async () => {
       when(getSessionData)
