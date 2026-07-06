@@ -13,6 +13,10 @@ import { poultryApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { when } from "jest-when";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/config/index.js", () => ({
   config: {
@@ -71,13 +75,18 @@ describe("what-you-can-claim page", () => {
   });
 
   describe("GET operation handler", () => {
+    const getResponse = () => server.inject({ ...optionsBase, method: "GET" });
+    const browserTitle = "What you can claim for a poultry biosecurity agreement";
+    const pageHeader = "What you can claim for as part of this agreement";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
+
     test("returns 200 and content is correct", async () => {
       const res = await server.inject({ ...optionsBase, method: "GET" });
 
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.payload).toContain("/select-funding"); // back-link
-      expect(res.payload).toContain("What you can claim for as part of this agreement");
       expect(res.payload).toContain(
         "Under this Poultry Biosecurity Review (PBR) agreement, you can claim funding for biosecurity reviews for every poultry site associated with your single business identifier (SBI).",
       );

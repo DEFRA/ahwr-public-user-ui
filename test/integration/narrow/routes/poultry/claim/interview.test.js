@@ -9,6 +9,11 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
@@ -64,39 +69,23 @@ describe("/poultry/interview", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("redirect if not logged in / authorized", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const response = await server.inject(options);
-
-      expect(response.statusCode).toBe(302);
-      expect(response.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
 
-    test("display question text", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({});
+      return server.inject({ method: "GET", url, auth });
+    };
 
-      const response = await server.inject(options);
-
-      expect(await axe(response.payload)).toHaveNoViolations();
-      const $ = cheerio.load(response.payload);
-      expect($("title").text()).toMatch(
-        "Would you be willing to take part in a short follow-up interview about your experience of this scheme? - Get funding to improve animal health and welfare",
-      );
-      expect($("h1").text()).toMatch(
-        "Would you be willing to take part in a short follow-up interview about your experience of this scheme?",
-      );
-    });
+    const browserTitle =
+      "Follow-up interview about your experience of the poultry biosecurity review scheme";
+    const pageHeader =
+      "Would you be willing to take part in a short follow-up interview about your experience of this scheme?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test("selects 'yes' when previously selected", async () => {
       const options = {

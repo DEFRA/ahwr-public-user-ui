@@ -9,6 +9,11 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
@@ -63,39 +68,20 @@ describe("/poultry/changes-cost", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("redirect if not logged in / authorized", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const response = await server.inject(options);
-
-      expect(response.statusCode).toBe(302);
-      expect(response.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
 
-    test("display question text", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({});
-
-      const response = await server.inject(options);
-
-      expect(await axe(response.payload)).toHaveNoViolations();
-      const $ = cheerio.load(response.payload);
-      expect($("title").text()).toMatch(
-        "How much do you expect to spend on recommended biosecurity changes? - Get funding to improve animal health and welfare",
-      );
-      expect($("h1").text()).toMatch(
-        "How much do you expect to spend on recommended biosecurity changes?",
-      );
-    });
+      return server.inject({ method: "GET", url, auth });
+    };
+    const browserTitle = "Expected spend for poultry biosecurity changes";
+    const pageHeader = "How much do you expect to spend on recommended biosecurity changes?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
 
     test.each([
       { previousAnswer: "0-1500" },

@@ -4,6 +4,10 @@ import { load } from "cheerio";
 import { getClaimsByApplicationReference } from "../../../../../app/api-requests/claim-api.js";
 import { axe } from "../../../../helpers/axe-helper.js";
 import { findLinkByText } from "../../../../helpers/find-link-by-text.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../app/api-requests/claim-api.js");
 jest.mock("../../../../../app/auth/auth-code-grant/request-authorization-code-url.js", () => ({
@@ -210,4 +214,14 @@ describe("GET /poultry/manage-claims", () => {
     expect($("body").text()).not.toContain("You have not submitted any claims yet.");
     expect(await axe(res.payload)).toHaveNoViolations();
   });
+
+  const getResponse = async () => {
+    await setServerState(server, { ...baseState });
+    getClaimsByApplicationReference.mockResolvedValueOnce([]);
+    return server.inject(options);
+  };
+  const pageTitle = "Manage poultry biosecurity claims";
+  const pageHeader = "Manage your claims";
+  testBrowserPageTitle({ title: pageTitle, getResponse });
+  testPageHeading({ heading: pageHeader, getResponse });
 });

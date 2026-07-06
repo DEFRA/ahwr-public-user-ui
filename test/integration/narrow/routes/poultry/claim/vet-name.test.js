@@ -1,5 +1,10 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 
@@ -73,6 +78,12 @@ describe("/poultry/vet-name", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    const getResponse = () => server.inject({ method: "GET", url, auth });
+    const browserTitle = "Poultry vet's name";
+    const pageHeader = "What is the vet's name?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
+
     test("returns 200", async () => {
       const options = {
         method: "GET",
@@ -85,10 +96,6 @@ describe("/poultry/vet-name", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect(await axe(res.payload)).toHaveNoViolations();
-      expect($("h1").text()).toMatch("What is the vet's name?");
-      expect($("title").text().trim()).toContain(
-        "What is the vet's name? - Get funding to improve animal health and welfare",
-      );
       expectPhaseBanner.ok($);
     });
 
@@ -130,16 +137,8 @@ describe("/poultry/vet-name", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
 
     test("redirects to apply journey when poultry agreement is not AGREED", async () => {
@@ -171,18 +170,14 @@ describe("/poultry/vet-name", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb, vetsName: "Test Vet" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb, vetsName: "Test Vet" },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
 
     test.each([
@@ -211,7 +206,6 @@ describe("/poultry/vet-name", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("What is the vet's name?");
-      expect($("title").text().trim()).toContain("Error: What is the vet's name?");
       expect($(".govuk-error-summary__title").text().trim()).toBe("There is a problem");
       expect($("#main-content > div > div > div > div > div > ul > li > a").text()).toMatch(error);
       expect($('a[href="#vetsName"]').text().trim()).toBe(error);

@@ -2,6 +2,10 @@ import * as cheerio from "cheerio";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { createServer } from "../../../../../../app/server.js";
 import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import {
   clearPoultryClaim,
   getSessionData,
   sessionEntryKeys,
@@ -39,13 +43,7 @@ describe("Claim confirmation", () => {
     jest.clearAllMocks();
   });
 
-  test("GET endemicsConfirmation route %s", async () => {
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
-
+  const mockConfirmationSession = () => {
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
       .mockReturnValue({
@@ -68,6 +66,26 @@ describe("Claim confirmation", () => {
         sessionKeys.confirmedDetails,
       )
       .mockReturnValue(true);
+  };
+
+  const getResponse = () => {
+    mockConfirmationSession();
+    return server.inject({ method: "GET", url, auth });
+  };
+
+  const browserTitle = "Poultry biosecurity claim submitted";
+  const pageHeader = "Claim submitted";
+  testBrowserPageTitle({ title: browserTitle, getResponse });
+  testPageHeading({ heading: pageHeader, getResponse });
+
+  test("GET endemicsConfirmation route %s", async () => {
+    const options = {
+      method: "GET",
+      url,
+      auth,
+    };
+
+    mockConfirmationSession();
 
     const res = await server.inject(options);
 

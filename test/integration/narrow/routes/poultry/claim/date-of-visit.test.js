@@ -1,6 +1,10 @@
 import * as cheerio from "cheerio";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { createServer } from "../../../../../../app/server.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 import expectPhaseBanner from "assert";
 import {
   getSessionData,
@@ -31,10 +35,6 @@ const auth = { credentials: {}, strategy: "cookie" };
 const url = "/poultry/date-of-visit";
 
 function expectPageContentOk($, previousPageUrl) {
-  expect($("title").text()).toMatch(
-    "Date of visit - Get funding to improve animal health and welfare",
-  );
-  expect($("h1").text().trim()).toMatch("Date of visit");
   expect($("p").text()).toMatch("This is the date the vet last visited the site for this review.");
   expect($("#visit-date-hint").text()).toMatch("For example, 27 3 2022");
   expect($(`label[for=visit-date-day]`).text()).toMatch("Day");
@@ -152,6 +152,12 @@ describe("GET /poultry/date-of-visit", () => {
     expect(res.statusCode).toBe(302);
     expect(res.headers.location.toString()).toEqual(`/poultry/what-you-can-claim`);
   });
+
+  const getResponse = () => server.inject(options);
+  const browserTitle = "Date of visit for poultry";
+  const pageHeader = "Date of visit";
+  testBrowserPageTitle({ title: browserTitle, getResponse });
+  testPageHeading({ heading: pageHeader, getResponse });
 
   test("without previous data, shows the screen with empty date boxes", async () => {
     const res = await server.inject(options);

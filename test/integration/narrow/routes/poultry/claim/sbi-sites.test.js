@@ -1,5 +1,9 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
 import {
@@ -64,6 +68,19 @@ describe("/sbi-sites tests", () => {
   });
 
   describe("GET", () => {
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ reference: "TEMP-6GSE-PIR8" });
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    const browserTitle = "Poultry sites associated with this SBI?";
+    const pageHeader =
+      "Is this the only site associated with this Single Business Identifier (SBI)?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
+
     test("returns 200 and displays page correctly", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -76,14 +93,7 @@ describe("/sbi-sites tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Is this the only site associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/cph");
-      const legend = $(".govuk-fieldset__legend--l");
-      expect(legend.text().trim()).toBe(
-        "Is this the only site associated with this Single Business Identifier (SBI)?",
-      );
       expectPhaseBanner.ok($);
     });
 
@@ -202,29 +212,38 @@ describe("/sbi-sites tests", () => {
       });
     });
 
-    test("display errors when no answer selected", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-      });
+    describe("display errors when no answer selected", () => {
+      const getResponse = () => {
+        getSessionData.mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+        });
 
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb },
-        headers: { cookie: `crumb=${crumb}` },
-      });
+        return server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+      };
 
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#isOnlyHerdOnSbi"]').text()).toContain(
-        "Select if this is the only site associated with this SBI",
-      );
-      expect($("title").text().trim()).toContain(
-        "Is this the only site associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
+      const browserTitle = "Error: Poultry sites associated with this SBI?";
+      const pageHeader =
+        "Is this the only site associated with this Single Business Identifier (SBI)?";
+      testBrowserPageTitle({ title: browserTitle, getResponse });
+      testPageHeading({ heading: pageHeader, getResponse });
+
+      test("display errors when no answer selected", async () => {
+        const res = await getResponse();
+
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(400);
+        expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
+        expect($('a[href="#isOnlyHerdOnSbi"]').text()).toContain(
+          "Select if this is the only site associated with this SBI",
+        );
+      });
     });
   });
 });

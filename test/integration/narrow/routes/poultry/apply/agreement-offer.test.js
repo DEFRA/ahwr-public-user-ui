@@ -20,6 +20,10 @@ import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { refreshApplications } from "../../../../../../app/lib/context-helper.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import { dashboardRoutes } from "../../../../../../app/constants/routes.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/lib/context-helper");
 jest.mock("../../../../../../app/session/index");
@@ -89,6 +93,13 @@ describe("Agreement offer test", () => {
   createApplication.mockResolvedValue({ applicationReference: "POUL-PJ7E-WSI8" });
 
   describe("GET /agreement-offer route", () => {
+    const getResponse = () =>
+      server.inject({ method: "GET", url: "/poultry/agreement-offer", auth });
+    const browserTitle = "Review poultry agreement offer";
+    const pageHeader = "Review your agreement offer";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
+
     test("when not logged in redirects to dashboard /sign-in", async () => {
       const options = {
         method: "GET",
@@ -114,11 +125,6 @@ describe("Agreement offer test", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
       ok($);
-
-      expect($("title").text()).toMatch(
-        "Review your agreement offer - Get funding to improve animal health and welfare",
-      );
-      expect($("h1.govuk-heading-l").text().trim()).toBe("Review your agreement offer");
 
       const intro = $("p")
         .filter((i, el) =>
@@ -235,163 +241,227 @@ describe("Agreement offer test", () => {
   });
 
   describe("POST /agreement-offer route", () => {
-    test("returns 200, caches data and sends message for valid request", async () => {
-      when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.fundingSelection,
-          sessionKeys.fundingSelection.selectedFunding,
-        )
-        .mockReturnValue("POUL");
-      const applications = [{ organisation, reference: "TEMP-PJ7E-WSI8" }];
-      getApplicationsBySbi.mockReturnValue(applications);
-      const crumb = await getCrumbs(server);
-      const options = {
-        method: "POST",
-        url: "/poultry/agreement-offer",
-        payload: { crumb, terms: "agree", offerStatus: "accepted" },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
+    describe("accepted", () => {
+      const getResponse = async () => {
+        when(getSessionData)
+          .calledWith(
+            expect.anything(),
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.selectedFunding,
+          )
+          .mockReturnValue("POUL");
+        const applications = [{ organisation, reference: "TEMP-PJ7E-WSI8" }];
+        getApplicationsBySbi.mockReturnValue(applications);
+        const crumb = await getCrumbs(server);
+        const options = {
+          method: "POST",
+          url: "/poultry/agreement-offer",
+          payload: { crumb, terms: "agree", offerStatus: "accepted" },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
+
+        return server.inject(options);
       };
+      const pageHeader = "Application complete";
+      const browserTitle = "Poultry application complete";
 
-      const res = await server.inject(options);
+      testBrowserPageTitle({ title: browserTitle, getResponse });
+      testPageHeading({ heading: pageHeader, getResponse });
 
-      expect(res.statusCode).toBe(StatusCodes.OK);
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("Application complete");
-      expect($("title").text()).toMatch(
-        "Application complete - Get funding to improve animal health and welfare",
-      );
+      test("returns 200, caches data and sends message for valid request", async () => {
+        when(getSessionData)
+          .calledWith(
+            expect.anything(),
+            sessionEntryKeys.fundingSelection,
+            sessionKeys.fundingSelection.selectedFunding,
+          )
+          .mockReturnValue("POUL");
+        const applications = [{ organisation, reference: "TEMP-PJ7E-WSI8" }];
+        getApplicationsBySbi.mockReturnValue(applications);
+        const crumb = await getCrumbs(server);
+        const options = {
+          method: "POST",
+          url: "/poultry/agreement-offer",
+          payload: { crumb, terms: "agree", offerStatus: "accepted" },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
 
-      const guidanceLinks = $("a").filter(
-        (_, el) => $(el).text().trim() === "how to have a poultry biosecurity review",
-      );
-      expect(guidanceLinks.length).toBe(2);
-      guidanceLinks.each((_, el) => {
-        expect($(el).attr("href")).toBe("https://example.gov.uk/poultry-guidance");
+        const res = await server.inject(options);
+
+        expect(res.statusCode).toBe(StatusCodes.OK);
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
+
+        const guidanceLinks = $("a").filter(
+          (_, el) => $(el).text().trim() === "how to have a poultry biosecurity review",
+        );
+        expect(guidanceLinks.length).toBe(2);
+        guidanceLinks.each((_, el) => {
+          expect($(el).attr("href")).toBe("https://example.gov.uk/poultry-guidance");
+        });
+
+        ok($);
+        expect(clearApplyRedirect).toHaveBeenCalled();
+        expect(refreshApplications).toHaveBeenCalledWith(organisation.sbi, expect.anything());
+        expect(createApplication).toHaveBeenCalledWith(
+          { organisation, ...poultryApplyData, type: "POUL" },
+          expect.anything(),
+        );
+        expect(trackEvent).toHaveBeenCalledWith(
+          expect.anything(),
+          "submit-application",
+          "status: accepted sbi:0123456789",
+          {
+            reference:
+              "applicationReference: POUL-PJ7E-WSI8, tempApplicationReference: TEMP-PJ7E-WSI8",
+          },
+        );
+      });
+    });
+
+    describe("rejected", () => {
+      const getRejectionResponse = async () => {
+        const crumb = await getCrumbs(server);
+        const options = {
+          method: "POST",
+          url: "/poultry/agreement-offer",
+          payload: { crumb, terms: "agree", offerStatus: "rejected" },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
+
+        return server.inject(options);
+      };
+      testBrowserPageTitle({
+        title: "Poultry agreement offer rejected",
+        getResponse: getRejectionResponse,
+      });
+      testPageHeading({
+        heading: "Agreement offer rejected",
+        getResponse: getRejectionResponse,
       });
 
-      ok($);
-      expect(clearApplyRedirect).toHaveBeenCalled();
-      expect(refreshApplications).toHaveBeenCalledWith(organisation.sbi, expect.anything());
-      expect(createApplication).toHaveBeenCalledWith(
-        { organisation, ...poultryApplyData, type: "POUL" },
-        expect.anything(),
-      );
-      expect(trackEvent).toHaveBeenCalledWith(
-        expect.anything(),
-        "submit-application",
-        "status: accepted sbi:0123456789",
-        {
-          reference:
-            "applicationReference: POUL-PJ7E-WSI8, tempApplicationReference: TEMP-PJ7E-WSI8",
-        },
-      );
+      test("returns 200, shows offer rejection content on rejection", async () => {
+        const crumb = await getCrumbs(server);
+        const options = {
+          method: "POST",
+          url: "/poultry/agreement-offer",
+          payload: { crumb, terms: "agree", offerStatus: "rejected" },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
+
+        const res = await server.inject(options);
+
+        expect(res.statusCode).toBe(StatusCodes.OK);
+        expect(await axe(res.payload)).toHaveNoViolations();
+        // Asserting a new reference has been set in the session
+        expect(setSessionData).toHaveBeenCalledWith(
+          expect.anything(),
+          sessionEntryKeys.poultryApplyData,
+          sessionKeys.poultryApplyData.reference,
+          expect.any(String),
+        );
+        const $ = cheerio.load(res.payload);
+        expect(res.payload).toContain(
+          "You've rejected the agreement offer and your application has been cancelled.",
+        );
+        expect(res.payload).toContain("You'll need to start a new application if you:");
+
+        const bulletItems = $("ul.govuk-list--bullet").first().find("li");
+        const actualItems = bulletItems.map((i, el) => $(el).text().trim()).get();
+        expect(actualItems).toEqual([
+          "rejected the agreement by mistake",
+          "change your mind and want to apply again",
+        ]);
+
+        const callChargesLink = $("a:contains('Find out about call charges')");
+        expect(callChargesLink).toExistOnce();
+        expect(callChargesLink.text().trim()).toBe(
+          "Find out about call charges (opens in new tab)",
+        );
+
+        expect($(".govuk-back-link")).toBeAbsent();
+
+        ok($);
+        expect(createApplication).toHaveBeenCalledWith(
+          { organisation, ...poultryApplyData, type: "POUL" },
+          expect.anything(),
+        );
+        expect(refreshApplications).not.toHaveBeenCalled();
+        expect(trackEvent).toHaveBeenCalledWith(
+          expect.anything(),
+          "submit-application",
+          "status: rejected sbi:0123456789",
+          {
+            reference:
+              "applicationReference: POUL-PJ7E-WSI8, tempApplicationReference: TEMP-PJ7E-WSI8",
+          },
+        );
+      });
     });
 
-    test("returns 200, shows offer rejection content on rejection", async () => {
-      const crumb = await getCrumbs(server);
-      const options = {
-        method: "POST",
-        url: "/poultry/agreement-offer",
-        payload: { crumb, terms: "agree", offerStatus: "rejected" },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
+    describe("error", () => {
+      const getErrorResponse = async () => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.organisation)
+          .mockReturnValue(organisation);
+        const crumb = await getCrumbs(server);
+        const options = {
+          method: "POST",
+          url: "/poultry/agreement-offer",
+          payload: { crumb, offerStatus: "accepted" },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
+
+        return server.inject(options);
       };
 
-      const res = await server.inject(options);
+      const errorTitle = "Error: Review poultry agreement offer";
+      testBrowserPageTitle({ title: errorTitle, getResponse: getErrorResponse });
 
-      expect(res.statusCode).toBe(StatusCodes.OK);
-      expect(await axe(res.payload)).toHaveNoViolations();
-      // Asserting a new reference has been set in the session
-      expect(setSessionData).toHaveBeenCalledWith(
-        expect.anything(),
-        sessionEntryKeys.poultryApplyData,
-        sessionKeys.poultryApplyData.reference,
-        expect.any(String),
-      );
-      const $ = cheerio.load(res.payload);
-      expect($("title").text()).toMatch(
-        "Agreement offer rejected - Get funding to improve animal health and welfare",
-      );
-      expect($("h1").text()).toMatch("Agreement offer rejected");
-      expect(res.payload).toContain(
-        "You've rejected the agreement offer and your application has been cancelled.",
-      );
-      expect(res.payload).toContain("You'll need to start a new application if you:");
+      test("returns 400 when request is not valid", async () => {
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.organisation)
+          .mockReturnValue(organisation);
+        const crumb = await getCrumbs(server);
+        const options = {
+          method: "POST",
+          url: "/poultry/agreement-offer",
+          payload: { crumb, offerStatus: "accepted" },
+          auth,
+          headers: { cookie: `crumb=${crumb}` },
+        };
 
-      const bulletItems = $("ul.govuk-list--bullet").first().find("li");
-      const actualItems = bulletItems.map((i, el) => $(el).text().trim()).get();
-      expect(actualItems).toEqual([
-        "rejected the agreement by mistake",
-        "change your mind and want to apply again",
-      ]);
+        const res = await server.inject(options);
 
-      const callChargesLink = $("a:contains('Find out about call charges')");
-      expect(callChargesLink).toExistOnce();
-      expect(callChargesLink.text().trim()).toBe("Find out about call charges (opens in new tab)");
+        expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
+        expect($("h1.govuk-heading-l").text()).toEqual("Review your agreement offer");
+        expect($("#organisation-name").text()).toEqual(organisation.name);
+        expect($("#organisation-address").text()).toContain("1 fake street");
+        expect($("#organisation-sbi").text()).toEqual(organisation.sbi);
+        expect($("#terms-error").text()).toMatch(
+          "Confirm you have read and agree to the terms and conditions",
+        );
 
-      expect($(".govuk-back-link")).toBeAbsent();
+        const vetLink = $("#vetSummaryTemplateUri");
+        expect(vetLink.attr("href")).toBe("https://example.gov.uk/poultry-vet-summary");
+        expect(vetLink.attr("target")).toBe("_blank");
+        const termsLink = $("#termsAndConditionsUri");
+        expect(termsLink.attr("href")).toBe("https://example.gov.uk/poultry-terms");
+        expect(termsLink.attr("target")).toBe("_blank");
+        expect($("button[value='accepted']").text().trim()).toBe("Accept offer");
+        expect($("button[value='rejected']").text().trim()).toBe("Reject offer");
 
-      ok($);
-      expect(createApplication).toHaveBeenCalledWith(
-        { organisation, ...poultryApplyData, type: "POUL" },
-        expect.anything(),
-      );
-      expect(refreshApplications).not.toHaveBeenCalled();
-      expect(trackEvent).toHaveBeenCalledWith(
-        expect.anything(),
-        "submit-application",
-        "status: rejected sbi:0123456789",
-        {
-          reference:
-            "applicationReference: POUL-PJ7E-WSI8, tempApplicationReference: TEMP-PJ7E-WSI8",
-        },
-      );
-    });
-
-    test("returns 400 when request is not valid", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.organisation)
-        .mockReturnValue(organisation);
-      const crumb = await getCrumbs(server);
-      const options = {
-        method: "POST",
-        url: "/poultry/agreement-offer",
-        payload: { crumb, offerStatus: "accepted" },
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect($("h1.govuk-heading-l").text()).toEqual("Review your agreement offer");
-      expect($("title").text()).toMatch(
-        "Review your agreement offer - Get funding to improve animal health and welfare",
-      );
-      expect($("#organisation-name").text()).toEqual(organisation.name);
-      expect($("#organisation-address").text()).toContain("1 fake street");
-      expect($("#organisation-sbi").text()).toEqual(organisation.sbi);
-      expect($("#terms-error").text()).toMatch(
-        "Confirm you have read and agree to the terms and conditions",
-      );
-
-      const vetLink = $("#vetSummaryTemplateUri");
-      expect(vetLink.attr("href")).toBe("https://example.gov.uk/poultry-vet-summary");
-      expect(vetLink.attr("target")).toBe("_blank");
-      const termsLink = $("#termsAndConditionsUri");
-      expect(termsLink.attr("href")).toBe("https://example.gov.uk/poultry-terms");
-      expect(termsLink.attr("target")).toBe("_blank");
-      expect($("button[value='accepted']").text().trim()).toBe("Accept offer");
-      expect($("button[value='rejected']").text().trim()).toBe("Reject offer");
-
-      expect(createApplication).not.toHaveBeenCalled();
-      expect(refreshApplications).not.toHaveBeenCalled();
-      expect(trackEvent).not.toHaveBeenCalled();
+        expect(createApplication).not.toHaveBeenCalled();
+        expect(refreshApplications).not.toHaveBeenCalled();
+        expect(trackEvent).not.toHaveBeenCalled();
+      });
     });
 
     test("when not logged in redirects to dashboard /sign-in", async () => {

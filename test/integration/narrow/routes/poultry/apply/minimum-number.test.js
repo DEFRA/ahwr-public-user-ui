@@ -12,6 +12,10 @@ import { poultryApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/api-requests/application-api");
 jest.mock("../../../../../../app/session/index.js");
@@ -68,6 +72,12 @@ describe("Check review minimum number page test", () => {
   });
 
   describe("GET /minimum-number route when logged in", () => {
+    const getResponse = () => server.inject({ ...options, method: "GET" });
+    const browserTitle = "Minimum number of poultry";
+    const pageHeader = "Minimum number of poultry on the site";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
+
     test("returns 200 with reviewed eligibility content and correct backLink", async () => {
       const res = await server.inject({ ...options, method: "GET" });
 
@@ -75,15 +85,7 @@ describe("Check review minimum number page test", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
 
       const $ = cheerio.load(res.payload);
-      const titleClassName = ".govuk-heading-l";
-      const title = "Minimum number of poultry on the site";
-      const pageTitleByClassName = $(titleClassName).text();
-      const pageTitleByName = $("title").text();
-      const fullTitle = `${title} - Get funding to improve animal health and welfare`;
       const backLinkUrlByClassName = $(".govuk-back-link").attr("href");
-
-      expect(pageTitleByName).toContain(fullTitle);
-      expect(pageTitleByClassName).toEqual(title);
       expect(backLinkUrlByClassName).toContain(poultryApplyRoutes.whatYouCanClaim);
 
       expect(res.payload).toContain(

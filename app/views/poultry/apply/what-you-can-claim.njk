@@ -1,8 +1,9 @@
 {% extends './layouts/layout.njk' %}
 
+{% set browserTitleText='What you can claim for a poultry biosecurity agreement' %}
 {% set pageHeadingText='What you can claim for as part of this agreement' %}
 
-{% block pageTitle %}{{ pageHeadingText }} - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{{ browserTitleText }} - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block containerStart %}
 {{ govukBackLink({

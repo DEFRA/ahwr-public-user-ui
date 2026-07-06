@@ -1,5 +1,10 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import expectPhaseBanner from "assert";
 import { sendInvalidDataPoultryEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
@@ -66,16 +71,20 @@ describe("/poultry/minimum-birds tests", () => {
   });
 
   describe("GET", () => {
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
+    });
 
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({ reference: "TEMP-6GSE-PIR8" });
+      return server.inject({ method: "GET", url, auth });
+    };
+    testBrowserPageTitle({ title: "Minimum number of poultry", getResponse });
+    testPageHeading({
+      heading: "Has your vet confirmed that this site can hold the minimum number of birds?",
+      getResponse,
     });
 
     test("returns 200 and displays page correctly", async () => {
@@ -90,14 +99,7 @@ describe("/poultry/minimum-birds tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Minimum number of birds - Get funding to improve animal health and welfare - GOV.UK",
-      );
       expect($("#back").attr("href")).toContain("/poultry-type");
-      const legend = $(".govuk-fieldset__legend--l");
-      expect(legend.text().trim()).toBe(
-        "Has your vet confirmed that this site can hold the minimum number of birds?",
-      );
 
       const hint = $(".govuk-hint");
       expect(hint.text()).toContain("The minimum numbers of birds are:");
@@ -237,29 +239,37 @@ describe("/poultry/minimum-birds tests", () => {
       );
     });
 
-    test("displays errors when no answer selected", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
+    describe("displays errors when no answer selected", () => {
+      const getResponse = () => {
+        getSessionData.mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+        });
+
+        return server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+      };
+
+      testBrowserPageTitle({ title: "Minimum number of poultry", getResponse });
+      testPageHeading({
+        heading: "Has your vet confirmed that this site can hold the minimum number of birds?",
+        getResponse,
       });
 
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb },
-        headers: { cookie: `crumb=${crumb}` },
+      test("displays errors when no answer selected", async () => {
+        const res = await getResponse();
+        expect(await axe(res.payload)).toHaveNoViolations();
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(400);
+        expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
+        expect($('a[href="#minimumNumberOfBirds"]').text()).toContain(
+          "Select if the vet has confirmed the minimum number of birds",
+        );
       });
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#minimumNumberOfBirds"]').text()).toContain(
-        "Select if the vet has confirmed the minimum number of birds",
-      );
-      expect($("title").text().trim()).toContain(
-        "Error: Minimum number of birds - Get funding to improve animal health and welfare - GOV.UK",
-      );
     });
   });
 });

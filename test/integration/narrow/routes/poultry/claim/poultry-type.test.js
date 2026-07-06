@@ -2,6 +2,11 @@ import * as cheerio from "cheerio";
 import { when } from "jest-when";
 import { createServer } from "../../../../../../app/server.js";
 import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
+import {
   getSessionData,
   sessionEntryKeys,
   sessionKeys,
@@ -60,16 +65,8 @@ describe("/poultry/poultry-type", () => {
   });
 
   describe("GET", () => {
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
 
     test("shows information", async () => {
@@ -89,19 +86,16 @@ describe("/poultry/poultry-type", () => {
       expect($("#back").attr("href")).toEqual("/poultry/sbi-sites");
     });
 
-    test("shows the updated heading", async () => {
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
         .mockReturnValue({ typesOfPoultry: [] });
-
-      const res = await server.inject({
-        method: "GET",
-        url,
-        auth,
-      });
-
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toEqual("Which types of poultry do you keep on this site?");
+      return server.inject({ method: "GET", url, auth });
+    };
+    testBrowserPageTitle({ title: "Select poultry type", getResponse });
+    testPageHeading({
+      heading: "Which types of poultry do you keep on this site?",
+      getResponse,
     });
 
     test("shows the updated hint", async () => {

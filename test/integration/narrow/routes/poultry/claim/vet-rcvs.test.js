@@ -1,5 +1,10 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import {
@@ -62,6 +67,17 @@ describe("/poultry/vet-rcvs", () => {
   });
 
   describe(`GET /poultry/vet-rcvs`, () => {
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+        .mockReturnValue({});
+      return server.inject({ method: "GET", url, auth });
+    };
+    const browserTitle = "Poultry vet’s RCVS number";
+    const pageHeader = "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?";
+    testBrowserPageTitle({ title: browserTitle, getResponse });
+    testPageHeading({ heading: pageHeader, getResponse });
+
     test("returns 200 and displays page correctly when visting page first time", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
@@ -77,12 +93,6 @@ describe("/poultry/vet-rcvs", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1 > label").text().trim()).toMatch(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
-      );
-      expect($("title").text().trim()).toContain(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare",
-      );
       expectPhaseBanner.ok($);
       expect(await axe(res.payload)).toHaveNoViolations();
     });
@@ -102,26 +112,13 @@ describe("/poultry/vet-rcvs", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1 > label").text().trim()).toMatch(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
-      );
-      expect($("title").text().trim()).toContain(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare",
-      );
+      expect($("#vetRCVSNumber").val()).toBe("1234567");
       expectPhaseBanner.ok($);
       expect(await axe(res.payload)).toHaveNoViolations();
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -132,18 +129,14 @@ describe("/poultry/vet-rcvs", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb, vetRCVSNumber: "123" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb, vetRCVSNumber: "123" },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
 
     test.each([
