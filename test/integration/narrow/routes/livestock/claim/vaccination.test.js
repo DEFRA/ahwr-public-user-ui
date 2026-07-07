@@ -9,6 +9,10 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -58,23 +62,20 @@ describe("Vaccination test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("Returns 200", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => server.inject({ method: "GET", url, auth });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({ title: "Livestock vaccination", getResponse });
+    testPageHeading({
+      heading:
+        "What is the herd porcine reproductive and respiratory syndrome (PRRS) vaccination status?",
+      getResponse,
+    });
+
+    test("Returns 200", async () => {
+      const res = await getResponse();
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain(
-        "Livestock vaccination - Get funding to improve animal health and welfare",
-      );
-      expect($("h1").text()).toMatch(
-        "What is the herd porcine reproductive and respiratory syndrome (PRRS) vaccination status?",
-      );
       expectPhaseBanner.ok($);
     });
 

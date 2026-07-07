@@ -12,6 +12,10 @@ import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../../app/lib/
 import { clearPiHuntSessionOnChange } from "../../../../../../app/lib/clear-pi-hunt-session-on-change.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
@@ -68,23 +72,23 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("returns 200", async () => {
-      const options = {
-        method: "GET",
-        auth,
-        url,
-      };
+    const getResponse = () => server.inject({ method: "GET", auth, url });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({
+      title: "Persistently infected hunt for bovine viral diarrhoea done on livestock",
+      getResponse,
+    });
+    testPageHeading({
+      heading:
+        "Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?",
+      getResponse,
+    });
+
+    test("returns 200", async () => {
+      const res = await getResponse();
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
-      expect($(".govuk-fieldset__heading").text().trim()).toEqual(
-        "Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?",
-      );
-      expect($("title").text().trim()).toContain(
-        "Persistently infected hunt for bovine viral diarrhoea done on livestock - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-radios__item").length).toEqual(2);
       expectPhaseBanner.ok($);
     });

@@ -11,6 +11,10 @@ import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../../app/lib/
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
@@ -69,6 +73,19 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({ typeOfLivestock: "pigs", reference: "TEMP-6GSE-PIR8" });
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    testBrowserPageTitle({
+      title: "Livestock biosecurity assessment",
+      getResponse,
+    });
+    testPageHeading({ heading: "Did the vet do a biosecurity assessment?", getResponse });
+
     test("redirect if not logged in / authorized", async () => {
       const options = {
         method: "GET",
@@ -119,22 +136,6 @@ describe("Biosecurity test when Optional PI Hunt is OFF", () => {
 
       expect(await axe(response.payload)).toHaveNoViolations();
       expect(response.statusCode).toBe(200);
-    });
-    test("display question text", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
-
-      const response = await server.inject(options);
-
-      expect(await axe(response.payload)).toHaveNoViolations();
-      const $ = cheerio.load(response.payload);
-      expect($("title").text()).toMatch(
-        "Livestock biosecurity assessment - Get funding to improve animal health and welfare",
-      );
-      expect($("h1").text()).toMatch("Did the vet do a biosecurity assessment?");
     });
     test("select 'yes' when biosecurity is 'yes'", async () => {
       const options = {

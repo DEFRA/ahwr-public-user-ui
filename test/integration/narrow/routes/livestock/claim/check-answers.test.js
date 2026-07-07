@@ -39,6 +39,10 @@ import { submitNewClaim } from "../../../../../../app/api-requests/claim-api.js"
 import { when } from "jest-when";
 import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
@@ -91,6 +95,22 @@ describe("Check answers test", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(dairyReviewClaim);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    testBrowserPageTitle({
+      title: "Check your answers before submitting your livestock claim",
+      getResponse,
+    });
+    testPageHeading({ heading: "Check your answers", getResponse });
+
     test("when not logged in redirects to /sign-in", async () => {
       const options = {
         method: "GET",
@@ -153,10 +173,6 @@ describe("Check answers test", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
 
-      expect($("h1").text()).toMatch("Check your answers");
-      expect($("title").text()).toMatch(
-        "Check your answers before submitting your livestock claim - Get funding to improve animal health and welfare",
-      );
       expect(res.statusCode).toBe(200);
 
       const rowKeys = getRowKeys($);

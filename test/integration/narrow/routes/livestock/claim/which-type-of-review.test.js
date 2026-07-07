@@ -10,6 +10,10 @@ import {
 } from "../../../../../../app/session/index.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
@@ -74,7 +78,7 @@ describe("Which type of review test", () => {
         .mockReturnValue({ typeOfReview: "REVIEW", reference: "TEMP-6GSE-PIR8" });
     });
 
-    test("returns 200 and renders page", async () => {
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockReturnValue({
@@ -83,19 +87,23 @@ describe("Which type of review test", () => {
           previousClaims: [],
           latestVetVisitApplication,
         });
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+      return server.inject({ method: "GET", url, auth });
+    };
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({
+      title: "Are you claiming for a livestock review or follow-up?",
+      getResponse,
+    });
+    testPageHeading({
+      heading: "Are you claiming for a review or follow-up?",
+      getResponse,
+    });
+
+    test("returns 200 and renders page", async () => {
+      const res = await getResponse();
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Are you claiming for a livestock review or follow-up? - Get funding to improve animal health and welfare",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/species");
       expectPhaseBanner.ok($);
     });

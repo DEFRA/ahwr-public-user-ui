@@ -9,6 +9,10 @@ import {
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -58,22 +62,16 @@ describe("pigs pcr result test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("returns 200", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => server.inject({ method: "GET", url, auth });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({ title: "Pig livestock PCR test-result", getResponse });
+    testPageHeading({ heading: "What was the result of the PCR test?", getResponse });
+
+    test("returns 200", async () => {
+      const res = await getResponse();
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("What was the result of the PCR test?");
-      expect($("title").text()).toContain(
-        "Pig livestock PCR test-result - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
-
       expectPhaseBanner.ok($);
     });
 

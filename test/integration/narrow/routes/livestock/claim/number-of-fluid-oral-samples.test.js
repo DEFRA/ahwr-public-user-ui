@@ -10,6 +10,10 @@ import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
@@ -64,16 +68,17 @@ describe("Number of fluid oral samples test", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    const getResponse = () => server.inject({ method: "GET", url, auth });
+
+    testBrowserPageTitle({ title: "Number of livestock oral fluid samples", getResponse });
+    testPageHeading({ heading: "How many oral fluid samples were tested?", getResponse });
+
     test("should return 200 and have back link to endemicsTestUrn when visit before Pigs&Payments golive", async () => {
       const options = { method: "GET", url, auth };
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("How many oral fluid samples were tested?");
-      expect($("title").text()).toContain(
-        "Number of livestock oral fluid samples - Get funding to improve animal health and welfare",
-      );
       expect($("#back").attr("href")).toBe("/livestock/test-urn");
       expectPhaseBanner.ok($);
     });
@@ -92,10 +97,6 @@ describe("Number of fluid oral samples test", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("How many oral fluid samples were tested?");
-      expect($("title").text()).toContain(
-        "Number of livestock oral fluid samples - Get funding to improve animal health and welfare",
-      );
       expect($("#back").attr("href")).toBe("/livestock/samples-types");
       expectPhaseBanner.ok($);
     });

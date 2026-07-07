@@ -9,6 +9,10 @@ import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -57,22 +61,17 @@ describe("Endemics package test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("Returns 200", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => server.inject({ method: "GET", url, auth });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({ title: "Sheep livestock health package", getResponse });
+    testPageHeading({ heading: "Which sheep health package did you choose?", getResponse });
+
+    test("Returns 200", async () => {
+      const res = await getResponse();
 
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toMatch("Which sheep health package did you choose?");
-      expect($("title").text()).toContain(
-        "Sheep livestock health package - Get funding to improve animal health and welfare",
-      );
 
       expectPhaseBanner.ok($);
     });

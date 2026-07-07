@@ -8,6 +8,10 @@ import {
   sessionKeys,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session");
 
@@ -31,6 +35,48 @@ describe("Claim confirmation", () => {
     jest.clearAllMocks();
   });
 
+  const setupSession = (typeOfReview) => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        reference,
+        amount: 55,
+        typeOfReview,
+      });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.latestEndemicsApplication,
+      )
+      .mockReturnValue({ status: "AGREED" });
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.confirmedDetails,
+        sessionKeys.confirmedDetails,
+      )
+      .mockReturnValue(true);
+
+    when(getSessionData)
+      .calledWith(
+        expect.anything(),
+        sessionEntryKeys.endemicsClaim,
+        sessionKeys.endemicsClaim.reference,
+      )
+      .mockReturnValue("IAHW-1LZ5-ELVQ");
+  };
+
+  const getResponse = () => {
+    setupSession("REVIEW");
+    return server.inject({ method: "GET", url, auth });
+  };
+
+  testBrowserPageTitle({ title: "Livestock claim submitted", getResponse });
+  testPageHeading({ heading: "Claim complete", getResponse });
+
   test.each([{ typeOfReview: "FOLLOW_UP" }, { typeOfReview: "REVIEW" }])(
     "GET endemicsConfirmation route %s",
     async ({ typeOfReview }) => {
@@ -41,37 +87,7 @@ describe("Claim confirmation", () => {
         auth,
       };
 
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValue({
-          reference,
-          amount: 55,
-          typeOfReview,
-        });
-
-      when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.latestEndemicsApplication,
-        )
-        .mockReturnValue({ status: "AGREED" });
-
-      when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.confirmedDetails,
-          sessionKeys.confirmedDetails,
-        )
-        .mockReturnValue(true);
-
-      when(getSessionData)
-        .calledWith(
-          expect.anything(),
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.reference,
-        )
-        .mockReturnValue("IAHW-1LZ5-ELVQ");
+      setupSession(typeOfReview);
 
       const res = await server.inject(options);
 
@@ -80,10 +96,6 @@ describe("Claim confirmation", () => {
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
-      expect($("h1").text()).toContain("Claim complete");
-      expect($("title").text()).toContain(
-        "Livestock claim submitted - Get funding to improve animal health and welfare",
-      );
       expect($("#amount").text()).toContain("55");
       expect($("#reference").text().trim()).toEqual(reference);
       expect($("#message").text().trim()).toContain(
