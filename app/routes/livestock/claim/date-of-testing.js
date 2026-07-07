@@ -7,7 +7,7 @@ import {
 } from "../../../session/index.js";
 import { getReviewType, getLivestockTypes } from "../../../lib/utils.js";
 
-import { validateDateParts } from "../../../lib/date-validations.js";
+import { validateDateParts, datePartsMessage } from "../../../lib/date-validations.js";
 import { getReviewWithinLast10Months } from "../../../lib/claim-helper.js";
 import {
   getReviewHerdId,
@@ -71,7 +71,6 @@ const getTheQuestionAndHintText = (typeOfReview, typeOfLivestock) => {
 
 const onAnotherDateInputId = "on-another-date";
 const dateOfSamplingText = "Date of sampling";
-const DATE_PARTS_COUNT = 3;
 
 const getHandler = {
   method: "GET",
@@ -206,20 +205,12 @@ const postPayloadSchema = Joi.object({
   [`${onAnotherDateInputId}-year`]: Joi.string().allow("").default(""),
 });
 
-const datePartsMessage = ({ reason, missing }) => {
-  if (reason === "incomplete") {
-    return missing.length === DATE_PARTS_COUNT
-      ? "Enter the date samples were taken"
-      : `${dateOfSamplingText} must include a ${missing.join(" and a ")}`;
-  }
-  if (reason === "year") {
-    return "Year must include 4 numbers";
-  }
-  return `${dateOfSamplingText} must be a real date`;
-};
-
 const buildDatePartsError = (request, partsError) => {
-  const message = datePartsMessage(partsError);
+  const message = datePartsMessage(partsError, {
+    enterDate: "Enter the date samples were taken",
+    subject: dateOfSamplingText,
+    realDate: `${dateOfSamplingText} must be a real date`,
+  });
   const { day, month, year } = partsError.inputsInError;
   return {
     errorSummary: [{ text: message, href: anchorTestingDate }],

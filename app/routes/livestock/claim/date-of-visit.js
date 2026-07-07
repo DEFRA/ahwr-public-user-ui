@@ -2,8 +2,6 @@ import joi from "joi";
 import {
   BEEF,
   DAIRY,
-  MAX_POSSIBLE_DAY,
-  MAX_POSSIBLE_MONTH,
   MULTIPLE_SPECIES_RELEASE_DATE,
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
 } from "../../../constants/claim-constants.js";
@@ -11,7 +9,7 @@ import {
   getOldWorldClaimFromApplication,
   getAllClaimsForFirstHerd,
 } from "../../../lib/claim-helper.js";
-import { isValidDate } from "../../../lib/date-validations.js";
+import { validateDateParts, datePartsMessage } from "../../../lib/date-validations.js";
 import { getReviewType, getLivestockTypes } from "../../../lib/utils.js";
 import {
   getSessionData,
@@ -109,9 +107,9 @@ const visitDateDayAnchor = "#visit-date-day";
 
 const dateInputSchema = joi.object({
   crumb: joi.any(),
-  "visit-date-day": joi.number().max(MAX_POSSIBLE_DAY),
-  "visit-date-month": joi.number().max(MAX_POSSIBLE_MONTH),
-  "visit-date-year": joi.number(),
+  "visit-date-day": joi.string().allow("").default(""),
+  "visit-date-month": joi.string().allow("").default(""),
+  "visit-date-year": joi.string().allow("").default(""),
 });
 
 const getInputsInError = (error) => {
@@ -252,14 +250,19 @@ const postHandler = {
       const month = request.payload[visitDateHtml.labels.month];
       const year = request.payload[visitDateHtml.labels.year];
 
-      if (!isValidDate(Number(year), Number(month), Number(day))) {
+      const partsError = validateDateParts({ day, month, year });
+      if (partsError) {
         return respondWithDateError(
           request,
           h,
           buildErrorSummary({
-            errorMessage: `The date of ${reviewOrFollowUpText} must be a real date`,
+            errorMessage: datePartsMessage(partsError, {
+              enterDate: `Enter the date of ${reviewOrFollowUpText}`,
+              subject: `Date of ${reviewOrFollowUpText}`,
+              realDate: `The date of ${reviewOrFollowUpText} must be a real date`,
+            }),
             href: visitDateDayAnchor,
-            inputsInError: { day: true, month: true, year: true },
+            inputsInError: partsError.inputsInError,
           }),
         );
       }

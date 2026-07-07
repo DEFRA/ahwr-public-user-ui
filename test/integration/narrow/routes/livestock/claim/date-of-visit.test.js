@@ -67,6 +67,10 @@ const organisation = {
 const auth = { credentials: {}, strategy: "cookie" };
 const url = "/livestock/date-of-visit";
 
+const today = new Date();
+const tomorrow = new Date(today);
+tomorrow.setDate(today.getDate() + 1);
+
 describe("GET /livestock/date-of-visit handler", () => {
   let server;
 
@@ -321,35 +325,99 @@ describe("POST /livestock/date-of-visit handler", () => {
         day: "second",
         month: "february",
         year: "2000",
-        error: "Enter the date of review",
+        error: "The date of review must be a real date",
         kind: "dateEntered: 2000-february-second, dateOfAgreement: 2025-01-01",
       },
       {
-        scenario: "the entered date is of a correct format, but the date isn't real",
+        scenario: "the day cannot exist for the month entered",
         day: "31",
-        month: "2",
-        year: "2025",
+        month: "02",
+        year: "2023",
         error: "The date of review must be a real date",
-        kind: "dateEntered: 2025-2-31, dateOfAgreement: 2025-01-01",
+        kind: "dateEntered: 2023-02-31, dateOfAgreement: 2025-01-01",
       },
       {
-        scenario: "the entered date is before the agreement date",
-        day: "1",
+        scenario: "the date is before the agreement date",
+        day: "31",
         month: "12",
-        year: "2024",
+        year: "2021",
         error: "The date of review must be the same as or after the date of your agreement",
-        kind: "dateEntered: 2024-12-1, dateOfAgreement: 2025-01-01",
+        kind: "dateEntered: 2021-12-31, dateOfAgreement: 2025-01-01",
       },
       {
-        scenario: "the entered date is in the future",
-        day: "2",
-        month: "2",
-        year: "2040",
+        scenario: "the date is in the future",
+        day: `${tomorrow.getDate()}`,
+        month: `${tomorrow.getMonth() + 1}`,
+        year: `${tomorrow.getFullYear()}`,
         error: "The date of review must be today or in the past",
-        kind: "dateEntered: 2040-2-2, dateOfAgreement: 2025-01-01",
+        kind: `dateEntered: ${tomorrow.getFullYear()}-${tomorrow.getMonth() + 1}-${tomorrow.getDate()}, dateOfAgreement: 2025-01-01`,
+      },
+      {
+        scenario: "the date is incomplete",
+        day: "15",
+        month: "03",
+        year: "",
+        error: "Date of review must include a year",
+        kind: "dateEntered: -03-15, dateOfAgreement: 2025-01-01",
+      },
+      {
+        scenario: "the year is out of range",
+        day: "15",
+        month: "03",
+        year: "10000",
+        error: "Year must include 4 numbers",
+        kind: "dateEntered: 10000-03-15, dateOfAgreement: 2025-01-01",
+      },
+      {
+        scenario: "day is missing",
+        day: "",
+        month: "03",
+        year: "2023",
+        error: "Date of review must include a day",
+        kind: "dateEntered: 2023-03-, dateOfAgreement: 2025-01-01",
+      },
+      {
+        scenario: "month is missing",
+        day: "15",
+        month: "",
+        year: "2023",
+        error: "Date of review must include a month",
+        kind: "dateEntered: 2023--15, dateOfAgreement: 2025-01-01",
+      },
+      {
+        scenario: "day and month are missing",
+        day: "",
+        month: "",
+        year: "2023",
+        error: "Date of review must include a day and a month",
+        kind: "dateEntered: 2023--, dateOfAgreement: 2025-01-01",
+      },
+      {
+        scenario: "day and year are missing",
+        day: "",
+        month: "03",
+        year: "",
+        error: "Date of review must include a day and a year",
+        kind: "dateEntered: -03-, dateOfAgreement: 2025-01-01",
+      },
+      {
+        scenario: "month and year are missing",
+        day: "15",
+        month: "",
+        year: "",
+        error: "Date of review must include a month and a year",
+        kind: "dateEntered: --15, dateOfAgreement: 2025-01-01",
+      },
+      {
+        scenario: "year has only 2 digits",
+        day: "15",
+        month: "03",
+        year: "22",
+        error: "Year must include 4 numbers",
+        kind: "dateEntered: 22-03-15, dateOfAgreement: 2025-01-01",
       },
     ])(
-      "redirect back to page with errors if $scenario",
+      "redirects back to page with errors when $scenario",
       async ({ day, month, year, error, kind }) => {
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
