@@ -14,6 +14,10 @@ import { when } from "jest-when";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
@@ -105,6 +109,31 @@ describe("GET /livestock/date-of-visit handler", () => {
     await server.stop();
     jest.resetAllMocks();
   });
+
+  const getResponse = (typeOfReview) => () => {
+    when(getSessionData)
+      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+      .mockReturnValue({
+        latestEndemicsApplication,
+        latestVetVisitApplication,
+        typeOfReview,
+        typeOfLivestock: "beef",
+        previousClaims: [],
+        reference: "TEMP-6GSE-PIR8",
+      });
+    return server.inject({ method: "GET", url, auth });
+  };
+
+  testBrowserPageTitle({
+    title: "Date of livestock review",
+    getResponse: getResponse("REVIEW"),
+  });
+  testBrowserPageTitle({
+    title: "Date of livestock follow-up",
+    getResponse: getResponse("FOLLOW_UP"),
+  });
+  testPageHeading({ heading: "Date of review", getResponse: getResponse("REVIEW") });
+  testPageHeading({ heading: "Date of follow-up", getResponse: getResponse("FOLLOW_UP") });
 
   test("returns 200 when you dont have any previous claims", async () => {
     when(getSessionData)
@@ -222,8 +251,6 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expect($("h1").text().trim()).toBe("Date of follow-up");
-    expect($("title").text()).toMatch(/^Date of livestock follow-up - /);
     expect($(".govuk-back-link").attr("href")).toBe("/livestock/vet-visits-review-test-results");
     expectPhaseBanner.ok($);
   });
@@ -250,8 +277,6 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expect($("h1").text().trim()).toBe("Date of review");
-    expect($("title").text()).toMatch(/^Date of livestock review - /);
     expect($(".govuk-back-link").attr("href")).toBe("/livestock/review-type");
     expectPhaseBanner.ok($);
   });

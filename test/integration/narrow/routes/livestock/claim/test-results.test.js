@@ -9,6 +9,10 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -58,32 +62,26 @@ describe("Test Results test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test.each([
-      { typeOfReview: "FOLLOW_UP", question: "What was the follow-up test result?" },
-      { typeOfReview: "REVIEW", question: "What was the test result?" },
-    ])("returns 200", async ({ typeOfReview, question }) => {
+    const getResponse = (typeOfReview) => () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockImplementation(() => {
           return { typeOfReview, reference: "TEMP-6GSE-PIR8" };
         });
+      return server.inject({ method: "GET", url, auth });
+    };
 
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch(question);
-      expect($("title").text()).toContain(
-        "Livestock test result - Get funding to improve animal health and welfare",
-      );
-
-      expectPhaseBanner.ok($);
+    testBrowserPageTitle({
+      title: "Livestock test result",
+      getResponse: getResponse("REVIEW"),
+    });
+    testPageHeading({
+      heading: "What was the test result?",
+      getResponse: getResponse("REVIEW"),
+    });
+    testPageHeading({
+      heading: "What was the follow-up test result?",
+      getResponse: getResponse("FOLLOW_UP"),
     });
 
     test.each([
