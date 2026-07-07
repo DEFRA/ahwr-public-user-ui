@@ -100,7 +100,7 @@ describe("PI Hunt recommended tests", () => {
     ])("returns 200", async ({ typeOfLivestock, reviewTestResults, backLink }) => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValueOnce({ typeOfLivestock, reviewTestResults });
+        .mockReturnValue({ typeOfLivestock, reviewTestResults });
 
       const options = {
         method: "GET",
