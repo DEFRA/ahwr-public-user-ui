@@ -8,6 +8,7 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import { testBrowserPageTitle } from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -57,6 +58,26 @@ describe("Sheep test result tests", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "sheep",
+          sheepEndemicsPackage: "reducedExternalParasites",
+          sheepTestResults: [
+            ...sheepTestResultsMockData,
+            { diseaseType: "sheepScab", result: "", isCurrentPage: true },
+          ],
+          reference: "TEMP-6GSE-PIR8",
+        });
+      return server.inject({ method: "GET", url: `${url}?diseaseType=sheepScab`, auth });
+    };
+
+    testBrowserPageTitle({
+      title: "Sheep livestock test result",
+      getResponse,
+    });
+
     test(`Get ${url} Returns 200`, async () => {
       const options = {
         method: "GET",
@@ -81,7 +102,6 @@ describe("Sheep test result tests", () => {
 
       expect(res.statusCode).toBe(200);
       expect($("h1").text()).toMatch("What was the Sheep scab result?");
-      expect($("title").text()).toContain("Sheep livestock test result");
       expect($(".govuk-back-link").attr("href")).toContain(
         "/livestock/sheep-test-results?diseaseType=other",
       );

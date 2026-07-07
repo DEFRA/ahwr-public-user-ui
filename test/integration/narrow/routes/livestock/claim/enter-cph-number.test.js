@@ -11,6 +11,10 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -64,26 +68,46 @@ describe("/livestock/cph tests", () => {
   });
 
   const expectHerdText = ($) => {
-    expect($("title").text().trim()).toContain(
-      "CPH number for livestock - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-    );
-    expect($(".govuk-heading-l").text().trim()).toBe(
-      "Enter the County Parish Holding (CPH) number for this herd",
-    );
     expect($(".govuk-label--m").text().trim()).toBe("CPH number for this herd");
   };
 
   const expectFlockText = ($) => {
-    expect($("title").text().trim()).toContain(
-      "CPH number for livestock - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-    );
-    expect($(".govuk-heading-l").text().trim()).toBe(
-      "Enter the County Parish Holding (CPH) number for this flock",
-    );
     expect($(".govuk-label--m").text().trim()).toBe("CPH number for this flock");
   };
 
   describe("GET", () => {
+    const getResponse = (session) => () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(session);
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    testBrowserPageTitle({
+      title: "CPH number for livestock",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "beef",
+      }),
+    });
+    testPageHeading({
+      heading: "Enter the County Parish Holding (CPH) number for this herd",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "beef",
+      }),
+    });
+    testPageHeading({
+      heading: "Enter the County Parish Holding (CPH) number for this flock",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "sheep",
+      }),
+    });
+
     test("returns 200 with herd labels when species beef", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)

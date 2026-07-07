@@ -13,6 +13,7 @@ import { canMakeClaim } from "../../../../../../app/lib/can-make-claim.js";
 import { getReviewWithinLast10Months } from "../../../../../../app/lib/claim-helper.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import { testBrowserPageTitle } from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/api-requests/claim-api");
@@ -70,6 +71,34 @@ describe("select-the-herd tests", () => {
   });
 
   describe("GET", () => {
+    const getResponse = (session) => () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(session);
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    testBrowserPageTitle({
+      title: "Previous flock livestock claim",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "sheep",
+        previousClaims: [],
+        herds: [],
+      }),
+    });
+    testBrowserPageTitle({
+      title: "Previous herd livestock claim",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "beef",
+        previousClaims: [],
+        herds: [],
+      }),
+    });
+
     test("returns 200 with flock labels when species sheep and display type value from previousClaims", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
@@ -109,9 +138,6 @@ describe("select-the-herd tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Previous flock livestock claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/check-herd-details");
       expectPhaseBanner.ok($);
 
@@ -140,9 +166,6 @@ describe("select-the-herd tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Previous herd livestock claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/check-herd-details");
       expect($('.govuk-radios__input[value="yes"]').is(":checked")).toBeTruthy();
       expectPhaseBanner.ok($);

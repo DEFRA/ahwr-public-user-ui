@@ -12,6 +12,10 @@ import {
 import { ONLY_HERD } from "../../../../../../app/constants/claim-constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -65,6 +69,46 @@ describe("/livestock/enter-herd-details tests", () => {
   });
 
   describe("GET", () => {
+    const getResponse = (session) => () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(session);
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    testBrowserPageTitle({
+      title: "Livestock herd details",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "beef",
+      }),
+    });
+    testBrowserPageTitle({
+      title: "Livestock flock details",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "sheep",
+      }),
+    });
+    testPageHeading({
+      heading: "Enter the herd details",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "beef",
+      }),
+    });
+    testPageHeading({
+      heading: "Enter the flock details",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "sheep",
+      }),
+    });
+
     test("returns 200 with herd labels when species beef", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
@@ -79,11 +123,7 @@ describe("/livestock/enter-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
-      expect($(".govuk-heading-l").text().trim()).toBe("Enter the herd details");
       expect($(".govuk-hint").text().trim()).toContain("Tell us about this herd");
       const legendText = $(".govuk-fieldset__legend--m").text().trim();
       expect(legendText).toBe(
@@ -119,9 +159,6 @@ describe("/livestock/enter-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect($('.govuk-checkboxes__input[value="differentBreed"]').is(":checked")).toBeTruthy();
       expect($('.govuk-checkboxes__input[value="keptSeparate"]').is(":checked")).toBeTruthy();
@@ -142,11 +179,7 @@ describe("/livestock/enter-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock flock details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
-      expect($(".govuk-heading-l").text().trim()).toBe("Enter the flock details");
       expect($(".govuk-hint").text().trim()).toContain("Tell us about this flock");
       const legendText = $(".govuk-fieldset__legend--m").text().trim();
       expect(legendText).toBe(
@@ -171,11 +204,7 @@ describe("/livestock/enter-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
-      expect($(".govuk-heading-l").text().trim()).toBe("Enter the herd details");
       expect($(".govuk-hint").text().trim()).toContain("Tell us about this herd");
       const legendText = $(".govuk-fieldset__legend--m").text().trim();
       expect(legendText).toBe(
@@ -200,11 +229,7 @@ describe("/livestock/enter-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
-      expect($(".govuk-heading-l").text().trim()).toBe("Enter the herd details");
       expect($(".govuk-hint").text().trim()).toContain("Tell us about this herd");
       const legendText = $(".govuk-fieldset__legend--m").text().trim();
       expect(legendText).toBe(

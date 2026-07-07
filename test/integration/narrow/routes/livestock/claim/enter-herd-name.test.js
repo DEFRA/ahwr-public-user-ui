@@ -11,6 +11,7 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import { testBrowserPageTitle } from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -64,9 +65,6 @@ describe("/livestock/herd-name tests", () => {
   });
 
   const expectHerdText = ($) => {
-    expect($("title").text().trim()).toContain(
-      "Livestock herd name - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-    );
     expect($(".govuk-label--l").text().trim()).toBe("Enter the herd name");
     expect($(".govuk-hint").text().trim()).toContain("Tell us about this herd");
     expect($(".govuk-details__summary-text").text().trim()).toBe(
@@ -77,9 +75,6 @@ describe("/livestock/herd-name tests", () => {
   };
 
   const expectFlockText = ($) => {
-    expect($("title").text().trim()).toContain(
-      "Livestock flock name - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-    );
     expect($(".govuk-label--l").text().trim()).toBe("Enter the flock name");
     expect($(".govuk-hint").text().trim()).toContain("Tell us about this flock");
     expect($(".govuk-details__summary-text").text().trim()).toBe(
@@ -89,6 +84,32 @@ describe("/livestock/herd-name tests", () => {
   };
 
   describe("GET", () => {
+    const getResponse = (session) => () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(session);
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    testBrowserPageTitle({
+      title: "Livestock herd name",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "beef",
+        herds: [{ id: "1" }],
+      }),
+    });
+    testBrowserPageTitle({
+      title: "Livestock flock name",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "sheep",
+        herds: [{ id: "1" }],
+      }),
+    });
+
     test("returns 200 with herd labels when species beef", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
