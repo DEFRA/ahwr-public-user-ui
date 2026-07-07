@@ -15,9 +15,17 @@ const DATE_PARTS_COUNT = DATE_PARTS.length;
 const inputsInError = (flagged) =>
   Object.fromEntries(DATE_PARTS.map((part) => [part, flagged.includes(part)]));
 
-// Validates the raw day/month/year strings of a GOV.UK date input as a single
-// unit. Returns null when the date is complete and real, otherwise a descriptor
-// the route maps to a message. Future/agreement-date rules live in the route.
+/**
+ * Validates the raw day/month/year strings of a GOV.UK date input as a single
+ * unit. Future/agreement-date rules live in the route.
+ *
+ * @param {{ day: string, month: string, year: string }} parts - The raw date input strings.
+ * @returns {{ reason: string, missing: string[], inputsInError: { day: boolean, month: boolean, year: boolean } } | null}
+ *   `null` when the date is complete and real, otherwise a descriptor the route
+ *   maps to a message via {@link datePartsMessage}. `reason` is one of
+ *   `"incomplete"` (parts missing), `"year"` (year out of range) or `"realDate"`
+ *   (not a real calendar date).
+ */
 export const validateDateParts = ({ day, month, year }) => {
   const missing = DATE_PARTS.filter((part) => ({ day, month, year })[part] === "");
   if (missing.length > 0) {
