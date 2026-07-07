@@ -10,6 +10,10 @@ import {
 import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
@@ -61,21 +65,16 @@ describe("Type of samples taken test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("returns 200", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => server.inject({ method: "GET", url, auth });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({ title: "Type of livestock samples", getResponse });
+    testPageHeading({ heading: "What type of samples were taken?", getResponse });
+
+    test("returns 200", async () => {
+      const res = await getResponse();
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("What type of samples were taken?");
-      expect($("title").text()).toContain(
-        "Type of livestock samples - Get funding to improve animal health and welfare",
-      );
       expectPhaseBanner.ok($);
     });
 
