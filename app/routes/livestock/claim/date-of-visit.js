@@ -9,7 +9,7 @@ import {
   getOldWorldClaimFromApplication,
   getAllClaimsForFirstHerd,
 } from "../../../lib/claim-helper.js";
-import { validateDateParts } from "../../../lib/date-validations.js";
+import { validateDateParts, datePartsMessage } from "../../../lib/date-validations.js";
 import { getReviewType, getLivestockTypes } from "../../../lib/utils.js";
 import {
   getSessionData,
@@ -104,20 +104,6 @@ const buildErrorSummary = ({ errorMessage, href, inputsInError }) => {
 };
 
 const visitDateDayAnchor = "#visit-date-day";
-
-const DATE_PARTS_COUNT = 3;
-
-const datePartsMessage = ({ reason, missing }, reviewOrFollowUpText) => {
-  if (reason === "incomplete") {
-    return missing.length === DATE_PARTS_COUNT
-      ? `Enter the date of ${reviewOrFollowUpText}`
-      : `Date of ${reviewOrFollowUpText} must include a ${missing.join(" and a ")}`;
-  }
-  if (reason === "year") {
-    return "Year must include 4 numbers";
-  }
-  return `The date of ${reviewOrFollowUpText} must be a real date`;
-};
 
 const onAnotherDateInputId = "visit-date";
 const dateInputSchema = joi.object({
@@ -271,7 +257,11 @@ const postHandler = {
           request,
           h,
           buildErrorSummary({
-            errorMessage: datePartsMessage(partsError, reviewOrFollowUpText),
+            errorMessage: datePartsMessage(partsError, {
+              enterDate: `Enter the date of ${reviewOrFollowUpText}`,
+              subject: `Date of ${reviewOrFollowUpText}`,
+              realDate: `The date of ${reviewOrFollowUpText} must be a real date`,
+            }),
             href: visitDateDayAnchor,
             inputsInError: partsError.inputsInError,
           }),
