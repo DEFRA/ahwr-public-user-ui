@@ -11,6 +11,10 @@ import { applyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 const auth = {
   credentials: { reference: "1111", sbi: "111111111" },
@@ -54,24 +58,45 @@ describe("Declaration test", () => {
   });
 
   describe("GET /livestock/timings route", () => {
-    test("returns 200 when application found", async () => {
+    const getOptions = {
+      method: "GET",
+      url: applyRoutes.timings,
+      auth,
+    };
+
+    beforeEach(() => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.application)
+        .mockReturnValue({ reference: "IAHW-1234-ABCD" });
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue(organisation);
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.confirmedDetails,
+          sessionKeys.confirmedDetails,
+        )
+        .mockReturnValue(true);
+    });
+
+    const getResponse = () => {
       getApplicationsBySbi.mockResolvedValueOnce([]);
+      return server.inject(getOptions);
+    };
 
-      const options = {
-        method: "GET",
-        url: applyRoutes.timings,
-        auth,
-      };
+    testBrowserPageTitle({
+      title: "Timing of livestock reviews and follow-ups",
+      getResponse,
+    });
+    testPageHeading({ heading: "Timing of reviews and follow-ups", getResponse });
 
-      const res = await server.inject(options);
+    test("returns 200 when application found", async () => {
+      const res = await getResponse();
 
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("Timing of reviews and follow-ups");
-      expect($("title").text()).toMatch(
-        "Timing of livestock reviews and follow-ups - Get funding to improve animal health and welfare",
-      );
       expect($("main h2").length).toBe(2);
 
       const firstListItems = $("ul.govuk-list--bullet").first().find("li");
