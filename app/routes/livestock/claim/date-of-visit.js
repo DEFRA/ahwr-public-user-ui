@@ -105,12 +105,11 @@ const buildErrorSummary = ({ errorMessage, href, inputsInError }) => {
 
 const visitDateDayAnchor = "#visit-date-day";
 
-const onAnotherDateInputId = "visit-date";
 const dateInputSchema = joi.object({
   crumb: joi.any(),
-  [`${onAnotherDateInputId}-day`]: joi.string().allow("").default(""),
-  [`${onAnotherDateInputId}-month`]: joi.string().allow("").default(""),
-  [`${onAnotherDateInputId}-year`]: joi.string().allow("").default(""),
+  "visit-date-day": joi.string().allow("").default(""),
+  "visit-date-month": joi.string().allow("").default(""),
+  "visit-date-year": joi.string().allow("").default(""),
 });
 
 const getInputsInError = (error) => {
