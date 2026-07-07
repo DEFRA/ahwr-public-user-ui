@@ -5,6 +5,7 @@ import { createServer } from "../../../../../app/server.js";
 import { getClaimsByApplicationReference } from "../../../../../app/api-requests/claim-api.js";
 import { refreshApplications } from "../../../../../app/lib/context-helper.js";
 import { axe } from "../../../../helpers/axe-helper.js";
+import { testBrowserPageTitle } from "../../../../helpers/page-title-and-heading.js";
 
 const nunJucksInternalTimerMethods = ["nextTick"];
 
@@ -106,6 +107,33 @@ describe("GET /livestock/manage-claims", () => {
   });
 
   describe("Cattle/Pig/Sheep", () => {
+    const getResponse = async () => {
+      const sbi = "106354662";
+      await setServerState(server, {
+        confirmedDetails: true,
+        customer: { attachedToMultipleBusinesses: true },
+        endemicsClaim: {
+          latestEndemicsApplication: {
+            sbi,
+            reference: "IAHW-TEST-NEW1",
+            redacted: false,
+            status: "AGREED",
+          },
+        },
+        organisation: { sbi, name: "PARTRIDGES", farmerName: "Janice Harrison" },
+      });
+      getClaimsByApplicationReference.mockResolvedValueOnce([]);
+      return server.inject({
+        url: "/livestock/manage-claims",
+        auth: { credentials: {}, strategy: "cookie" },
+      });
+    };
+
+    testBrowserPageTitle({
+      title: "Manage your livestock claims",
+      getResponse,
+    });
+
     test("new world, multiple businesses", async () => {
       const applicationReference = "IAHW-TEST-NEW1";
       const sbi = "106354662";
@@ -144,10 +172,6 @@ describe("GET /livestock/manage-claims", () => {
       });
 
       const $ = cheerio.load(payload);
-
-      expect($("title").text()).toContain(
-        "Manage your livestock claims - Get funding to improve animal health and welfare",
-      );
 
       expect(findByText($, "Important").length).toBe(0);
 
