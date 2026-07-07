@@ -21,6 +21,7 @@ import {
   testBrowserPageTitle,
   testPageHeading,
 } from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session");
@@ -216,10 +217,8 @@ describe("Date of testing", () => {
       expect($("#on-another-date-year").val()).toBe("2024");
     });
 
-    test("redirects to /sign-in when not authenticated", async () => {
-      const res = await server.inject({ method: "GET", url });
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/sign-in");
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -228,10 +227,8 @@ describe("Date of testing", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("redirects to /sign-in when not authenticated", async () => {
-      const res = await server.inject({ method: "POST", url });
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/sign-in");
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "POST", url }),
     });
 
     test("returns 403 when CSRF crumb is missing", async () => {

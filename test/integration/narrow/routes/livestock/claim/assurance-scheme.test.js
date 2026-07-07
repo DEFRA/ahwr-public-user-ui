@@ -14,6 +14,7 @@ import {
   testBrowserPageTitle,
   testPageHeading,
 } from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
@@ -82,20 +83,8 @@ describe("Assurance Scheme", () => {
     });
     testPageHeading({ heading: "Is this flock part of an Assurance Scheme?", getResponse });
 
-    test("redirect if not logged in / authorized", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValue({ typeOfLivestock: "pigs" });
-
-      const response = await server.inject(options);
-
-      expect(response.statusCode).toBe(302);
-      expect(response.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
 
     test("Returns 200", async () => {

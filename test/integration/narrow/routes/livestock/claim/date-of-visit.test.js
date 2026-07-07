@@ -18,6 +18,7 @@ import {
   testBrowserPageTitle,
   testPageHeading,
 } from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/session");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
@@ -281,16 +282,8 @@ describe("GET /livestock/date-of-visit handler", () => {
     expectPhaseBanner.ok($);
   });
 
-  test("when not logged in redirects to /sign-in", async () => {
-    const options = {
-      method: "GET",
-      url,
-    };
-
-    const res = await server.inject(options);
-
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location.toString()).toEqual(`/sign-in`);
+  testRedirectsToSignInWhenLoggedOut({
+    getResponse: () => server.inject({ method: "GET", url }),
   });
 });
 
@@ -314,10 +307,8 @@ describe("POST /livestock/date-of-visit handler", () => {
     jest.clearAllMocks();
   });
 
-  test("redirects to /sign-in when not authenticated", async () => {
-    const res = await server.inject({ method: "POST", url });
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/sign-in");
+  testRedirectsToSignInWhenLoggedOut({
+    getResponse: () => server.inject({ method: "POST", url }),
   });
 
   test("returns 403 when CSRF crumb is missing", async () => {

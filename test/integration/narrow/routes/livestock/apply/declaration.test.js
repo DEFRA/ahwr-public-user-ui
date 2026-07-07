@@ -23,6 +23,7 @@ import {
   testBrowserPageTitle,
   testPageHeading,
 } from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/lib/context-helper");
 jest.mock("../../../../../../app/session/index");
@@ -86,16 +87,8 @@ describe("Declaration test", () => {
   createApplication.mockResolvedValue({ applicationReference: "IAHW-PJ7E-WSI8" });
 
   describe("GET /livestock/agreement-offer route", () => {
-    test("when not logged in redirects to dashboard /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url: "/livestock/agreement-offer",
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-      expect(res.headers.location.toString()).toEqual("/sign-in");
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url: "/livestock/agreement-offer" }),
     });
 
     const getResponse = () =>
