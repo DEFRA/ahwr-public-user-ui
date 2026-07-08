@@ -12,6 +12,11 @@ import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../../../../app/lib/
 import { clearPiHuntSessionOnChange } from "../../../../../../app/lib/clear-pi-hunt-session-on-change.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
@@ -68,37 +73,29 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("returns 200", async () => {
-      const options = {
-        method: "GET",
-        auth,
-        url,
-      };
+    const getResponse = () => server.inject({ method: "GET", auth, url });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({
+      title: "Persistently infected hunt for bovine viral diarrhoea done on livestock",
+      getResponse,
+    });
+    testPageHeading({
+      heading:
+        "Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?",
+      getResponse,
+    });
+
+    test("returns 200", async () => {
+      const res = await getResponse();
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
-      expect($(".govuk-fieldset__heading").text().trim()).toEqual(
-        "Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?",
-      );
-      expect($("title").text().trim()).toContain(
-        "Persistently infected hunt for bovine viral diarrhoea done on livestock - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-radios__item").length).toEqual(2);
       expectPhaseBanner.ok($);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -110,18 +107,14 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
       jest.resetAllMocks();
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb, laboratoryURN: "123" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb, laboratoryURN: "123" },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
     test("Continue to eligible page if user select yes", async () => {
       const options = {

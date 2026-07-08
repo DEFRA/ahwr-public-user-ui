@@ -9,6 +9,11 @@ import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -57,36 +62,23 @@ describe("Endemics package test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("Returns 200", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => server.inject({ method: "GET", url, auth });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({ title: "Sheep livestock health package", getResponse });
+    testPageHeading({ heading: "Which sheep health package did you choose?", getResponse });
+
+    test("Returns 200", async () => {
+      const res = await getResponse();
 
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1").text().trim()).toMatch("Which sheep health package did you choose?");
-      expect($("title").text()).toContain(
-        "Sheep livestock health package - Get funding to improve animal health and welfare",
-      );
 
       expectPhaseBanner.ok($);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
 
     test("backlink", async () => {
@@ -109,18 +101,14 @@ describe("Endemics package test", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb, herdVaccinationStatus: "vaccinated" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb, herdVaccinationStatus: "vaccinated" },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
 
     test.each([

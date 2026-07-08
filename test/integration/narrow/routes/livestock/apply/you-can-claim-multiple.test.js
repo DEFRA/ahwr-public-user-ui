@@ -12,6 +12,10 @@ import { applyRoutes } from "../../../../../../app/constants/routes.js";
 import { when } from "jest-when";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/config/index.js", () => ({
   config: {
@@ -67,15 +71,22 @@ describe("you-can-claim-multiple page", () => {
   });
 
   describe("GET operation handler", () => {
+    const getResponse = () => server.inject({ ...optionsBase, method: "GET" });
+
+    testBrowserPageTitle({
+      title: "What you can claim for a livestock agreement",
+      getResponse,
+    });
+    testPageHeading({
+      heading: "What you can claim for as part of this agreement",
+      getResponse,
+    });
+
     test("returns 200 and content is correct", async () => {
-      const res = await server.inject({ ...optionsBase, method: "GET" });
+      const res = await getResponse();
 
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(StatusCodes.OK);
-      expect(res.payload).toContain(
-        "What you can claim for a livestock agreement - Get funding to improve animal health and welfare",
-      );
-      expect(res.payload).toContain("What you can claim for as part of this agreement"); // h1 unchanged
       expect(res.payload).toContain("/check-details"); // back-link
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),

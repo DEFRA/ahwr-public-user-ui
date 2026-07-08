@@ -10,6 +10,11 @@ import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
@@ -59,21 +64,16 @@ describe("Number of samples tested test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("returns 200 and expected content", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => server.inject({ method: "GET", url, auth });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({ title: "Number of livestock samples tested", getResponse });
+    testPageHeading({ heading: "How many samples were tested?", getResponse });
+
+    test("returns 200 and expected content", async () => {
+      const res = await getResponse();
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("How many samples were tested?");
-      expect($("title").text()).toContain(
-        "Number of livestock samples tested - Get funding to improve animal health and welfare",
-      );
       expect($(".govuk-hint").text().trim()).toEqual(
         "Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.",
       );
@@ -81,16 +81,8 @@ describe("Number of samples tested test", () => {
       expectPhaseBanner.ok($);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -101,18 +93,14 @@ describe("Number of samples tested test", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb, numberOfSamplesTested: "123" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb, numberOfSamplesTested: "123" },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
 
     test("shows error when payload is empty", async () => {

@@ -10,6 +10,11 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
@@ -67,36 +72,24 @@ describe("Vet rcvs test when Optional PI Hunt is OFF", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("returns 200", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => server.inject({ method: "GET", url, auth });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({ title: "Livestock vet's RCVS number", getResponse });
+    testPageHeading({
+      heading: "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
+      getResponse,
+    });
+
+    test("returns 200", async () => {
+      const res = await getResponse();
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("h1 > label").text().trim()).toMatch(
-        "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
-      );
-      expect($("title").text().trim()).toContain(
-        "Livestock vet's RCVS number - Get funding to improve animal health and welfare",
-      );
       expectPhaseBanner.ok($);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -107,18 +100,14 @@ describe("Vet rcvs test when Optional PI Hunt is OFF", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb, vetRCVSNumber: "123" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb, vetRCVSNumber: "123" },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
 
     test.each([

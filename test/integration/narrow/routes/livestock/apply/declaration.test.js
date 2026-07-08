@@ -19,6 +19,11 @@ import { when } from "jest-when";
 import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { refreshApplications } from "../../../../../../app/lib/context-helper.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/lib/context-helper");
 jest.mock("../../../../../../app/session/index");
@@ -82,34 +87,25 @@ describe("Declaration test", () => {
   createApplication.mockResolvedValue({ applicationReference: "IAHW-PJ7E-WSI8" });
 
   describe("GET /livestock/agreement-offer route", () => {
-    test("when not logged in redirects to dashboard /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url: "/livestock/agreement-offer",
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-      expect(res.headers.location.toString()).toEqual("/sign-in");
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url: "/livestock/agreement-offer" }),
     });
 
-    test("returns 200 when organisation found in session", async () => {
-      const options = {
-        method: "GET",
-        url: "/livestock/agreement-offer",
-        auth,
-      };
+    const getResponse = () =>
+      server.inject({ method: "GET", url: "/livestock/agreement-offer", auth });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({
+      title: "Review your livestock agreement offer",
+      getResponse,
+    });
+    testPageHeading({ heading: "Review your agreement offer", getResponse });
+
+    test("returns 200 when organisation found in session", async () => {
+      const res = await getResponse();
 
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(StatusCodes.OK);
       const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("Review your agreement offer");
-      expect($("title").text()).toMatch(
-        "Review your livestock agreement offer - Get funding to improve animal health and welfare",
-      );
       ok($);
       const expectedHerdsText = `If the RPA requests evidence that your reviews or follow-ups took place, or details of the herd or flocks you have, you must provide it. This will be on your vet summary.`;
       const herdsText = $("p")

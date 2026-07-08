@@ -11,6 +11,7 @@ import {
 } from "../../../../../../app/session/index.js";
 import { canMakeClaim } from "../../../../../../app/lib/can-make-claim.js";
 import { when } from "jest-when";
+import { testBrowserPageTitle } from "../../../../../helpers/page-title-and-heading.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../../app/session/index.js");
@@ -71,6 +72,50 @@ describe("select-the-herd tests", () => {
   });
 
   describe("GET", () => {
+    const getResponse = (session) => () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(session);
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    testBrowserPageTitle({
+      title: "Is this the same livestock flock you have previously claimed for?",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "sheep",
+        previousClaims: [],
+        herds: [],
+      }),
+    });
+
+    testBrowserPageTitle({
+      title: "Is this the same livestock herd you have previously claimed for?",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "beef",
+        previousClaims: [],
+        herds: [{ id: "100bb722-3de1-443e-8304-0bba8f922050", name: "Barn animals" }],
+      }),
+    });
+
+    testBrowserPageTitle({
+      title: "Livestock herd you are claiming for",
+      getResponse: getResponse({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "beef",
+        previousClaims: [],
+        herds: [
+          { id: "100bb722-3de1-443e-8304-0bba8f922050", name: "Barn animals" },
+          { id: "200bb722-3de1-443e-8304-0bba8f922050", name: "Hilltop" },
+          { id: "300bb722-3de1-443e-8304-0bba8f922050", name: "Field animals" },
+        ],
+      }),
+    });
+
     test("returns 200 with flock labels when species sheep", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
@@ -107,9 +152,6 @@ describe("select-the-herd tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Is this the same livestock flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expectPhaseBanner.ok($);
     });
@@ -132,9 +174,6 @@ describe("select-the-herd tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Is this the same livestock herd you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expect($('.govuk-radios__input[value="NEW_HERD"]').is(":checked")).toBeTruthy();
       expectPhaseBanner.ok($);
@@ -171,9 +210,6 @@ describe("select-the-herd tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expectPhaseBanner.ok($);
 
       const radios = $(".govuk-radios__item");
@@ -220,9 +256,6 @@ describe("select-the-herd tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Is this the same livestock flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/date-of-visit");
       expectPhaseBanner.ok($);
 
@@ -295,9 +328,6 @@ describe("select-the-herd tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expectPhaseBanner.ok($);
 
       const radios = $(".govuk-radios__item");
@@ -383,9 +413,6 @@ describe("select-the-herd tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expectPhaseBanner.ok($);
 
       const radios = $(".govuk-radios__item");

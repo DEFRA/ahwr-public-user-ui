@@ -39,6 +39,11 @@ import { submitNewClaim } from "../../../../../../app/api-requests/claim-api.js"
 import { when } from "jest-when";
 import { trackEvent } from "../../../../../../app/logging/logger.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
@@ -91,16 +96,24 @@ describe("Check answers test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(dairyReviewClaim);
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.organisation)
+        .mockReturnValue({ name: "business name" });
+      return server.inject({ method: "GET", url, auth });
+    };
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({
+      title: "Check your answers before submitting your livestock claim",
+      getResponse,
+    });
+    testPageHeading({ heading: "Check your answers", getResponse });
 
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual("/sign-in");
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
 
     test("shows fields for a review claim in the correct order for each species for beef", async () => {
@@ -153,10 +166,6 @@ describe("Check answers test", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
 
-      expect($("h1").text()).toMatch("Check your answers");
-      expect($("title").text()).toMatch(
-        "Check your answers before submitting your livestock claim - Get funding to improve animal health and welfare",
-      );
       expect(res.statusCode).toBe(200);
 
       const rowKeys = getRowKeys($);
@@ -636,11 +645,6 @@ describe("Check answers test", () => {
         expect(await axe(res.payload)).toHaveNoViolations();
         expect(res.statusCode).toBe(200);
         const $ = cheerio.load(res.payload);
-
-        expect($("h1").text()).toMatch("Check your answers");
-        expect($("title").text()).toMatch(
-          "Check your answers before submitting your livestock claim - Get funding to improve animal health and welfare",
-        );
         expect($(".govuk-summary-list__key").text()).toContain(content);
         expect($(".govuk-summary-list__value").text()).toContain("SpeciesNumbers");
         expect($(".govuk-back-link").attr("href")).toEqual(backLink);
@@ -677,11 +681,6 @@ describe("Check answers test", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-
-      expect($("h1").text()).toMatch("Check your answers");
-      expect($("title").text()).toMatch(
-        "Check your answers before submitting your livestock claim - Get funding to improve animal health and welfare",
-      );
       expect($(".govuk-summary-list__key").text()).not.toContain("Test results\n");
       expect($(".govuk-summary-list__value").text()).not.toContain("TestResults");
     });
@@ -726,11 +725,6 @@ describe("Check answers test", () => {
         expect(await axe(res.payload)).toHaveNoViolations();
         expect(res.statusCode).toBe(200);
         const $ = cheerio.load(res.payload);
-
-        expect($("h1").text()).toMatch("Check your answers");
-        expect($("title").text()).toMatch(
-          "Check your answers before submitting your livestock claim - Get funding to improve animal health and welfare",
-        );
         expect($(".govuk-summary-list__key").text()).toContain("Review test result");
         expect($(".govuk-summary-list__value").text()).toContain("VetVisitsReviewTestResults");
       },
@@ -1067,18 +1061,14 @@ describe("Check answers test", () => {
       );
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
   });
 });

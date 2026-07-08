@@ -11,6 +11,11 @@ import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { getAmount } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("ffc-ahwr-common-library");
@@ -60,37 +65,22 @@ describe("PI Hunt recommended tests", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("returns 200", async () => {
-      const options = {
-        method: "GET",
-        auth,
-        url,
-      };
+    const getResponse = () => server.inject({ method: "GET", auth, url });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({ title: "PI hunt recommended for livestock", getResponse });
+    testPageHeading({ heading: "Was the PI hunt recommended by the vet?", getResponse });
+
+    test("returns 200", async () => {
+      const res = await getResponse();
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
-      expect($(".govuk-fieldset__heading").text().trim()).toEqual(
-        "Was the PI hunt recommended by the vet?",
-      );
-      expect($("title").text()).toContain(
-        "PI hunt recommended for livestock - Get funding to improve animal health and welfare",
-      );
       expect($(".govuk-radios__item").length).toEqual(2);
       expectPhaseBanner.ok($);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -101,18 +91,14 @@ describe("PI Hunt recommended tests", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
 
     test("Continue to eligible page if user select yes", async () => {

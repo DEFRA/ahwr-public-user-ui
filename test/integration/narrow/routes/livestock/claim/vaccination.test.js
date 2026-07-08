@@ -9,6 +9,11 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -58,36 +63,25 @@ describe("Vaccination test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("Returns 200", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
+    const getResponse = () => server.inject({ method: "GET", url, auth });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({ title: "Livestock vaccination", getResponse });
+    testPageHeading({
+      heading:
+        "What is the herd porcine reproductive and respiratory syndrome (PRRS) vaccination status?",
+      getResponse,
+    });
+
+    test("Returns 200", async () => {
+      const res = await getResponse();
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text()).toContain(
-        "Livestock vaccination - Get funding to improve animal health and welfare",
-      );
-      expect($("h1").text()).toMatch(
-        "What is the herd porcine reproductive and respiratory syndrome (PRRS) vaccination status?",
-      );
       expectPhaseBanner.ok($);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
 
     test.each([
@@ -148,18 +142,14 @@ describe("Vaccination test", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb, herdVaccinationStatus: "vaccinated" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb, herdVaccinationStatus: "vaccinated" },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
 
     test.each([

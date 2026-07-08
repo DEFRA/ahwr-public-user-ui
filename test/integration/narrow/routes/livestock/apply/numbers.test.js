@@ -12,6 +12,10 @@ import { applyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/api-requests/application-api");
 jest.mock("../../../../../../app/session/index.js");
@@ -60,24 +64,22 @@ describe("Check review numbers page test", () => {
   });
 
   describe("GET /livestock/minimum-number route when logged in", () => {
+    const getResponse = () => server.inject({ ...options, method: "GET" });
+
+    testBrowserPageTitle({ title: "Minimum number of livestock", getResponse });
+    testPageHeading({
+      heading: "Minimum number of each species in each herd or flock",
+      getResponse,
+    });
+
     test("returns 200 and has correct backLink", async () => {
-      const res = await server.inject({ ...options, method: "GET" });
+      const res = await getResponse();
 
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
 
       const $ = cheerio.load(res.payload);
-      const titleClassName = ".govuk-heading-l";
-      const heading = "Minimum number of each species in each herd or flock";
-      const title = "Minimum number of livestock";
-      const pageTitleByClassName = $(titleClassName).text();
-      const pageTitleByName = $("title").text();
-      const fullTitle = `${title} - Get funding to improve animal health and welfare`;
-      const backLinkUrlByClassName = $(".govuk-back-link").attr("href");
-
-      expect(pageTitleByName).toContain(fullTitle);
-      expect(pageTitleByClassName).toEqual(heading);
-      expect(backLinkUrlByClassName).toContain(applyRoutes.youCanClaimMultiple);
+      expect($(".govuk-back-link").attr("href")).toContain(applyRoutes.youCanClaimMultiple);
       ok($);
     });
   });

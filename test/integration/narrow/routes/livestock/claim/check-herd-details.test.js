@@ -11,6 +11,10 @@ import {
 import { getNextMultipleHerdsPage } from "../../../../../../app/lib/get-next-multiple-herds-page.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/get-next-multiple-herds-page.js");
@@ -72,6 +76,42 @@ describe("/livestock/check-herd-details tests", () => {
   });
 
   describe("GET", () => {
+    const getResponse = (session) => () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(session);
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    const beefSession = {
+      reference: "TEMP-6GSE-PIR8",
+      typeOfReview: "REVIEW",
+      typeOfLivestock: "beef",
+      herdId: "909bb722-3de1-443e-8304-0bba8f922050",
+      herdVersion: 1,
+      herdName: "Commercial Herd",
+      herdCph: "22/333/4444",
+      isOnlyHerdOnSbi: "no",
+      herdReasons: ["differentBreed"],
+    };
+
+    testBrowserPageTitle({
+      title: "Check livestock herd details",
+      getResponse: getResponse(beefSession),
+    });
+    testBrowserPageTitle({
+      title: "Check livestock flock details",
+      getResponse: getResponse({ ...beefSession, typeOfLivestock: "sheep" }),
+    });
+    testPageHeading({
+      heading: "Check herd details",
+      getResponse: getResponse(beefSession),
+    });
+    testPageHeading({
+      heading: "Check flock details",
+      getResponse: getResponse({ ...beefSession, typeOfLivestock: "sheep" }),
+    });
+
     test("returns 200 with herd labels when species beef, also change links are correct", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
@@ -92,13 +132,9 @@ describe("/livestock/check-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "herd details")).toBeTruthy();
-      expect($("h1").text().trim()).toBe("Check herd details");
       expect(assertLinkExistsFor($, "Only herd associated with SBI")).toBeTruthy();
       expectPhaseBanner.ok($);
     });
@@ -123,14 +159,10 @@ describe("/livestock/check-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Check livestock flock details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "flock details")).toBeTruthy();
       expect(assertLinkExistsFor($, "Only flock associated with SBI")).toBeTruthy();
-      expect($("h1").text().trim()).toBe("Check flock details");
       expectPhaseBanner.ok($);
     });
 
@@ -154,9 +186,6 @@ describe("/livestock/check-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sbi-herds");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "Only herd associated with SBI")).toBeTruthy();
@@ -184,9 +213,6 @@ describe("/livestock/check-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "Only herd associated with SBI")).toBeTruthy();
@@ -220,13 +246,9 @@ describe("/livestock/check-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "herd details")).toBeTruthy();
-      expect($("h1").text().trim()).toBe("Check herd details");
       expect(assertLinkExistsFor($, "Only herd associated with SBI")).toBeTruthy();
       expectPhaseBanner.ok($);
     });
@@ -252,13 +274,9 @@ describe("/livestock/check-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "herd details")).toBeTruthy();
-      expect($("h1").text().trim()).toBe("Check herd details");
       expect(assertLinkExistsFor($, "Only herd associated with SBI")).toBeTruthy();
       expectPhaseBanner.ok($);
     });
@@ -288,13 +306,9 @@ describe("/livestock/check-herd-details tests", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Check livestock herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/enter-herd-details");
       expect(assertLinkExistsFor($, "CPH number")).toBeTruthy();
       expect(assertLinkExistsFor($, "herd details")).toBeTruthy();
-      expect($("h1").text().trim()).toBe("Check herd details");
       expect(assertLinkExistsFor($, "Only herd associated with SBI")).toBeFalsy();
       expectPhaseBanner.ok($);
     });

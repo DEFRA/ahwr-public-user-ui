@@ -8,6 +8,11 @@ import {
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -60,16 +65,18 @@ describe("Disease status test", () => {
   });
 
   describe(`GET ${url}`, () => {
-    test("redirect if not logged in / authorized", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({ reference: "TEMP-6GSE-PIR8" });
+      return server.inject({ method: "GET", url, auth });
+    };
 
-      const response = await server.inject(options);
+    testBrowserPageTitle({ title: "Livestock disease status", getResponse });
+    testPageHeading({ heading: "What is the disease status category?", getResponse });
 
-      expect(response.statusCode).toBe(302);
-      expect(response.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
 
     test("Returns 200", async () => {
@@ -86,26 +93,6 @@ describe("Disease status test", () => {
 
       expect(await axe(response.payload)).toHaveNoViolations();
       expect(response.statusCode).toBe(200);
-    });
-
-    test("display question text", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValue({ reference: "TEMP-6GSE-PIR8" });
-
-      const response = await server.inject(options);
-
-      expect(await axe(response.payload)).toHaveNoViolations();
-      const $ = cheerio.load(response.payload);
-      expect($("h1").text()).toMatch("What is the disease status category?");
-      expect($("title").text()).toContain(
-        "Livestock disease status - Get funding to improve animal health and welfare",
-      );
     });
 
     test("select '1' when diseaseStatus is '1'", async () => {

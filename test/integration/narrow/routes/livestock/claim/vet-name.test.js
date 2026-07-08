@@ -9,6 +9,11 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 const errorMessages = {
   enterName: "Enter the vet's name",
@@ -68,6 +73,20 @@ describe("Vet name test", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfLivestock: "beef",
+          typeOfReview: "FOLLOW_UP",
+          reference: "TEMP-6GSE-PIR8",
+        });
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    testBrowserPageTitle({ title: "Livestock vet's name", getResponse });
+    testPageHeading({ heading: "What is the vet's name?", getResponse });
+
     test.each([{ reviewTestResults: "negative" }, { reviewTestResults: "positive" }])(
       "returns 200",
       async ({ reviewTestResults }) => {
@@ -79,34 +98,17 @@ describe("Vet name test", () => {
             reviewTestResults,
             reference: "TEMP-6GSE-PIR8",
           });
-        const options = {
-          method: "GET",
-          url,
-          auth,
-        };
 
-        const res = await server.inject(options);
+        const res = await server.inject({ method: "GET", url, auth });
 
         expect(res.statusCode).toBe(200);
         const $ = cheerio.load(res.payload);
-        expect($("h1").text()).toMatch("What is the vet's name?");
-        expect($("title").text().trim()).toContain(
-          "Livestock vet's name - Get funding to improve animal health and welfare",
-        );
         expectPhaseBanner.ok($);
       },
     );
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -117,18 +119,14 @@ describe("Vet name test", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb, numberAnimalsTested: "123" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb, numberAnimalsTested: "123" },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
     test.each([
       { vetsName: "", error: errorMessages.enterName },

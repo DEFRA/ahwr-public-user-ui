@@ -10,6 +10,11 @@ import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { getAmount } from "ffc-ahwr-common-library";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../../app/session/index.js");
@@ -61,56 +66,59 @@ describe("PI Hunt recommended tests", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    const getResponse = (session) => () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue(session);
+      return server.inject({ method: "GET", auth, url });
+    };
+
+    testBrowserPageTitle({
+      title: "Persistently infected hunt done on all livestock in herd",
+      getResponse: getResponse({ typeOfLivestock: "beef", reviewTestResults: "positive" }),
+    });
+    testPageHeading({
+      heading: "Was the PI hunt done on all beef cattle in the herd?",
+      getResponse: getResponse({ typeOfLivestock: "beef", reviewTestResults: "positive" }),
+    });
+    testPageHeading({
+      heading: "Was the PI hunt done on all dairy cattle in the herd?",
+      getResponse: getResponse({ typeOfLivestock: "dairy", reviewTestResults: "negative" }),
+    });
+
     test.each([
       {
         typeOfLivestock: "beef",
         reviewTestResults: "positive",
         backLink: "/livestock/pi-hunt",
-        expectedQuestion: "Was the PI hunt done on all beef cattle in the herd?",
       },
       {
         typeOfLivestock: "dairy",
         reviewTestResults: "negative",
         backLink: "/livestock/pi-hunt-recommended",
-        expectedQuestion: "Was the PI hunt done on all dairy cattle in the herd?",
       },
-    ])(
-      "returns 200",
-      async ({ typeOfLivestock, reviewTestResults, backLink, expectedQuestion }) => {
-        when(getSessionData)
-          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-          .mockReturnValueOnce({ typeOfLivestock, reviewTestResults });
+    ])("returns 200", async ({ typeOfLivestock, reviewTestResults, backLink }) => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({ typeOfLivestock, reviewTestResults });
 
-        const options = {
-          method: "GET",
-          auth,
-          url,
-        };
-
-        const res = await server.inject(options);
-        const $ = cheerio.load(res.payload);
-
-        expect(res.statusCode).toBe(200);
-        expect($(".govuk-fieldset__heading").text().trim()).toEqual(expectedQuestion);
-        expect($("title").text()).toContain(
-          "Persistently infected hunt done on all livestock in herd - Get funding to improve animal health and welfare",
-        );
-        expect($(".govuk-radios__item").length).toEqual(2);
-        expect($(".govuk-back-link").attr("href")).toContain(backLink);
-        expectPhaseBanner.ok($);
-      },
-    );
-
-    test("when not logged in redirects to /sign-in", async () => {
       const options = {
         method: "GET",
+        auth,
         url,
       };
 
       const res = await server.inject(options);
+      const $ = cheerio.load(res.payload);
 
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+      expect(res.statusCode).toBe(200);
+      expect($(".govuk-radios__item").length).toEqual(2);
+      expect($(".govuk-back-link").attr("href")).toContain(backLink);
+      expectPhaseBanner.ok($);
+    });
+
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -121,18 +129,14 @@ describe("PI Hunt recommended tests", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
 
     test("Continue to eligible page if user select yes", async () => {

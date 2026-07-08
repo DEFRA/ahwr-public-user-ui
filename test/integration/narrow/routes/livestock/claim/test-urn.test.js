@@ -14,6 +14,11 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 
 jest.mock("../../../../../../app/session/index.js");
@@ -68,61 +73,30 @@ describe("Test URN GET", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test.each([
-      {
-        typeOfLivestock: "beef",
-        typeOfReview: "FOLLOW_UP",
-        title:
-          "What’s the laboratory unique reference number (URN) or certificate number of the test results?",
-        reviewTestResults: "positive",
-      },
-      {
-        typeOfLivestock: "dairy",
-        typeOfReview: "FOLLOW_UP",
-        title:
-          "What’s the laboratory unique reference number (URN) or certificate number of the test results?",
-      },
-      {
-        typeOfLivestock: "sheep",
-        typeOfReview: "REVIEW",
-        title: "What’s the laboratory unique reference number (URN) for the test results?",
-      },
-      {
-        typeOfLivestock: "pigs",
-        typeOfReview: "FOLLOW_UP",
-        title: "What’s the laboratory unique reference number (URN) for the test results?",
-      },
-    ])(
-      "Return 200 with Title $title when type of species is $typeOfLivestock and type of review is $typeOfReview",
-      async ({ title, typeOfLivestock, typeOfReview, reviewTestResults }) => {
-        when(getSessionData)
-          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-          .mockReturnValue({
-            typeOfLivestock,
-            typeOfReview,
-            reviewTestResults,
-            reference: "TEMP-6GSE-PIR8",
-            laboratoryURN: "ABC123",
-          });
+    const getResponse = (session) => () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          reference: "TEMP-6GSE-PIR8",
+          laboratoryURN: "ABC123",
+          ...session,
+        });
+      return server.inject({ method: "GET", url, auth });
+    };
 
-        const options = {
-          method: "GET",
-          url,
-          auth,
-        };
-
-        const res = await server.inject(options);
-
-        expect(res.statusCode).toBe(200);
-        const $ = cheerio.load(res.payload);
-        expect($("h1").text()).toMatch(title);
-        expect($("title").text()).toContain(
-          "Livestock laboratory's unique reference number - Get funding to improve animal health and welfare",
-        );
-
-        expectPhaseBanner.ok($);
-      },
-    );
+    testBrowserPageTitle({
+      title: "Livestock laboratory's unique reference number",
+      getResponse: getResponse({ typeOfLivestock: "beef", typeOfReview: "FOLLOW_UP" }),
+    });
+    testPageHeading({
+      heading:
+        "What’s the laboratory unique reference number (URN) or certificate number of the test results?",
+      getResponse: getResponse({ typeOfLivestock: "beef", typeOfReview: "FOLLOW_UP" }),
+    });
+    testPageHeading({
+      heading: "What’s the laboratory unique reference number (URN) for the test results?",
+      getResponse: getResponse({ typeOfLivestock: "sheep", typeOfReview: "REVIEW" }),
+    });
 
     test.each([
       {
@@ -237,16 +211,8 @@ describe("Test URN GET", () => {
       },
     );
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -257,18 +223,14 @@ describe("Test URN GET", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb, laboratoryURN: "123" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb, laboratoryURN: "123" },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
 
     test.each([

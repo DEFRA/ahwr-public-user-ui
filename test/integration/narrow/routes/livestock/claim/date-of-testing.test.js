@@ -17,6 +17,11 @@ import {
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session");
@@ -88,6 +93,28 @@ describe("Date of testing", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          typeOfReview: "FOLLOW_UP",
+          typeOfLivestock: "beef",
+          latestEndemicsApplication,
+          reference: "TEMP-6GSE-PIR8",
+          dateOfVisit: "2022-01-01",
+        });
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    testBrowserPageTitle({
+      title: "When livestock samples were taken",
+      getResponse,
+    });
+    testPageHeading({
+      heading: "When were samples taken?",
+      getResponse,
+    });
+
     test.each([{ typeOfLivestock: "beef" }, { typeOfLivestock: "dairy" }])(
       "returns 200",
       async ({ typeOfLivestock }) => {
@@ -112,10 +139,6 @@ describe("Date of testing", () => {
         expect(await axe(res.payload)).toHaveNoViolations();
         expect(res.statusCode).toBe(HttpStatus.OK);
         const $ = cheerio.load(res.payload);
-        expect($("h1").text()).toMatch("When were samples taken?");
-        expect($("title").text()).toContain(
-          "When livestock samples were taken - Get funding to improve animal health and welfare",
-        );
         expect($(".govuk-back-link").attr("href")).toMatch("/livestock/pi-hunt-all-animals");
         expectPhaseBanner.ok($);
         expect($("#whenTestingWasCarriedOut-hint").text()).toMatch(
@@ -194,10 +217,8 @@ describe("Date of testing", () => {
       expect($("#on-another-date-year").val()).toBe("2024");
     });
 
-    test("redirects to /sign-in when not authenticated", async () => {
-      const res = await server.inject({ method: "GET", url });
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/sign-in");
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -206,10 +227,8 @@ describe("Date of testing", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("redirects to /sign-in when not authenticated", async () => {
-      const res = await server.inject({ method: "POST", url });
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/sign-in");
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "POST", url }),
     });
 
     test("returns 403 when CSRF crumb is missing", async () => {

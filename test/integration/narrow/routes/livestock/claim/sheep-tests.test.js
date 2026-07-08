@@ -9,6 +9,10 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -34,6 +38,46 @@ describe("Test Results test", () => {
   });
 
   describe(`GET ${url} route`, () => {
+    const getResponse = () => {
+      when(getSessionData)
+        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+        .mockReturnValue({
+          sheepEndemicsPackage: "reducedExternalParasites",
+          reference: "TEMP-6GSE-PIR8",
+        });
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.latestEndemicsApplication,
+        )
+        .mockReturnValue({ status: "AGREED" });
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.confirmedDetails,
+          sessionKeys.confirmedDetails,
+        )
+        .mockReturnValue(true);
+      when(getSessionData)
+        .calledWith(
+          expect.anything(),
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.reference,
+        )
+        .mockReturnValue("IAHW-1LZ5-ELVQ");
+      return server.inject({ method: "GET", url, auth });
+    };
+
+    testBrowserPageTitle({
+      title: "Sheep livestock disease or condition samples",
+      getResponse,
+    });
+    testPageHeading({
+      heading: "Which disease or condition did the vet take samples to test for?",
+      getResponse,
+    });
+
     test("returns 200", async () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
@@ -76,12 +120,6 @@ describe("Test Results test", () => {
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
-      expect($("h1").text()).toMatch(
-        "Which disease or condition did the vet take samples to test for?",
-      );
-      expect($("title").text()).toMatch(
-        "Sheep livestock disease or condition samples - Get funding to improve animal health and welfare",
-      );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/sheep-endemics-package");
 
       expectPhaseBanner.ok($);

@@ -9,6 +9,11 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/session/index.js");
 
@@ -58,32 +63,26 @@ describe("Test Results test", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test.each([
-      { typeOfReview: "FOLLOW_UP", question: "What was the follow-up test result?" },
-      { typeOfReview: "REVIEW", question: "What was the test result?" },
-    ])("returns 200", async ({ typeOfReview, question }) => {
+    const getResponse = (typeOfReview) => () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockImplementation(() => {
           return { typeOfReview, reference: "TEMP-6GSE-PIR8" };
         });
+      return server.inject({ method: "GET", url, auth });
+    };
 
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch(question);
-      expect($("title").text()).toContain(
-        "Livestock test result - Get funding to improve animal health and welfare",
-      );
-
-      expectPhaseBanner.ok($);
+    testBrowserPageTitle({
+      title: "Livestock test result",
+      getResponse: getResponse("REVIEW"),
+    });
+    testPageHeading({
+      heading: "What was the test result?",
+      getResponse: getResponse("REVIEW"),
+    });
+    testPageHeading({
+      heading: "What was the follow-up test result?",
+      getResponse: getResponse("FOLLOW_UP"),
     });
 
     test.each([
@@ -144,16 +143,8 @@ describe("Test Results test", () => {
       expectPhaseBanner.ok($);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
   });
 
@@ -164,18 +155,14 @@ describe("Test Results test", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("when not logged in redirects to /sign-in", async () => {
-      const options = {
-        method: "POST",
-        url,
-        payload: { crumb, testResults: "positive" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () =>
+        server.inject({
+          method: "POST",
+          url,
+          payload: { crumb, testResults: "positive" },
+          headers: { cookie: `crumb=${crumb}` },
+        }),
     });
 
     test.each([

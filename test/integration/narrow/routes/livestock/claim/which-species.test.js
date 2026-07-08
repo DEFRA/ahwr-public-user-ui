@@ -12,6 +12,10 @@ import {
   setSessionData,
 } from "../../../../../../app/session/index.js";
 import { when } from "jest-when";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
 
 jest.mock("../../../../../../app/session");
 jest.mock("../../../../../../app/lib/context-helper", () => ({
@@ -77,21 +81,19 @@ describe("Endemics which species test", () => {
   });
 
   describe("GET /livestock/species", () => {
-    test("should render page when no previous session exists", async () => {
-      const options = {
-        method: "GET",
-        auth,
-        url,
-      };
+    const getResponse = () => server.inject({ method: "GET", auth, url });
 
-      const res = await server.inject(options);
+    testBrowserPageTitle({
+      title: "Which livestock species are you claiming for?",
+      getResponse,
+    });
+    testPageHeading({ heading: "Which species are you claiming for?", getResponse });
+
+    test("should render page when no previous session exists", async () => {
+      const res = await getResponse();
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
-      expect($("title").text().trim()).toContain(
-        "Which livestock species are you claiming for? - Get funding to improve animal health and welfare - GOV.UK",
-      );
-      expect($("h1").text().trim()).toMatch("Which species are you claiming for?");
       expect($(".govuk-radios__item").length).toEqual(4);
       expect($(".govuk-back-link").attr("href")).toContain("manage-claims");
 

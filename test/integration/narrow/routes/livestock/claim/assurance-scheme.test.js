@@ -10,6 +10,11 @@ import {
 
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
+import {
+  testBrowserPageTitle,
+  testPageHeading,
+} from "../../../../../helpers/page-title-and-heading.js";
+import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
 
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
@@ -65,38 +70,28 @@ describe("Assurance Scheme", () => {
   });
 
   describe(`GET ${url} route`, () => {
-    test("redirect if not logged in / authorized", async () => {
-      const options = {
-        method: "GET",
-        url,
-      };
-
+    const getResponse = () => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockReturnValue({ typeOfLivestock: "pigs" });
+      return server.inject({ method: "GET", url, auth });
+    };
 
-      const response = await server.inject(options);
+    testBrowserPageTitle({
+      title: "Livestock biosecurity assessment",
+      getResponse,
+    });
+    testPageHeading({ heading: "Is this flock part of an Assurance Scheme?", getResponse });
 
-      expect(response.statusCode).toBe(302);
-      expect(response.headers.location.toString()).toEqual(`/sign-in`);
+    testRedirectsToSignInWhenLoggedOut({
+      getResponse: () => server.inject({ method: "GET", url }),
     });
 
     test("Returns 200", async () => {
-      const options = {
-        method: "GET",
-        url,
-        auth,
-      };
-
-      const response = await server.inject(options);
+      const response = await getResponse();
 
       expect(await axe(response.payload)).toHaveNoViolations();
       expect(response.statusCode).toBe(200);
-      const $ = cheerio.load(response.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock biosecurity assessment - Get funding to improve animal health and welfare",
-      );
-      expect($("h1").text().trim()).toBe("Is this flock part of an Assurance Scheme?");
     });
   });
 
