@@ -198,7 +198,7 @@ export const vetVisitsHandlers = [
 
         const { sheepHeaders, nonSheepHeaders } = buildTableHeaders();
 
-        return h.view("livestock/vet-visits", {
+        return h.view("livestock/manage-claims", {
           beefClaimsRows,
           dairyClaimsRows,
           pigClaimsRows,
