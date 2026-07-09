@@ -141,6 +141,63 @@ const addHerdToSession = async (request, existingHerd, herds) => {
 
 const isUnnamedHerdClaim = (herdId, claim) => herdId === radioValueUnnamedHerd && !claim.herd?.id;
 
+const persistSelectedHerdId = async (request, herdSelected, tempHerdId) => {
+  const isNewOrUnnamedHerd = [radioValueUnnamedHerd, radioValueNewHerd].includes(herdSelected);
+  await setSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+    sessionKeys.endemicsClaim.herdId,
+    isNewOrUnnamedHerd ? tempHerdId : herdSelected,
+    { shouldEmitEvent: false },
+  );
+};
+
+const getClaimEligibilityError = (herdSelected, sessionData) => {
+  const {
+    previousClaims,
+    typeOfLivestock,
+    typeOfReview,
+    dateOfVisit,
+    organisation,
+    oldWorldApplication,
+  } = sessionData;
+
+  const prevHerdClaims = previousClaims.filter(
+    (claim) =>
+      claim.data.typeOfLivestock === typeOfLivestock &&
+      (isUnnamedHerdClaim(herdSelected, claim) || claim.herd?.id === herdSelected),
+  );
+
+  return canMakeClaim({
+    prevClaims: prevHerdClaims,
+    typeOfReview,
+    dateOfVisit,
+    organisation,
+    typeOfLivestock,
+    oldWorldApplication,
+  });
+};
+
+const renderNewHerdReviewException = (h) =>
+  h
+    .view(claimViews.selectTheHerdException, {
+      backLink: pageUrl,
+      claimForAReviewLink: claimRoutes.whichTypeOfReview,
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
+
+const renderSelectHerdDateException = (h, errorMessage, isReview) =>
+  h
+    .view(claimViews.selectTheHerdDateException, {
+      backLink: pageUrl,
+      errorMessage,
+      backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? "review" : "follow-up"}.`,
+      backToPageLink: claimRoutes.dateOfVisit,
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
+
 const postHandler = {
   method: "POST",
   path: pageUrl,
@@ -210,47 +267,18 @@ const postHandler = {
         { shouldEmitEvent: false },
       );
 
-      if ([radioValueUnnamedHerd, radioValueNewHerd].includes(herdSelected)) {
-        await setSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.herdId,
-          tempHerdId,
-          { shouldEmitEvent: false },
-        );
-      } else {
-        await setSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.herdId,
-          herdSelected,
-          { shouldEmitEvent: false },
-        );
-      }
-
-      const { isReview } = getReviewType(typeOfReview);
+      await persistSelectedHerdId(request, herdSelected, tempHerdId);
 
       if (herdSelected === radioValueNewHerd && typeOfReview === claimType.endemics) {
-        return h
-          .view(claimViews.selectTheHerdException, {
-            backLink: pageUrl,
-            claimForAReviewLink: claimRoutes.whichTypeOfReview,
-          })
-          .code(HttpStatus.BAD_REQUEST)
-          .takeover();
+        return renderNewHerdReviewException(h);
       }
 
-      const prevHerdClaims = previousClaims.filter(
-        (claim) =>
-          claim.data.typeOfLivestock === typeOfLivestock &&
-          (isUnnamedHerdClaim(herdSelected, claim) || claim.herd?.id === herdSelected),
-      );
-      const errorMessage = canMakeClaim({
-        prevClaims: prevHerdClaims,
+      const errorMessage = getClaimEligibilityError(herdSelected, {
+        previousClaims,
+        typeOfLivestock,
         typeOfReview,
         dateOfVisit,
         organisation,
-        typeOfLivestock,
         oldWorldApplication,
       });
 
@@ -261,15 +289,8 @@ const postHandler = {
           exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
         });
 
-        return h
-          .view(claimViews.selectTheHerdDateException, {
-            backLink: pageUrl,
-            errorMessage,
-            backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? "review" : "follow-up"}.`,
-            backToPageLink: claimRoutes.dateOfVisit,
-          })
-          .code(HttpStatus.BAD_REQUEST)
-          .takeover();
+        const { isReview } = getReviewType(typeOfReview);
+        return renderSelectHerdDateException(h, errorMessage, isReview);
       }
 
       const existingHerd = herds.find((herd) => herd.id === herdSelected);

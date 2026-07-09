@@ -113,7 +113,7 @@ describe("Declaration test", () => {
           return $(el).text().trim().startsWith("If the RPA requests evidence");
         })
         .first();
-      expect(herdsText.length).toBe(1);
+      expect(herdsText).toHaveLength(1);
       expect(herdsText.text().trim()).toBe(expectedHerdsText);
     });
   });

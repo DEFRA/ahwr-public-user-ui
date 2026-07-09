@@ -94,7 +94,7 @@ describe("Endemics which species test", () => {
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
-      expect($(".govuk-radios__item").length).toEqual(4);
+      expect($(".govuk-radios__item")).toHaveLength(4);
       expect($(".govuk-back-link").attr("href")).toContain("manage-claims");
 
       expect(resetEndemicsClaimSession).toHaveBeenCalled();

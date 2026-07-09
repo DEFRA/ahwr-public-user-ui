@@ -214,7 +214,7 @@ describe("select-the-herd tests", () => {
 
       const radios = $(".govuk-radios__item");
 
-      expect(radios.length).toBe(4);
+      expect(radios).toHaveLength(4);
 
       expect(radios.eq(0).find("input").val()).toBe("100bb722-3de1-443e-8304-0bba8f922050");
       expect(radios.eq(0).text()).toContain("Barn animals");
@@ -332,7 +332,7 @@ describe("select-the-herd tests", () => {
 
       const radios = $(".govuk-radios__item");
 
-      expect(radios.length).toBe(5);
+      expect(radios).toHaveLength(5);
 
       expect(radios.eq(0).find("input").val()).toBe("100bb722-3de1-443e-8304-0bba8f922050");
       expect(radios.eq(0).text()).toContain("Barn animals");
@@ -417,7 +417,7 @@ describe("select-the-herd tests", () => {
 
       const radios = $(".govuk-radios__item");
 
-      expect(radios.length).toBe(5);
+      expect(radios).toHaveLength(5);
 
       expect(radios.eq(0).find("input").val()).toBe("100bb722-3de1-443e-8304-0bba8f922050");
       expect(radios.eq(0).text()).toContain("Barn animals");
