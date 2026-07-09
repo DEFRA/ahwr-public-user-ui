@@ -44,6 +44,12 @@ test("omits the deprecated X-XSS-Protection header", async () => {
   expect(headers["x-xss-protection"]).toBeUndefined();
 });
 
+test("omits the obsolete Permissions-Policy header", async () => {
+  const headers = await getHeaders();
+
+  expect(headers["permissions-policy"]).toBeUndefined();
+});
+
 test("retains X-Frame-Options deny alongside frame-ancestors", async () => {
   const headers = await getHeaders();
 
