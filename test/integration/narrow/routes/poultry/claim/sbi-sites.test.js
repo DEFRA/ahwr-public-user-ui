@@ -75,7 +75,7 @@ describe("/sbi-sites tests", () => {
       return server.inject({ method: "GET", url, auth });
     };
 
-    const browserTitle = "Poultry sites associated with this SBI?";
+    const browserTitle = "Poultry sites associated with this SBI";
     const pageHeader =
       "Is this the only site associated with this Single Business Identifier (SBI)?";
     testBrowserPageTitle({ title: browserTitle, getResponse });
@@ -227,7 +227,7 @@ describe("/sbi-sites tests", () => {
         });
       };
 
-      const browserTitle = "Error: Poultry sites associated with this SBI?";
+      const browserTitle = "Error: Poultry sites associated with this SBI";
       const pageHeader =
         "Is this the only site associated with this Single Business Identifier (SBI)?";
       testBrowserPageTitle({ title: browserTitle, getResponse });
