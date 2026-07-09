@@ -15,18 +15,10 @@ import { createApplication } from "../../../api-requests/application-api.js";
 import { createTempReference } from "../../../lib/create-temp-ref.js";
 import { trackEvent } from "../../../logging/logger.js";
 import { refreshApplications } from "../../../lib/context-helper.js";
-
-export const resetFarmerApplyDataBeforeApplication = (application) => {
-  delete application.agreeSpeciesNumbers;
-  delete application.agreeSameSpecies;
-  delete application.agreeMultipleSpecies;
-  delete application.agreeVisitTimings;
-};
-
-export const formatOrganisation = (organisation) => ({
-  ...organisation,
-  address: organisation.address.split(",").map((line) => line.trim()),
-});
+import {
+  resetFarmerApplyDataBeforeApplication,
+  formatOrganisation,
+} from "../../../lib/apply-helpers.js";
 
 const processRejectedApplication = async (h, request) => {
   // create new tempApplicationId as the current one has been used to create a rejected application
