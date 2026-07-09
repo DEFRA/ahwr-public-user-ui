@@ -71,7 +71,6 @@ export const headerPlugin = {
       { key: "Strict-Transport-Security", value: "max-age=31536000;" },
       { key: "Cache-Control", value: "no-store" },
       { key: "Referrer-Policy", value: "no-referrer" },
-      { key: "Permissions-Policy", value: "Interest-Cohort=()" },
     ],
   },
 };
