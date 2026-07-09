@@ -9,7 +9,7 @@ import { thresholds } from "../../../constants/claim-constants.js";
 import { getReviewType, getLivestockTypes } from "../../../lib/utils.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
 const getTheQuestionText = (typeOfLivestock, typeOfReview) => {
@@ -39,7 +39,7 @@ const getTheQuestionText = (typeOfLivestock, typeOfReview) => {
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.numberOfSpeciesTested,
+  path: livestockClaimRoutes.numberOfSpeciesTested,
   options: {
     handler: async (request, h) => {
       const { numberAnimalsTested, typeOfLivestock, typeOfReview } = getSessionData(
@@ -47,10 +47,10 @@ const getHandler = {
         sessionEntryKeys.endemicsClaim,
       );
 
-      return h.view(claimViews.numberOfSpeciesTested, {
+      return h.view(livestockClaimViews.numberOfSpeciesTested, {
         questionText: getTheQuestionText(typeOfLivestock, typeOfReview),
         numberAnimalsTested,
-        backLink: claimRoutes.speciesNumbers,
+        backLink: livestockClaimRoutes.speciesNumbers,
       });
     },
   },
@@ -58,7 +58,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.numberOfSpeciesTested,
+  path: livestockClaimRoutes.numberOfSpeciesTested,
   options: {
     validate: {
       payload: Joi.object({
@@ -77,9 +77,9 @@ const postHandler = {
         );
 
         return h
-          .view(claimViews.numberOfSpeciesTested, {
+          .view(livestockClaimViews.numberOfSpeciesTested, {
             ...request.payload,
-            backLink: claimRoutes.speciesNumbers,
+            backLink: livestockClaimRoutes.speciesNumbers,
             questionText: getTheQuestionText(typeOfLivestock, typeOfReview),
             errorMessage: {
               text: error.details[0].message,
@@ -104,9 +104,9 @@ const postHandler = {
 
       if (numOfAnimalsTested === 0) {
         return h
-          .view(claimViews.numberOfSpeciesTested, {
+          .view(livestockClaimViews.numberOfSpeciesTested, {
             ...request.payload,
-            backLink: claimRoutes.speciesNumbers,
+            backLink: livestockClaimRoutes.speciesNumbers,
             questionText: getTheQuestionText(typeOfLivestock, typeOfReview),
             errorMessage: {
               text: "The number of animals tested cannot be 0",
@@ -130,7 +130,7 @@ const postHandler = {
       );
 
       if (isEligible) {
-        return h.redirect(claimRoutes.vetName);
+        return h.redirect(livestockClaimRoutes.vetName);
       }
 
       const exceptionMessage =
@@ -146,9 +146,9 @@ const postHandler = {
 
       if (isPigs && isEndemicsFollowUp) {
         return h
-          .view(claimViews.numberOfSpeciesPigsException, {
-            continueClaimLink: claimRoutes.vetName,
-            backLink: claimRoutes.numberOfSpeciesTested,
+          .view(livestockClaimViews.numberOfSpeciesPigsException, {
+            continueClaimLink: livestockClaimRoutes.vetName,
+            backLink: livestockClaimRoutes.numberOfSpeciesTested,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -156,17 +156,17 @@ const postHandler = {
 
       if (isSheep) {
         return h
-          .view(claimViews.numberOfSpeciesSheepException, {
-            continueClaimLink: claimRoutes.vetName,
-            backLink: claimRoutes.numberOfSpeciesTested,
+          .view(livestockClaimViews.numberOfSpeciesSheepException, {
+            continueClaimLink: livestockClaimRoutes.vetName,
+            backLink: livestockClaimRoutes.numberOfSpeciesTested,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
       }
 
       return h
-        .view(claimViews.numberOfSpeciesException, {
-          backLink: claimRoutes.numberOfSpeciesTested,
+        .view(livestockClaimViews.numberOfSpeciesException, {
+          backLink: livestockClaimRoutes.numberOfSpeciesTested,
           piHuntEnabled: isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit),
         })
         .code(HttpStatus.BAD_REQUEST)

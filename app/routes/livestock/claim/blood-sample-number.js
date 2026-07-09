@@ -6,7 +6,7 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../../session/index.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 import { thresholds } from "../../../constants/claim-constants.js";
 
@@ -20,7 +20,7 @@ const { requiredNumberBloodSamples } = thresholds;
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.numberOfBloodSamples,
+  path: livestockClaimRoutes.numberOfBloodSamples,
   options: {
     handler: async (request, h) => {
       const numberOfBloodSamples = getSessionData(
@@ -29,9 +29,9 @@ const getHandler = {
         numberOfBloodSamplesKey,
       );
 
-      return h.view(claimViews.numberOfBloodSamples, {
+      return h.view(livestockClaimViews.numberOfBloodSamples, {
         numberOfBloodSamples,
-        backLink: claimRoutes.typeOfSamplesTaken,
+        backLink: livestockClaimRoutes.typeOfSamplesTaken,
       });
     },
   },
@@ -39,7 +39,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.numberOfBloodSamples,
+  path: livestockClaimRoutes.numberOfBloodSamples,
   options: {
     validate: {
       payload: Joi.object({
@@ -52,10 +52,10 @@ const postHandler = {
       failAction: async (request, h, error) => {
         request.logger.error({ error });
         return h
-          .view(claimViews.numberOfBloodSamples, {
+          .view(livestockClaimViews.numberOfBloodSamples, {
             ...request.payload,
             errorMessage: { text: error.details[0].message, href: `#${numberOfBloodSamplesKey}` },
-            backLink: claimRoutes.typeOfSamplesTaken,
+            backLink: livestockClaimRoutes.typeOfSamplesTaken,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -78,15 +78,15 @@ const postHandler = {
           exception: `Value ${numberOfBloodSamples} is not exactly ${requiredNumberBloodSamples}`,
         });
         return h
-          .view(claimViews.numberOfBloodSamplesException, {
-            backLink: claimRoutes.numberOfBloodSamples,
+          .view(livestockClaimViews.numberOfBloodSamplesException, {
+            backLink: livestockClaimRoutes.numberOfBloodSamples,
             requiredNumberBloodSamples,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
       }
 
-      return h.redirect(claimRoutes.testResults);
+      return h.redirect(livestockClaimRoutes.testResults);
     },
   },
 };

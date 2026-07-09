@@ -6,7 +6,7 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../../session/index.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { PIGS_SAMPLE_TYPES } from "../../../constants/claim-constants.js";
 
 const { oralFluid, blood } = PIGS_SAMPLE_TYPES;
@@ -22,14 +22,14 @@ const {
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.typeOfSamplesTaken,
+  path: livestockClaimRoutes.typeOfSamplesTaken,
   options: {
     handler: async (request, h) => {
       const typeOfSamplesTaken = getSessionData(request, endemicsClaimEntry, typeOfSamplesTakenKey);
 
-      return h.view(claimViews.typeOfSamplesTaken, {
+      return h.view(livestockClaimViews.typeOfSamplesTaken, {
         previousAnswer: typeOfSamplesTaken,
-        backLink: claimRoutes.testUrn,
+        backLink: livestockClaimRoutes.testUrn,
       });
     },
   },
@@ -37,7 +37,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.typeOfSamplesTaken,
+  path: livestockClaimRoutes.typeOfSamplesTaken,
   options: {
     validate: {
       payload: Joi.object({
@@ -49,10 +49,10 @@ const postHandler = {
       failAction: async (request, h, error) => {
         request.logger.error({ error });
         return h
-          .view(claimViews.typeOfSamplesTaken, {
+          .view(livestockClaimViews.typeOfSamplesTaken, {
             ...request.payload,
             errorMessage: { text: error.details[0].message, href: `#${typeOfSamplesTakenKey}` },
-            backLink: claimRoutes.testUrn,
+            backLink: livestockClaimRoutes.testUrn,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -76,8 +76,8 @@ const postHandler = {
 
       const nextPage =
         typeOfSamplesTaken === oralFluid
-          ? claimRoutes.numberOfFluidOralSamples
-          : claimRoutes.numberOfBloodSamples;
+          ? livestockClaimRoutes.numberOfFluidOralSamples
+          : livestockClaimRoutes.numberOfBloodSamples;
       return h.redirect(nextPage);
     },
   },

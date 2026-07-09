@@ -4,20 +4,20 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../../session/index.js";
-import { applyRoutes, applyViews } from "../../../constants/routes.js";
+import { livestockApplyRoutes, livestockApplyViews } from "../../../constants/routes.js";
 import { preApplyHandler } from "../../../lib/pre-apply-handler.js";
 
 export const numbersRouteHandlers = [
   {
     method: "GET",
-    path: applyRoutes.numbers,
+    path: livestockApplyRoutes.numbers,
     options: {
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
-        const backLink = applyRoutes.youCanClaimMultiple;
+        const backLink = livestockApplyRoutes.youCanClaimMultiple;
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
-        return h.view(applyViews.numbers, {
+        return h.view(livestockApplyViews.numbers, {
           backLink,
           organisation,
         });
@@ -26,7 +26,7 @@ export const numbersRouteHandlers = [
   },
   {
     method: "POST",
-    path: applyRoutes.numbers,
+    path: livestockApplyRoutes.numbers,
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {
@@ -37,7 +37,7 @@ export const numbersRouteHandlers = [
             "yes",
           );
 
-          return h.redirect(applyRoutes.timings);
+          return h.redirect(livestockApplyRoutes.timings);
         }
 
         await setSessionData(
@@ -47,7 +47,7 @@ export const numbersRouteHandlers = [
           "no",
         );
 
-        return h.view(applyViews.offerRejected, {
+        return h.view(livestockApplyViews.offerRejected, {
           termsRejected: true,
         });
       },

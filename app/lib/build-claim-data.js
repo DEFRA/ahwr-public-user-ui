@@ -5,7 +5,7 @@ import {
   getVaccinationStatusForDisplay,
   upperFirstLetter,
 } from "./display-helpers.js";
-import { claimRoutes } from "../constants/routes.js";
+import { livestockClaimRoutes } from "../constants/routes.js";
 import {
   sheepPackages,
   sheepTestResultsType,
@@ -23,7 +23,7 @@ const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
           `${sessionData.biosecurity?.biosecurity}, Assessment percentage: ${sessionData.biosecurity?.assessmentPercentage}%`,
         )
       : upperFirstLetter(sessionData.biosecurity),
-    claimRoutes.biosecurity,
+    livestockClaimRoutes.biosecurity,
     "biosecurity assessment",
   );
 };
@@ -32,7 +32,7 @@ const getAssuranceSchemeRow = (sessionData) => {
   return createdHerdRowObject(
     "Assurance scheme",
     upperFirstLetter(sessionData.assuranceScheme),
-    claimRoutes.assuranceScheme,
+    livestockClaimRoutes.assuranceScheme,
     "assurance scheme",
   );
 };
@@ -41,7 +41,7 @@ const getDateOfVisitRow = (isReview, dateOfVisit) => {
   return createdHerdRowObject(
     isReview ? "Date of review" : "Date of follow-up",
     formatDate(dateOfVisit),
-    claimRoutes.dateOfVisit,
+    livestockClaimRoutes.dateOfVisit,
     `date of ${isReview ? "review" : "follow-up"}`,
   );
 };
@@ -49,7 +49,7 @@ const getDateOfSamplingRow = (dateOfTesting) => {
   return createdHerdRowObject(
     "Date of sampling",
     dateOfTesting ? formatDate(dateOfTesting) : undefined,
-    claimRoutes.dateOfTesting,
+    livestockClaimRoutes.dateOfTesting,
     "date of sampling",
   );
 };
@@ -68,7 +68,7 @@ const getSheepDiseasesTestedRow = (isEndemicsFollowUp, sessionData) => {
     return createdHerdRowObject(
       "Diseases or conditions tested for",
       testList,
-      claimRoutes.sheepTests,
+      livestockClaimRoutes.sheepTests,
       "diseases or conditions tested for",
     );
   }
@@ -80,48 +80,48 @@ export const buildVetTestandPiHuntRows = ({ endemicsClaimSession, isReview }) =>
     createdHerdRowObject(
       "Vet's name",
       upperFirstLetter(endemicsClaimSession.vetsName),
-      claimRoutes.vetName,
+      livestockClaimRoutes.vetName,
       "vet's name",
     ),
     createdHerdRowObject(
       "Vet's RCVS number",
       endemicsClaimSession.vetRCVSNumber,
-      claimRoutes.vetRcvs,
+      livestockClaimRoutes.vetRcvs,
       "vet's rcvs number",
     ),
   ];
   const piHuntRow = createdHerdRowObject(
     "PI hunt",
     upperFirstLetter(endemicsClaimSession.piHunt),
-    claimRoutes.piHunt,
+    livestockClaimRoutes.piHunt,
     "the pi hunt",
   );
 
   const piHuntRecommendedRow = createdHerdRowObject(
     "Vet recommended PI hunt",
     upperFirstLetter(endemicsClaimSession.piHuntRecommended),
-    claimRoutes.piHuntRecommended,
+    livestockClaimRoutes.piHuntRecommended,
     "the pi hunt recommended",
   );
 
   const piHuntAllAnimalsRow = createdHerdRowObject(
     "PI hunt done on all cattle in herd",
     upperFirstLetter(endemicsClaimSession.piHuntAllAnimals),
-    claimRoutes.piHuntAllAnimals,
+    livestockClaimRoutes.piHuntAllAnimals,
     "the pi hunt",
   );
 
   const testResultsRow = createdHerdRowObject(
     isReview ? "Test results" : "Follow-up test result",
     upperFirstLetter(endemicsClaimSession.testResults),
-    claimRoutes.testResults,
+    livestockClaimRoutes.testResults,
     "test results",
   );
 
   const vetVisitsReviewTestResultsRow = createdHerdRowObject(
     "Review test result",
     upperFirstLetter(endemicsClaimSession.vetVisitsReviewTestResults),
-    claimRoutes.vetVisitsReviewTestResults,
+    livestockClaimRoutes.vetVisitsReviewTestResults,
     "review test results",
   );
 
@@ -148,21 +148,21 @@ export const buildRows = ({
   const speciesNumbersRow = createdHerdRowObject(
     getSpeciesEligibleNumberForDisplay(endemicsClaimSession, true),
     upperFirstLetter(endemicsClaimSession.speciesNumbers),
-    claimRoutes.speciesNumbers,
+    livestockClaimRoutes.speciesNumbers,
     "number of species",
   );
 
   const numberOfAnimalsTestedRow = createdHerdRowObject(
     "Number of samples taken",
     endemicsClaimSession.numberAnimalsTested,
-    claimRoutes.numberOfSpeciesTested,
+    livestockClaimRoutes.numberOfSpeciesTested,
     "number of samples taken",
   );
 
   const laboratoryUrnRow = createdHerdRowObject(
     isBeef || isDairy ? "URN or test certificate" : "URN",
     endemicsClaimSession.laboratoryURN,
-    claimRoutes.testUrn,
+    livestockClaimRoutes.testUrn,
     "URN",
   );
 
@@ -176,35 +176,35 @@ export const buildRows = ({
   const typeOfSamplesTakenRow = createdHerdRowObject(
     "Type of samples taken",
     typeOfSamplesDisplayValue,
-    claimRoutes.typeOfSamplesTaken,
+    livestockClaimRoutes.typeOfSamplesTaken,
     "type of samples taken",
   );
 
   const oralFluidSamplesRow = createdHerdRowObject(
     "Number of oral fluid samples taken",
     endemicsClaimSession.numberOfOralFluidSamples,
-    claimRoutes.numberOfFluidOralSamples,
+    livestockClaimRoutes.numberOfFluidOralSamples,
     "number of oral fluid samples taken",
   );
 
   const bloodSamplesRow = createdHerdRowObject(
     "Number of blood samples taken",
     endemicsClaimSession.numberOfBloodSamples,
-    claimRoutes.numberOfBloodSamples,
+    livestockClaimRoutes.numberOfBloodSamples,
     "number of blood samples taken",
   );
 
   const samplesTestedRow = createdHerdRowObject(
     "Number of samples tested",
     endemicsClaimSession.numberOfSamplesTested,
-    claimRoutes.numberOfSamplesTested,
+    livestockClaimRoutes.numberOfSamplesTested,
     "number of samples tested",
   );
 
   const herdVaccinationStatusRow = createdHerdRowObject(
     "Herd PRRS vaccination status",
     getVaccinationStatusForDisplay(endemicsClaimSession.herdVaccinationStatus),
-    claimRoutes.vaccination,
+    livestockClaimRoutes.vaccination,
     "herd PRRS vaccination status",
   );
 
@@ -215,7 +215,7 @@ export const buildRows = ({
   const sheepPackageRow = createdHerdRowObject(
     "Sheep health package",
     sheepPackages[endemicsClaimSession.sheepEndemicsPackage],
-    claimRoutes.sheepEndemicsPackage,
+    livestockClaimRoutes.sheepEndemicsPackage,
     "sheep health package",
   );
 
@@ -266,7 +266,7 @@ const buildSheepTestResultRows = ({ endemicsClaimSession, isEndemicsFollowUp }) 
       actions: {
         items: [
           {
-            href: `${claimRoutes.sheepTestResults}?diseaseType=${diseaseType}`,
+            href: `${livestockClaimRoutes.sheepTestResults}?diseaseType=${diseaseType}`,
             text: "Change",
             visuallyHiddenText: `disease type ${diseaseType} and test result`,
           },

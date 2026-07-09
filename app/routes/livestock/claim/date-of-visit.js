@@ -27,7 +27,7 @@ import { getHerds } from "../../../api-requests/application-api.js";
 import { getTempHerdId } from "../../../lib/get-temp-herd-id.js";
 import { getNextMultipleHerdsPage } from "../../../lib/get-next-multiple-herds-page.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 import { trackEvent } from "../../../logging/logger.js";
@@ -85,10 +85,10 @@ export const previousPageUrl = (
     typeOfLivestock === oldWorldClaimTypeOfLivestock;
 
   if (isCattleEndemicsClaimForOldWorldReview) {
-    return claimRoutes.vetVisitsReviewTestResults;
+    return livestockClaimRoutes.vetVisitsReviewTestResults;
   }
 
-  return claimRoutes.whichTypeOfReview;
+  return livestockClaimRoutes.whichTypeOfReview;
 };
 
 const buildErrorSummary = ({ errorMessage, href, inputsInError }) => {
@@ -164,7 +164,7 @@ const respondWithDateError = (request, h, { errorSummary, inputsInError }) => {
   });
 
   return h
-    .view(claimViews.dateOfVisit, {
+    .view(livestockClaimViews.dateOfVisit, {
       reviewOrFollowUpText,
       errorSummary,
       dateOfVisit,
@@ -177,7 +177,7 @@ const respondWithDateError = (request, h, { errorSummary, inputsInError }) => {
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.dateOfVisit,
+  path: livestockClaimRoutes.dateOfVisit,
   options: {
     handler: async (request, h) => {
       const {
@@ -191,7 +191,7 @@ const getHandler = {
       const { isReview } = getReviewType(typeOfReview);
       const reviewOrFollowUpText = isReview ? "review" : "follow-up";
 
-      return h.view(claimViews.dateOfVisit, {
+      return h.view(livestockClaimViews.dateOfVisit, {
         reviewOrFollowUpText,
         dateOfVisit: parseStoredDate(dateOfVisit),
         backLink: previousPageUrl(
@@ -207,7 +207,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.dateOfVisit,
+  path: livestockClaimRoutes.dateOfVisit,
   options: {
     validate: {
       payload: dateInputSchema,
@@ -340,7 +340,7 @@ const postHandler = {
         });
 
         if (herds.length) {
-          return h.redirect(claimRoutes.selectTheHerd);
+          return h.redirect(livestockClaimRoutes.selectTheHerd);
         }
 
         await setSessionData(request, endemicsClaimEntry, herdIdKey, tempHerdId, {
@@ -351,7 +351,7 @@ const postHandler = {
           shouldEmitEvent: false,
         });
 
-        return h.redirect(claimRoutes.enterHerdName);
+        return h.redirect(livestockClaimRoutes.enterHerdName);
       }
 
       return await nonMhRouting(request, h, {
@@ -380,7 +380,7 @@ const checkForTimingException = async (
 
   if (claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased) {
     exception = `User is attempting to claim for dairy follow-up with a date of visit of ${getReadableDate(dateOfVisit)} which is before dairy follow-ups was enabled.`;
-    exceptionView = claimViews.dairyFollowUpDateException;
+    exceptionView = livestockClaimViews.dairyFollowUpDateException;
   }
 
   if (
@@ -388,7 +388,7 @@ const checkForTimingException = async (
     isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)
   ) {
     exception = `User is attempting to claim for MS with a date of visit of ${getReadableDate(dateOfVisit)} which is before MS was enabled.`;
-    exceptionView = claimViews.multipleSpeciesDateException;
+    exceptionView = livestockClaimViews.multipleSpeciesDateException;
   }
 
   if (exception) {
@@ -400,7 +400,7 @@ const checkForTimingException = async (
 
     return {
       timingExceptionRedirect: h
-        .view(exceptionView, { backLink: claimRoutes.dateOfVisit })
+        .view(exceptionView, { backLink: livestockClaimRoutes.dateOfVisit })
         .code(HttpStatus.BAD_REQUEST)
         .takeover(),
       timingException: exception,
@@ -448,8 +448,8 @@ const nonMhRouting = async (
     });
 
     return h
-      .view(claimViews.whichTypeOfReviewException, {
-        backLink: claimRoutes.whichTypeOfReview,
+      .view(livestockClaimViews.whichTypeOfReviewException, {
+        backLink: livestockClaimRoutes.whichTypeOfReview,
         backToPageMessage: "Tell us if you are claiming for a review or follow up.",
       })
       .code(HttpStatus.BAD_REQUEST)
@@ -479,8 +479,8 @@ const nonMhRouting = async (
     });
 
     return h
-      .view(claimViews.dateOfVisitException, {
-        backLink: claimRoutes.dateOfVisit,
+      .view(livestockClaimViews.dateOfVisitException, {
+        backLink: livestockClaimRoutes.dateOfVisit,
         errorMessage,
         backToPageMessage: `Enter the date the vet last visited your farm for this ${reviewOrFollowUpText}.`,
       })

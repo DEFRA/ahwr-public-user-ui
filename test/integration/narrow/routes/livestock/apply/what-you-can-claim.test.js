@@ -8,7 +8,7 @@ import {
 import { createServer } from "../../../../../../app/server.js";
 import { StatusCodes } from "http-status-codes";
 import { getApplicationsBySbi } from "../../../../../../app/api-requests/application-api.js";
-import { applyRoutes } from "../../../../../../app/constants/routes.js";
+import { livestockApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { when } from "jest-when";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
@@ -57,7 +57,7 @@ describe("you-can-claim-multiple page", () => {
       strategy: "cookie",
       credentials: { reference: "1111", sbi: "111111111" },
     },
-    url: applyRoutes.youCanClaimMultiple,
+    url: livestockApplyRoutes.youCanClaimMultiple,
   };
 
   let server;
@@ -128,7 +128,7 @@ describe("you-can-claim-multiple page", () => {
         sessionKeys.farmerApplyData.agreeMultipleSpecies,
         "yes",
       );
-      expect(res.headers.location).toEqual(applyRoutes.numbers);
+      expect(res.headers.location).toEqual(livestockApplyRoutes.numbers);
     });
 
     test("returns 200 and navigates to the offer rejected page when user disagrees", async () => {

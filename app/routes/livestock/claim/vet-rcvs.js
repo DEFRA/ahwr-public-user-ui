@@ -8,7 +8,7 @@ import {
   setSessionData,
 } from "../../../session/index.js";
 import { getEndemicsClaimDetails, getTestResult } from "../../../lib/utils.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
 
 const errorMessages = {
@@ -28,31 +28,31 @@ const nextPageURL = (request) => {
 
   if (isEndemicsFollowUp) {
     if (relevantReviewForEndemics.type === claimType.vetVisits && isPigs) {
-      return claimRoutes.vetVisitsReviewTestResults;
+      return livestockClaimRoutes.vetVisitsReviewTestResults;
     }
     if (isSheep) {
-      return claimRoutes.sheepEndemicsPackage;
+      return livestockClaimRoutes.sheepEndemicsPackage;
     }
     if (isBeef || isDairy) {
-      return claimRoutes.testUrn;
+      return livestockClaimRoutes.testUrn;
     }
     if (isPigs) {
-      return claimRoutes.vaccination;
+      return livestockClaimRoutes.vaccination;
     }
   }
 
-  return claimRoutes.testUrn;
+  return livestockClaimRoutes.testUrn;
 };
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.vetRcvs,
+  path: livestockClaimRoutes.vetRcvs,
   options: {
     handler: async (request, h) => {
       const { vetRCVSNumber } = getSessionData(request, sessionEntryKeys.endemicsClaim);
-      return h.view(claimViews.vetRcvs, {
+      return h.view(livestockClaimViews.vetRcvs, {
         vetRCVSNumber,
-        backLink: claimRoutes.vetName,
+        backLink: livestockClaimRoutes.vetName,
       });
     },
   },
@@ -60,7 +60,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.vetRcvs,
+  path: livestockClaimRoutes.vetRcvs,
   options: {
     validate: {
       payload: Joi.object({
@@ -78,9 +78,9 @@ const postHandler = {
       failAction: async (request, h, error) => {
         request.logger.error({ error });
         return h
-          .view(claimViews.vetRcvs, {
+          .view(livestockClaimViews.vetRcvs, {
             ...request.payload,
-            backLink: claimRoutes.vetName,
+            backLink: livestockClaimRoutes.vetName,
             errorMessage: {
               text: error.details[0].message,
               href: `#${sessionKeys.endemicsClaim.vetRCVSNumber}`,
@@ -110,15 +110,15 @@ const postHandler = {
       );
 
       if (isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) && isBeefOrDairyEndemics) {
-        return h.redirect(claimRoutes.piHunt);
+        return h.redirect(livestockClaimRoutes.piHunt);
       }
 
       if (isBeef || isDairy) {
         if (isPositive) {
-          return h.redirect(claimRoutes.piHunt);
+          return h.redirect(livestockClaimRoutes.piHunt);
         }
         if (isNegative) {
-          return h.redirect(claimRoutes.biosecurity);
+          return h.redirect(livestockClaimRoutes.biosecurity);
         }
       }
 

@@ -8,19 +8,19 @@ import {
 import HttpStatus from "http-status-codes";
 import { PIG_GENETIC_SEQUENCING_VALUES } from "ffc-ahwr-common-library";
 import { claimConstants } from "../../../constants/claim-constants.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 
 const getBackLink = (pigsFollowUpTest) => {
   if (pigsFollowUpTest === claimConstants.pigsFollowUpTest.elisa) {
-    return claimRoutes.pigsElisaResult;
+    return livestockClaimRoutes.pigsElisaResult;
   }
 
-  return claimRoutes.pigsPcrResult;
+  return livestockClaimRoutes.pigsPcrResult;
 };
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.pigsGeneticSequencing,
+  path: livestockClaimRoutes.pigsGeneticSequencing,
   options: {
     handler: async (request, h) => {
       const { pigsGeneticSequencing, pigsFollowUpTest } = getSessionData(
@@ -28,7 +28,7 @@ const getHandler = {
         sessionEntryKeys.endemicsClaim,
       );
 
-      return h.view(claimViews.pigsGeneticSequencing, {
+      return h.view(livestockClaimViews.pigsGeneticSequencing, {
         options: PIG_GENETIC_SEQUENCING_VALUES.map((x) => ({
           ...x,
           text: x.label,
@@ -42,7 +42,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.pigsGeneticSequencing,
+  path: livestockClaimRoutes.pigsGeneticSequencing,
   options: {
     validate: {
       payload: Joi.object({
@@ -62,7 +62,7 @@ const postHandler = {
         );
 
         return h
-          .view(claimViews.pigsGeneticSequencing, {
+          .view(livestockClaimViews.pigsGeneticSequencing, {
             errorMessage,
             options: PIG_GENETIC_SEQUENCING_VALUES.map((x) => ({
               ...x,
@@ -84,7 +84,7 @@ const postHandler = {
         geneticSequencing,
       );
 
-      return h.redirect(claimRoutes.biosecurity);
+      return h.redirect(livestockClaimRoutes.biosecurity);
     },
   },
 };

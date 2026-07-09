@@ -27,7 +27,7 @@ export const loginRoutes = {
   devLandingPage: "/dev-landing-page",
 };
 
-export const applyRoutes = {
+export const livestockApplyRoutes = {
   youCanClaimMultiple: "/livestock/what-you-can-claim",
   timings: "/livestock/timings",
   numbers: "/livestock/minimum-number",
@@ -41,7 +41,7 @@ export const poultryApplyRoutes = {
   agreementOffer: "/poultry/agreement-offer",
 };
 
-export const applyViews = {
+export const livestockApplyViews = {
   youCanClaimMultiple: "livestock/apply/what-you-can-claim",
   timings: "livestock/apply/timings",
   numbers: "livestock/apply/minimum-number",
@@ -60,7 +60,7 @@ export const poultryApplyViews = {
   confirmation: "poultry/apply/confirmation",
 };
 
-export const claimRoutes = {
+export const livestockClaimRoutes = {
   assuranceScheme: "/livestock/assurance-scheme",
   biosecurity: "/livestock/biosecurity-assessment",
   checkAnswers: "/livestock/check-answers",
@@ -100,7 +100,7 @@ export const claimRoutes = {
   whichTypeOfReview: "/livestock/review-type",
 };
 
-export const claimViews = {
+export const livestockClaimViews = {
   assuranceScheme: "livestock/claim/assurance-scheme",
   biosecurityException: "livestock/claim/biosecurity-exception",
   biosecurity: "livestock/claim/biosecurity-assessment",

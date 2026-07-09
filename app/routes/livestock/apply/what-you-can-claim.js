@@ -5,7 +5,11 @@ import {
   sessionKeys,
   setSessionEntry,
 } from "../../../session/index.js";
-import { applyRoutes, applyViews, dashboardRoutes } from "../../../constants/routes.js";
+import {
+  livestockApplyRoutes,
+  livestockApplyViews,
+  dashboardRoutes,
+} from "../../../constants/routes.js";
 import { createTempReference } from "../../../lib/create-temp-ref.js";
 import { getUserTypeByApplication } from "../../../lib/get-user-type-by-application.js";
 import { getApplicationsBySbi } from "../../../api-requests/application-api.js";
@@ -15,7 +19,7 @@ import { JOURNEY } from "../../../constants/constants.js";
 export const claimMultipleRouteHandlers = [
   {
     method: "GET",
-    path: applyRoutes.youCanClaimMultiple,
+    path: livestockApplyRoutes.youCanClaimMultiple,
     options: {
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
@@ -45,7 +49,7 @@ export const claimMultipleRouteHandlers = [
           { journey: JOURNEY.APPLY },
         );
 
-        return h.view(applyViews.youCanClaimMultiple, {
+        return h.view(livestockApplyViews.youCanClaimMultiple, {
           backLink: dashboardRoutes.checkDetails,
           organisation,
         });
@@ -54,7 +58,7 @@ export const claimMultipleRouteHandlers = [
   },
   {
     method: "POST",
-    path: applyRoutes.youCanClaimMultiple,
+    path: livestockApplyRoutes.youCanClaimMultiple,
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {
@@ -65,7 +69,7 @@ export const claimMultipleRouteHandlers = [
             "yes",
           );
 
-          return h.redirect(applyRoutes.numbers);
+          return h.redirect(livestockApplyRoutes.numbers);
         }
 
         await setSessionData(
@@ -75,7 +79,7 @@ export const claimMultipleRouteHandlers = [
           "no",
         );
 
-        return h.view(applyViews.offerRejected, {
+        return h.view(livestockApplyViews.offerRejected, {
           termsRejected: true,
         });
       },

@@ -19,7 +19,7 @@ import {
   sessionKeys,
   setSessionData,
 } from "../../../session/index.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
 const backLink = (request) => {
@@ -51,13 +51,13 @@ const backLink = (request) => {
     ) &&
     isBeefOrDairyEndemics
   ) {
-    return claimRoutes.dateOfVisit;
+    return livestockClaimRoutes.dateOfVisit;
   }
   if ((isDairy || isBeef) && isNegative) {
-    return claimRoutes.dateOfVisit;
+    return livestockClaimRoutes.dateOfVisit;
   }
 
-  return claimRoutes.dateOfTesting;
+  return livestockClaimRoutes.dateOfTesting;
 };
 
 const hintHtml = "You can find this on the summary the vet gave you.";
@@ -108,7 +108,7 @@ const legendText = (
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.speciesNumbers,
+  path: livestockClaimRoutes.speciesNumbers,
   options: {
     handler: async (request, h) => {
       const claim = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -133,7 +133,7 @@ const getHandler = {
       const { isReview } = getReviewType(claim.typeOfReview);
       const reviewOrFollowUp = isReview ? "review" : "follow-up";
 
-      return h.view(claimViews.speciesNumbers, {
+      return h.view(livestockClaimViews.speciesNumbers, {
         backLink: backLink(request),
         customisedTitle: `Minimum number of livestock on date of ${reviewOrFollowUp}?`,
         ...getYesNoRadios(
@@ -150,7 +150,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.speciesNumbers,
+  path: livestockClaimRoutes.speciesNumbers,
   options: {
     validate: {
       payload: Joi.object({
@@ -170,7 +170,7 @@ const postHandler = {
         );
 
         return h
-          .view(claimViews.speciesNumbers, {
+          .view(livestockClaimViews.speciesNumbers, {
             backLink: backLink(request),
             errorMessage: {
               text: errorMessageText(
@@ -223,10 +223,10 @@ const postHandler = {
 
       if (answer === "yes") {
         if (isDairy || (isBeef && isEndemicsFollowUp)) {
-          return h.redirect(claimRoutes.vetName);
+          return h.redirect(livestockClaimRoutes.vetName);
         }
 
-        return h.redirect(claimRoutes.numberOfSpeciesTested);
+        return h.redirect(livestockClaimRoutes.numberOfSpeciesTested);
       }
 
       await sendInvalidDataEvent({
@@ -236,8 +236,8 @@ const postHandler = {
       });
 
       return h
-        .view(claimViews.speciesNumbersException, {
-          backLink: claimRoutes.speciesNumbers,
+        .view(livestockClaimViews.speciesNumbersException, {
+          backLink: livestockClaimRoutes.speciesNumbers,
           changeYourAnswerText: sheepNumbersExceptionsText[typeOfReview],
           isReview,
         })

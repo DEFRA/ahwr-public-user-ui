@@ -1,5 +1,5 @@
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import {
   getSessionData,
   sessionEntryKeys,
@@ -10,7 +10,7 @@ import { sheepTestTypes } from "../../../constants/claim-constants.js";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.sheepTests,
+  path: livestockClaimRoutes.sheepTests,
   options: {
     handler: async (request, h) => {
       const sessionEndemicsClaim = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -18,9 +18,9 @@ const getHandler = {
         (test) => ({ ...test, checked: sessionEndemicsClaim.sheepTests?.includes(test.value) }),
       );
 
-      return h.view(claimViews.sheepTests, {
+      return h.view(livestockClaimViews.sheepTests, {
         sheepTestCheckboxItems,
-        backLink: claimRoutes.sheepEndemicsPackage,
+        backLink: livestockClaimRoutes.sheepEndemicsPackage,
       });
     },
   },
@@ -28,7 +28,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.sheepTests,
+  path: livestockClaimRoutes.sheepTests,
   options: {
     handler: async (request, h) => {
       const { sheepTests } = request.payload;
@@ -53,9 +53,9 @@ const postHandler = {
         );
 
         return h
-          .view(claimViews.sheepTests, {
+          .view(livestockClaimViews.sheepTests, {
             sheepTestCheckboxItems,
-            backLink: claimRoutes.sheepEndemicsPackage,
+            backLink: livestockClaimRoutes.sheepEndemicsPackage,
             errorMessage: {
               text: "Select a disease or condition",
               href: "#sheepTests",
@@ -71,9 +71,9 @@ const postHandler = {
         );
 
         return h
-          .view(claimViews.sheepTests, {
+          .view(livestockClaimViews.sheepTests, {
             sheepTestCheckboxItems,
-            backLink: claimRoutes.sheepEndemicsPackage,
+            backLink: livestockClaimRoutes.sheepEndemicsPackage,
             errorMessage: {
               text: "Select all diseases or conditions tested for in this package",
               href: "#sheepTests",
@@ -97,7 +97,7 @@ const postHandler = {
         sessionKeys.endemicsClaim.sheepTestResults,
         sheepTestResultValue,
       );
-      return h.redirect(claimRoutes.sheepTestResults);
+      return h.redirect(livestockClaimRoutes.sheepTestResults);
     },
   },
 };

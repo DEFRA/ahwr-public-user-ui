@@ -7,7 +7,7 @@ import {
   sessionKeys,
 } from "../../../../../../app/session/index.js";
 import { getApplicationsBySbi } from "../../../../../../app/api-requests/application-api.js";
-import { applyRoutes } from "../../../../../../app/constants/routes.js";
+import { livestockApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
@@ -60,7 +60,7 @@ describe("Declaration test", () => {
   describe("GET /livestock/timings route", () => {
     const getOptions = {
       method: "GET",
-      url: applyRoutes.timings,
+      url: livestockApplyRoutes.timings,
       auth,
     };
 
@@ -122,7 +122,7 @@ describe("Declaration test", () => {
 
     test("returns 302 to next page when agree answer given", async () => {
       const res = await server.inject({
-        url: applyRoutes.timings,
+        url: livestockApplyRoutes.timings,
         auth,
         method: "POST",
         headers: { cookie: `crumb=${crumb}` },
@@ -130,12 +130,12 @@ describe("Declaration test", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual(applyRoutes.declaration);
+      expect(res.headers.location).toEqual(livestockApplyRoutes.declaration);
     });
 
     test("returns 200 to agreement rejected page when rejected answer given", async () => {
       const res = await server.inject({
-        url: applyRoutes.timings,
+        url: livestockApplyRoutes.timings,
         auth,
         method: "POST",
         headers: { cookie: `crumb=${crumb}` },

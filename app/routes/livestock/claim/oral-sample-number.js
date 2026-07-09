@@ -7,13 +7,13 @@ import {
 } from "../../../session/index.js";
 import { thresholds } from "../../../constants/claim-constants.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 import { isPigsAndPaymentsUserJourney } from "../../../lib/context-helper.js";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.numberOfFluidOralSamples,
+  path: livestockClaimRoutes.numberOfFluidOralSamples,
   options: {
     handler: async (request, h) => {
       const { numberOfOralFluidSamples, dateOfVisit } = getSessionData(
@@ -21,10 +21,10 @@ const getHandler = {
         sessionEntryKeys.endemicsClaim,
       );
       const backLink = isPigsAndPaymentsUserJourney(dateOfVisit)
-        ? claimRoutes.typeOfSamplesTaken
-        : claimRoutes.testUrn;
+        ? livestockClaimRoutes.typeOfSamplesTaken
+        : livestockClaimRoutes.testUrn;
 
-      return h.view(claimViews.numberOfFluidOralSamples, {
+      return h.view(livestockClaimViews.numberOfFluidOralSamples, {
         numberOfOralFluidSamples,
         backLink,
       });
@@ -34,7 +34,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.numberOfFluidOralSamples,
+  path: livestockClaimRoutes.numberOfFluidOralSamples,
   options: {
     validate: {
       payload: Joi.object({
@@ -49,10 +49,10 @@ const postHandler = {
         request.logger.error({ error });
 
         return h
-          .view(claimViews.numberOfFluidOralSamples, {
+          .view(livestockClaimViews.numberOfFluidOralSamples, {
             ...request.payload,
             errorMessage: { text: error.details[0].message, href: "#numberOfOralFluidSamples" },
-            backLink: claimRoutes.testUrn,
+            backLink: livestockClaimRoutes.testUrn,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -76,15 +76,15 @@ const postHandler = {
         });
 
         return h
-          .view(claimViews.numberOfFluidOralSamplesException, {
-            backLink: claimRoutes.numberOfFluidOralSamples,
+          .view(livestockClaimViews.numberOfFluidOralSamplesException, {
+            backLink: livestockClaimRoutes.numberOfFluidOralSamples,
             minimumNumberFluidOralSamples: thresholds.minimumNumberFluidOralSamples,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
       }
 
-      return h.redirect(claimRoutes.testResults);
+      return h.redirect(livestockClaimRoutes.testResults);
     },
   },
 };

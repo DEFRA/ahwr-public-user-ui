@@ -1,4 +1,4 @@
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { ONLY_HERD_ON_SBI } from "../../../constants/claim-constants.js";
 import { getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { getSessionData, sessionEntryKeys } from "../../../session/index.js";
@@ -12,7 +12,7 @@ const getHerdReasonsText = (herdReasons) => {
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.checkHerdDetails,
+  path: livestockClaimRoutes.checkHerdDetails,
   options: {
     tags: ["mh"],
     handler: async (request, h) => {
@@ -21,18 +21,18 @@ const getHandler = {
       const herdReasonsText =
         isOnlyHerdOnSbi === ONLY_HERD_ON_SBI.YES ? undefined : getHerdReasonsText(herdReasons);
 
-      return h.view(claimViews.checkHerdDetails, {
+      return h.view(livestockClaimViews.checkHerdDetails, {
         backLink:
           isOnlyHerdOnSbi === ONLY_HERD_ON_SBI.YES
-            ? claimRoutes.herdOthersOnSbi
-            : claimRoutes.enterHerdDetails,
+            ? livestockClaimRoutes.herdOthersOnSbi
+            : livestockClaimRoutes.enterHerdDetails,
         herdName,
         herdCph,
         herdReasons: herdReasonsText,
         isOnlyHerdOnSbi: skipOtherHerdsOnSbiPage(herds, herdId) ? undefined : isOnlyHerdOnSbi,
-        herdCphLink: claimRoutes.enterCphNumber,
-        herdReasonsLink: claimRoutes.enterHerdDetails,
-        isOnlyHerdOnSbiLink: claimRoutes.herdOthersOnSbi,
+        herdCphLink: livestockClaimRoutes.enterCphNumber,
+        herdReasonsLink: livestockClaimRoutes.enterHerdDetails,
+        isOnlyHerdOnSbiLink: livestockClaimRoutes.herdOthersOnSbi,
         herdOrFlock: getHerdOrFlock(typeOfLivestock),
       });
     },
@@ -41,7 +41,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.checkHerdDetails,
+  path: livestockClaimRoutes.checkHerdDetails,
   options: {
     handler: async (request, h) => {
       const { previousClaims, typeOfLivestock } = getSessionData(
@@ -51,7 +51,7 @@ const postHandler = {
 
       const nextPageUrl = skipSameHerdPage(previousClaims, typeOfLivestock)
         ? await getNextMultipleHerdsPage(request)
-        : claimRoutes.sameHerd;
+        : livestockClaimRoutes.sameHerd;
       return h.redirect(nextPageUrl);
     },
   },

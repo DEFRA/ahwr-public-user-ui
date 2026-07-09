@@ -1,13 +1,17 @@
 import { clearEndemicsClaim, getSessionData, sessionEntryKeys } from "../../../session/index.js";
 import { config } from "../../../config/index.js";
 import { getReviewType } from "../../../lib/utils.js";
-import { claimRoutes, claimViews, dashboardRoutes } from "../../../constants/routes.js";
+import {
+  livestockClaimRoutes,
+  livestockClaimViews,
+  dashboardRoutes,
+} from "../../../constants/routes.js";
 
 const { customerSurvey } = config;
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.confirmation,
+  path: livestockClaimRoutes.confirmation,
   options: {
     handler: async (request, h) => {
       const { reference, amount, typeOfReview } = getSessionData(
@@ -19,7 +23,7 @@ const getHandler = {
 
       clearEndemicsClaim(request);
 
-      return h.view(claimViews.confirmation, {
+      return h.view(livestockClaimViews.confirmation, {
         claimTypeText: isReview ? "animal health and welfare review" : "endemic disease follow-up",
         claimDashboard: dashboardRoutes.manageYourClaims,
         reference,

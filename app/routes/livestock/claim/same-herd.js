@@ -11,13 +11,13 @@ import { getReviewType } from "../../../lib/utils.js";
 import { canMakeClaim } from "../../../lib/can-make-claim.js";
 import { getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { getNextMultipleHerdsPage } from "../../../lib/get-next-multiple-herds-page.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { getClaimInfo } from "../../utils/get-claim-info.js";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.sameHerd,
+  path: livestockClaimRoutes.sameHerd,
   options: {
     handler: async (request, h) => {
       const { typeOfLivestock, previousClaims, herdSame } = getSessionData(
@@ -27,8 +27,8 @@ const getHandler = {
       const herdOrFlock = getHerdOrFlock(typeOfLivestock);
       const claimInfo = getClaimInfo(previousClaims, typeOfLivestock);
 
-      return h.view(claimViews.sameHerd, {
-        backLink: claimRoutes.checkHerdDetails,
+      return h.view(livestockClaimViews.sameHerd, {
+        backLink: livestockClaimRoutes.checkHerdDetails,
         ...claimInfo,
         herdOrFlock,
         herdSame,
@@ -39,7 +39,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.sameHerd,
+  path: livestockClaimRoutes.sameHerd,
   options: {
     validate: {
       payload: Joi.object({
@@ -55,13 +55,13 @@ const postHandler = {
         const claimInfo = getClaimInfo(previousClaims, typeOfLivestock);
 
         return h
-          .view(claimViews.sameHerd, {
+          .view(livestockClaimViews.sameHerd, {
             ...request.payload,
             errorMessage: {
               text: `Select yes if it is the same ${herdOrFlock}`,
               href: "#herdSame",
             },
-            backLink: claimRoutes.checkHerdDetails,
+            backLink: livestockClaimRoutes.checkHerdDetails,
             ...claimInfo,
             herdOrFlock,
             herdSame,
@@ -118,13 +118,13 @@ const postHandler = {
           });
 
           return h
-            .view(claimViews.sameHerdException, {
-              backLink: claimRoutes.sameHerd,
+            .view(livestockClaimViews.sameHerdException, {
+              backLink: livestockClaimRoutes.sameHerd,
               errorMessage,
               backToPageText:
                 "If you entered the wrong date, you'll need to go back and enter the correct date.",
               backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? "review" : "follow-up"}.`,
-              backToPageLink: claimRoutes.dateOfVisit,
+              backToPageLink: livestockClaimRoutes.dateOfVisit,
             })
             .code(HttpStatus.BAD_REQUEST)
             .takeover();
@@ -139,14 +139,14 @@ const postHandler = {
         });
 
         return h
-          .view(claimViews.sameHerdException, {
-            backLink: claimRoutes.sameHerd,
+          .view(livestockClaimViews.sameHerdException, {
+            backLink: livestockClaimRoutes.sameHerd,
             errorMessage:
               "You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.",
             backToPageText:
               "If you have not claimed for the review yet, you will need to submit a claim and have the claim approved first.",
             backToPageMessage: "Claim for a review",
-            backToPageLink: claimRoutes.whichTypeOfReview,
+            backToPageLink: livestockClaimRoutes.whichTypeOfReview,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();

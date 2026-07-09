@@ -8,7 +8,7 @@ import {
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { ONLY_HERD, ONLY_HERD_ON_SBI } from "../../../constants/claim-constants.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { canMakeClaim } from "../../../lib/can-make-claim.js";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { getClaimInfo } from "../../utils/get-claim-info.js";
@@ -16,7 +16,7 @@ import { getReviewType } from "../../../lib/utils.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
-const pageUrl = claimRoutes.selectTheHerd;
+const pageUrl = livestockClaimRoutes.selectTheHerd;
 
 const radioValueUnnamedHerd = "UNNAMED_HERD";
 const radioValueNewHerd = "NEW_HERD";
@@ -67,8 +67,8 @@ const getHandler = {
 
       const claimWithoutHerd = getMostRecentClaimWithoutHerd(previousClaims, typeOfLivestock);
 
-      return h.view(claimViews.selectTheHerd, {
-        backLink: claimRoutes.dateOfVisit,
+      return h.view(livestockClaimViews.selectTheHerd, {
+        backLink: livestockClaimRoutes.dateOfVisit,
         ...getSelectHerdTitles(herds, herdOrFlock),
         radioValueNewHerd,
         ...claimInfo,
@@ -180,20 +180,20 @@ const getClaimEligibilityError = (herdSelected, sessionData) => {
 
 const renderNewHerdReviewException = (h) =>
   h
-    .view(claimViews.selectTheHerdException, {
+    .view(livestockClaimViews.selectTheHerdException, {
       backLink: pageUrl,
-      claimForAReviewLink: claimRoutes.whichTypeOfReview,
+      claimForAReviewLink: livestockClaimRoutes.whichTypeOfReview,
     })
     .code(HttpStatus.BAD_REQUEST)
     .takeover();
 
 const renderSelectHerdDateException = (h, errorMessage, isReview) =>
   h
-    .view(claimViews.selectTheHerdDateException, {
+    .view(livestockClaimViews.selectTheHerdDateException, {
       backLink: pageUrl,
       errorMessage,
       backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? "review" : "follow-up"}.`,
-      backToPageLink: claimRoutes.dateOfVisit,
+      backToPageLink: livestockClaimRoutes.dateOfVisit,
     })
     .code(HttpStatus.BAD_REQUEST)
     .takeover();
@@ -221,13 +221,13 @@ const postHandler = {
         const claimWithoutHerd = getMostRecentClaimWithoutHerd(previousClaims, typeOfLivestock);
 
         return h
-          .view(claimViews.selectTheHerd, {
+          .view(livestockClaimViews.selectTheHerd, {
             ...request.payload,
             errorMessage: {
               text: `Select the ${herdOrFlock} you are claiming for`,
               href: "#herdSelected",
             },
-            backLink: claimRoutes.dateOfVisit,
+            backLink: livestockClaimRoutes.dateOfVisit,
             ...getSelectHerdTitles(herds, herdOrFlock),
             radioValueNewHerd,
             ...claimInfo,
@@ -305,7 +305,9 @@ const postHandler = {
         );
       }
 
-      const nextPageUrl = existingHerd ? claimRoutes.checkHerdDetails : claimRoutes.enterHerdName;
+      const nextPageUrl = existingHerd
+        ? livestockClaimRoutes.checkHerdDetails
+        : livestockClaimRoutes.enterHerdName;
 
       return h.redirect(nextPageUrl);
     },

@@ -8,7 +8,7 @@ import {
 import { radios } from "../../../models/form-component/radios.js";
 import { clearPiHuntSessionOnChange } from "../../../lib/clear-pi-hunt-session-on-change.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { getAmount } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
@@ -17,7 +17,7 @@ const hintHtml = "You can find this on the summary the vet gave you.";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.piHuntRecommended,
+  path: livestockClaimRoutes.piHuntRecommended,
   options: {
     handler: async (request, h) => {
       const piHuntRecommended = getSessionData(
@@ -34,8 +34,8 @@ const getHandler = {
         { value: "no", text: "No", checked: piHuntRecommended === "no" },
       ]);
 
-      return h.view(claimViews.piHuntRecommended, {
-        backLink: claimRoutes.piHunt,
+      return h.view(livestockClaimViews.piHuntRecommended, {
+        backLink: livestockClaimRoutes.piHunt,
         title: questionText,
         ...yesOrNoRadios,
       });
@@ -45,7 +45,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.piHuntRecommended,
+  path: livestockClaimRoutes.piHuntRecommended,
   options: {
     validate: {
       payload: Joi.object({
@@ -67,9 +67,9 @@ const postHandler = {
         ]);
 
         return h
-          .view(claimViews.piHuntRecommended, {
+          .view(livestockClaimViews.piHuntRecommended, {
             ...yesOrNoRadios,
-            backLink: claimRoutes.piHunt,
+            backLink: livestockClaimRoutes.piHunt,
             title: questionText,
             errorMessage: {
               text: errorText,
@@ -119,16 +119,16 @@ const postHandler = {
         }
 
         return h
-          .view(claimViews.piHuntRecommendedException, {
+          .view(livestockClaimViews.piHuntRecommendedException, {
             claimPaymentNoPiHunt,
-            continueClaimLink: claimRoutes.biosecurity,
-            backLink: claimRoutes.piHuntRecommended,
+            continueClaimLink: livestockClaimRoutes.biosecurity,
+            backLink: livestockClaimRoutes.piHuntRecommended,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
       }
 
-      return h.redirect(claimRoutes.piHuntAllAnimals);
+      return h.redirect(livestockClaimRoutes.piHuntAllAnimals);
     },
   },
 };

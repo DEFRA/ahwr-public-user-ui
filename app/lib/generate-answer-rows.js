@@ -1,4 +1,4 @@
-import { claimRoutes } from "../constants/routes.js";
+import { livestockClaimRoutes } from "../constants/routes.js";
 import { PIG_GENETIC_SEQUENCING_VALUES } from "ffc-ahwr-common-library";
 
 export const createdHerdRowObject = (keyText, htmlValue, href, visuallyHiddenText) => {
@@ -38,8 +38,8 @@ export const generatePigStatusAnswerRows = (sessionData) => {
       items: [
         {
           href: sessionData.pigsElisaTestResult
-            ? claimRoutes.pigsElisaResult
-            : claimRoutes.pigsPcrResult,
+            ? livestockClaimRoutes.pigsElisaResult
+            : livestockClaimRoutes.pigsPcrResult,
           text: "Change",
           visuallyHiddenText: "test result",
         },
@@ -56,7 +56,7 @@ export const generatePigStatusAnswerRows = (sessionData) => {
     actions: {
       items: [
         {
-          href: claimRoutes.pigsGeneticSequencing,
+          href: livestockClaimRoutes.pigsGeneticSequencing,
           text: "Change",
           visuallyHiddenText: "genetic sequencing test results",
         },

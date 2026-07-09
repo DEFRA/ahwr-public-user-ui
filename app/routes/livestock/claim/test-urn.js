@@ -11,7 +11,7 @@ import {
 } from "../../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
 import { getEndemicsClaimDetails, getTestResult } from "../../../lib/utils.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { isURNUnique } from "../../../api-requests/claim-api.js";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
@@ -34,19 +34,19 @@ const previousPageUrl = ({ typeOfLivestock, typeOfReview, reviewTestResults, dat
   const { isPositive } = getTestResult(reviewTestResults);
 
   if (isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) && isBeefOrDairyEndemics) {
-    return claimRoutes.dateOfTesting;
+    return livestockClaimRoutes.dateOfTesting;
   }
   if (isReview) {
-    return claimRoutes.vetRcvs;
+    return livestockClaimRoutes.vetRcvs;
   }
   if (isEndemicsFollowUp && isPigs) {
-    return claimRoutes.vaccination;
+    return livestockClaimRoutes.vaccination;
   }
   if ((isBeef || isDairy) && isPositive) {
-    return claimRoutes.piHunt;
+    return livestockClaimRoutes.piHunt;
   }
 
-  return claimRoutes.vetRcvs;
+  return livestockClaimRoutes.vetRcvs;
 };
 
 const nextPageUrl = ({ typeOfLivestock, typeOfReview, dateOfVisit }) => {
@@ -57,29 +57,29 @@ const nextPageUrl = ({ typeOfLivestock, typeOfReview, dateOfVisit }) => {
 
   if (isPigs && isReview) {
     if (isPigsAndPaymentsUserJourney(dateOfVisit)) {
-      return claimRoutes.typeOfSamplesTaken;
+      return livestockClaimRoutes.typeOfSamplesTaken;
     }
-    return claimRoutes.numberOfFluidOralSamples;
+    return livestockClaimRoutes.numberOfFluidOralSamples;
   }
   if (isPigs && isEndemicsFollowUp) {
-    return claimRoutes.numberOfSamplesTested;
+    return livestockClaimRoutes.numberOfSamplesTested;
   }
   if (isBeef || isDairy) {
-    return claimRoutes.testResults;
+    return livestockClaimRoutes.testResults;
   }
 
-  return claimRoutes.checkAnswers;
+  return livestockClaimRoutes.checkAnswers;
 };
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.testUrn,
+  path: livestockClaimRoutes.testUrn,
   options: {
     handler: async (request, h) => {
       const { laboratoryURN, typeOfLivestock, typeOfReview, reviewTestResults, dateOfVisit } =
         getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-      return h.view(claimViews.testUrn, {
+      return h.view(livestockClaimViews.testUrn, {
         title: title({ typeOfLivestock, typeOfReview }),
         laboratoryURN,
         backLink: previousPageUrl({
@@ -95,7 +95,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.testUrn,
+  path: livestockClaimRoutes.testUrn,
   options: {
     validate: {
       payload: Joi.object({
@@ -125,7 +125,7 @@ const postHandler = {
             : error.details[0].message;
 
         return h
-          .view(claimViews.testUrn, {
+          .view(livestockClaimViews.testUrn, {
             ...request.payload,
             title: title({ typeOfLivestock, typeOfReview }),
             errorMessage: { text: errorMessage, href: "#laboratoryURN" },
@@ -165,8 +165,8 @@ const postHandler = {
         });
 
         return h
-          .view(claimViews.testUrnException, {
-            backLink: claimRoutes.testUrn,
+          .view(livestockClaimViews.testUrnException, {
+            backLink: livestockClaimRoutes.testUrn,
             isBeefOrDairyEndemics,
           })
           .code(HttpStatus.BAD_REQUEST)

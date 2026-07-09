@@ -17,7 +17,7 @@ import {
   isWithin4MonthsBeforeOrAfterDateOfVisit,
 } from "../../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
@@ -34,14 +34,14 @@ const backLink = (request) => {
     isEndemicsFollowUp &&
     (isBeef || isDairy)
   ) {
-    return claimRoutes.piHuntAllAnimals;
+    return livestockClaimRoutes.piHuntAllAnimals;
   }
 
   if (isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags)) {
     return getHerdBackLink(typeOfLivestock, previousClaims);
   }
 
-  return claimRoutes.dateOfVisit;
+  return livestockClaimRoutes.dateOfVisit;
 };
 
 const optionSameReviewOrFollowUpDateText = (typeOfReview) => {
@@ -74,7 +74,7 @@ const dateOfSamplingText = "Date of sampling";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.dateOfTesting,
+  path: livestockClaimRoutes.dateOfTesting,
   options: {
     handler: async (request, h) => {
       const {
@@ -88,7 +88,7 @@ const getHandler = {
         typeOfReview,
         typeOfLivestock,
       );
-      return h.view(claimViews.dateOfTesting, {
+      return h.view(livestockClaimViews.dateOfTesting, {
         optionSameReviewOrFollowUpDateText: optionSameReviewOrFollowUpDateText(typeOfReview),
         questionText,
         questionHintText,
@@ -143,7 +143,7 @@ const renderDateOfTestingError = (request, h, { errorSummary, whenTestingWasCarr
   );
 
   return h
-    .view(claimViews.dateOfTesting, {
+    .view(livestockClaimViews.dateOfTesting, {
       ...request.payload,
       dateOfVisit,
       errorSummary,
@@ -229,7 +229,7 @@ const buildDatePartsError = (request, partsError) => {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.dateOfTesting,
+  path: livestockClaimRoutes.dateOfTesting,
   options: {
     validate: {
       payload: postPayloadSchema,
@@ -296,10 +296,10 @@ const postHandler = {
       );
 
       if (isCattleFollowUp(sessionData)) {
-        return h.redirect(claimRoutes.testUrn);
+        return h.redirect(livestockClaimRoutes.testUrn);
       }
 
-      return h.redirect(claimRoutes.speciesNumbers);
+      return h.redirect(livestockClaimRoutes.speciesNumbers);
     },
   },
 };
@@ -342,8 +342,8 @@ async function reviewBeforeFollowUpErrorHandler(request, dateOfTesting, h) {
   });
 
   return h
-    .view(claimViews.dateOfTestingException, {
-      backLink: claimRoutes.dateOfTesting,
+    .view(livestockClaimViews.dateOfTestingException, {
+      backLink: livestockClaimRoutes.dateOfTesting,
       errorMessage,
       errorLink:
         "https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups",

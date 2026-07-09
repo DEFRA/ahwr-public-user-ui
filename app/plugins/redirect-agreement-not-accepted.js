@@ -1,11 +1,18 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { applyRoutes, claimRoutes, dashboardRoutes } from "../constants/routes.js";
+import {
+  livestockApplyRoutes,
+  livestockClaimRoutes,
+  dashboardRoutes,
+} from "../constants/routes.js";
 
 export const redirectAgreementNotAcceptedPlugin = {
   plugin: {
     name: "redirect-agreement-not-accepted",
     register: (server, _) => {
-      const includedPaths = [dashboardRoutes.manageYourClaims, ...Object.values(claimRoutes)];
+      const includedPaths = [
+        dashboardRoutes.manageYourClaims,
+        ...Object.values(livestockClaimRoutes),
+      ];
       server.ext("onPreHandler", (request, h) => {
         if (request.path.startsWith("/poultry")) {
           return h.continue;
@@ -19,7 +26,7 @@ export const redirectAgreementNotAcceptedPlugin = {
           );
 
           if (latestEndemicsApplication?.status !== "AGREED") {
-            return h.redirect(applyRoutes.youCanClaimMultiple).takeover();
+            return h.redirect(livestockApplyRoutes.youCanClaimMultiple).takeover();
           }
         }
         return h.continue;

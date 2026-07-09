@@ -10,15 +10,17 @@ import HttpStatus from "http-status-codes";
 import { getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { ONLY_HERD_ON_SBI } from "../../../constants/claim-constants.js";
 import { skipOtherHerdsOnSbiPage } from "../../../lib/context-helper.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { normalizeCphNumber } from "../../../lib/cph-normalization.js";
 
 const getBackLink = (herdVersion) =>
-  !herdVersion || herdVersion === 1 ? claimRoutes.enterHerdName : claimRoutes.selectTheHerd;
+  !herdVersion || herdVersion === 1
+    ? livestockClaimRoutes.enterHerdName
+    : livestockClaimRoutes.selectTheHerd;
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.enterCphNumber,
+  path: livestockClaimRoutes.enterCphNumber,
   options: {
     tags: ["mh"],
     handler: async (request, h) => {
@@ -27,7 +29,7 @@ const getHandler = {
         sessionEntryKeys.endemicsClaim,
       );
 
-      return h.view(claimViews.enterCphNumber, {
+      return h.view(livestockClaimViews.enterCphNumber, {
         backLink: getBackLink(herdVersion),
         herdCph,
         herdOrFlock: getHerdOrFlock(typeOfLivestock),
@@ -38,7 +40,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.enterCphNumber,
+  path: livestockClaimRoutes.enterCphNumber,
   options: {
     validate: {
       payload: Joi.object({
@@ -55,7 +57,7 @@ const postHandler = {
         );
 
         return h
-          .view(claimViews.enterCphNumber, {
+          .view(livestockClaimViews.enterCphNumber, {
             ...request.payload,
             errorMessage: {
               text: `Enter the CPH for this ${getHerdOrFlock(typeOfLivestock)}, format should be nn/nnn/nnnn`,
@@ -95,10 +97,10 @@ const postHandler = {
       if (skipOtherHerdsOnSbiPage(herds, herdId)) {
         nextPageUrl =
           isOnlyHerdOnSbi === ONLY_HERD_ON_SBI.NO
-            ? claimRoutes.enterHerdDetails
-            : claimRoutes.checkHerdDetails;
+            ? livestockClaimRoutes.enterHerdDetails
+            : livestockClaimRoutes.checkHerdDetails;
       } else {
-        nextPageUrl = claimRoutes.herdOthersOnSbi;
+        nextPageUrl = livestockClaimRoutes.herdOthersOnSbi;
       }
 
       return h.redirect(nextPageUrl);

@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { radios } from "../../models/form-component/radios.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import {
   getSessionData,
   sessionEntryKeys,
@@ -62,7 +62,7 @@ const sheepRadioOptions = [
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.sheepEndemicsPackage,
+  path: livestockClaimRoutes.sheepEndemicsPackage,
   options: {
     handler: async (request, h) => {
       const session = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -77,8 +77,8 @@ const getHandler = {
           checked: session.sheepEndemicsPackage === option.value,
         })),
       );
-      const backLink = claimRoutes.vetRcvs;
-      return h.view(claimViews.sheepEndemicsPackage, {
+      const backLink = livestockClaimRoutes.vetRcvs;
+      return h.view(livestockClaimViews.sheepEndemicsPackage, {
         backLink,
         pageHeading,
         sheepEndemicsPackage: session.sheepEndemicsPackage,
@@ -90,7 +90,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.sheepEndemicsPackage,
+  path: livestockClaimRoutes.sheepEndemicsPackage,
   options: {
     validate: {
       payload: Joi.object({
@@ -115,9 +115,9 @@ const postHandler = {
         )(sheepRadioOptions);
 
         return h
-          .view(claimViews.sheepEndemicsPackage, {
+          .view(livestockClaimViews.sheepEndemicsPackage, {
             ...request.payload,
-            backLink: claimRoutes.vetRcvs,
+            backLink: livestockClaimRoutes.vetRcvs,
             pageHeading,
             ...sheepEndemicsPackageRadios,
             errorMessage: {
@@ -153,7 +153,7 @@ const postHandler = {
         sheepEndemicsPackage,
       );
 
-      return h.redirect(claimRoutes.sheepTests);
+      return h.redirect(livestockClaimRoutes.sheepTests);
     },
   },
 };

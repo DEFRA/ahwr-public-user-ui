@@ -7,7 +7,7 @@ import {
 } from "../../../session/index.js";
 import { radios } from "../../models/form-component/radios.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { getEndemicsClaimDetails, getReviewType } from "../../../lib/utils.js";
 import { PIGS_SAMPLE_TYPES } from "../../../constants/claim-constants.js";
 
@@ -23,21 +23,21 @@ const previousPageUrl = (request) => {
 
   if (isEndemicsFollowUp) {
     if (isSheep) {
-      return claimRoutes.diseaseStatus;
+      return livestockClaimRoutes.diseaseStatus;
     }
     if (isBeef || isDairy) {
-      return claimRoutes.testUrn;
+      return livestockClaimRoutes.testUrn;
     }
   }
 
   if (isPigs) {
     if (typeOfSamplesTaken === PIGS_SAMPLE_TYPES.blood) {
-      return claimRoutes.numberOfBloodSamples;
+      return livestockClaimRoutes.numberOfBloodSamples;
     }
-    return claimRoutes.numberOfFluidOralSamples;
+    return livestockClaimRoutes.numberOfFluidOralSamples;
   }
   if (isBeef || isDairy) {
-    return claimRoutes.testUrn;
+    return livestockClaimRoutes.testUrn;
   }
 
   return undefined; // if a review, and is for sheep, what should back page be? Can this ever happen?
@@ -47,10 +47,10 @@ const nextPageURL = (request) => {
   const { isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview);
 
   if (isBeefOrDairyEndemics) {
-    return claimRoutes.biosecurity;
+    return livestockClaimRoutes.biosecurity;
   }
 
-  return claimRoutes.checkAnswers;
+  return livestockClaimRoutes.checkAnswers;
 };
 const pageTitle = (request) => {
   const { typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -62,7 +62,7 @@ const hintHtml = "You can find this on the summary the vet gave you.";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.testResults,
+  path: livestockClaimRoutes.testResults,
   options: {
     handler: async (request, h) => {
       const { testResults } = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -72,7 +72,7 @@ const getHandler = {
         { value: "positive", text: "Positive", checked: testResults === "positive" },
         { value: "negative", text: "Negative", checked: testResults === "negative" },
       ]);
-      return h.view(claimViews.testResults, {
+      return h.view(livestockClaimViews.testResults, {
         backLink: previousPageUrl(request),
         title: pageTitle(request),
         ...positiveNegativeRadios,
@@ -83,7 +83,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.testResults,
+  path: livestockClaimRoutes.testResults,
   options: {
     validate: {
       payload: Joi.object({
@@ -101,7 +101,7 @@ const postHandler = {
           { value: "negative", text: "Negative" },
         ]);
         return h
-          .view(claimViews.testResults, {
+          .view(livestockClaimViews.testResults, {
             ...request.payload,
             title: pageTitle(request),
             backLink: previousPageUrl(request),

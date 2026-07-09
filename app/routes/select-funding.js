@@ -7,7 +7,7 @@ import {
   clearFundingSelection,
 } from "../session/index.js";
 import {
-  applyRoutes,
+  livestockApplyRoutes,
   dashboardRoutes,
   dashboardViews,
   poultryApplyRoutes,
@@ -109,7 +109,7 @@ export const selectFundingRouteHandlers = [
           return h.redirect(
             latestEndemicsApplication
               ? dashboardRoutes.manageYourClaims
-              : applyRoutes.youCanClaimMultiple,
+              : livestockApplyRoutes.youCanClaimMultiple,
           );
         }
 

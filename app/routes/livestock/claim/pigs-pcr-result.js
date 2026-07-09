@@ -7,11 +7,11 @@ import {
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { claimConstants } from "../../../constants/claim-constants.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.pigsPcrResult,
+  path: livestockClaimRoutes.pigsPcrResult,
   options: {
     handler: async (request, h) => {
       const testResult = getSessionData(
@@ -20,9 +20,9 @@ const getHandler = {
         sessionKeys.endemicsClaim.pigsPcrTestResult,
       );
 
-      return h.view(claimViews.pigsPcrResult, {
+      return h.view(livestockClaimViews.pigsPcrResult, {
         previousAnswer: testResult,
-        backLink: claimRoutes.numberOfSamplesTested,
+        backLink: livestockClaimRoutes.numberOfSamplesTested,
       });
     },
   },
@@ -30,7 +30,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.pigsPcrResult,
+  path: livestockClaimRoutes.pigsPcrResult,
   options: {
     validate: {
       payload: Joi.object({
@@ -42,9 +42,9 @@ const postHandler = {
         const errorMessage = { text: "Select the result of the test" };
 
         return h
-          .view(claimViews.pigsPcrResult, {
+          .view(livestockClaimViews.pigsPcrResult, {
             errorMessage,
-            backLink: claimRoutes.numberOfSamplesTested,
+            backLink: livestockClaimRoutes.numberOfSamplesTested,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -61,7 +61,7 @@ const postHandler = {
       );
 
       if (pcrResult === claimConstants.result.positive) {
-        return h.redirect(claimRoutes.pigsGeneticSequencing);
+        return h.redirect(livestockClaimRoutes.pigsGeneticSequencing);
       }
 
       // Clearing this from the session in-case they filled it out, then went back.
@@ -74,7 +74,7 @@ const postHandler = {
         { shouldEmitEvent: false },
       );
 
-      return h.redirect(claimRoutes.biosecurity);
+      return h.redirect(livestockClaimRoutes.biosecurity);
     },
   },
 };

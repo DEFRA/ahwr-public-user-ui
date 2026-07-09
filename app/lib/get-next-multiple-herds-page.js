@@ -3,7 +3,7 @@ import { getSessionData, setSessionData, sessionEntryKeys, sessionKeys } from ".
 import { getLivestockTypes, isCows, getReviewType } from "./utils.js";
 import { getReviewHerdId, isVisitDateAfterPIHuntAndDairyGoLive } from "./context-helper.js";
 import { clearPiHuntSessionOnChange } from "./clear-pi-hunt-session-on-change.js";
-import { claimRoutes } from "../constants/routes.js";
+import { livestockClaimRoutes } from "../constants/routes.js";
 
 export const getNextMultipleHerdsPage = async (request) => {
   const {
@@ -59,10 +59,10 @@ export const getNextMultipleHerdsPage = async (request) => {
         isCows(typeOfLivestock) &&
         (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === "negative")
       ) {
-        return claimRoutes.speciesNumbers;
+        return livestockClaimRoutes.speciesNumbers;
       }
     }
   }
 
-  return claimRoutes.dateOfTesting;
+  return livestockClaimRoutes.dateOfTesting;
 };

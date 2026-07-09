@@ -7,7 +7,7 @@ import {
   sessionKeys,
   setSessionData,
 } from "../../../session/index.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { vetsNameSchema } from "../../utils/schemas.js";
 
 const backLink = (request) => {
@@ -16,19 +16,19 @@ const backLink = (request) => {
   const { isEndemicsFollowUp } = getReviewType(typeOfReview);
 
   if (isDairy || (isBeef && isEndemicsFollowUp)) {
-    return claimRoutes.speciesNumbers;
+    return livestockClaimRoutes.speciesNumbers;
   }
 
-  return claimRoutes.numberOfSpeciesTested;
+  return livestockClaimRoutes.numberOfSpeciesTested;
 };
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.vetName,
+  path: livestockClaimRoutes.vetName,
   options: {
     handler: async (request, h) => {
       const { vetsName } = getSessionData(request, sessionEntryKeys.endemicsClaim);
-      return h.view(claimViews.vetName, {
+      return h.view(livestockClaimViews.vetName, {
         vetsName,
         backLink: backLink(request),
       });
@@ -38,7 +38,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.vetName,
+  path: livestockClaimRoutes.vetName,
   options: {
     validate: {
       payload: Joi.object({
@@ -47,7 +47,7 @@ const postHandler = {
       failAction: async (request, h, error) => {
         request.logger.error({ error });
         return h
-          .view(claimViews.vetName, {
+          .view(livestockClaimViews.vetName, {
             ...request.payload,
             backLink: backLink(request),
             errorMessage: {
@@ -68,7 +68,7 @@ const postHandler = {
         sessionKeys.endemicsClaim.vetsName,
         vetsName,
       );
-      return h.redirect(claimRoutes.vetRcvs);
+      return h.redirect(livestockClaimRoutes.vetRcvs);
     },
   },
 };

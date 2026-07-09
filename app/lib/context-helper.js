@@ -18,8 +18,8 @@ import {
 } from "../constants/claim-constants.js";
 import {
   allPoultryRoutes,
-  applyRoutes,
-  claimRoutes,
+  livestockApplyRoutes,
+  livestockClaimRoutes,
   dashboardRoutes,
   poultryApplyUrls,
   poultryClaimUrls,
@@ -156,8 +156,8 @@ export const skipSameHerdPage = (previousClaims, typeOfLivestock) => {
 
 export const getHerdBackLink = (typeOfLivestock, previousClaims) => {
   return skipSameHerdPage(previousClaims, typeOfLivestock)
-    ? claimRoutes.checkHerdDetails
-    : claimRoutes.sameHerd;
+    ? livestockClaimRoutes.checkHerdDetails
+    : livestockClaimRoutes.sameHerd;
 };
 
 export const skipOtherHerdsOnSbiPage = (existingHerds, selectedHerdId) => {
@@ -238,7 +238,7 @@ function getPoultrySurveyUri(request) {
 }
 
 function getEndemicsSurveyUri(request) {
-  if (request.path === applyRoutes.declaration && request.method === "post") {
+  if (request.path === livestockApplyRoutes.declaration && request.method === "post") {
     return customerSurvey.applyUri;
   }
 

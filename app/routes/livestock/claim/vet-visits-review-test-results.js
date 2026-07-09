@@ -2,7 +2,7 @@ import Joi from "joi";
 import { radios } from "../../models/form-component/radios.js";
 import HttpStatus from "http-status-codes";
 import { getLivestockTypes } from "../../../lib/utils.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import {
   getSessionData,
   sessionEntryKeys,
@@ -13,9 +13,9 @@ import {
 const previousPageUrl = (typeOfLivestock) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock);
   if (isBeef || isDairy) {
-    return claimRoutes.whichTypeOfReview;
+    return livestockClaimRoutes.whichTypeOfReview;
   }
-  return claimRoutes.vetRcvs;
+  return livestockClaimRoutes.vetRcvs;
 };
 
 const nextPageURL = (request) => {
@@ -23,14 +23,14 @@ const nextPageURL = (request) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock);
 
   if (isBeef || isDairy) {
-    return claimRoutes.dateOfVisit;
+    return livestockClaimRoutes.dateOfVisit;
   }
-  return claimRoutes.vaccination;
+  return livestockClaimRoutes.vaccination;
 };
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.vetVisitsReviewTestResults,
+  path: livestockClaimRoutes.vetVisitsReviewTestResults,
   options: {
     handler: async (request, h) => {
       const { vetVisitsReviewTestResults, typeOfLivestock } = getSessionData(
@@ -44,7 +44,7 @@ const getHandler = {
         { value: "positive", text: "Positive", checked: vetVisitsReviewTestResults === "positive" },
         { value: "negative", text: "Negative", checked: vetVisitsReviewTestResults === "negative" },
       ]);
-      return h.view(claimViews.vetVisitsReviewTestResults, {
+      return h.view(livestockClaimViews.vetVisitsReviewTestResults, {
         typeOfLivestock,
         backLink: previousPageUrl(typeOfLivestock),
         ...positiveNegativeRadios,
@@ -55,7 +55,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.vetVisitsReviewTestResults,
+  path: livestockClaimRoutes.vetVisitsReviewTestResults,
   options: {
     validate: {
       payload: Joi.object({
@@ -73,7 +73,7 @@ const postHandler = {
           { value: "negative", text: "Negative" },
         ]);
         return h
-          .view(claimViews.vetVisitsReviewTestResults, {
+          .view(livestockClaimViews.vetVisitsReviewTestResults, {
             ...request.payload,
             typeOfLivestock,
             backLink: previousPageUrl(typeOfLivestock),

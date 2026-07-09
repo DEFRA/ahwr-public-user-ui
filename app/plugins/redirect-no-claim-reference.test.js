@@ -1,6 +1,6 @@
 import Hapi from "@hapi/hapi";
 import { redirectNoClaimReferencePlugin } from "./redirect-no-claim-reference.js";
-import { dashboardRoutes, claimRoutes } from "../constants/routes.js";
+import { dashboardRoutes, livestockClaimRoutes } from "../constants/routes.js";
 
 import { getSessionData } from "../session/index.js";
 
@@ -16,7 +16,7 @@ describe("redirectNoClaimReferencePlugin", () => {
     server = Hapi.server();
     server.route({
       method: "GET",
-      path: claimRoutes.checkAnswers,
+      path: livestockClaimRoutes.checkAnswers,
       handler: () => "ok",
     });
     await server.register(redirectNoClaimReferencePlugin);
@@ -35,7 +35,7 @@ describe("redirectNoClaimReferencePlugin", () => {
 
     const response = await server.inject({
       method: "GET",
-      url: claimRoutes.checkAnswers,
+      url: livestockClaimRoutes.checkAnswers,
     });
 
     expect(response.statusCode).toBe(302);
@@ -47,7 +47,7 @@ describe("redirectNoClaimReferencePlugin", () => {
 
     const response = await server.inject({
       method: "GET",
-      url: claimRoutes.checkAnswers,
+      url: livestockClaimRoutes.checkAnswers,
     });
 
     expect(response.statusCode).toBe(200);
@@ -56,7 +56,7 @@ describe("redirectNoClaimReferencePlugin", () => {
   it("does not redirect on excluded route", async () => {
     server.route({
       method: "GET",
-      path: claimRoutes.whichSpecies,
+      path: livestockClaimRoutes.whichSpecies,
       handler: () => "ok",
     });
 
@@ -64,7 +64,7 @@ describe("redirectNoClaimReferencePlugin", () => {
 
     const response = await server.inject({
       method: "GET",
-      url: claimRoutes.whichSpecies,
+      url: livestockClaimRoutes.whichSpecies,
     });
 
     expect(response.statusCode).toBe(200);
@@ -73,7 +73,7 @@ describe("redirectNoClaimReferencePlugin", () => {
   it("does not redirect on included route and method is POST", async () => {
     server.route({
       method: "POST",
-      path: claimRoutes.checkAnswers,
+      path: livestockClaimRoutes.checkAnswers,
       handler: () => "ok",
     });
 
@@ -81,7 +81,7 @@ describe("redirectNoClaimReferencePlugin", () => {
 
     const response = await server.inject({
       method: "POST",
-      url: claimRoutes.checkAnswers,
+      url: livestockClaimRoutes.checkAnswers,
     });
 
     expect(response.statusCode).toBe(200);
