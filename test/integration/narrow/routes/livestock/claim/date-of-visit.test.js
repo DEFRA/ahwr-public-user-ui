@@ -19,6 +19,7 @@ import {
   testPageHeading,
 } from "../../../../../helpers/page-title-and-heading.js";
 import { testRedirectsToSignInWhenLoggedOut } from "../../../../../helpers/sign-in-redirect.js";
+import { livestockClaimRoutes } from "../../../../../../app/constants/routes.js";
 
 jest.mock("../../../../../../app/session");
 jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
@@ -70,7 +71,7 @@ const organisation = {
 };
 
 const auth = { credentials: {}, strategy: "cookie" };
-const url = "/livestock/date-of-visit";
+const url = livestockClaimRoutes.dateOfVisit;
 
 const today = new Date();
 const tomorrow = new Date(today);
@@ -158,7 +159,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, "/livestock/review-type");
+    expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
     expectPhaseBanner.ok($);
   });
 
@@ -190,7 +191,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, "/livestock/review-type");
+    expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
     expectPhaseBanner.ok($);
   });
 
@@ -226,7 +227,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect($("#visit-date-day")[0].attribs.value).toEqual("1");
     expect($("#visit-date-month")[0].attribs.value).toEqual("5");
     expect($("#visit-date-year")[0].attribs.value).toEqual("2024");
-    expectPageContentOk($, "/livestock/review-type");
+    expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
     expectPhaseBanner.ok($);
   });
 
@@ -252,7 +253,9 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expect($(".govuk-back-link").attr("href")).toBe("/livestock/vet-visits-review-test-results");
+    expect($(".govuk-back-link").attr("href")).toBe(
+      livestockClaimRoutes.vetVisitsReviewTestResults,
+    );
     expectPhaseBanner.ok($);
   });
 
@@ -278,7 +281,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expect($(".govuk-back-link").attr("href")).toBe("/livestock/review-type");
+    expect($(".govuk-back-link").attr("href")).toBe(livestockClaimRoutes.whichTypeOfReview);
     expectPhaseBanner.ok($);
   });
 
@@ -543,7 +546,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -575,7 +578,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -616,7 +619,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -657,7 +660,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -746,7 +749,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -776,7 +779,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -862,7 +865,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -905,7 +908,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -946,7 +949,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/species-numbers");
+      expect(res.headers.location).toBe(livestockClaimRoutes.speciesNumbers);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1130,7 +1133,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1283,7 +1286,7 @@ describe("POST /livestock/date-of-visit handler", () => {
 
       const res = await server.inject(options);
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1323,7 +1326,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/livestock/test-date");
+      expect(res.headers.location).toEqual(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1375,7 +1378,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/livestock/test-date");
+      expect(res.headers.location).toEqual(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1438,7 +1441,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/livestock/species-numbers");
+      expect(res.headers.location).toEqual(livestockClaimRoutes.speciesNumbers);
       expect(trackEvent).not.toHaveBeenCalled();
     });
 
@@ -1475,7 +1478,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/livestock/species-numbers");
+      expect(res.headers.location).toEqual(livestockClaimRoutes.speciesNumbers);
       expect(trackEvent).not.toHaveBeenCalled();
     });
 
@@ -1512,7 +1515,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/livestock/test-date");
+      expect(res.headers.location).toEqual(livestockClaimRoutes.dateOfTesting);
       expect(trackEvent).not.toHaveBeenCalled();
     });
   });
@@ -1538,7 +1541,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1579,7 +1582,7 @@ describe("POST /livestock/date-of-visit handler", () => {
       const res = await server.inject(options);
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("/livestock/test-date");
+      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
       expect(setSessionData).not.toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
@@ -1628,7 +1631,7 @@ describe("POST /livestock/date-of-visit handler", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toEqual("/livestock/select-herd");
+    expect(res.headers.location).toEqual(livestockClaimRoutes.selectTheHerd);
   });
 
   test("should redirect to enter herd name page when there are not previous herds and is multi herds journey", async () => {
@@ -1662,7 +1665,7 @@ describe("POST /livestock/date-of-visit handler", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toEqual("/livestock/herd-name");
+    expect(res.headers.location).toEqual(livestockClaimRoutes.enterHerdName);
   });
 
   test("should redirect to species-numbers page when making a follow-up claim with visit date of pre-MH go-live, against a pre-MH review, and already made post-MH review for another herd", async () => {
@@ -1709,7 +1712,7 @@ describe("POST /livestock/date-of-visit handler", () => {
     const res = await server.inject(options);
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("/livestock/species-numbers");
+    expect(res.headers.location).toBe(livestockClaimRoutes.speciesNumbers);
     expect(setSessionData).toHaveBeenCalledWith(
       expect.any(Object),
       "endemicsClaim",
@@ -1780,7 +1783,7 @@ describe("previousPageUrl", () => {
       typeOfReview: "FOLLOW_UP",
       previousClaims: [],
       typeOfLivestock: "beef",
-      expected: "/livestock/vet-visits-review-test-results",
+      expected: livestockClaimRoutes.vetVisitsReviewTestResults,
     },
     {
       scenario: "should return url of endemicsWhichTypeOfReview if claim type is review",
@@ -1788,7 +1791,7 @@ describe("previousPageUrl", () => {
       typeOfReview: "REVIEW",
       previousClaims: [],
       typeOfLivestock: "beef",
-      expected: "/livestock/review-type",
+      expected: livestockClaimRoutes.whichTypeOfReview,
     },
     {
       scenario:
@@ -1797,7 +1800,7 @@ describe("previousPageUrl", () => {
       typeOfReview: "FOLLOW_UP",
       previousClaims: [],
       typeOfLivestock: "beef",
-      expected: "/livestock/review-type",
+      expected: livestockClaimRoutes.whichTypeOfReview,
     },
     {
       scenario:
@@ -1818,7 +1821,7 @@ describe("previousPageUrl", () => {
         },
       ],
       typeOfLivestock: "beef",
-      expected: "/livestock/review-type",
+      expected: livestockClaimRoutes.whichTypeOfReview,
     },
   ])("$scenario", ({ whichReview, typeOfReview, previousClaims, typeOfLivestock, expected }) => {
     const latestVetVisitApplication = {
