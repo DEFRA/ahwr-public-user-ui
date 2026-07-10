@@ -125,151 +125,174 @@ describe("shouldShowManageYourClaims", () => {
         true,
       ],
     ])("%s", (_name, path, latestApplication, expected) => {
-      const request = { path };
-      mockEndemicsSessionData(request, latestApplication);
+      const method = "get";
 
+      const request = { path, method };
+
+      mockEndemicsSessionData(request, latestApplication);
       const actual = shouldShowManageYourClaims(request);
 
       expect(actual).toBe(expected);
     });
 
     test("false when status is not AGREED in endemics but agreed on poultry", () => {
-      const request = { path: "/livestock/manage-claims" };
-      mockEndemicsSessionData(request, { status: "PENDING" });
-      mockPoultrySessionData(request, { status: "AGREED" });
+      const path = "/livestock/manage-claims";
+      const method = "get";
+      const latestEndemicsApplication = { status: "PENDING" };
+      const latestPoultryApplication = { status: "AGREED" };
+      const expected = false;
 
+      const request = { path, method };
+
+      mockEndemicsSessionData(request, latestEndemicsApplication);
+      mockPoultrySessionData(request, latestPoultryApplication);
       const actual = shouldShowManageYourClaims(request);
 
-      expect(actual).toBe(false);
+      expect(actual).toBe(expected);
     });
 
     test("true on post declaration (confirmation)", () => {
-      const request = { path: "/livestock/agreement-offer", method: "post" };
-      mockEndemicsSessionData(request, { status: "AGREED" });
+      const path = "/livestock/agreement-offer";
+      const method = "post";
+      const latestEndemicsApplication = { status: "AGREED" };
+      const expected = true;
 
+      const request = { path, method };
+
+      mockEndemicsSessionData(request, latestEndemicsApplication);
       const actual = shouldShowManageYourClaims(request);
 
-      expect(actual).toBe(true);
+      expect(actual).toBe(expected);
     });
 
     test("false on get declaration (before confirmation)", () => {
-      const request = { path: "/livestock/agreement-offer", method: "get" };
-      mockEndemicsSessionData(request, { status: "AGREED" });
+      const path = "/livestock/agreement-offer";
+      const method = "get";
+      const latestEndemicsApplication = { status: "AGREED" };
+      const expected = false;
 
+      const request = { path, method };
+
+      mockEndemicsSessionData(request, latestEndemicsApplication);
       const actual = shouldShowManageYourClaims(request);
 
-      expect(actual).toBe(false);
+      expect(actual).toBe(expected);
     });
 
     test("false when no status in livestock but agreed on poultry on endemics apply route", () => {
-      const request = { path: livestockApplyRoutes.timings };
-      mockPoultrySessionData(request, { status: "AGREED" });
+      const path = livestockApplyRoutes.timings;
+      const method = "get";
+      const latestPoultryApplication = { status: "AGREED" };
+      const expected = false;
 
+      const request = { path, method };
+
+      mockPoultrySessionData(request, latestPoultryApplication);
       const actual = shouldShowManageYourClaims(request);
 
-      expect(actual).toBe(false);
+      expect(actual).toBe(expected);
     });
   });
 
   describe("poultry urls", () => {
-    test("false when latestPoultryApplication is null", () => {
-      const request = { path: "/poultry/manage-claims" };
-      mockPoultrySessionData(request, null);
+    test.each([
+      ["false when latestPoultryApplication is null", "/poultry/manage-claims", null, false],
+      [
+        "false when latestPoultryApplication is undefined",
+        "/poultry/manage-claims",
+        undefined,
+        false,
+      ],
+      ["false when latestPoultryApplication has no status", "/poultry/manage-claims", {}, false],
+      ["false when status is not AGREED", "/poultry/manage-claims", { status: "PENDING" }, false],
+      ["true when status is AGREED", "/poultry/manage-claims", { status: "AGREED" }, true],
+      [
+        "true when status is AGREED on a claim route",
+        "/poultry/date-of-visit",
+        { status: "AGREED" },
+        true,
+      ],
+    ])("%s", (_name, path, latestApplication, expected) => {
+      const method = "get";
 
+      const request = { path, method };
+
+      mockPoultrySessionData(request, latestApplication);
       const actual = shouldShowManageYourClaims(request);
 
-      expect(actual).toBe(false);
-    });
-
-    test("false when latestPoultryApplication is undefined", () => {
-      const request = { path: "/poultry/manage-claims" };
-      mockPoultrySessionData(request, undefined);
-
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(false);
-    });
-
-    test("false when latestPoultryApplication has no status", () => {
-      const request = { path: "/poultry/manage-claims" };
-      mockPoultrySessionData(request, {});
-
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(false);
-    });
-
-    test("false when status is not AGREED", () => {
-      const request = { path: "/poultry/manage-claims" };
-      mockPoultrySessionData(request, { status: "PENDING" });
-
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(false);
+      expect(actual).toBe(expected);
     });
 
     test("false when status is not AGREED in poultry but agreed on endemics", () => {
-      const request = { path: "/poultry/manage-claims" };
-      mockPoultrySessionData(request, { status: "PENDING" });
-      mockEndemicsSessionData(request, { status: "AGREED" });
+      const path = "/poultry/manage-claims";
+      const method = "get";
+      const latestPoultryApplication = { status: "PENDING" };
+      const latestEndemicsApplication = { status: "AGREED" };
+      const expected = false;
 
+      const request = { path, method };
+
+      mockPoultrySessionData(request, latestPoultryApplication);
+      mockEndemicsSessionData(request, latestEndemicsApplication);
       const actual = shouldShowManageYourClaims(request);
 
-      expect(actual).toBe(false);
-    });
-
-    test("true when status is AGREED", () => {
-      const request = { path: "/poultry/manage-claims" };
-      mockPoultrySessionData(request, { status: "AGREED" });
-
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(true);
-    });
-
-    test("true when status is AGREED on a claim route", () => {
-      const request = { path: "/poultry/date-of-visit" };
-      mockPoultrySessionData(request, { status: "AGREED" });
-
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(true);
+      expect(actual).toBe(expected);
     });
 
     test("true when status is AGREED on apply confirmation", () => {
-      const request = { path: "/poultry/agreement-offer" };
-      mockPoultrySessionData(request, { status: "AGREED" });
+      const path = "/poultry/agreement-offer";
+      const method = "post";
+      const latestPoultryApplication = { status: "AGREED" };
+      const expected = true;
 
+      const request = { path, method };
+
+      mockPoultrySessionData(request, latestPoultryApplication);
       const actual = shouldShowManageYourClaims(request);
 
-      expect(actual).toBe(true);
+      expect(actual).toBe(expected);
     });
 
     test("true on post declaration post (confirmation)", () => {
-      const request = { path: "/poultry/agreement-offer", method: "post" };
-      mockPoultrySessionData(request, { status: "AGREED" });
+      const path = "/poultry/agreement-offer";
+      const method = "post";
+      const latestPoultryApplication = { status: "AGREED" };
+      const expected = true;
 
+      const request = { path, method };
+
+      mockPoultrySessionData(request, latestPoultryApplication);
       const actual = shouldShowManageYourClaims(request);
 
-      expect(actual).toBe(true);
+      expect(actual).toBe(expected);
     });
 
     test("false on get declaration (before confirmation)", () => {
-      const request = { path: "/poultry/agreement-offer", method: "get" };
-      mockPoultrySessionData(request, { status: "AGREED" });
+      const path = "/poultry/agreement-offer";
+      const method = "get";
+      const latestPoultryApplication = { status: "AGREED" };
+      const expected = false;
 
+      const request = { path, method };
+
+      mockPoultrySessionData(request, latestPoultryApplication);
       const actual = shouldShowManageYourClaims(request);
 
-      expect(actual).toBe(false);
+      expect(actual).toBe(expected);
     });
 
     test("false when no status in poultry but agreed on endemics on poultry apply route", () => {
-      const request = { path: poultryApplyRoutes.timings };
-      mockEndemicsSessionData(request, { status: "AGREED" });
+      const path = poultryApplyRoutes.timings;
+      const method = "get";
+      const latestEndemicsApplication = { status: "AGREED" };
+      const expected = false;
 
+      const request = { path, method };
+
+      mockEndemicsSessionData(request, latestEndemicsApplication);
       const actual = shouldShowManageYourClaims(request);
 
-      expect(actual).toBe(false);
+      expect(actual).toBe(expected);
     });
   });
 });
