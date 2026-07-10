@@ -111,6 +111,15 @@ describe("shouldShowManageYourClaims", () => {
       .mockReturnValue(returnValue);
   };
 
+  const assertManageYourClaims = ({ path, method, mockSessionData, application, expected }) => {
+    const request = { path, method };
+
+    mockSessionData(request, application);
+    const actual = shouldShowManageYourClaims(request);
+
+    expect(actual).toBe(expected);
+  };
+
   describe("livestock urls", () => {
     test.each([
       [
@@ -150,14 +159,13 @@ describe("shouldShowManageYourClaims", () => {
         showsManageYourClaims,
       ],
     ])("%s", (_name, path, latestApplication, expected) => {
-      const method = "get";
-
-      const request = { path, method };
-
-      mockEndemicsSessionData(request, latestApplication);
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(expected);
+      assertManageYourClaims({
+        path,
+        method: "get",
+        mockSessionData: mockEndemicsSessionData,
+        application: latestApplication,
+        expected,
+      });
     });
 
     test("false when status is not AGREED in endemics but agreed on poultry", () => {
@@ -182,12 +190,13 @@ describe("shouldShowManageYourClaims", () => {
       const latestEndemicsApplication = { status: "AGREED" };
       const expected = showsManageYourClaims;
 
-      const request = { path, method };
-
-      mockEndemicsSessionData(request, latestEndemicsApplication);
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(expected);
+      assertManageYourClaims({
+        path,
+        method,
+        mockSessionData: mockEndemicsSessionData,
+        application: latestEndemicsApplication,
+        expected,
+      });
     });
 
     test("false on get declaration (before confirmation)", () => {
@@ -196,12 +205,13 @@ describe("shouldShowManageYourClaims", () => {
       const latestEndemicsApplication = { status: "AGREED" };
       const expected = doesNotShowManageYourClaims;
 
-      const request = { path, method };
-
-      mockEndemicsSessionData(request, latestEndemicsApplication);
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(expected);
+      assertManageYourClaims({
+        path,
+        method,
+        mockSessionData: mockEndemicsSessionData,
+        application: latestEndemicsApplication,
+        expected,
+      });
     });
 
     test("false when no status in livestock but agreed on poultry on endemics apply route", () => {
@@ -210,12 +220,13 @@ describe("shouldShowManageYourClaims", () => {
       const latestPoultryApplication = { status: "AGREED" };
       const expected = doesNotShowManageYourClaims;
 
-      const request = { path, method };
-
-      mockPoultrySessionData(request, latestPoultryApplication);
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(expected);
+      assertManageYourClaims({
+        path,
+        method,
+        mockSessionData: mockPoultrySessionData,
+        application: latestPoultryApplication,
+        expected,
+      });
     });
   });
 
@@ -258,14 +269,13 @@ describe("shouldShowManageYourClaims", () => {
         showsManageYourClaims,
       ],
     ])("%s", (_name, path, latestApplication, expected) => {
-      const method = "get";
-
-      const request = { path, method };
-
-      mockPoultrySessionData(request, latestApplication);
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(expected);
+      assertManageYourClaims({
+        path,
+        method: "get",
+        mockSessionData: mockPoultrySessionData,
+        application: latestApplication,
+        expected,
+      });
     });
 
     test("false when status is not AGREED in poultry but agreed on endemics", () => {
@@ -290,12 +300,13 @@ describe("shouldShowManageYourClaims", () => {
       const latestPoultryApplication = { status: "AGREED" };
       const expected = showsManageYourClaims;
 
-      const request = { path, method };
-
-      mockPoultrySessionData(request, latestPoultryApplication);
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(expected);
+      assertManageYourClaims({
+        path,
+        method,
+        mockSessionData: mockPoultrySessionData,
+        application: latestPoultryApplication,
+        expected,
+      });
     });
 
     test("true on post declaration post (confirmation)", () => {
@@ -304,12 +315,13 @@ describe("shouldShowManageYourClaims", () => {
       const latestPoultryApplication = { status: "AGREED" };
       const expected = showsManageYourClaims;
 
-      const request = { path, method };
-
-      mockPoultrySessionData(request, latestPoultryApplication);
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(expected);
+      assertManageYourClaims({
+        path,
+        method,
+        mockSessionData: mockPoultrySessionData,
+        application: latestPoultryApplication,
+        expected,
+      });
     });
 
     test("false on get declaration (before confirmation)", () => {
@@ -318,12 +330,13 @@ describe("shouldShowManageYourClaims", () => {
       const latestPoultryApplication = { status: "AGREED" };
       const expected = doesNotShowManageYourClaims;
 
-      const request = { path, method };
-
-      mockPoultrySessionData(request, latestPoultryApplication);
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(expected);
+      assertManageYourClaims({
+        path,
+        method,
+        mockSessionData: mockPoultrySessionData,
+        application: latestPoultryApplication,
+        expected,
+      });
     });
 
     test("false when no status in poultry but agreed on endemics on poultry apply route", () => {
@@ -332,12 +345,13 @@ describe("shouldShowManageYourClaims", () => {
       const latestEndemicsApplication = { status: "AGREED" };
       const expected = doesNotShowManageYourClaims;
 
-      const request = { path, method };
-
-      mockEndemicsSessionData(request, latestEndemicsApplication);
-      const actual = shouldShowManageYourClaims(request);
-
-      expect(actual).toBe(expected);
+      assertManageYourClaims({
+        path,
+        method,
+        mockSessionData: mockEndemicsSessionData,
+        application: latestEndemicsApplication,
+        expected,
+      });
     });
   });
 });
