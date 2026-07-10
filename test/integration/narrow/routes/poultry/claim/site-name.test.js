@@ -150,91 +150,85 @@ describe("/poultry/site-name", () => {
       crumb = await getCrumbs(server);
     });
 
-    test("navigates to the correct page when payload valid", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-      });
+    test.each([
+      {
+        scenario: "there are no previous claims",
+        session: { reference: "TEMP-6GSE-PIR8" },
+      },
+      {
+        scenario: "site name does not exist in previous claims",
+        session: {
+          reference: "TEMP-6GSE-PIR8",
+          previousClaims: [
+            { herd: { herdName: "First herd" } },
+            { herd: { herdName: "Second herd" } },
+          ],
+        },
+      },
+    ])(
+      "saves site name and navigates to next page when payload valid and $scenario",
+      async ({ session }) => {
+        getSessionData.mockReturnValue(session);
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdName: "    Commercial Herd    " },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        expect(res.statusCode).toBe(302);
+        expect(res.headers.location).toEqual("/poultry/cph");
+        expect(setSessionData).toHaveBeenCalled();
+        expect(emitHerdEvent).toHaveBeenCalled();
+      },
+    );
+
+    test.each([
+      {
+        scenario: "site name is missing",
+        herdName: undefined,
+        session: { reference: "TEMP-6GSE-PIR8", herds: [{ id: 1 }] },
+        error: "Enter the site name",
+      },
+      {
+        scenario: "site name is less than 2 characters",
+        herdName: "a",
+        session: { reference: "TEMP-6GSE-PIR8", herds: [{ id: 1 }] },
+        error: "Enter a site name of between 2 and 30 characters",
+      },
+      {
+        scenario: "site name is greater than 30 characters",
+        herdName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        session: { reference: "TEMP-6GSE-PIR8", herds: [{ id: 1 }] },
+        error: "Enter a site name of between 2 and 30 characters",
+      },
+      {
+        scenario: "site name contains an invalid character",
+        herdName: "abc$",
+        session: { reference: "TEMP-6GSE-PIR8", herds: [{ id: 1 }] },
+        error:
+          "Name must only include letters a to z, numbers and special characters such as hyphens, spaces and apostrophes.",
+      },
+      {
+        scenario: "site name has already been used in a previous claim",
+        herdName: "Commercial Herd",
+        session: {
+          reference: "TEMP-6GSE-PIR8",
+          herds: [{ id: 1 }],
+          previousClaims: [{ herd: { name: "Commercial Herd" } }],
+        },
+        error: "You have already used this name, the name must be unique",
+      },
+    ])("displays errors when $scenario", async ({ herdName, session, error }) => {
+      getSessionData.mockReturnValue(session);
 
       const res = await server.inject({
         method: "POST",
         url,
         auth,
-        payload: { crumb, herdName: "    Commercial Herd    " },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/cph");
-      expect(setSessionData).toHaveBeenCalled();
-      expect(emitHerdEvent).toHaveBeenCalled();
-    });
-
-    test("saves site name in session and navigates to next page when site name does not exist in previous claims", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        previousClaims: [
-          {
-            herd: {
-              herdName: "First herd",
-            },
-          },
-          {
-            herd: {
-              herdName: "Second herd",
-            },
-          },
-        ],
-      });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, herdName: "    Commercial Herd    " },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/poultry/cph");
-      expect(setSessionData).toHaveBeenCalled();
-      expect(emitHerdEvent).toHaveBeenCalled();
-    });
-
-    test("displays errors when site name is missing", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: 1 }],
-      });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#herdName"]').text()).toContain("Enter the site name");
-      expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteHint($);
-      expect(emitHerdEvent).not.toHaveBeenCalled();
-    });
-
-    test("displays errors when site name is less than 2 characters", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: 1 }],
-      });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, herdName: "a" },
+        payload: { crumb, herdName },
         headers: { cookie: `crumb=${crumb}` },
       });
 
@@ -242,94 +236,7 @@ describe("/poultry/site-name", () => {
       const $ = cheerio.load(res.payload);
       expect(res.statusCode).toBe(400);
       expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#herdName"]').text()).toContain(
-        "Enter a site name of between 2 and 30 characters",
-      );
-      expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteHint($);
-      expect(emitHerdEvent).not.toHaveBeenCalled();
-    });
-
-    test("displays errors when site name is greater than 30 characters", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: 1 }],
-      });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, herdName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#herdName"]').text()).toContain(
-        "Enter a site name of between 2 and 30 characters",
-      );
-      expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteHint($);
-      expect(emitHerdEvent).not.toHaveBeenCalled();
-    });
-
-    test("displays errors when site name contains an invalid character", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: 1 }],
-      });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, herdName: "abc$" },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#herdName"]').text()).toContain(
-        "Name must only include letters a to z, numbers and special characters such as hyphens, spaces and apostrophes.",
-      );
-      expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
-      expectSiteHint($);
-      expect(emitHerdEvent).not.toHaveBeenCalled();
-    });
-
-    test("displays errors when site name has already been used in a previous claim", async () => {
-      getSessionData.mockReturnValue({
-        reference: "TEMP-6GSE-PIR8",
-        herds: [{ id: 1 }],
-        previousClaims: [
-          {
-            herd: {
-              name: "Commercial Herd",
-            },
-          },
-        ],
-      });
-
-      const res = await server.inject({
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, herdName: "Commercial Herd" },
-        headers: { cookie: `crumb=${crumb}` },
-      });
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      const $ = cheerio.load(res.payload);
-      expect(res.statusCode).toBe(400);
-      expect($("h2.govuk-error-summary__title").text()).toContain("There is a problem");
-      expect($('a[href="#herdName"]').text()).toContain(
-        "You have already used this name, the name must be unique",
-      );
+      expect($('a[href="#herdName"]').text()).toContain(error);
       expect($(".govuk-back-link").attr("href")).toContain("/poultry/select-site");
       expectSiteHint($);
       expect(emitHerdEvent).not.toHaveBeenCalled();

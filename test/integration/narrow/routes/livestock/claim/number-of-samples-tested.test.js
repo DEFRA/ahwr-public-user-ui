@@ -103,12 +103,31 @@ describe("Number of samples tested test", () => {
         }),
     });
 
-    test("shows error when payload is empty", async () => {
+    test.each([
+      {
+        scenario: "payload is empty",
+        numberOfSamplesTested: "",
+        error:
+          "Error: Enter how many samples were tested. Use the number of PCR or ELISA test results you got back",
+      },
+      {
+        scenario: "payload is of invalid type",
+        numberOfSamplesTested: "seven",
+        error:
+          "Error: The amount of samples tested must only include numbers. Use the number of PCR or ELISA test results you got back",
+      },
+      {
+        scenario: "payload number is too high",
+        numberOfSamplesTested: "10000000",
+        error:
+          "Error: The number of samples tested should not exceed 9999. Use the number of PCR or ELISA test results you got back",
+      },
+    ])("shows error when $scenario", async ({ numberOfSamplesTested, error }) => {
       const options = {
         method: "POST",
         url,
         auth,
-        payload: { crumb, numberOfSamplesTested: "" },
+        payload: { crumb, numberOfSamplesTested },
         headers: { cookie: `crumb=${crumb}` },
       };
 
@@ -117,28 +136,7 @@ describe("Number of samples tested test", () => {
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
       expect($("h1").text()).toMatch("How many samples were tested?");
-      expect($("#numberOfSamplesTested-error").text().trim()).toEqual(
-        "Error: Enter how many samples were tested. Use the number of PCR or ELISA test results you got back",
-      );
-    });
-
-    test("shows error when payload is of invalid type", async () => {
-      const options = {
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, numberOfSamplesTested: "seven" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(400);
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("How many samples were tested?");
-      expect($("#numberOfSamplesTested-error").text().trim()).toEqual(
-        "Error: The amount of samples tested must only include numbers. Use the number of PCR or ELISA test results you got back",
-      );
+      expect($("#numberOfSamplesTested-error").text().trim()).toEqual(error);
     });
 
     test.each([
@@ -174,25 +172,6 @@ describe("Number of samples tested test", () => {
       },
     );
 
-    test("shows error when payload number is too high", async () => {
-      const options = {
-        method: "POST",
-        url,
-        auth,
-        payload: { crumb, numberOfSamplesTested: "10000000" },
-        headers: { cookie: `crumb=${crumb}` },
-      };
-
-      const res = await server.inject(options);
-
-      expect(res.statusCode).toBe(400);
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toMatch("How many samples were tested?");
-      expect($("#numberOfSamplesTested-error").text().trim()).toEqual(
-        "Error: The number of samples tested should not exceed 9999. Use the number of PCR or ELISA test results you got back",
-      );
-    });
-
     test.each([
       {
         screen: "PCR",
@@ -218,7 +197,6 @@ describe("Number of samples tested test", () => {
     ])(
       "redirects to $screen page if valid sample numbers, $vaccinatedValue and $lastReviewTestResults",
       async ({
-        _screen,
         numberOfSamplesTested,
         lastReviewTestResults,
         vaccinatedValue,
