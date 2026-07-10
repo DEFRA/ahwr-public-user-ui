@@ -5,22 +5,22 @@ import {
   sessionKeys,
 } from "../../../session/index.js";
 import { userType } from "../../../constants/constants.js";
-import { applyRoutes, applyViews } from "../../../constants/routes.js";
+import { livestockApplyRoutes, livestockApplyViews } from "../../../constants/routes.js";
 import { preApplyHandler } from "../../../lib/pre-apply-handler.js";
 
 export const timingsRouteHandlers = [
   {
     method: "GET",
-    path: applyRoutes.timings,
+    path: livestockApplyRoutes.timings,
     options: {
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
         const hasOldWorldApplication = organisation.userType !== userType.NEW_USER;
 
-        return h.view(applyViews.timings, {
+        return h.view(livestockApplyViews.timings, {
           hasOldWorldApplication,
-          backLink: applyRoutes.numbers,
+          backLink: livestockApplyRoutes.numbers,
           organisation,
         });
       },
@@ -28,7 +28,7 @@ export const timingsRouteHandlers = [
   },
   {
     method: "POST",
-    path: applyRoutes.timings,
+    path: livestockApplyRoutes.timings,
     options: {
       handler: async (request, h) => {
         if (request.payload.agreementStatus === "agree") {
@@ -39,7 +39,7 @@ export const timingsRouteHandlers = [
             "yes",
           );
 
-          return h.redirect(applyRoutes.declaration);
+          return h.redirect(livestockApplyRoutes.declaration);
         }
 
         await setSessionData(
@@ -49,7 +49,7 @@ export const timingsRouteHandlers = [
           "no",
         );
 
-        return h.view(applyViews.offerRejected, {
+        return h.view(livestockApplyViews.offerRejected, {
           termsRejected: true,
         });
       },

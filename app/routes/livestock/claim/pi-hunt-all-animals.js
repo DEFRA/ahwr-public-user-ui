@@ -9,13 +9,13 @@ import { radios } from "../../../models/form-component/radios.js";
 import { getTestResult } from "../../../lib/utils.js";
 import { clearPiHuntSessionOnChange } from "../../../lib/clear-pi-hunt-session-on-change.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { getAmount } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
 const backLink = (reviewTestResults) => {
   const { isPositive } = getTestResult(reviewTestResults);
-  return isPositive ? claimRoutes.piHunt : claimRoutes.piHuntRecommended;
+  return isPositive ? livestockClaimRoutes.piHunt : livestockClaimRoutes.piHuntRecommended;
 };
 
 const getQuestionText = (typeOfLivestock) =>
@@ -25,7 +25,7 @@ const hintHtml = "You can find this on the summary the vet gave you.";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.piHuntAllAnimals,
+  path: livestockClaimRoutes.piHuntAllAnimals,
   options: {
     handler: async (request, h) => {
       const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getSessionData(
@@ -41,7 +41,7 @@ const getHandler = {
         { value: "no", text: "No", checked: piHuntAllAnimals === "no" },
       ]);
 
-      return h.view(claimViews.piHuntAllAnimals, {
+      return h.view(livestockClaimViews.piHuntAllAnimals, {
         backLink: backLink(reviewTestResults),
         title: questionText,
         ...yesOrNoRadios,
@@ -52,7 +52,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.piHuntAllAnimals,
+  path: livestockClaimRoutes.piHuntAllAnimals,
   options: {
     validate: {
       payload: Joi.object({
@@ -74,7 +74,7 @@ const postHandler = {
         ]);
 
         return h
-          .view(claimViews.piHuntAllAnimals, {
+          .view(livestockClaimViews.piHuntAllAnimals, {
             ...yesOrNoRadios,
             backLink: backLink(reviewTestResults),
             title: questionText,
@@ -126,18 +126,18 @@ const postHandler = {
         }
 
         return h
-          .view(claimViews.piHuntAllAnimalsException, {
+          .view(livestockClaimViews.piHuntAllAnimalsException, {
             reviewTestResults,
             claimPaymentNoPiHunt,
             livestockText: typeOfLivestock,
-            continueClaimLink: claimRoutes.biosecurity,
-            backLink: claimRoutes.piHuntAllAnimals,
+            continueClaimLink: livestockClaimRoutes.biosecurity,
+            backLink: livestockClaimRoutes.piHuntAllAnimals,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
       }
 
-      return h.redirect(claimRoutes.dateOfTesting);
+      return h.redirect(livestockClaimRoutes.dateOfTesting);
     },
   },
 };

@@ -1,8 +1,8 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { dashboardRoutes, claimRoutes } from "../constants/routes.js";
+import { dashboardRoutes, livestockClaimRoutes } from "../constants/routes.js";
 
 const includedPaths = new Set(
-  Object.values(claimRoutes).filter((path) => path !== claimRoutes.whichSpecies),
+  Object.values(livestockClaimRoutes).filter((path) => path !== livestockClaimRoutes.whichSpecies),
 );
 
 export const redirectNoClaimReferencePlugin = {

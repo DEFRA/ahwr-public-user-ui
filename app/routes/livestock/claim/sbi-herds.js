@@ -9,7 +9,7 @@ import {
 import HttpStatus from "http-status-codes";
 import { ONLY_HERD, ONLY_HERD_ON_SBI } from "../../../constants/claim-constants.js";
 import { getHerdOrFlock } from "../../../lib/display-helpers.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 
 const getSpeciesGroupText = (typeOfLivestock) => {
   const textByLivestock = {
@@ -23,15 +23,15 @@ const getSpeciesGroupText = (typeOfLivestock) => {
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.herdOthersOnSbi,
+  path: livestockClaimRoutes.herdOthersOnSbi,
   options: {
     handler: async (request, h) => {
       const { isOnlyHerdOnSbi, typeOfLivestock } = getSessionData(
         request,
         sessionEntryKeys.endemicsClaim,
       );
-      return h.view(claimViews.herdOthersOnSbi, {
-        backLink: claimRoutes.enterCphNumber,
+      return h.view(livestockClaimViews.herdOthersOnSbi, {
+        backLink: livestockClaimRoutes.enterCphNumber,
         isOnlyHerdOnSbi,
         herdOrFlock: getHerdOrFlock(typeOfLivestock),
         speciesGroupText: getSpeciesGroupText(typeOfLivestock),
@@ -42,7 +42,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.herdOthersOnSbi,
+  path: livestockClaimRoutes.herdOthersOnSbi,
   options: {
     validate: {
       payload: Joi.object({
@@ -53,13 +53,13 @@ const postHandler = {
         const { typeOfLivestock } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
         return h
-          .view(claimViews.herdOthersOnSbi, {
+          .view(livestockClaimViews.herdOthersOnSbi, {
             ...request.payload,
             errorMessage: {
               text: `Select yes if this is the only ${getSpeciesGroupText(typeOfLivestock)} associated with this SBI`,
               href: "#isOnlyHerdOnSbi",
             },
-            backLink: claimRoutes.enterCphNumber,
+            backLink: livestockClaimRoutes.enterCphNumber,
             herdOrFlock: getHerdOrFlock(typeOfLivestock),
             speciesGroupText: getSpeciesGroupText(typeOfLivestock),
           })
@@ -105,10 +105,10 @@ const postHandler = {
           },
         });
 
-        return h.redirect(claimRoutes.checkHerdDetails);
+        return h.redirect(livestockClaimRoutes.checkHerdDetails);
       }
 
-      return h.redirect(claimRoutes.enterHerdDetails);
+      return h.redirect(livestockClaimRoutes.enterHerdDetails);
     },
   },
 };

@@ -7,14 +7,18 @@ import {
   sessionKeys,
   setSessionData,
 } from "../../../session/index.js";
-import { claimRoutes, claimViews, dashboardRoutes } from "../../../constants/routes.js";
+import {
+  livestockClaimRoutes,
+  livestockClaimViews,
+  dashboardRoutes,
+} from "../../../constants/routes.js";
 import { TYPE_OF_LIVESTOCK } from "ffc-ahwr-common-library";
 
 const errorMessage = { text: "Select which species you are claiming for" };
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.whichSpecies,
+  path: livestockClaimRoutes.whichSpecies,
   options: {
     handler: async (request, h) => {
       // get type of livestock here, before we reset the session
@@ -29,7 +33,7 @@ const getHandler = {
       // to this point to change species, we cant keep all their answers
       await resetEndemicsClaimSession(request, latestEndemicsApplication.reference);
 
-      return h.view(claimViews.whichSpecies, {
+      return h.view(livestockClaimViews.whichSpecies, {
         ...(typeOfLivestock && {
           previousAnswer: typeOfLivestock,
         }),
@@ -41,7 +45,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.whichSpecies,
+  path: livestockClaimRoutes.whichSpecies,
   options: {
     validate: {
       payload: Joi.object({
@@ -52,7 +56,7 @@ const postHandler = {
       failAction: (request, h, error) => {
         request.logger.error({ error });
         return h
-          .view(claimViews.whichSpecies, {
+          .view(livestockClaimViews.whichSpecies, {
             errorMessage,
             backLink: dashboardRoutes.manageYourClaims,
           })
@@ -79,7 +83,7 @@ const postHandler = {
         typeOfLivestock,
       );
 
-      return h.redirect(claimRoutes.whichTypeOfReview);
+      return h.redirect(livestockClaimRoutes.whichTypeOfReview);
     },
   },
 };

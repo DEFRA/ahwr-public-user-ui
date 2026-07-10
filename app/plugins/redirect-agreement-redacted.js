@@ -1,5 +1,10 @@
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
-import { applyRoutes, dashboardRoutes, loginRoutes, supportRoutes } from "../constants/routes.js";
+import {
+  livestockApplyRoutes,
+  dashboardRoutes,
+  loginRoutes,
+  supportRoutes,
+} from "../constants/routes.js";
 
 export const redirectAgreementRedactedPlugin = {
   plugin: {
@@ -9,10 +14,10 @@ export const redirectAgreementRedactedPlugin = {
         loginRoutes.cannotSignIn,
         supportRoutes.health,
         supportRoutes.assets,
-        applyRoutes.declaration,
-        applyRoutes.numbers,
-        applyRoutes.timings,
-        applyRoutes.youCanClaimMultiple,
+        livestockApplyRoutes.declaration,
+        livestockApplyRoutes.numbers,
+        livestockApplyRoutes.timings,
+        livestockApplyRoutes.youCanClaimMultiple,
         dashboardRoutes.manageYourClaims,
       ];
       server.ext("onPreHandler", (request, h) => {

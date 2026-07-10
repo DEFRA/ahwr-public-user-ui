@@ -30,7 +30,7 @@ import { getLatestApplications } from "./application-helper.js";
 import { AHWR_SCHEME, POULTRY_SCHEME } from "ffc-ahwr-common-library";
 import { config } from "../config/index.js";
 import {
-  applyRoutes,
+  livestockApplyRoutes,
   dashboardRoutes,
   poultryApplyRoutes,
   poultryClaimRoutes,
@@ -479,7 +479,7 @@ describe("context-helper", () => {
 
     describe("livestock urls", () => {
       it("returns the agreement survey uri when path is /livestock/agreement-offer and method is post", () => {
-        const mockRequest = { path: applyRoutes.declaration, method: "post" };
+        const mockRequest = { path: livestockApplyRoutes.declaration, method: "post" };
         const result = getSurveyUri(mockRequest);
 
         expect(result).toBe(config.customerSurvey.applyUri);
@@ -514,7 +514,7 @@ describe("context-helper", () => {
       });
 
       it("returns claimUri when path is /livestock/agreement-offer but method is get and latestEndemicsApplication exists", () => {
-        const mockRequest = { path: applyRoutes.declaration, method: "get" };
+        const mockRequest = { path: livestockApplyRoutes.declaration, method: "get" };
         mockEndemicsSessionData(mockRequest, { reference: "IAHW-1111-2222" });
 
         const result = getSurveyUri(mockRequest);

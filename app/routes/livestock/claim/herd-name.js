@@ -8,14 +8,14 @@ import {
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { getHerdOrFlock } from "../../../lib/display-helpers.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 
 const getBackLink = (herds) =>
-  !herds?.length ? claimRoutes.dateOfVisit : claimRoutes.selectTheHerd;
+  !herds?.length ? livestockClaimRoutes.dateOfVisit : livestockClaimRoutes.selectTheHerd;
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.enterHerdName,
+  path: livestockClaimRoutes.enterHerdName,
   options: {
     tags: ["mh"],
     handler: async (request, h) => {
@@ -23,7 +23,7 @@ const getHandler = {
         request,
         sessionEntryKeys.endemicsClaim,
       );
-      return h.view(claimViews.enterHerdName, {
+      return h.view(livestockClaimViews.enterHerdName, {
         backLink: getBackLink(herds),
         herdName,
         herdOrFlock: getHerdOrFlock(typeOfLivestock),
@@ -47,7 +47,7 @@ const isHerdNameEmpty = (errorType) =>
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.enterHerdName,
+  path: livestockClaimRoutes.enterHerdName,
   options: {
     validate: {
       payload: Joi.object({
@@ -74,7 +74,7 @@ const postHandler = {
           : error.details[0].message;
 
         return h
-          .view(claimViews.enterHerdName, {
+          .view(livestockClaimViews.enterHerdName, {
             ...request.payload,
             errorMessage: {
               text: errorText,
@@ -96,7 +96,7 @@ const postHandler = {
 
       if (previousClaims?.some((claim) => claim.herd?.name === herdName.trim())) {
         return h
-          .view(claimViews.enterHerdName, {
+          .view(livestockClaimViews.enterHerdName, {
             ...request.payload,
             errorMessage: {
               text: ERROR_MESSAGES.NAME_UNIQUE,
@@ -128,7 +128,7 @@ const postHandler = {
         },
       });
 
-      return h.redirect(claimRoutes.enterCphNumber);
+      return h.redirect(livestockClaimRoutes.enterCphNumber);
     },
   },
 };

@@ -11,7 +11,7 @@ import {
   UNNAMED_HERD,
 } from "ffc-ahwr-common-library";
 import { isWithin10MonthsFromNow } from "../../lib/utils.js";
-import { claimRoutes, dashboardRoutes } from "../../constants/routes.js";
+import { livestockClaimRoutes, dashboardRoutes } from "../../constants/routes.js";
 import { SHEEP } from "../../constants/claim-constants.js";
 import { refreshApplications } from "../../lib/context-helper.js";
 
@@ -198,7 +198,7 @@ export const vetVisitsHandlers = [
 
         const { sheepHeaders, nonSheepHeaders } = buildTableHeaders();
 
-        return h.view("livestock/vet-visits", {
+        return h.view("livestock/manage-claims", {
           beefClaimsRows,
           dairyClaimsRows,
           pigClaimsRows,
@@ -209,7 +209,7 @@ export const vetVisitsHandlers = [
           },
           showNotificationBanner,
           attachedToMultipleBusinesses,
-          claimJourneyStartPointUri: claimRoutes.whichSpecies,
+          claimJourneyStartPointUri: livestockClaimRoutes.whichSpecies,
           ...organisation,
           ...(latestEndemicsApplication?.reference && {
             reference: latestEndemicsApplication.reference,

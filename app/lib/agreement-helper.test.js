@@ -2,7 +2,7 @@ import { when } from "jest-when";
 import { checkIfPoultryAgreement, shouldShowManageYourClaims } from "./agreement-helper.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import {
-  applyRoutes,
+  livestockApplyRoutes,
   dashboardRoutes,
   loginRoutes,
   poultryApplyRoutes,
@@ -190,7 +190,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when no status in livestock but agreed on poultry on endemics apply route", () => {
-      const request = { path: applyRoutes.timings };
+      const request = { path: livestockApplyRoutes.timings };
       mockPoultrySessionData(request, { status: "AGREED" });
 
       const actual = shouldShowManageYourClaims(request);

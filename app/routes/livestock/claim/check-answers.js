@@ -4,7 +4,7 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../../session/index.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { upperFirstLetter } from "../../../lib/display-helpers.js";
 import { getLivestockTypes, getReviewType } from "../../../lib/utils.js";
 import { submitNewClaim } from "../../../api-requests/claim-api.js";
@@ -20,10 +20,10 @@ import { JOURNEY } from "../../../constants/constants.js";
 
 const getBackLink = (isReview, isSheep) => {
   if (isReview) {
-    return isSheep ? claimRoutes.testUrn : claimRoutes.testResults;
+    return isSheep ? livestockClaimRoutes.testUrn : livestockClaimRoutes.testResults;
   }
 
-  return isSheep ? claimRoutes.sheepTestResults : claimRoutes.biosecurity;
+  return isSheep ? livestockClaimRoutes.sheepTestResults : livestockClaimRoutes.biosecurity;
 };
 
 const getNoChangeRows = ({ isReview, isPigs, isSheep, organisationName, endemicsClaimSession }) => {
@@ -63,7 +63,7 @@ const getHerdNameRow = (herdName, typeOfLivestock) => {
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.checkAnswers,
+  path: livestockClaimRoutes.checkAnswers,
   options: {
     handler: async (request, h) => {
       const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -122,7 +122,7 @@ const getHandler = {
       ];
 
       const rowsWithData = rows.filter((row) => row.value?.html !== undefined);
-      return h.view(claimViews.checkAnswers, {
+      return h.view(livestockClaimViews.checkAnswers, {
         listData: { rows: rowsWithData },
         backLink,
       });
@@ -132,7 +132,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.checkAnswers,
+  path: livestockClaimRoutes.checkAnswers,
   options: {
     handler: async (request, h) => {
       const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -168,7 +168,7 @@ const postHandler = {
           reference: `applicationReference: ${claimPayload.applicationReference}, claimReference: ${claim.reference}, tempClaimReference: ${claimPayload.reference}`,
         },
       );
-      return h.redirect(claimRoutes.confirmation);
+      return h.redirect(livestockClaimRoutes.confirmation);
     },
   },
 };

@@ -64,13 +64,37 @@ describe("/livestock/sbi-herds tests", () => {
   });
 
   describe("GET", () => {
-    test("returns 200 with herd labels when species beef", async () => {
+    test.each([
+      {
+        typeOfLivestock: "beef",
+        hint: "Tell us about this herd",
+        legend:
+          "Is this the only beef cattle herd associated with this Single Business Identifier (SBI)?",
+      },
+      {
+        typeOfLivestock: "sheep",
+        hint: "Tell us about this flock",
+        legend:
+          "Is this the only flock of sheep associated with this Single Business Identifier (SBI)?",
+      },
+      {
+        typeOfLivestock: "dairy",
+        hint: "Tell us about this herd",
+        legend:
+          "Is this the only dairy cattle herd associated with this Single Business Identifier (SBI)?",
+      },
+      {
+        typeOfLivestock: "pigs",
+        hint: "Tell us about this herd",
+        legend: "Is this the only pigs herd associated with this Single Business Identifier (SBI)?",
+      },
+    ])("returns 200 with $typeOfLivestock labels", async ({ typeOfLivestock, hint, legend }) => {
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockReturnValue({
           reference: "TEMP-6GSE-PIR8",
           typeOfReview: "REVIEW",
-          typeOfLivestock: "beef",
+          typeOfLivestock,
         });
 
       const res = await server.inject({ method: "GET", url, auth });
@@ -82,11 +106,8 @@ describe("/livestock/sbi-herds tests", () => {
         "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
-      expect($(".govuk-hint").text()).toContain("Tell us about this herd");
-      const legend = $(".govuk-fieldset__legend--l");
-      expect(legend.text().trim()).toBe(
-        "Is this the only beef cattle herd associated with this Single Business Identifier (SBI)?",
-      );
+      expect($(".govuk-hint").text()).toContain(hint);
+      expect($(".govuk-fieldset__legend--l").text().trim()).toBe(legend);
       expectPhaseBanner.ok($);
     });
 
@@ -110,84 +131,6 @@ describe("/livestock/sbi-herds tests", () => {
       );
       expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
       expect($('.govuk-radios__input[value="no"]').is(":checked")).toBeTruthy();
-      expectPhaseBanner.ok($);
-    });
-
-    test("returns 200 with flock labels when species sheep", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValue({
-          reference: "TEMP-6GSE-PIR8",
-          typeOfReview: "REVIEW",
-          typeOfLivestock: "sheep",
-        });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
-      expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
-      expect($(".govuk-hint").text()).toContain("Tell us about this flock");
-      const legend = $(".govuk-fieldset__legend--l");
-      expect(legend.text().trim()).toBe(
-        "Is this the only flock of sheep associated with this Single Business Identifier (SBI)?",
-      );
-      expectPhaseBanner.ok($);
-    });
-
-    test("returns 200 with flock labels when species dairy", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValue({
-          reference: "TEMP-6GSE-PIR8",
-          typeOfReview: "REVIEW",
-          typeOfLivestock: "dairy",
-        });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
-      expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
-      expect($(".govuk-hint").text()).toContain("Tell us about this herd");
-      const legend = $(".govuk-fieldset__legend--l");
-      expect(legend.text().trim()).toBe(
-        "Is this the only dairy cattle herd associated with this Single Business Identifier (SBI)?",
-      );
-      expectPhaseBanner.ok($);
-    });
-
-    test("returns 200 with flock labels when species pigs", async () => {
-      when(getSessionData)
-        .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-        .mockReturnValue({
-          reference: "TEMP-6GSE-PIR8",
-          typeOfReview: "REVIEW",
-          typeOfLivestock: "pigs",
-        });
-
-      const res = await server.inject({ method: "GET", url, auth });
-
-      expect(await axe(res.payload)).toHaveNoViolations();
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expect($("title").text().trim()).toContain(
-        "Livestock associated with this SBI - Get funding to improve animal health and welfare - GOV.UKGOV.UK",
-      );
-      expect($(".govuk-back-link").attr("href")).toContain("/livestock/cph");
-      expect($(".govuk-hint").text()).toContain("Tell us about this herd");
-      const legend = $(".govuk-fieldset__legend--l");
-      expect(legend.text().trim()).toBe(
-        "Is this the only pigs herd associated with this Single Business Identifier (SBI)?",
-      );
       expectPhaseBanner.ok($);
     });
   });

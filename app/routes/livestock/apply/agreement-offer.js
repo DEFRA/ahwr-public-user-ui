@@ -8,25 +8,17 @@ import {
 } from "../../../session/index.js";
 import { userType, JOURNEY } from "../../../constants/constants.js";
 import { config } from "../../../config/index.js";
-import { applyRoutes, applyViews } from "../../../constants/routes.js";
+import { livestockApplyRoutes, livestockApplyViews } from "../../../constants/routes.js";
 import { StatusCodes } from "http-status-codes";
 import { preApplyHandler } from "../../../lib/pre-apply-handler.js";
 import { createApplication } from "../../../api-requests/application-api.js";
 import { createTempReference } from "../../../lib/create-temp-ref.js";
 import { trackEvent } from "../../../logging/logger.js";
 import { refreshApplications } from "../../../lib/context-helper.js";
-
-export const resetFarmerApplyDataBeforeApplication = (application) => {
-  delete application.agreeSpeciesNumbers;
-  delete application.agreeSameSpecies;
-  delete application.agreeMultipleSpecies;
-  delete application.agreeVisitTimings;
-};
-
-export const formatOrganisation = (organisation) => ({
-  ...organisation,
-  address: organisation.address.split(",").map((line) => line.trim()),
-});
+import {
+  resetFarmerApplyDataBeforeApplication,
+  formatOrganisation,
+} from "../../../lib/apply-helpers.js";
 
 const processRejectedApplication = async (h, request) => {
   // create new tempApplicationId as the current one has been used to create a rejected application
@@ -41,7 +33,7 @@ const processRejectedApplication = async (h, request) => {
     tempApplicationId,
   );
 
-  return h.view(applyViews.offerRejected, {
+  return h.view(livestockApplyViews.offerRejected, {
     offerRejected: true,
   });
 };
@@ -49,15 +41,15 @@ const processRejectedApplication = async (h, request) => {
 export const declarationRouteHandlers = [
   {
     method: "get",
-    path: applyRoutes.declaration,
+    path: livestockApplyRoutes.declaration,
     options: {
       pre: [{ method: preApplyHandler }],
       handler: async (request, h) => {
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
-        return h.view(applyViews.declaration, {
-          backLink: applyRoutes.timings,
-          latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${applyRoutes.declaration}`,
+        return h.view(livestockApplyViews.declaration, {
+          backLink: livestockApplyRoutes.timings,
+          latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${livestockApplyRoutes.declaration}`,
           organisation: formatOrganisation(organisation),
         });
       },
@@ -65,7 +57,7 @@ export const declarationRouteHandlers = [
   },
   {
     method: "post",
-    path: applyRoutes.declaration,
+    path: livestockApplyRoutes.declaration,
     options: {
       validate: {
         payload: joi.object({
@@ -79,9 +71,9 @@ export const declarationRouteHandlers = [
           const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
           return h
-            .view(applyViews.declaration, {
-              backLink: applyRoutes.timings,
-              latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${applyRoutes.declaration}`,
+            .view(livestockApplyViews.declaration, {
+              backLink: livestockApplyRoutes.timings,
+              latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${livestockApplyRoutes.declaration}`,
               errorMessage: {
                 text: "Select yes if you have read and agree to the terms and conditions",
               },
@@ -162,7 +154,7 @@ export const declarationRouteHandlers = [
         // refresh application
         await refreshApplications(organisation.sbi, request);
 
-        return h.view(applyViews.confirmation, {
+        return h.view(livestockApplyViews.confirmation, {
           reference: applicationReference,
           isNewUser: userType.NEW_USER === organisation.userType,
           latestTermsAndConditionsUri: config.latestTermsAndConditionsUri,

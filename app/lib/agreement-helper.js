@@ -3,7 +3,7 @@ import { APPLICATION_REFERENCE_PREFIX_POULTRY } from "ffc-ahwr-common-library";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import {
   allPoultryRoutes,
-  applyRoutes,
+  livestockApplyRoutes,
   dashboardRoutes,
   loginRoutes,
   poultryApplyRoutes,
@@ -15,7 +15,7 @@ export const checkIfPoultryAgreement = (latestEndemicsApplication) => {
 
 const userHasLivestockAgreement = (request) => {
   // Technically, this should never happen, because of redirection plugin.
-  if (request.path === applyRoutes.declaration && request.method === "get") {
+  if (request.path === livestockApplyRoutes.declaration && request.method === "get") {
     return false;
   }
 

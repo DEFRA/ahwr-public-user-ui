@@ -11,7 +11,7 @@ import {
   sessionKeys,
   setSessionData,
 } from "../../../session/index.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { sheepTestResultsType, sheepTestTypes } from "../../../constants/claim-constants.js";
 
 const MAX_ALLOWED_CHARS = 500;
@@ -32,13 +32,13 @@ const routes = (request) => {
     sheepTestResults[nextPageDiseaseTypeIndex]?.diseaseType;
 
   return {
-    currentPage: `${claimRoutes.sheepTestResults}?diseaseType=${currentDiseaseType}`,
+    currentPage: `${livestockClaimRoutes.sheepTestResults}?diseaseType=${currentDiseaseType}`,
     nextPage: nextPageDiseaseType
-      ? `${claimRoutes.sheepTestResults}?diseaseType=${nextPageDiseaseType}`
-      : claimRoutes.checkAnswers,
+      ? `${livestockClaimRoutes.sheepTestResults}?diseaseType=${nextPageDiseaseType}`
+      : livestockClaimRoutes.checkAnswers,
     previousPage: previousDiseaseType
-      ? `${claimRoutes.sheepTestResults}?diseaseType=${previousDiseaseType}`
-      : claimRoutes.sheepTests,
+      ? `${livestockClaimRoutes.sheepTestResults}?diseaseType=${previousDiseaseType}`
+      : livestockClaimRoutes.sheepTests,
   };
 };
 
@@ -370,7 +370,7 @@ const getEmptyItems = (items, itemType) => {
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.sheepTestResults,
+  path: livestockClaimRoutes.sheepTestResults,
   options: {
     handler: async (request, h) => {
       const endemicsClaim = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -392,7 +392,7 @@ const getHandler = {
       const pageContent = getPageContent(request);
       const { previousPage } = routes(request);
 
-      return h.view(claimViews.sheepTestResults, {
+      return h.view(livestockClaimViews.sheepTestResults, {
         ...pageContent,
         backLink: previousPage,
       });
@@ -402,7 +402,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.sheepTestResults,
+  path: livestockClaimRoutes.sheepTestResults,
   options: {
     handler: async (request, h) => {
       const { payload } = request;
@@ -419,7 +419,7 @@ const postHandler = {
 
         if (!payload?.testResult) {
           return h
-            .view(claimViews.sheepTestResults, { ...pageContent, backLink, errorList })
+            .view(livestockClaimViews.sheepTestResults, { ...pageContent, backLink, errorList })
             .code(HttpStatus.BAD_REQUEST)
             .takeover();
         }
@@ -455,7 +455,7 @@ const postHandler = {
         const pageContent = getPageContent(request, results);
 
         return h
-          .view(claimViews.sheepTestResults, {
+          .view(livestockClaimViews.sheepTestResults, {
             ...pageContent,
             backLink: previousPage,
             errorList: getErrorList(diseaseTypeValidationError, testResultValidationError),
@@ -504,7 +504,7 @@ const postHandler = {
         });
 
         return h
-          .view(claimViews.sheepTestResults, {
+          .view(livestockClaimViews.sheepTestResults, {
             ...pageContent,
             backLink: previousPage,
             errorList: [
@@ -526,7 +526,7 @@ const postHandler = {
         return h.redirect(nextPage);
       }
 
-      return h.view(claimViews.sheepTestResults, {
+      return h.view(livestockClaimViews.sheepTestResults, {
         ...getPageContent(request),
         backLink: previousPage,
       });

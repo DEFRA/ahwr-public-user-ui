@@ -7,11 +7,11 @@ import {
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { claimConstants } from "../../../constants/claim-constants.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.pigsElisaResult,
+  path: livestockClaimRoutes.pigsElisaResult,
   options: {
     handler: async (request, h) => {
       const testResult = getSessionData(
@@ -20,9 +20,9 @@ const getHandler = {
         sessionKeys.endemicsClaim.pigsElisaTestResult,
       );
 
-      return h.view(claimViews.pigsElisaResult, {
+      return h.view(livestockClaimViews.pigsElisaResult, {
         previousAnswer: testResult,
-        backLink: claimRoutes.numberOfSamplesTested,
+        backLink: livestockClaimRoutes.numberOfSamplesTested,
       });
     },
   },
@@ -30,7 +30,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.pigsElisaResult,
+  path: livestockClaimRoutes.pigsElisaResult,
   options: {
     validate: {
       payload: Joi.object({
@@ -42,9 +42,9 @@ const postHandler = {
         const errorMessage = { text: "Select the result of the test" };
 
         return h
-          .view(claimViews.pigsElisaResult, {
+          .view(livestockClaimViews.pigsElisaResult, {
             errorMessage,
-            backLink: claimRoutes.numberOfSamplesTested,
+            backLink: livestockClaimRoutes.numberOfSamplesTested,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -70,7 +70,7 @@ const postHandler = {
         { shouldEmitEvent: false },
       );
 
-      return h.redirect(claimRoutes.biosecurity);
+      return h.redirect(livestockClaimRoutes.biosecurity);
     },
   },
 };

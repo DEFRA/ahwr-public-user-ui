@@ -7,12 +7,12 @@ import {
 } from "../../../session/index.js";
 import { thresholds, claimConstants } from "../../../constants/claim-constants.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.numberOfSamplesTested,
+  path: livestockClaimRoutes.numberOfSamplesTested,
   options: {
     handler: async (request, h) => {
       const numberOfSamplesTested = getSessionData(
@@ -21,9 +21,9 @@ const getHandler = {
         sessionKeys.endemicsClaim.numberOfSamplesTested,
       );
 
-      return h.view(claimViews.numberOfSamplesTested, {
+      return h.view(livestockClaimViews.numberOfSamplesTested, {
         numberOfSamplesTested,
-        backLink: claimRoutes.testUrn,
+        backLink: livestockClaimRoutes.testUrn,
         hintText:
           "Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.",
       });
@@ -33,7 +33,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.numberOfSamplesTested,
+  path: livestockClaimRoutes.numberOfSamplesTested,
   options: {
     validate: {
       payload: Joi.object({
@@ -50,10 +50,10 @@ const postHandler = {
       }),
       failAction: async (request, h, error) => {
         return h
-          .view(claimViews.numberOfSamplesTested, {
+          .view(livestockClaimViews.numberOfSamplesTested, {
             ...request.payload,
             errorMessage: { text: error.details[0].message, href: "#numberOfSamplesTested" },
-            backLink: claimRoutes.testUrn,
+            backLink: livestockClaimRoutes.testUrn,
             hintText:
               "Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.",
           })
@@ -89,8 +89,8 @@ const postHandler = {
         });
 
         return h
-          .view(claimViews.numberOfSamplesTestedException, {
-            backLink: claimRoutes.numberOfSamplesTested,
+          .view(livestockClaimViews.numberOfSamplesTestedException, {
+            backLink: livestockClaimRoutes.numberOfSamplesTested,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -110,7 +110,7 @@ const postHandler = {
           pcr,
           { shouldEmitEvent: false },
         );
-        return h.redirect(claimRoutes.pigsPcrResult);
+        return h.redirect(livestockClaimRoutes.pigsPcrResult);
       }
 
       await setSessionData(
@@ -121,7 +121,7 @@ const postHandler = {
         { shouldEmitEvent: false },
       );
 
-      return h.redirect(claimRoutes.pigsElisaResult);
+      return h.redirect(livestockClaimRoutes.pigsElisaResult);
     },
   },
 };

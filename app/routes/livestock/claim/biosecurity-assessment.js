@@ -5,7 +5,7 @@ import {
   sessionEntryKeys,
   sessionKeys,
 } from "../../../session/index.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { getTestResult, getLivestockTypes } from "../../../lib/utils.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
@@ -44,20 +44,20 @@ export const getBeefOrDairyPage = (endemicsClaimSession, isNegative, isPositive)
 
   if (isNegative) {
     if (!piHuntDone) {
-      return claimRoutes.piHunt;
+      return livestockClaimRoutes.piHunt;
     }
 
     if (!piHuntRecommended) {
-      return claimRoutes.piHuntRecommended;
+      return livestockClaimRoutes.piHuntRecommended;
     }
 
     if (piHuntRecommended && !piHuntAllAnimals) {
-      return claimRoutes.piHuntAllAnimals;
+      return livestockClaimRoutes.piHuntAllAnimals;
     }
   }
 
   if (isPositive && piHuntDone && !piHuntAllAnimals) {
-    return claimRoutes.piHuntAllAnimals;
+    return livestockClaimRoutes.piHuntAllAnimals;
   }
 
   if (
@@ -70,10 +70,10 @@ export const getBeefOrDairyPage = (endemicsClaimSession, isNegative, isPositive)
       endemicsClaimSession.dateOfVisit,
     )
   ) {
-    return claimRoutes.testResults;
+    return livestockClaimRoutes.testResults;
   }
 
-  return claimRoutes.testResults;
+  return livestockClaimRoutes.testResults;
 };
 export const previousPageUrl = (request) => {
   const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
@@ -86,27 +86,27 @@ export const previousPageUrl = (request) => {
   }
 
   if ((isBeef || isDairy) && isNegative) {
-    return claimRoutes.vetRCVS;
+    return livestockClaimRoutes.vetRCVS;
   }
 
   if (isPigs) {
     return getBackPageForPigs(endemicsClaimSession);
   }
 
-  return claimRoutes.testResults;
+  return livestockClaimRoutes.testResults;
 };
 
 const getBackPageForPigs = (session) => {
   // This page might have been skipped, if they said the result was negative
   if (session?.pigsGeneticSequencing) {
-    return claimRoutes.pigsGeneticSequencing;
+    return livestockClaimRoutes.pigsGeneticSequencing;
   }
 
   if (session?.pigsFollowUpTest === pcr) {
-    return claimRoutes.pigsPcrResult;
+    return livestockClaimRoutes.pigsPcrResult;
   }
 
-  return claimRoutes.pigsElisaResult;
+  return livestockClaimRoutes.pigsElisaResult;
 };
 
 export const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPercentage) => {
@@ -128,12 +128,12 @@ export const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPerce
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.biosecurity,
+  path: livestockClaimRoutes.biosecurity,
   options: {
     handler: async (request, h) => {
       const endemicsClaimSession = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-      return h.view(claimViews.biosecurity, {
+      return h.view(livestockClaimViews.biosecurity, {
         previousAnswer: endemicsClaimSession?.biosecurity,
         typeOfLivestock: endemicsClaimSession?.typeOfLivestock,
         backLink: previousPageUrl(request),
@@ -144,7 +144,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.biosecurity,
+  path: livestockClaimRoutes.biosecurity,
   options: {
     validate: {
       payload: Joi.object({
@@ -181,7 +181,7 @@ const postHandler = {
         };
 
         return h
-          .view(claimViews.biosecurity, {
+          .view(livestockClaimViews.biosecurity, {
             backLink: previousPageUrl(request),
             typeOfLivestock: endemicsClaimSession?.typeOfLivestock,
             ...errors,
@@ -214,12 +214,14 @@ const postHandler = {
         });
 
         return h
-          .view(claimViews.biosecurityException, { backLink: claimRoutes.biosecurity })
+          .view(livestockClaimViews.biosecurityException, {
+            backLink: livestockClaimRoutes.biosecurity,
+          })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
       }
 
-      return h.redirect(claimRoutes.checkAnswers);
+      return h.redirect(livestockClaimRoutes.checkAnswers);
     },
   },
 };

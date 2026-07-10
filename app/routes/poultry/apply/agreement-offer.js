@@ -17,7 +17,7 @@ import { refreshApplications } from "../../../lib/context-helper.js";
 import {
   resetFarmerApplyDataBeforeApplication,
   formatOrganisation,
-} from "../../livestock/apply/declaration.js";
+} from "../../../lib/apply-helpers.js";
 import { prePoultryApplyHandler } from "../../../lib/pre-poultry-apply-handler.js";
 
 const processRejectedApplication = async (h, request) => {

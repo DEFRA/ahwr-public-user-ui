@@ -9,13 +9,13 @@ import { getTestResult } from "../../../lib/utils.js";
 import { clearPiHuntSessionOnChange } from "../../../lib/clear-pi-hunt-session-on-change.js";
 import { isVisitDateAfterPIHuntAndDairyGoLive } from "../../../lib/context-helper.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.piHunt,
+  path: livestockClaimRoutes.piHunt,
   options: {
     handler: async (request, h) => {
       const { piHunt: previousPiHuntAnswer, dateOfVisit } = getSessionData(
@@ -27,9 +27,9 @@ const getHandler = {
         ? "Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?"
         : "Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?";
 
-      return h.view(claimViews.piHunt, {
+      return h.view(livestockClaimViews.piHunt, {
         titleText,
-        backLink: claimRoutes.vetRcvs,
+        backLink: livestockClaimRoutes.vetRcvs,
         previousAnswer: previousPiHuntAnswer,
       });
     },
@@ -38,7 +38,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.piHunt,
+  path: livestockClaimRoutes.piHunt,
   options: {
     validate: {
       payload: Joi.object({
@@ -56,9 +56,9 @@ const postHandler = {
           : "Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?";
 
         return h
-          .view(claimViews.piHunt, {
+          .view(livestockClaimViews.piHunt, {
             titleText,
-            backLink: claimRoutes.vetRcvs,
+            backLink: livestockClaimRoutes.vetRcvs,
             previousAnswer: previousPiHuntAnswer,
             errorMessage: { text: "Select yes if a PI hunt was done", href: "#piHunt" },
           })
@@ -97,23 +97,23 @@ const postHandler = {
         }
 
         if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) {
-          return h.redirect(claimRoutes.biosecurity);
+          return h.redirect(livestockClaimRoutes.biosecurity);
         }
 
         return h
-          .view(claimViews.piHuntException, { backLink: claimRoutes.piHunt })
+          .view(livestockClaimViews.piHuntException, { backLink: livestockClaimRoutes.piHunt })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
       }
 
       if (piHuntEnabledAndVisitDateAfterGoLive && isPositive) {
-        return h.redirect(claimRoutes.piHuntAllAnimals);
+        return h.redirect(livestockClaimRoutes.piHuntAllAnimals);
       }
       if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) {
-        return h.redirect(claimRoutes.piHuntRecommended);
+        return h.redirect(livestockClaimRoutes.piHuntRecommended);
       }
 
-      return h.redirect(claimRoutes.testUrn);
+      return h.redirect(livestockClaimRoutes.testUrn);
     },
   },
 };

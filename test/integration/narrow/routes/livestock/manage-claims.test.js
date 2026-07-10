@@ -173,7 +173,7 @@ describe("GET /livestock/manage-claims", () => {
 
       const $ = cheerio.load(payload);
 
-      expect(findByText($, "Important").length).toBe(0);
+      expect(findByText($, "Important")).toHaveLength(0);
 
       expect(getTableCells($)).toEqual([
         ["Visit date", "Herd name", "Type and claim number", "Status"],

@@ -8,7 +8,7 @@ import {
   sessionKeys,
   setSessionData,
 } from "../../../session/index.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 
 const { vaccination } = claimConstants;
 
@@ -18,7 +18,7 @@ const hintHtml = "You can find this on the summary the vet gave you.";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.vaccination,
+  path: livestockClaimRoutes.vaccination,
   options: {
     handler: async (request, h) => {
       const { vetVisitsReviewTestResults, herdVaccinationStatus } = getSessionData(
@@ -42,15 +42,20 @@ const getHandler = {
           checked: herdVaccinationStatus === "notVaccinated",
         },
       ]);
-      const backLink = vetVisitsReviewTestResults ? claimRoutes.testResults : claimRoutes.vetRcvs;
-      return h.view(claimViews.vaccination, { backLink, ...vaccinatedNotVaccinatedRadios });
+      const backLink = vetVisitsReviewTestResults
+        ? livestockClaimRoutes.testResults
+        : livestockClaimRoutes.vetRcvs;
+      return h.view(livestockClaimViews.vaccination, {
+        backLink,
+        ...vaccinatedNotVaccinatedRadios,
+      });
     },
   },
 };
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.vaccination,
+  path: livestockClaimRoutes.vaccination,
   options: {
     validate: {
       payload: Joi.object({
@@ -73,9 +78,11 @@ const postHandler = {
           { value: vaccination.vaccinated, text: "Vaccinated" },
           { value: vaccination.notVaccinated, text: "Not vaccinated" },
         ]);
-        const backLink = vetVisitsReviewTestResults ? claimRoutes.testResults : claimRoutes.vetRcvs;
+        const backLink = vetVisitsReviewTestResults
+          ? livestockClaimRoutes.testResults
+          : livestockClaimRoutes.vetRcvs;
         return h
-          .view(claimViews.vaccination, {
+          .view(livestockClaimViews.vaccination, {
             ...request.payload,
             backLink,
             ...vaccinatedNotVaccinatedRadios,
@@ -97,7 +104,7 @@ const postHandler = {
         sessionKeys.endemicsClaim.herdVaccinationStatus,
         herdVaccinationStatus,
       );
-      return h.redirect(claimRoutes.testUrn);
+      return h.redirect(livestockClaimRoutes.testUrn);
     },
   },
 };

@@ -8,7 +8,7 @@ import {
 } from "../../../../../../app/session/index.js";
 import { createServer } from "../../../../../../app/server.js";
 import { getApplicationsBySbi } from "../../../../../../app/api-requests/application-api.js";
-import { applyRoutes } from "../../../../../../app/constants/routes.js";
+import { livestockApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
@@ -50,7 +50,7 @@ describe("Check review numbers page test", () => {
 
   const options = {
     auth,
-    url: applyRoutes.numbers,
+    url: livestockApplyRoutes.numbers,
   };
 
   let server;
@@ -79,7 +79,9 @@ describe("Check review numbers page test", () => {
       expect(res.statusCode).toBe(200);
 
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toContain(applyRoutes.youCanClaimMultiple);
+      expect($(".govuk-back-link").attr("href")).toContain(
+        livestockApplyRoutes.youCanClaimMultiple,
+      );
       ok($);
     });
   });
@@ -100,7 +102,7 @@ describe("Check review numbers page test", () => {
       });
 
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual(applyRoutes.timings);
+      expect(res.headers.location).toEqual(livestockApplyRoutes.timings);
     });
 
     test("returns 200 to offer rejected page when not agree answer given", async () => {

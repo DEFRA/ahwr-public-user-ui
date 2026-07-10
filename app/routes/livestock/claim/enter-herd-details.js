@@ -10,10 +10,12 @@ import HttpStatus from "http-status-codes";
 import { MULTIPLE_HERD_REASONS } from "ffc-ahwr-common-library";
 import { getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { skipOtherHerdsOnSbiPage } from "../../../lib/context-helper.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 
 const getPreviousPageUrl = (herds, herdId) =>
-  skipOtherHerdsOnSbiPage(herds, herdId) ? claimRoutes.enterCphNumber : claimRoutes.herdOthersOnSbi;
+  skipOtherHerdsOnSbiPage(herds, herdId)
+    ? livestockClaimRoutes.enterCphNumber
+    : livestockClaimRoutes.herdOthersOnSbi;
 
 const HINT_TEXT_BY_REASON = {
   separateManagementNeeds: "for example, year-round or block calving",
@@ -51,13 +53,13 @@ const getEnterHerdDetailsViewData = (request, ignoreHerdReasons = false) => {
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.enterHerdDetails,
+  path: livestockClaimRoutes.enterHerdDetails,
   options: {
     handler: async (request, h) => {
       const { backLink, checkboxItemsForHerdReasons, herdReasons, herdOrFlock } =
         getEnterHerdDetailsViewData(request);
 
-      return h.view(claimViews.enterHerdDetails, {
+      return h.view(livestockClaimViews.enterHerdDetails, {
         backLink,
         checkboxItemsForHerdReasons,
         herdReasons,
@@ -69,7 +71,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.enterHerdDetails,
+  path: livestockClaimRoutes.enterHerdDetails,
   options: {
     validate: {
       payload: Joi.object({
@@ -83,7 +85,7 @@ const postHandler = {
           getEnterHerdDetailsViewData(request, true);
 
         return h
-          .view(claimViews.enterHerdDetails, {
+          .view(livestockClaimViews.enterHerdDetails, {
             ...request.payload,
             errorMessage: {
               text: `Select the reasons for this separate ${herdOrFlock}`,
@@ -127,7 +129,7 @@ const postHandler = {
         },
       });
 
-      return h.redirect(claimRoutes.checkHerdDetails);
+      return h.redirect(livestockClaimRoutes.checkHerdDetails);
     },
   },
 };

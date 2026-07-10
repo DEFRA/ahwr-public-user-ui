@@ -1,6 +1,6 @@
 import HttpStatus from "http-status-codes";
 import Joi from "joi";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import {
   getSessionData,
   sessionEntryKeys,
@@ -12,16 +12,16 @@ const YES_TO_ASSURANCE_TEXT = "Select yes if this is the only flock associated w
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.assuranceScheme,
+  path: livestockClaimRoutes.assuranceScheme,
   options: {
     handler: async (request, h) => {
       const { assuranceScheme } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-      return h.view(claimViews.assuranceScheme, {
+      return h.view(livestockClaimViews.assuranceScheme, {
         ...(assuranceScheme && {
           previousAnswer: assuranceScheme,
         }),
-        backLink: claimRoutes.checkHerdDetails,
+        backLink: livestockClaimRoutes.checkHerdDetails,
       });
     },
   },
@@ -29,7 +29,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.assuranceScheme,
+  path: livestockClaimRoutes.assuranceScheme,
   options: {
     validate: {
       payload: Joi.object({
@@ -41,9 +41,9 @@ const postHandler = {
       failAction: async (request, h, error) => {
         request.logger.error({ error });
         return h
-          .view(claimViews.assuranceScheme, {
+          .view(livestockClaimViews.assuranceScheme, {
             ...request.payload,
-            backLink: claimRoutes.checkHerdDetails,
+            backLink: livestockClaimRoutes.checkHerdDetails,
             errorMessage: {
               text: error.details[0].message,
               href: `#${sessionKeys.endemicsClaim.assuranceScheme}`,
@@ -62,7 +62,7 @@ const postHandler = {
         sessionKeys.endemicsClaim.assuranceScheme,
         assurance,
       );
-      return h.redirect(claimRoutes.speciesNumbers);
+      return h.redirect(livestockClaimRoutes.speciesNumbers);
     },
   },
 };

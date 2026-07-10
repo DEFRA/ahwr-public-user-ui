@@ -7,20 +7,20 @@ import {
   sessionKeys,
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 
 const getHandler = {
   method: "GET",
-  path: claimRoutes.diseaseStatus,
+  path: livestockClaimRoutes.diseaseStatus,
   options: {
     handler: async (request, h) => {
       const endemicsClaimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-      return h.view(claimViews.diseaseStatus, {
+      return h.view(livestockClaimViews.diseaseStatus, {
         ...(endemicsClaimData.diseaseStatus && {
           previousAnswer: endemicsClaimData.diseaseStatus,
         }),
-        backLink: claimRoutes.numberOfSamplesTested,
+        backLink: livestockClaimRoutes.numberOfSamplesTested,
       });
     },
   },
@@ -28,7 +28,7 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: claimRoutes.diseaseStatus,
+  path: livestockClaimRoutes.diseaseStatus,
   options: {
     validate: {
       payload: Joi.object({
@@ -38,9 +38,9 @@ const postHandler = {
       }),
       failAction: (_request, h, _err) => {
         return h
-          .view(claimViews.diseaseStatus, {
+          .view(livestockClaimViews.diseaseStatus, {
             errorMessage: { text: "Enter the disease status category" },
-            backLink: claimRoutes.numberOfSamplesTested,
+            backLink: livestockClaimRoutes.numberOfSamplesTested,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -56,7 +56,7 @@ const postHandler = {
         diseaseStatus,
       );
 
-      return h.redirect(claimRoutes.biosecurity);
+      return h.redirect(livestockClaimRoutes.biosecurity);
     },
   },
 };

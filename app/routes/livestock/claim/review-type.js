@@ -1,6 +1,6 @@
 import Joi from "joi";
 import HttpStatus from "http-status-codes";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import {
   getSessionData,
   sessionEntryKeys,
@@ -27,13 +27,13 @@ const getPreviousAnswer = (typeOfReview) => {
 export const whichReviewHandlers = [
   {
     method: "GET",
-    path: claimRoutes.whichTypeOfReview,
+    path: livestockClaimRoutes.whichTypeOfReview,
     options: {
       handler: async (request, h) => {
         const { typeOfReview } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-        return h.view(claimViews.whichTypeOfReview, {
-          backLink: claimRoutes.whichSpecies,
+        return h.view(livestockClaimViews.whichTypeOfReview, {
+          backLink: livestockClaimRoutes.whichSpecies,
           previousAnswer: getPreviousAnswer(typeOfReview),
         });
       },
@@ -41,7 +41,7 @@ export const whichReviewHandlers = [
   },
   {
     method: "POST",
-    path: claimRoutes.whichTypeOfReview,
+    path: livestockClaimRoutes.whichTypeOfReview,
     options: {
       validate: {
         payload: Joi.object({
@@ -51,9 +51,9 @@ export const whichReviewHandlers = [
           request.logger.error({ error });
 
           return h
-            .view(claimViews.whichTypeOfReview, {
+            .view(livestockClaimViews.whichTypeOfReview, {
               errorMessage: { text: "Select what you are claiming for", href: "#typeOfReview" },
-              backLink: claimRoutes.whichSpecies,
+              backLink: livestockClaimRoutes.whichSpecies,
             })
             .code(HttpStatus.BAD_REQUEST)
             .takeover();
@@ -93,8 +93,8 @@ export const whichReviewHandlers = [
             });
 
             return h
-              .view(claimViews.whichTypeOfReviewException, {
-                backLink: claimRoutes.whichTypeOfReview,
+              .view(livestockClaimViews.whichTypeOfReviewException, {
+                backLink: livestockClaimRoutes.whichTypeOfReview,
                 backToPageMessage: "Tell us if you are claiming for a review or follow up.",
               })
               .code(HttpStatus.BAD_REQUEST)
@@ -109,10 +109,10 @@ export const whichReviewHandlers = [
           typeOfLivestock === oldWorldClaimTypeOfLivestock;
 
         if (isCattleEndemicsClaimForOldWorldReview) {
-          return h.redirect(claimRoutes.vetVisitsReviewTestResults);
+          return h.redirect(livestockClaimRoutes.vetVisitsReviewTestResults);
         }
 
-        return h.redirect(claimRoutes.dateOfVisit);
+        return h.redirect(livestockClaimRoutes.dateOfVisit);
       },
     },
   },

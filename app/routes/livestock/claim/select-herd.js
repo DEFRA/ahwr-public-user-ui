@@ -8,7 +8,7 @@ import {
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { ONLY_HERD, ONLY_HERD_ON_SBI } from "../../../constants/claim-constants.js";
-import { claimRoutes, claimViews } from "../../../constants/routes.js";
+import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
 import { canMakeClaim } from "../../../lib/can-make-claim.js";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { getClaimInfo } from "../../utils/get-claim-info.js";
@@ -16,7 +16,7 @@ import { getReviewType } from "../../../lib/utils.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
-const pageUrl = claimRoutes.selectTheHerd;
+const pageUrl = livestockClaimRoutes.selectTheHerd;
 
 const radioValueUnnamedHerd = "UNNAMED_HERD";
 const radioValueNewHerd = "NEW_HERD";
@@ -67,8 +67,8 @@ const getHandler = {
 
       const claimWithoutHerd = getMostRecentClaimWithoutHerd(previousClaims, typeOfLivestock);
 
-      return h.view(claimViews.selectTheHerd, {
-        backLink: claimRoutes.dateOfVisit,
+      return h.view(livestockClaimViews.selectTheHerd, {
+        backLink: livestockClaimRoutes.dateOfVisit,
         ...getSelectHerdTitles(herds, herdOrFlock),
         radioValueNewHerd,
         ...claimInfo,
@@ -141,6 +141,63 @@ const addHerdToSession = async (request, existingHerd, herds) => {
 
 const isUnnamedHerdClaim = (herdId, claim) => herdId === radioValueUnnamedHerd && !claim.herd?.id;
 
+const persistSelectedHerdId = async (request, herdSelected, tempHerdId) => {
+  const isNewOrUnnamedHerd = [radioValueUnnamedHerd, radioValueNewHerd].includes(herdSelected);
+  await setSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+    sessionKeys.endemicsClaim.herdId,
+    isNewOrUnnamedHerd ? tempHerdId : herdSelected,
+    { shouldEmitEvent: false },
+  );
+};
+
+const getClaimEligibilityError = (herdSelected, sessionData) => {
+  const {
+    previousClaims,
+    typeOfLivestock,
+    typeOfReview,
+    dateOfVisit,
+    organisation,
+    oldWorldApplication,
+  } = sessionData;
+
+  const prevHerdClaims = previousClaims.filter(
+    (claim) =>
+      claim.data.typeOfLivestock === typeOfLivestock &&
+      (isUnnamedHerdClaim(herdSelected, claim) || claim.herd?.id === herdSelected),
+  );
+
+  return canMakeClaim({
+    prevClaims: prevHerdClaims,
+    typeOfReview,
+    dateOfVisit,
+    organisation,
+    typeOfLivestock,
+    oldWorldApplication,
+  });
+};
+
+const renderNewHerdReviewException = (h) =>
+  h
+    .view(livestockClaimViews.selectTheHerdException, {
+      backLink: pageUrl,
+      claimForAReviewLink: livestockClaimRoutes.whichTypeOfReview,
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
+
+const renderSelectHerdDateException = (h, errorMessage, isReview) =>
+  h
+    .view(livestockClaimViews.selectTheHerdDateException, {
+      backLink: pageUrl,
+      errorMessage,
+      backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? "review" : "follow-up"}.`,
+      backToPageLink: livestockClaimRoutes.dateOfVisit,
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
+
 const postHandler = {
   method: "POST",
   path: pageUrl,
@@ -164,13 +221,13 @@ const postHandler = {
         const claimWithoutHerd = getMostRecentClaimWithoutHerd(previousClaims, typeOfLivestock);
 
         return h
-          .view(claimViews.selectTheHerd, {
+          .view(livestockClaimViews.selectTheHerd, {
             ...request.payload,
             errorMessage: {
               text: `Select the ${herdOrFlock} you are claiming for`,
               href: "#herdSelected",
             },
-            backLink: claimRoutes.dateOfVisit,
+            backLink: livestockClaimRoutes.dateOfVisit,
             ...getSelectHerdTitles(herds, herdOrFlock),
             radioValueNewHerd,
             ...claimInfo,
@@ -210,47 +267,18 @@ const postHandler = {
         { shouldEmitEvent: false },
       );
 
-      if ([radioValueUnnamedHerd, radioValueNewHerd].includes(herdSelected)) {
-        await setSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.herdId,
-          tempHerdId,
-          { shouldEmitEvent: false },
-        );
-      } else {
-        await setSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.herdId,
-          herdSelected,
-          { shouldEmitEvent: false },
-        );
-      }
-
-      const { isReview } = getReviewType(typeOfReview);
+      await persistSelectedHerdId(request, herdSelected, tempHerdId);
 
       if (herdSelected === radioValueNewHerd && typeOfReview === claimType.endemics) {
-        return h
-          .view(claimViews.selectTheHerdException, {
-            backLink: pageUrl,
-            claimForAReviewLink: claimRoutes.whichTypeOfReview,
-          })
-          .code(HttpStatus.BAD_REQUEST)
-          .takeover();
+        return renderNewHerdReviewException(h);
       }
 
-      const prevHerdClaims = previousClaims.filter(
-        (claim) =>
-          claim.data.typeOfLivestock === typeOfLivestock &&
-          (isUnnamedHerdClaim(herdSelected, claim) || claim.herd?.id === herdSelected),
-      );
-      const errorMessage = canMakeClaim({
-        prevClaims: prevHerdClaims,
+      const errorMessage = getClaimEligibilityError(herdSelected, {
+        previousClaims,
+        typeOfLivestock,
         typeOfReview,
         dateOfVisit,
         organisation,
-        typeOfLivestock,
         oldWorldApplication,
       });
 
@@ -261,15 +289,8 @@ const postHandler = {
           exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
         });
 
-        return h
-          .view(claimViews.selectTheHerdDateException, {
-            backLink: pageUrl,
-            errorMessage,
-            backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? "review" : "follow-up"}.`,
-            backToPageLink: claimRoutes.dateOfVisit,
-          })
-          .code(HttpStatus.BAD_REQUEST)
-          .takeover();
+        const { isReview } = getReviewType(typeOfReview);
+        return renderSelectHerdDateException(h, errorMessage, isReview);
       }
 
       const existingHerd = herds.find((herd) => herd.id === herdSelected);
@@ -284,7 +305,9 @@ const postHandler = {
         );
       }
 
-      const nextPageUrl = existingHerd ? claimRoutes.checkHerdDetails : claimRoutes.enterHerdName;
+      const nextPageUrl = existingHerd
+        ? livestockClaimRoutes.checkHerdDetails
+        : livestockClaimRoutes.enterHerdName;
 
       return h.redirect(nextPageUrl);
     },
