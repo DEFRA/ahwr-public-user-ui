@@ -185,47 +185,32 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true on post declaration (confirmation)", () => {
-      const path = livestockApplyRoutes.declaration;
-      const method = "post";
-      const latestEndemicsApplication = { status: "AGREED" };
-      const expected = showsManageYourClaims;
-
       assertManageYourClaims({
-        path,
-        method,
+        path: livestockApplyRoutes.declaration,
+        method: "post",
         mockSessionData: mockEndemicsSessionData,
-        application: latestEndemicsApplication,
-        expected,
+        application: { status: "AGREED" },
+        expected: showsManageYourClaims,
       });
     });
 
     test("false on get declaration (before confirmation)", () => {
-      const path = livestockApplyRoutes.declaration;
-      const method = "get";
-      const latestEndemicsApplication = { status: "AGREED" };
-      const expected = doesNotShowManageYourClaims;
-
       assertManageYourClaims({
-        path,
-        method,
+        path: livestockApplyRoutes.declaration,
+        method: "get",
         mockSessionData: mockEndemicsSessionData,
-        application: latestEndemicsApplication,
-        expected,
+        application: { status: "AGREED" },
+        expected: doesNotShowManageYourClaims,
       });
     });
 
     test("false when no status in livestock but agreed on poultry on endemics apply route", () => {
-      const path = livestockApplyRoutes.timings;
-      const method = "get";
-      const latestPoultryApplication = { status: "AGREED" };
-      const expected = doesNotShowManageYourClaims;
-
       assertManageYourClaims({
-        path,
-        method,
+        path: livestockApplyRoutes.timings,
+        method: "get",
         mockSessionData: mockPoultrySessionData,
-        application: latestPoultryApplication,
-        expected,
+        application: { status: "AGREED" },
+        expected: doesNotShowManageYourClaims,
       });
     });
   });
@@ -295,62 +280,42 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true when status is AGREED on apply confirmation", () => {
-      const path = poultryApplyRoutes.agreementOffer;
-      const method = "post";
-      const latestPoultryApplication = { status: "AGREED" };
-      const expected = showsManageYourClaims;
-
       assertManageYourClaims({
-        path,
-        method,
+        path: poultryApplyRoutes.agreementOffer,
+        method: "post",
         mockSessionData: mockPoultrySessionData,
-        application: latestPoultryApplication,
-        expected,
+        application: { status: "AGREED" },
+        expected: showsManageYourClaims,
       });
     });
 
     test("true on post declaration post (confirmation)", () => {
-      const path = poultryApplyRoutes.agreementOffer;
-      const method = "post";
-      const latestPoultryApplication = { status: "AGREED" };
-      const expected = showsManageYourClaims;
-
       assertManageYourClaims({
-        path,
-        method,
+        path: poultryApplyRoutes.agreementOffer,
+        method: "post",
         mockSessionData: mockPoultrySessionData,
-        application: latestPoultryApplication,
-        expected,
+        application: { status: "AGREED" },
+        expected: showsManageYourClaims,
       });
     });
 
     test("false on get declaration (before confirmation)", () => {
-      const path = poultryApplyRoutes.agreementOffer;
-      const method = "get";
-      const latestPoultryApplication = { status: "AGREED" };
-      const expected = doesNotShowManageYourClaims;
-
       assertManageYourClaims({
-        path,
-        method,
+        path: poultryApplyRoutes.agreementOffer,
+        method: "get",
         mockSessionData: mockPoultrySessionData,
-        application: latestPoultryApplication,
-        expected,
+        application: { status: "AGREED" },
+        expected: doesNotShowManageYourClaims,
       });
     });
 
     test("false when no status in poultry but agreed on endemics on poultry apply route", () => {
-      const path = poultryApplyRoutes.timings;
-      const method = "get";
-      const latestEndemicsApplication = { status: "AGREED" };
-      const expected = doesNotShowManageYourClaims;
-
       assertManageYourClaims({
-        path,
-        method,
+        path: poultryApplyRoutes.timings,
+        method: "get",
         mockSessionData: mockEndemicsSessionData,
-        application: latestEndemicsApplication,
-        expected,
+        application: { status: "AGREED" },
+        expected: doesNotShowManageYourClaims,
       });
     });
   });
