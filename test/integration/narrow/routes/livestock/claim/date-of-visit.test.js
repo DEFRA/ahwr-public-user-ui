@@ -1772,79 +1772,63 @@ describe("POST /livestock/date-of-visit handler", () => {
 });
 
 describe("previousPageUrl", () => {
-  test("should return url of endemicsVetVisitsReviewTestResults if endemics, old world claim is species of current user journey, and no relevant new world claims", () => {
-    const latestVetVisitApplication = {
-      data: {
-        whichReview: "beef",
-      },
-    };
-
-    const typeOfReview = "FOLLOW_UP";
-    const previousClaims = [];
-    const typeOfLivestock = "beef";
-
-    expect(
-      previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock),
-    ).toBe("/livestock/vet-visits-review-test-results");
-  });
-
-  test("should return url of endemicsWhichTypeOfReview if claim type is review", () => {
-    const latestVetVisitApplication = {
-      data: {
-        whichReview: "beef",
-      },
-    };
-
-    const typeOfReview = "REVIEW";
-    const previousClaims = [];
-    const typeOfLivestock = "beef";
-
-    expect(
-      previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock),
-    ).toBe("/livestock/review-type");
-  });
-
-  test("should return url of endemicsWhichTypeOfReview if old world review type of livestock is not beef or dairy", () => {
-    const latestVetVisitApplication = {
-      data: {
-        whichReview: "pigs",
-      },
-    };
-
-    const typeOfReview = "FOLLOW_UP";
-    const previousClaims = [];
-    const typeOfLivestock = "beef";
-
-    expect(
-      previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock),
-    ).toBe("/livestock/review-type");
-  });
-
-  test("should return url of endemicsWhichTypeOfReview if there are relevant new world claims (i.e. for the same species as the current journey)", () => {
-    const latestVetVisitApplication = {
-      data: {
-        whichReview: "beef",
-      },
-    };
-
-    const typeOfReview = "FOLLOW_UP";
-    const previousClaims = [
-      {
-        reference: "REBC-C2EA-C718",
-        applicationReference: "AHWR-2470-6BA9",
-        status: "AGREED",
-        type: "REVIEW",
-        createdAt: "2024-12-12T10:25:11.318Z",
-        data: {
-          typeOfLivestock: "beef",
-          dateOfVisit: "2024-12-12",
+  test.each([
+    {
+      scenario:
+        "should return url of endemicsVetVisitsReviewTestResults if endemics, old world claim is species of current user journey, and no relevant new world claims",
+      whichReview: "beef",
+      typeOfReview: "FOLLOW_UP",
+      previousClaims: [],
+      typeOfLivestock: "beef",
+      expected: "/livestock/vet-visits-review-test-results",
+    },
+    {
+      scenario: "should return url of endemicsWhichTypeOfReview if claim type is review",
+      whichReview: "beef",
+      typeOfReview: "REVIEW",
+      previousClaims: [],
+      typeOfLivestock: "beef",
+      expected: "/livestock/review-type",
+    },
+    {
+      scenario:
+        "should return url of endemicsWhichTypeOfReview if old world review type of livestock is not beef or dairy",
+      whichReview: "pigs",
+      typeOfReview: "FOLLOW_UP",
+      previousClaims: [],
+      typeOfLivestock: "beef",
+      expected: "/livestock/review-type",
+    },
+    {
+      scenario:
+        "should return url of endemicsWhichTypeOfReview if there are relevant new world claims (i.e. for the same species as the current journey)",
+      whichReview: "beef",
+      typeOfReview: "FOLLOW_UP",
+      previousClaims: [
+        {
+          reference: "REBC-C2EA-C718",
+          applicationReference: "AHWR-2470-6BA9",
+          status: "AGREED",
+          type: "REVIEW",
+          createdAt: "2024-12-12T10:25:11.318Z",
+          data: {
+            typeOfLivestock: "beef",
+            dateOfVisit: "2024-12-12",
+          },
         },
+      ],
+      typeOfLivestock: "beef",
+      expected: "/livestock/review-type",
+    },
+  ])("$scenario", ({ whichReview, typeOfReview, previousClaims, typeOfLivestock, expected }) => {
+    const latestVetVisitApplication = {
+      data: {
+        whichReview,
       },
-    ];
-    const typeOfLivestock = "beef";
+    };
 
     expect(
       previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock),
-    ).toBe("/livestock/review-type");
+    ).toBe(expected);
   });
 });
