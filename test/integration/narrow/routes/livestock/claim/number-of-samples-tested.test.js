@@ -197,7 +197,6 @@ describe("Number of samples tested test", () => {
     ])(
       "redirects to $screen page if valid sample numbers, $vaccinatedValue and $lastReviewTestResults",
       async ({
-        _screen,
         numberOfSamplesTested,
         lastReviewTestResults,
         vaccinatedValue,
