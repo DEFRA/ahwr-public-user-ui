@@ -3,9 +3,11 @@ import { checkIfPoultryAgreement, shouldShowManageYourClaims } from "./agreement
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 import {
   livestockApplyRoutes,
+  livestockClaimRoutes,
   dashboardRoutes,
   loginRoutes,
   poultryApplyRoutes,
+  poultryClaimRoutes,
 } from "../constants/routes.js";
 
 jest.mock("../session/index.js");
@@ -108,19 +110,34 @@ describe("shouldShowManageYourClaims", () => {
 
   describe("livestock urls", () => {
     test.each([
-      ["false when latestEndemicsApplication is null", "/livestock/manage-claims", null, false],
+      [
+        "false when latestEndemicsApplication is null",
+        dashboardRoutes.manageYourClaims,
+        null,
+        false,
+      ],
       [
         "false when latestEndemicsApplication is undefined",
-        "/livestock/manage-claims",
+        dashboardRoutes.manageYourClaims,
         undefined,
         false,
       ],
-      ["false when latestEndemicsApplication has no status", "/livestock/manage-claims", {}, false],
-      ["false when status is not AGREED", "/livestock/manage-claims", { status: "PENDING" }, false],
-      ["true when status is AGREED", "/livestock/manage-claims", { status: "AGREED" }, true],
+      [
+        "false when latestEndemicsApplication has no status",
+        dashboardRoutes.manageYourClaims,
+        {},
+        false,
+      ],
+      [
+        "false when status is not AGREED",
+        dashboardRoutes.manageYourClaims,
+        { status: "PENDING" },
+        false,
+      ],
+      ["true when status is AGREED", dashboardRoutes.manageYourClaims, { status: "AGREED" }, true],
       [
         "true when status is AGREED on a claim route",
-        "/livestock/date-of-visit",
+        livestockClaimRoutes.dateOfVisit,
         { status: "AGREED" },
         true,
       ],
@@ -136,7 +153,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when status is not AGREED in endemics but agreed on poultry", () => {
-      const path = "/livestock/manage-claims";
+      const path = dashboardRoutes.manageYourClaims;
       const method = "get";
       const latestEndemicsApplication = { status: "PENDING" };
       const latestPoultryApplication = { status: "AGREED" };
@@ -152,7 +169,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true on post declaration (confirmation)", () => {
-      const path = "/livestock/agreement-offer";
+      const path = livestockApplyRoutes.declaration;
       const method = "post";
       const latestEndemicsApplication = { status: "AGREED" };
       const expected = true;
@@ -166,7 +183,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false on get declaration (before confirmation)", () => {
-      const path = "/livestock/agreement-offer";
+      const path = livestockApplyRoutes.declaration;
       const method = "get";
       const latestEndemicsApplication = { status: "AGREED" };
       const expected = false;
@@ -196,19 +213,39 @@ describe("shouldShowManageYourClaims", () => {
 
   describe("poultry urls", () => {
     test.each([
-      ["false when latestPoultryApplication is null", "/poultry/manage-claims", null, false],
+      [
+        "false when latestPoultryApplication is null",
+        dashboardRoutes.poultryManageClaims,
+        null,
+        false,
+      ],
       [
         "false when latestPoultryApplication is undefined",
-        "/poultry/manage-claims",
+        dashboardRoutes.poultryManageClaims,
         undefined,
         false,
       ],
-      ["false when latestPoultryApplication has no status", "/poultry/manage-claims", {}, false],
-      ["false when status is not AGREED", "/poultry/manage-claims", { status: "PENDING" }, false],
-      ["true when status is AGREED", "/poultry/manage-claims", { status: "AGREED" }, true],
+      [
+        "false when latestPoultryApplication has no status",
+        dashboardRoutes.poultryManageClaims,
+        {},
+        false,
+      ],
+      [
+        "false when status is not AGREED",
+        dashboardRoutes.poultryManageClaims,
+        { status: "PENDING" },
+        false,
+      ],
+      [
+        "true when status is AGREED",
+        dashboardRoutes.poultryManageClaims,
+        { status: "AGREED" },
+        true,
+      ],
       [
         "true when status is AGREED on a claim route",
-        "/poultry/date-of-visit",
+        poultryClaimRoutes.dateOfVisit,
         { status: "AGREED" },
         true,
       ],
@@ -224,7 +261,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false when status is not AGREED in poultry but agreed on endemics", () => {
-      const path = "/poultry/manage-claims";
+      const path = dashboardRoutes.poultryManageClaims;
       const method = "get";
       const latestPoultryApplication = { status: "PENDING" };
       const latestEndemicsApplication = { status: "AGREED" };
@@ -240,7 +277,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true when status is AGREED on apply confirmation", () => {
-      const path = "/poultry/agreement-offer";
+      const path = poultryApplyRoutes.agreementOffer;
       const method = "post";
       const latestPoultryApplication = { status: "AGREED" };
       const expected = true;
@@ -254,7 +291,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("true on post declaration post (confirmation)", () => {
-      const path = "/poultry/agreement-offer";
+      const path = poultryApplyRoutes.agreementOffer;
       const method = "post";
       const latestPoultryApplication = { status: "AGREED" };
       const expected = true;
@@ -268,7 +305,7 @@ describe("shouldShowManageYourClaims", () => {
     });
 
     test("false on get declaration (before confirmation)", () => {
-      const path = "/poultry/agreement-offer";
+      const path = poultryApplyRoutes.agreementOffer;
       const method = "get";
       const latestPoultryApplication = { status: "AGREED" };
       const expected = false;
