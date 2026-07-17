@@ -174,9 +174,6 @@ export const getConfig = () => {
     devLogin: {
       enabled: process.env.DEV_LOGIN_ENABLED === "true",
     },
-    csp: {
-      enforce: process.env.CSP_ENFORCE_POLICY === "true",
-    },
     latestTermsAndConditionsUri: process.env.TERMS_AND_CONDITIONS_URL,
     reapplyTimeLimitMonths: 10,
     privacyPolicyUri: process.env.PRIVACY_POLICY_URI,

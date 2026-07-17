@@ -3,25 +3,12 @@ import { config } from "../config/index.js";
 
 const NONCE_BYTE_LENGTH = 16;
 
-const buildPolicy = ({ scriptSrc, styleSrc }) =>
+export const getContentSecurityPolicy = (nonce) =>
   "default-src 'self';object-src 'none';" +
-  scriptSrc +
+  `script-src 'self' www.google-analytics.com *.googletagmanager.com 'nonce-${nonce}';` +
   "form-action 'self';base-uri 'self';connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.com;" +
-  styleSrc +
+  "style-src 'self' tagmanager.google.com *.googleapis.com;" +
   "img-src 'self' *.google-analytics.com *.googletagmanager.com;frame-ancestors 'none';";
-
-const getPermissiveSecurityPolicy = () =>
-  buildPolicy({
-    scriptSrc:
-      "script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval';",
-    styleSrc: "style-src 'self' 'unsafe-inline' tagmanager.google.com *.googleapis.com;",
-  });
-
-export const getHardenedSecurityPolicy = (nonce) =>
-  buildPolicy({
-    scriptSrc: `script-src 'self' www.google-analytics.com *.googletagmanager.com 'nonce-${nonce}';`,
-    styleSrc: "style-src 'self' tagmanager.google.com *.googleapis.com;",
-  });
 
 const generateNonce = () => randomBytes(NONCE_BYTE_LENGTH).toString("base64");
 
@@ -42,18 +29,10 @@ export const headerPlugin = {
             response.header(x.key, x.value);
           });
 
-          if (config.csp.enforce) {
-            response.header(
-              "Content-Security-Policy",
-              getHardenedSecurityPolicy(request.app.cspNonce),
-            );
-          } else {
-            response.header("Content-Security-Policy", getPermissiveSecurityPolicy());
-            response.header(
-              "Content-Security-Policy-Report-Only",
-              getHardenedSecurityPolicy(request.app.cspNonce),
-            );
-          }
+          response.header(
+            "Content-Security-Policy",
+            getContentSecurityPolicy(request.app.cspNonce),
+          );
         }
 
         return h.continue;

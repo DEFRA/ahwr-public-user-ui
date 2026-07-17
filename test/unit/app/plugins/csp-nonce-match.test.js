@@ -6,7 +6,6 @@ jest.mock("../../../../app/config", () => {
     ...actual,
     config: {
       ...actual.config,
-      csp: { enforce: true },
       googleTagManagerKey: "GTM-TEST",
     },
   };
