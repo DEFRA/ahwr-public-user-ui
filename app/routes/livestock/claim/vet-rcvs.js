@@ -27,7 +27,7 @@ const nextPageURL = (request) => {
   );
 
   if (isEndemicsFollowUp) {
-    if (relevantReviewForEndemics.type === claimType.vetVisits && isPigs) {
+    if (relevantReviewForEndemics?.type === claimType.vetVisits && isPigs) {
       return livestockClaimRoutes.vetVisitsReviewTestResults;
     }
     if (isSheep) {
