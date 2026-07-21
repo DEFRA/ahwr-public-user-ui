@@ -229,6 +229,18 @@ describe("Vet rcvs test when Optional PI Hunt is OFF", () => {
       },
       {
         typeOfLivestock: "beef",
+        typeOfReview: "FOLLOW_UP",
+        relevantReviewForEndemics: undefined,
+        nextPageURL: "/livestock/test-urn",
+      },
+      {
+        typeOfLivestock: "pigs",
+        typeOfReview: "FOLLOW_UP",
+        relevantReviewForEndemics: undefined,
+        nextPageURL: "/livestock/vaccination",
+      },
+      {
+        typeOfLivestock: "beef",
         typeOfReview: "REVIEW",
         relevantReviewForEndemics: undefined,
         nextPageURL: "/livestock/test-urn",

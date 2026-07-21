@@ -119,7 +119,7 @@ const postHandler = {
 };
 
 const isFollowUpOfNewWorldReview = (relevantReviewForEndemics) => {
-  return relevantReviewForEndemics.type === claimType.review;
+  return relevantReviewForEndemics?.type === claimType.review;
 };
 
 export const piHuntHandlers = [getHandler, postHandler];
