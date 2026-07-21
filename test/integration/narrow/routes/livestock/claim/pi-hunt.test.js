@@ -177,6 +177,27 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
       expect(clearPiHuntSessionOnChange).not.toHaveBeenCalled();
     });
 
+    test("Continue to ineligible page if user select no and does not clear PI Hunt data when relevantReviewForEndemics is missing", async () => {
+      const options = {
+        method: "POST",
+        payload: { crumb, piHunt: "no" },
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` },
+      };
+      getSessionData.mockImplementation(() => {
+        return { typeOfLivestock: "beef" };
+      });
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(400);
+      const $ = cheerio.load(res.payload);
+      expect($("h1").text()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
+      expect(clearPiHuntSessionOnChange).not.toHaveBeenCalled();
+    });
+
     test("shows error when payload is invalid", async () => {
       getSessionData.mockImplementation(() => {
         return { typeOfLivestock: "beef", reviewTestResults: "positive" };
