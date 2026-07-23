@@ -35,8 +35,8 @@ jobs:
       - name: Scan security vulnerabilities
         run: npm audit --audit-level=high --omit dev
 
-      - name: Lint dependencies
-        run: npm run lint:deps
+      - name: Lint with Knip
+        run: npm run lint:knip
 
       - name: Lint
         run: npm run lint
