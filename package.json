@@ -47,7 +47,7 @@
     "@hapi/yar": "11.0.0",
     "@ministryofjustice/frontend": "9.0.0",
     "aws-embedded-metrics": "4.2.0",
-    "ffc-ahwr-common-library": "3.8.3",
+    "ffc-ahwr-common-library": "3.8.5",
     "form-data": "4.0.6",
     "global-agent": "3.0.0",
     "govuk-frontend": "6.2.0",
