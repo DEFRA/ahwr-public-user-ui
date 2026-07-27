@@ -4,12 +4,16 @@ export const devRedirectPlugin = {
     register: (server, _) => {
       server.ext("onPreResponse", (request, h) => {
         if (request.path === "/check-details") {
-          const response = h.request.response;
-          response.headers["content-security-policy"] = response.headers[
-            "content-security-policy"
-          ].replace("form-action 'self'", "form-action *");
+          const response = request.response;
+          const headers = response.isBoom ? response.output.headers : response.headers;
+          const csp = headers["content-security-policy"];
+
+          if (csp) {
+            headers["content-security-policy"] = csp.replace("form-action 'self'", "form-action *");
+          }
         }
-        return h.request.response;
+
+        return h.continue;
       });
     },
   },
