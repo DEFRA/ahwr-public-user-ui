@@ -7,7 +7,9 @@ import { cookiePlugin } from "./plugins/cookies.js";
 import { crumbPlugin } from "./plugins/crumb.js";
 import { errorPagesPlugin } from "./plugins/error-pages.js";
 import { requestLogger } from "./logging/request-logger.js";
+import Scooter from "@hapi/scooter";
 import { headerPlugin } from "./plugins/header.js";
+import { contentSecurityPolicyPlugin } from "./plugins/content-security-policy.js";
 import { sessionPlugin } from "./plugins/session.js";
 import { viewContextPlugin } from "./plugins/view-context.js";
 import { viewsPlugin } from "./plugins/views.js";
@@ -51,6 +53,9 @@ export async function createServer() {
   await server.register(requestLogger);
   await server.register(routerPlugin);
   await server.register(sessionPlugin);
+  // Scooter and Blankie must precede viewContextPlugin so the CSP nonce exists when the view context reads it
+  await server.register(Scooter);
+  await server.register(contentSecurityPolicyPlugin);
   await server.register(viewContextPlugin);
   await server.register(viewsPlugin);
   await server.register(headerPlugin);
