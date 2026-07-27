@@ -26,7 +26,7 @@ describe("View Context Plugin", () => {
     it("sets context when response is a view and template does not start with error-pages/", () => {
       const mockRequest = {
         path: "/test",
-        app: { cspNonce: "test-nonce" },
+        plugins: { blankie: { nonces: { script: "test-nonce" } } },
         auth: { isAuthenticated: true },
         response: {
           variety: "view",
@@ -43,10 +43,10 @@ describe("View Context Plugin", () => {
       expect(mockRequest.response.source.context.serviceName).toBeDefined();
     });
 
-    it("exposes the request CSP nonce to the view context", () => {
+    it("exposes the Blankie script nonce to the view context", () => {
       const mockRequest = {
         path: "/test",
-        app: { cspNonce: "test-nonce" },
+        plugins: { blankie: { nonces: { script: "test-nonce" } } },
         auth: { isAuthenticated: true },
         response: {
           variety: "view",

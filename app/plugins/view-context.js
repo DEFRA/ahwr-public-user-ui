@@ -22,7 +22,7 @@ export const viewContextPlugin = {
             serviceUrl = "/cookies";
           }
 
-          ctx.cspNonce = request.app.cspNonce;
+          ctx.cspNonce = request.plugins.blankie?.nonces?.script;
           ctx.serviceName = serviceName;
           ctx.serviceUrl = serviceUrl;
           ctx.serviceUri = serviceUri;

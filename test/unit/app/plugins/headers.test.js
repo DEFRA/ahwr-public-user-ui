@@ -1,15 +1,13 @@
 import { createServer } from "../../../../app/server.js";
+import { config } from "../../../../app/config/index.js";
 
-const contentSecurityPolicy = (nonce) =>
-  "default-src 'self';object-src 'none';" +
-  `script-src 'self' www.google-analytics.com *.googletagmanager.com 'nonce-${nonce}';` +
-  "form-action 'self';base-uri 'self';connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.com;" +
-  "style-src 'self' tagmanager.google.com *.googleapis.com;" +
-  "img-src 'self' *.google-analytics.com *.googletagmanager.com;frame-ancestors 'none';";
+let server;
+
+beforeAll(async () => {
+  server = await createServer();
+});
 
 const getHeaders = async (url = "/") => {
-  const server = await createServer();
-
   const { headers } = await server.inject({
     url,
     auth: {
@@ -21,44 +19,45 @@ const getHeaders = async (url = "/") => {
   return headers;
 };
 
-test("sets the content security policy as expected", async () => {
-  const headers = await getHeaders();
-  const csp = headers["content-security-policy"];
-  const nonce = /'nonce-([^']+)'/.exec(csp ?? "")?.[1];
+describe("non-CSP security headers", () => {
+  test.each([
+    ["x-frame-options", "deny"],
+    ["x-content-type-options", "nosniff"],
+    ["access-control-allow-origin", config.serviceUri],
+    ["cross-origin-opener-policy", "same-origin"],
+    ["cross-origin-embedder-policy", "require-corp"],
+    ["x-robots-tag", "noindex, nofollow"],
+    ["strict-transport-security", "max-age=31536000;"],
+    ["cache-control", "no-store"],
+    ["referrer-policy", "no-referrer"],
+  ])("sets %s to the expected value", async (header, value) => {
+    const headers = await getHeaders();
 
-  expect(nonce).toBeDefined();
-  expect(csp).toBe(contentSecurityPolicy(nonce));
-});
-
-test("skips headers when the response has no header element", async () => {
-  const server = await createServer();
-
-  const { headers } = await server.inject({
-    method: "POST",
-    url: "/nonsense",
-    auth: {
-      credentials: {},
-      strategy: "cookie",
-    },
+    expect(headers[header]).toBe(value);
   });
 
-  expect(headers["content-security-policy"]).toBeUndefined();
-});
+  test("omits the deprecated X-XSS-Protection header", async () => {
+    const headers = await getHeaders();
 
-test("omits the deprecated X-XSS-Protection header", async () => {
-  const headers = await getHeaders();
+    expect(headers["x-xss-protection"]).toBeUndefined();
+  });
 
-  expect(headers["x-xss-protection"]).toBeUndefined();
-});
+  test("omits the obsolete Permissions-Policy header", async () => {
+    const headers = await getHeaders();
 
-test("omits the obsolete Permissions-Policy header", async () => {
-  const headers = await getHeaders();
+    expect(headers["permissions-policy"]).toBeUndefined();
+  });
 
-  expect(headers["permissions-policy"]).toBeUndefined();
-});
+  test("skips the non-CSP headers when the response has no header element", async () => {
+    const { headers } = await server.inject({
+      method: "POST",
+      url: "/nonsense",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
 
-test("retains X-Frame-Options deny alongside frame-ancestors", async () => {
-  const headers = await getHeaders();
-
-  expect(headers["x-frame-options"]).toBe("deny");
+    expect(headers["x-frame-options"]).toBeUndefined();
+  });
 });
