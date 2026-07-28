@@ -27,5 +27,5 @@ export const requestAuthorizationCodeUrl = async (request, ssoOrgId) => {
   url.searchParams.append("code_challenge", codeChallenge);
   url.searchParams.append("code_challenge_method", "S256");
 
-  return url;
+  return url.toString();
 };
