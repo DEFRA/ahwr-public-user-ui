@@ -16,6 +16,11 @@ describe("Generate authentication url test", () => {
     expect(params.get("code_challenge")).not.toBeNull();
   });
 
+  test("requestAuthorizationCodeUrl returns a string so it is safe to use in a view context", async () => {
+    const result = await requestAuthorizationCodeUrl();
+    expect(typeof result).toBe("string");
+  });
+
   test("when invalid state occurs", async () => {
     verifyState.mockReturnValueOnce(false);
     const request = { yar: { id: "33" }, logger: { error: jest.fn() } };

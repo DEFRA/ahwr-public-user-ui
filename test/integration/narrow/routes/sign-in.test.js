@@ -27,7 +27,7 @@ describe("/sign-in", () => {
     });
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-    expect(res.headers.location.href).toMatch(DEFRA_ID_BASE_URL);
+    expect(res.headers.location).toMatch(DEFRA_ID_BASE_URL);
     expect(clearAllOfSession).toHaveBeenCalled();
     expect(metricsCounter).toHaveBeenCalledWith("sign_in");
   });
@@ -40,8 +40,8 @@ describe("/sign-in", () => {
     });
 
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
-    expect(res.headers.location.href).toMatch(DEFRA_ID_BASE_URL);
-    expect(res.headers.location.href).toContain(ssoOrgId);
+    expect(res.headers.location).toMatch(DEFRA_ID_BASE_URL);
+    expect(res.headers.location).toContain(ssoOrgId);
     expect(clearAllOfSession).toHaveBeenCalled();
     expect(metricsCounter).toHaveBeenCalledWith("sign_in");
   });
