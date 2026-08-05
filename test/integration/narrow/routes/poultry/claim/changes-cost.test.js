@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
+import { config } from "../../../../../../app/config/index.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import {
   getSessionData,
@@ -30,6 +31,7 @@ describe("/poultry/changes-cost", () => {
 
   beforeEach(async () => {
     crumb = await getCrumbs(server);
+    config.poultry.disableInterviewPage = false;
   });
 
   beforeAll(async () => {
@@ -131,7 +133,7 @@ describe("/poultry/changes-cost", () => {
         expect($("li > a").text()).toMatch(errorMessage);
       });
 
-      test("continue to next page when answer is selected", async () => {
+      test("continue to the interview page when answer is selected and the interview page is enabled", async () => {
         const options = {
           method: "POST",
           auth,
@@ -150,6 +152,23 @@ describe("/poultry/changes-cost", () => {
           "costOfChanges",
           "not-sure",
         );
+      });
+
+      test("continue directly to check answers when the interview page is disabled", async () => {
+        config.poultry.disableInterviewPage = true;
+
+        const options = {
+          method: "POST",
+          auth,
+          url,
+          headers: { cookie: `crumb=${crumb}` },
+          payload: { crumb, costOfChanges: "not-sure" },
+        };
+
+        const response = await server.inject(options);
+
+        expect(response.statusCode).toBe(302);
+        expect(response.headers.location).toEqual(`/poultry/check-answers`);
       });
 
       test("displays error when it receives an unknown value", async () => {

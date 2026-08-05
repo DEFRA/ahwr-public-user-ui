@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import Wreck from "@hapi/wreck";
 import { createServer } from "../../../../../../app/server.js";
+import { config } from "../../../../../../app/config/index.js";
 import {
   testBrowserPageTitle,
   testPageHeading,
@@ -36,6 +37,7 @@ describe("Poultry check answers test", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
+    config.poultry.disableInterviewPage = false;
 
     when(getSessionData)
       .calledWith(
@@ -131,7 +133,7 @@ describe("Poultry check answers test", () => {
       getResponse: () => server.inject({ method: "GET", url }),
     });
 
-    test("renders page with correct back link", async () => {
+    test("renders page with back link to interview when the interview page is enabled", async () => {
       const options = {
         method: "GET",
         url,
@@ -146,7 +148,24 @@ describe("Poultry check answers test", () => {
       expect($(".govuk-back-link").attr("href")).toBe("/poultry/interview");
     });
 
-    test("renders all 14 rows with data from session", async () => {
+    test("renders page with back link to changes cost when the interview page is disabled", async () => {
+      config.poultry.disableInterviewPage = true;
+
+      const options = {
+        method: "GET",
+        url,
+        auth,
+      };
+
+      const res = await server.inject(options);
+
+      expect(await axe(res.payload)).toHaveNoViolations();
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-back-link").attr("href")).toBe("/poultry/changes-cost");
+    });
+
+    test("renders all 14 rows with data from session when the interview page is enabled", async () => {
       const options = {
         method: "GET",
         url,
@@ -158,6 +177,22 @@ describe("Poultry check answers test", () => {
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
       expect($(".govuk-summary-list__row").length).toBe(14);
+    });
+
+    test("renders 13 rows, excluding the interview question, when the interview page is disabled", async () => {
+      config.poultry.disableInterviewPage = true;
+
+      const options = {
+        method: "GET",
+        url,
+        auth,
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      expect($(".govuk-summary-list__row")).toHaveLength(13);
     });
 
     test("displays organisation name without change link", async () => {
@@ -626,7 +661,7 @@ describe("Poultry check answers test", () => {
       );
     });
 
-    test("displays evaluation interview with correct change link", async () => {
+    test("displays evaluation interview with correct change link when the interview page is enabled", async () => {
       const options = {
         method: "GET",
         url,
@@ -645,6 +680,25 @@ describe("Poultry check answers test", () => {
       expect(interviewRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
         "/poultry/interview",
       );
+    });
+
+    test("does not display the evaluation interview row when the interview page is disabled", async () => {
+      config.poultry.disableInterviewPage = true;
+
+      const options = {
+        method: "GET",
+        url,
+        auth,
+      };
+
+      const res = await server.inject(options);
+
+      expect(res.statusCode).toBe(200);
+      const $ = cheerio.load(res.payload);
+      const keys = $(".govuk-summary-list__key")
+        .map((_index, element) => $(element).text().trim())
+        .get();
+      expect(keys).not.toContain("Evaluation interview");
     });
   });
 

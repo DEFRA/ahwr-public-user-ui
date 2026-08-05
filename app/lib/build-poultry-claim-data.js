@@ -1,4 +1,5 @@
 import { poultryClaimRoutes } from "../constants/routes.js";
+import { config } from "../config/index.js";
 import { formatDate, formatTypesOfPoultry, upperFirstLetter } from "./display-helpers.js";
 import { createdHerdRowObject, createImmutableRowObject } from "./generate-answer-rows.js";
 
@@ -81,14 +82,7 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
     costOfChangesRow,
   } = createBiosecurityRows(poultryClaim);
 
-  const interviewRow = createdHerdRowObject(
-    "Evaluation interview",
-    upperFirstLetter(poultryClaim.interview),
-    poultryClaimRoutes.interview,
-    "evaluation interview",
-  );
-
-  return [
+  const rows = [
     organisationNameRow,
     dateOfVisitRow,
     siteNameRow,
@@ -102,8 +96,20 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
     biosecurityUsefulnessRow,
     changesInBiosecurityRow,
     costOfChangesRow,
-    interviewRow,
   ];
+
+  if (!config.poultry.disableInterviewPage) {
+    const interviewRow = createdHerdRowObject(
+      "Evaluation interview",
+      upperFirstLetter(poultryClaim.interview),
+      poultryClaimRoutes.interview,
+      "evaluation interview",
+    );
+
+    rows.push(interviewRow);
+  }
+
+  return rows;
 };
 
 export const buildPoultryClaimPayload = (poultryClaim) => {

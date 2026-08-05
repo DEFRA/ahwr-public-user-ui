@@ -1,7 +1,7 @@
 import { getConfig } from "../../../../app/config/index.js";
 
 describe("Base config", () => {
-  const env = { ...process.env };
+  const env = { ...process.env, DISABLE_INTERVIEW_PAGE: "false" };
 
   afterEach(() => {
     process.env = { ...env };
@@ -37,5 +37,21 @@ describe("Base config", () => {
   test("should throw an error if poultry vet summary template URL is missing", () => {
     delete process.env.POULTRY_VET_SUMMARY_TEMPLATE_URL;
     expect(() => getConfig()).toThrow(/poultry.*vetSummaryTemplateUri.*required/);
+  });
+
+  test("poultry interview page is enabled by default", () => {
+    jest.replaceProperty(process.env, "DISABLE_INTERVIEW_PAGE", undefined);
+
+    const config = getConfig();
+
+    expect(config.poultry.disableInterviewPage).toBe(false);
+  });
+
+  test("poultry interview page can be disabled via DISABLE_INTERVIEW_PAGE=true", () => {
+    jest.replaceProperty(process.env, "DISABLE_INTERVIEW_PAGE", "true");
+
+    const config = getConfig();
+
+    expect(config.poultry.disableInterviewPage).toBe(true);
   });
 });
