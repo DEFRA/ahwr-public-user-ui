@@ -1,7 +1,7 @@
 import { getConfig } from "../../../../app/config/index.js";
 
 describe("Base config", () => {
-  const env = { ...process.env };
+  const env = { ...process.env, DISABLE_INTERVIEW_PAGE: false };
 
   afterEach(() => {
     process.env = { ...env };
@@ -40,7 +40,7 @@ describe("Base config", () => {
   });
 
   test("poultry interview page is enabled by default", () => {
-    delete process.env.DISABLE_INTERVIEW_PAGE;
+    jest.replaceProperty(process.env, "DISABLE_INTERVIEW_PAGE", undefined);
 
     const config = getConfig();
 
@@ -48,7 +48,7 @@ describe("Base config", () => {
   });
 
   test("poultry interview page can be disabled via DISABLE_INTERVIEW_PAGE=true", () => {
-    process.env.DISABLE_INTERVIEW_PAGE = "true";
+    jest.replaceProperty(process.env, "DISABLE_INTERVIEW_PAGE", "true");
 
     const config = getConfig();
 
