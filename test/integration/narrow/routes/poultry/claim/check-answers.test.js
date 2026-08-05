@@ -192,7 +192,7 @@ describe("Poultry check answers test", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-summary-list__row").length).toBe(13);
+      expect($(".govuk-summary-list__row")).toHaveLength(13);
     });
 
     test("displays organisation name without change link", async () => {
