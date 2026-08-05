@@ -1,7 +1,7 @@
 import { getConfig } from "../../../../app/config/index.js";
 
 describe("Base config", () => {
-  const env = { ...process.env, DISABLE_INTERVIEW_PAGE: false };
+  const env = { ...process.env, DISABLE_INTERVIEW_PAGE: "false" };
 
   afterEach(() => {
     process.env = { ...env };
