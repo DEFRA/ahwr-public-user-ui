@@ -38,4 +38,20 @@ describe("Base config", () => {
     delete process.env.POULTRY_VET_SUMMARY_TEMPLATE_URL;
     expect(() => getConfig()).toThrow(/poultry.*vetSummaryTemplateUri.*required/);
   });
+
+  test("poultry interview page is enabled by default", () => {
+    delete process.env.DISABLE_INTERVIEW_PAGE;
+
+    const config = getConfig();
+
+    expect(config.poultry.disableInterviewPage).toBe(false);
+  });
+
+  test("poultry interview page can be disabled via DISABLE_INTERVIEW_PAGE=true", () => {
+    process.env.DISABLE_INTERVIEW_PAGE = "true";
+
+    const config = getConfig();
+
+    expect(config.poultry.disableInterviewPage).toBe(true);
+  });
 });

@@ -7,6 +7,7 @@ import {
   buildPoultryRows,
 } from "../../../lib/build-poultry-claim-data.js";
 import { trackEvent } from "../../../logging/logger.js";
+import { config } from "../../../config/index.js";
 import {
   getSessionData,
   sessionEntryKeys,
@@ -30,9 +31,13 @@ const getHandler = {
 
       const rowsWithData = rows.filter((row) => row.value?.html !== undefined);
 
+      const backLink = config.poultry.disableInterviewPage
+        ? poultryClaimRoutes.changesCost
+        : poultryClaimRoutes.interview;
+
       return h.view(poultryClaimViews.checkAnswers, {
         listData: { rows: rowsWithData },
-        backLink: poultryClaimRoutes.interview,
+        backLink,
       });
     },
   },

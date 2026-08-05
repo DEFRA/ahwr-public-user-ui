@@ -105,6 +105,7 @@ const configSchema = joi.object({
     termsAndConditionsUri: joi.string().required(),
     vetSummaryTemplateUri: joi.string().required(),
     guidanceUri: joi.string().required(),
+    disableInterviewPage: joi.boolean().required(),
   },
 });
 
@@ -204,6 +205,7 @@ export const getConfig = () => {
       vetSummaryTemplateUri: process.env.POULTRY_VET_SUMMARY_TEMPLATE_URL,
       guidanceUri:
         "https://www.gov.uk/guidance/poultry-biosecurity-review-funding-guidance-for-poultry-keepers-and-vets#how-to-have-a-poultry-biosecurity-review",
+      disableInterviewPage: process.env.DISABLE_INTERVIEW_PAGE === "true",
     },
   };
 

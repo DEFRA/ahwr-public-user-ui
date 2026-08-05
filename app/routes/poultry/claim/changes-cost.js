@@ -6,6 +6,7 @@ import {
   sessionKeys,
 } from "../../../session/index.js";
 import { poultryClaimViews, poultryClaimRoutes } from "../../../constants/routes.js";
+import { config } from "../../../config/index.js";
 import HttpStatus from "http-status-codes";
 
 const INVALID_VALUE_TEXT = "Select your estimate";
@@ -66,7 +67,11 @@ const postHandler = {
         costOfChanges,
       );
 
-      return h.redirect(poultryClaimRoutes.interview);
+      const nextRoute = config.poultry.disableInterviewPage
+        ? poultryClaimRoutes.checkAnswers
+        : poultryClaimRoutes.interview;
+
+      return h.redirect(nextRoute);
     },
   },
 };

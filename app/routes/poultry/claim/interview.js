@@ -6,6 +6,7 @@ import {
   sessionKeys,
 } from "../../../session/index.js";
 import { poultryClaimViews, poultryClaimRoutes } from "../../../constants/routes.js";
+import { config } from "../../../config/index.js";
 import HttpStatus from "http-status-codes";
 
 const YES_TO_ASSESSMENT_TEXT = "Select if you want to take part";
@@ -15,6 +16,10 @@ const getHandler = {
   path: poultryClaimRoutes.interview,
   options: {
     handler: async (request, h) => {
+      if (config.poultry.disableInterviewPage) {
+        return h.redirect(poultryClaimRoutes.checkAnswers);
+      }
+
       const { interview } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
       return h.view(poultryClaimViews.interview, {
@@ -57,6 +62,10 @@ const postHandler = {
       },
     },
     handler: async (request, h) => {
+      if (config.poultry.disableInterviewPage) {
+        return h.redirect(poultryClaimRoutes.checkAnswers);
+      }
+
       const { interview } = request.payload;
 
       await setSessionData(
