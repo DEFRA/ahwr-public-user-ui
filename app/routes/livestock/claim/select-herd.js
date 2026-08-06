@@ -70,6 +70,8 @@ const displayScreen = ({ request, h, showErrorMessage = false }) => {
       }
     : undefined;
 
+  const herdName = herds.find((herd) => herd.id === claimInfo.herdId)?.name;
+
   return h.view(livestockClaimViews.selectTheHerd, {
     ...request.payload,
     errorMessage,
@@ -77,6 +79,8 @@ const displayScreen = ({ request, h, showErrorMessage = false }) => {
     ...getSelectHerdTitles(herds, herdOrFlock),
     radioValueNewHerd,
     ...claimInfo,
+    herdId: claimInfo.herdId,
+    herdName,
     herds: claimWithoutHerd
       ? herds.concat(createUnnamedHerd(claimWithoutHerd, typeOfLivestock))
       : herds,

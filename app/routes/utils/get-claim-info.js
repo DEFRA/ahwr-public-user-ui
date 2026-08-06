@@ -4,15 +4,18 @@ export const getClaimInfo = (previousClaims, typeOfLivestock) => {
   let claimTypeText;
   let dateOfVisitText;
   let claimDateText;
+  let herdIdentifier;
 
   const previousClaimsForSpecies = previousClaims?.filter(
     (claim) => claim.data.typeOfLivestock === typeOfLivestock,
   );
+
   if (previousClaimsForSpecies && previousClaimsForSpecies.length > 0) {
     const {
       createdAt,
       type,
       data: { dateOfVisit },
+      herd: { id },
     } = previousClaimsForSpecies.reduce((latest, claim) => {
       return claim.createdAt > latest.createdAt ? claim : latest;
     });
@@ -28,6 +31,7 @@ export const getClaimInfo = (previousClaims, typeOfLivestock) => {
       month: "long",
       year: "numeric",
     });
+    herdIdentifier = id;
   }
 
   return {
@@ -35,5 +39,6 @@ export const getClaimInfo = (previousClaims, typeOfLivestock) => {
     claimType: claimTypeText,
     lastVisitDate: dateOfVisitText,
     claimDate: claimDateText,
+    herdId: herdIdentifier,
   };
 };

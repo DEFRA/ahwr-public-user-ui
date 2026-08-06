@@ -8,6 +8,7 @@ describe("getClaimInfo", () => {
       typeOfLivestock: "sheep",
       dateOfVisit: "2025-04-14T00:00:00.000Z",
     },
+    herd: { id: "1" },
   };
 
   test("returns the species passed in", () => {
@@ -49,6 +50,7 @@ describe("getClaimInfo", () => {
       type: "FOLLOW_UP",
       createdAt: "2025-04-28T00:00:00.000Z",
       data: { typeOfLivestock: "sheep", dateOfVisit: "2025-04-14T00:00:00.000Z" },
+      herd: { id: "2" },
     };
 
     expect(getClaimInfo([sheepFollowUp], "sheep").claimType).toBe("Endemics");
