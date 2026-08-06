@@ -38,10 +38,10 @@ export const getClaimInfo = (previousClaims, typeOfLivestock) => {
   } else {
     return {
       species: typeOfLivestock,
-      claimType: undefined,
-      lastVisitDate: undefined,
-      claimDate: undefined,
-      herdId: undefined,
+      claimType: null,
+      lastVisitDate: null,
+      claimDate: null,
+      herdId: null,
     };
   }
 };

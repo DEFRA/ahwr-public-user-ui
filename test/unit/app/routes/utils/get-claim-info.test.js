@@ -56,7 +56,7 @@ describe("getClaimInfo", () => {
     expect(getClaimInfo([sheepFollowUp], "sheep").claimType).toBe("Endemics");
   });
 
-  test("returns undefined claim details when no claim exists for the species", () => {
+  test("returns null claim details when no claim exists for the species", () => {
     const beefReview = {
       type: "REVIEW",
       createdAt: "2025-09-01T00:00:00.000Z",
@@ -67,20 +67,22 @@ describe("getClaimInfo", () => {
 
     expect(info).toEqual({
       species: "sheep",
-      claimType: undefined,
-      lastVisitDate: undefined,
-      claimDate: undefined,
+      claimType: null,
+      lastVisitDate: null,
+      claimDate: null,
+      herdId: null,
     });
   });
 
-  test("returns undefined claim details when previousClaims is undefined", () => {
+  test("returns null claim details when previousClaims is undefined", () => {
     const info = getClaimInfo(undefined, "sheep");
 
     expect(info).toEqual({
       species: "sheep",
-      claimType: undefined,
-      lastVisitDate: undefined,
-      claimDate: undefined,
+      claimType: null,
+      lastVisitDate: null,
+      claimDate: null,
+      herdId: null,
     });
   });
 });
