@@ -52,32 +52,49 @@ const getSelectHerdTitles = (herds, herdOrFlock) => {
   };
 };
 
+const displayScreen = ({ request, h, showErrorMessage = false }) => {
+  const { typeOfLivestock, previousClaims, herds, herdSelected } = getSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+  );
+
+  const herdOrFlock = getHerdOrFlock(typeOfLivestock);
+  const claimInfo = getClaimInfo(previousClaims, typeOfLivestock);
+
+  const claimWithoutHerd = getMostRecentClaimWithoutHerd(previousClaims, typeOfLivestock);
+
+  const errorMessage = showErrorMessage
+    ? {
+        text: `Select the ${herdOrFlock} you are claiming for`,
+        href: "#herdSelected",
+      }
+    : undefined;
+
+  const herdName = herds.find((herd) => herd.id === claimInfo.herdId)?.name;
+
+  return h.view(livestockClaimViews.selectTheHerd, {
+    ...request.payload,
+    errorMessage,
+    backLink: livestockClaimRoutes.dateOfVisit,
+    ...getSelectHerdTitles(herds, herdOrFlock),
+    radioValueNewHerd,
+    ...claimInfo,
+    herdId: claimInfo.herdId,
+    herdName,
+    herds: claimWithoutHerd
+      ? herds.concat(createUnnamedHerd(claimWithoutHerd, typeOfLivestock))
+      : herds,
+    herdOrFlock,
+    herdSelected,
+  });
+};
+
 const getHandler = {
   method: "GET",
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { typeOfLivestock, previousClaims, herds, herdSelected } = getSessionData(
-        request,
-        sessionEntryKeys.endemicsClaim,
-      );
-
-      const herdOrFlock = getHerdOrFlock(typeOfLivestock);
-      const claimInfo = getClaimInfo(previousClaims, typeOfLivestock);
-
-      const claimWithoutHerd = getMostRecentClaimWithoutHerd(previousClaims, typeOfLivestock);
-
-      return h.view(livestockClaimViews.selectTheHerd, {
-        backLink: livestockClaimRoutes.dateOfVisit,
-        ...getSelectHerdTitles(herds, herdOrFlock),
-        radioValueNewHerd,
-        ...claimInfo,
-        herds: claimWithoutHerd
-          ? herds.concat(createUnnamedHerd(claimWithoutHerd, typeOfLivestock))
-          : herds,
-        herdOrFlock,
-        herdSelected,
-      });
+      return displayScreen({ request, h });
     },
   },
 };
@@ -210,33 +227,8 @@ const postHandler = {
       }),
       failAction: async (request, h, error) => {
         request.logger.error({ error });
-        const { typeOfLivestock, previousClaims, herds, herdSelected } = getSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-        );
 
-        const herdOrFlock = getHerdOrFlock(typeOfLivestock);
-        const claimInfo = getClaimInfo(previousClaims, typeOfLivestock);
-
-        const claimWithoutHerd = getMostRecentClaimWithoutHerd(previousClaims, typeOfLivestock);
-
-        return h
-          .view(livestockClaimViews.selectTheHerd, {
-            ...request.payload,
-            errorMessage: {
-              text: `Select the ${herdOrFlock} you are claiming for`,
-              href: "#herdSelected",
-            },
-            backLink: livestockClaimRoutes.dateOfVisit,
-            ...getSelectHerdTitles(herds, herdOrFlock),
-            radioValueNewHerd,
-            ...claimInfo,
-            herds: claimWithoutHerd
-              ? herds.concat(createUnnamedHerd(claimWithoutHerd, typeOfLivestock))
-              : herds,
-            herdOrFlock,
-            herdSelected,
-          })
+        return displayScreen({ request, h, showErrorMessage: true })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
       },
