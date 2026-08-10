@@ -1,9 +1,9 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Follow-up interview about your experience of the poultry biosecurity review scheme - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Did the review identify biosecurity improvements that you had previously not known about? - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block containerStart %}
-  {{ 
+  {{
     govukBackLink({
       text: "Back",
       href: backLink
@@ -22,26 +22,23 @@
                 text: errorMessage.text,
                 href: errorMessage.href
               }]
-            }) 
+            })
           }}
         {% endif %}
         <div class="govuk-grid-row">
           <form method="POST" autocomplete="off" novalidate="novalidate">
             <input type="hidden" name="crumb" value="{{crumb}}"/>
-            {{ 
+            {{
               govukRadios({
-                id: "interview",
-                name: "interview",
+                id: "biosecurityImprovements",
+                name: "biosecurityImprovements",
                 fieldset:{
                   legend:{
-                    text: "Would you be willing to take part in a short follow-up interview about your experience of this scheme?",
+                    text: "Did the review identify biosecurity improvements that you had previously not known about?",
                     isPageHeading: true,
                     classes: "govuk-fieldset__legend--l"
                   }
-                }, 
-                hint: {
-                  text: "An independent evaluation contractor working on behalf of Defra may contact you for a short voluntary interview. This will help us to improve this scheme and other services."
-                }, 
+                },
                 errorMessage: radioErrorMessage,
                 items: [
                   {

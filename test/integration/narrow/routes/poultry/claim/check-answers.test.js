@@ -66,7 +66,7 @@ describe("Poultry check answers test", () => {
         biosecurityUsefulness: "very-useful",
         changesInBiosecurity: "infra-and-control",
         costOfChanges: "0-1500",
-        interview: "yes",
+        biosecurityImprovements: "yes",
       });
 
     setSessionData.mockImplementation(() => {});
@@ -145,7 +145,7 @@ describe("Poultry check answers test", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-back-link").attr("href")).toBe("/poultry/interview");
+      expect($(".govuk-back-link").attr("href")).toBe("/poultry/improvements");
     });
 
     test("renders page with back link to changes cost when the interview page is disabled", async () => {
@@ -270,7 +270,7 @@ describe("Poultry check answers test", () => {
           biosecurityUsefulness: "very-useful",
           changesInBiosecurity: "infra-and-control",
           costOfChanges: "0-1500",
-          interview: "yes",
+          biosecurityImprovements: "yes",
         });
 
       Wreck.get.mockResolvedValue({ payload: { herds: [{ name: "Existing Farm Site" }] } });
@@ -330,7 +330,7 @@ describe("Poultry check answers test", () => {
           biosecurityUsefulness: "very-useful",
           changesInBiosecurity: "infra-and-control",
           costOfChanges: "0-1500",
-          interview: "yes",
+          biosecurityImprovements: "yes",
         });
 
       Wreck.get.mockResolvedValue({ payload: { herds: [{ name: "Existing Farm Site" }] } });
@@ -392,7 +392,7 @@ describe("Poultry check answers test", () => {
           biosecurityUsefulness: "very-useful",
           changesInBiosecurity: "infra-and-control",
           costOfChanges: "0-1500",
-          interview: "yes",
+          biosecurityImprovements: "yes",
         });
 
       Wreck.get.mockResolvedValue({ payload: { herds: [{ name: "Existing Farm Site" }] } });
@@ -454,7 +454,7 @@ describe("Poultry check answers test", () => {
           biosecurityUsefulness: "very-useful",
           changesInBiosecurity: "infra-and-control",
           costOfChanges: "0-1500",
-          interview: "yes",
+          biosecurityImprovements: "yes",
         });
 
       const options = {
@@ -493,7 +493,7 @@ describe("Poultry check answers test", () => {
           biosecurityUsefulness: "very-useful",
           changesInBiosecurity: "infra-and-control",
           costOfChanges: "0-1500",
-          interview: "yes",
+          biosecurityImprovements: "yes",
         });
 
       const options = {
@@ -678,7 +678,7 @@ describe("Poultry check answers test", () => {
       );
       expect(interviewRow.find(".govuk-summary-list__value").text().trim()).toBe("Yes");
       expect(interviewRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
-        "/poultry/interview",
+        "/poultry/improvements",
       );
     });
 
@@ -755,7 +755,7 @@ describe("Poultry check answers test", () => {
           biosecurityUsefulness: "very-useful",
           changesInBiosecurity: "infra-and-control",
           costOfChanges: "0-1500",
-          interview: "yes",
+          biosecurityImprovements: "yes",
         });
 
       const options = {
@@ -794,7 +794,7 @@ describe("Poultry check answers test", () => {
               biosecurityUsefulness: "very-useful",
               changesInBiosecurity: "infra-and-control",
               costOfChanges: "0-1500",
-              interview: "yes",
+              biosecurityImprovements: "yes",
             },
           },
         }),
@@ -821,7 +821,7 @@ describe("Poultry check answers test", () => {
           biosecurityUsefulness: "very-useful",
           changesInBiosecurity: "infra-and-control",
           costOfChanges: "0-1500",
-          interview: "yes",
+          biosecurityImprovements: "yes",
         });
 
       const options = {

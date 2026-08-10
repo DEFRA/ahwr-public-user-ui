@@ -13,7 +13,6 @@ const EVENT_KEY_BY_SESSION_KEY = {
   minimumNumberOfBirds: "speciesNumbers",
   changesInBiosecurity: "biosecurityChanges",
   costOfChanges: "biosecurityChangesCost",
-  interview: "schemeExperienceInterview",
   poultryApplication: "application",
 };
 

@@ -33,7 +33,7 @@ const getHandler = {
 
       const backLink = config.poultry.disableInterviewPage
         ? poultryClaimRoutes.changesCost
-        : poultryClaimRoutes.interview;
+        : poultryClaimRoutes.improvements;
 
       return h.view(poultryClaimViews.checkAnswers, {
         listData: { rows: rowsWithData },
