@@ -69,7 +69,7 @@ const postHandler = {
 
       const nextRoute = config.poultry.disableInterviewPage
         ? poultryClaimRoutes.checkAnswers
-        : poultryClaimRoutes.interview;
+        : poultryClaimRoutes.improvements;
 
       return h.redirect(nextRoute);
     },

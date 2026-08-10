@@ -9,21 +9,21 @@ import { poultryClaimViews, poultryClaimRoutes } from "../../../constants/routes
 import { config } from "../../../config/index.js";
 import HttpStatus from "http-status-codes";
 
-const YES_TO_ASSESSMENT_TEXT = "Select if you want to take part";
+const YES_TO_ASSESSMENT_TEXT = "Select if new biosecurity improvements were identified";
 
 const getHandler = {
   method: "GET",
-  path: poultryClaimRoutes.interview,
+  path: poultryClaimRoutes.improvements,
   options: {
     handler: async (request, h) => {
       if (config.poultry.disableInterviewPage) {
         return h.redirect(poultryClaimRoutes.checkAnswers);
       }
 
-      const { interview } = getSessionData(request, sessionEntryKeys.poultryClaim);
+      const { biosecurityImprovements } = getSessionData(request, sessionEntryKeys.poultryClaim);
 
-      return h.view(poultryClaimViews.interview, {
-        previousAnswer: interview,
+      return h.view(poultryClaimViews.improvements, {
+        previousAnswer: biosecurityImprovements,
         backLink: poultryClaimRoutes.changesCost,
       });
     },
@@ -32,30 +32,30 @@ const getHandler = {
 
 const postHandler = {
   method: "POST",
-  path: poultryClaimRoutes.interview,
+  path: poultryClaimRoutes.improvements,
   options: {
     validate: {
       payload: Joi.object({
-        interview: Joi.string()
+        biosecurityImprovements: Joi.string()
           .valid("yes", "no")
           .required()
           .messages({ "any.required": YES_TO_ASSESSMENT_TEXT }),
       }),
       failAction: (request, h, error) => {
         request.logger.error({ error });
-        const { interview } = request.payload;
+        const { biosecurityImprovements } = request.payload;
 
-        const errorMessage = { text: YES_TO_ASSESSMENT_TEXT, href: "#interview" };
+        const errorMessage = { text: YES_TO_ASSESSMENT_TEXT, href: "#biosecurityImprovements" };
         const errors = {
           errorMessage,
-          radioErrorMessage: interview === undefined ? errorMessage : undefined,
+          radioErrorMessage: biosecurityImprovements === undefined ? errorMessage : undefined,
         };
 
         return h
-          .view(poultryClaimViews.interview, {
+          .view(poultryClaimViews.improvements, {
             backLink: poultryClaimRoutes.changesCost,
             ...errors,
-            previousAnswer: interview,
+            previousAnswer: biosecurityImprovements,
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover();
@@ -66,13 +66,13 @@ const postHandler = {
         return h.redirect(poultryClaimRoutes.checkAnswers);
       }
 
-      const { interview } = request.payload;
+      const { biosecurityImprovements } = request.payload;
 
       await setSessionData(
         request,
         sessionEntryKeys.poultryClaim,
-        sessionKeys.poultryClaim.interview,
-        interview,
+        sessionKeys.poultryClaim.biosecurityImprovements,
+        biosecurityImprovements,
       );
 
       return h.redirect(poultryClaimRoutes.checkAnswers);
@@ -80,4 +80,4 @@ const postHandler = {
   },
 };
 
-export const poultryInterviewHandlers = [getHandler, postHandler];
+export const poultryImprovementsHandlers = [getHandler, postHandler];

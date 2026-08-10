@@ -46,7 +46,7 @@ export const sessionKeys = {
     herdReasons: "herdReasons",
     herds: "herds",
     herdSame: "herdSame",
-    interview: "interview",
+    biosecurityImprovements: "biosecurityImprovements",
     isOnlyHerdOnSbi: "isOnlyHerdOnSbi",
     latestPoultryApplication: "latestPoultryApplication",
     minimumNumberOfBirds: "minimumNumberOfBirds",
