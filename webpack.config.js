@@ -13,6 +13,10 @@ console.log(`Running webpack in ${isDev ? "development" : "production"} mode`);
 export default {
   entry: "./app/frontend/src/entry.js",
   mode: isDev ? "development" : "production",
+  // Development mode defaults to the `eval` devtool, which wraps modules in eval()
+  // and is blocked by our Content-Security-Policy (no 'unsafe-eval'). Use external
+  // source maps in development so the bundle runs under CSP; none in production.
+  devtool: isDev ? "source-map" : false,
   resolve: {
     modules: [path.resolve(__dirname, "src"), "node_modules"],
   },
