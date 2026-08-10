@@ -99,14 +99,14 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
   ];
 
   if (!config.poultry.disableInterviewPage) {
-    const interviewRow = createdHerdRowObject(
+    const improvementsRow = createdHerdRowObject(
       "Evaluation interview",
-      upperFirstLetter(poultryClaim.interview),
-      poultryClaimRoutes.interview,
+      upperFirstLetter(poultryClaim.biosecurityImprovements),
+      poultryClaimRoutes.improvements,
       "evaluation interview",
     );
 
-    rows.push(interviewRow);
+    rows.push(improvementsRow);
   }
 
   return rows;
@@ -137,7 +137,7 @@ export const buildPoultryClaimPayload = (poultryClaim) => {
       biosecurityUsefulness: poultryClaim.biosecurityUsefulness,
       changesInBiosecurity: poultryClaim.changesInBiosecurity,
       costOfChanges: poultryClaim.costOfChanges,
-      interview: poultryClaim.interview,
+      biosecurityImprovements: poultryClaim.biosecurityImprovements,
     },
   };
 };

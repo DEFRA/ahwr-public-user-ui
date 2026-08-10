@@ -20,14 +20,14 @@ jest.mock("../../../../../../app/messaging/ineligibility-event-emission.js");
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/lib/context-helper.js");
 
-const url = `/poultry/interview`;
+const url = `/poultry/improvements`;
 const auth = {
   credentials: { reference: "1111", sbi: "111111111" },
   strategy: "cookie",
 };
 let crumb;
 
-describe("/poultry/interview", () => {
+describe("/poultry/improvements", () => {
   let server;
 
   beforeEach(async () => {
@@ -69,7 +69,7 @@ describe("/poultry/interview", () => {
     await server.stop();
   });
 
-  describe("when the interview page is disabled", () => {
+  describe("when the improvements page is disabled", () => {
     beforeEach(() => {
       config.poultry.disableInterviewPage = true;
     });
@@ -81,13 +81,13 @@ describe("/poultry/interview", () => {
       expect(response.headers.location).toEqual("/poultry/check-answers");
     });
 
-    test("POST redirects straight to check answers and does not store interview data", async () => {
+    test("POST redirects straight to check answers and does not store biosecurityImprovements data", async () => {
       const options = {
         method: "POST",
         auth,
         url,
         headers: { cookie: `crumb=${crumb}` },
-        payload: { crumb, interview: "yes" },
+        payload: { crumb, biosecurityImprovements: "yes" },
       };
 
       const response = await server.inject(options);
@@ -97,13 +97,13 @@ describe("/poultry/interview", () => {
       expect(setSessionData).not.toHaveBeenCalledWith(
         expect.any(Object),
         "poultryClaim",
-        "interview",
+        "biosecurityImprovements",
         expect.anything(),
       );
     });
   });
 
-  describe("when the interview page is enabled (default)", () => {
+  describe("when the improvements page is enabled (default)", () => {
     beforeEach(() => {
       config.poultry.disableInterviewPage = false;
     });
@@ -121,9 +121,9 @@ describe("/poultry/interview", () => {
       };
 
       const browserTitle =
-        "Follow-up interview about your experience of the poultry biosecurity review scheme";
+        "Did the review identify biosecurity improvements that you had previously not known about?";
       const pageHeader =
-        "Would you be willing to take part in a short follow-up interview about your experience of this scheme?";
+        "Did the review identify biosecurity improvements that you had previously not known about?";
       testBrowserPageTitle({ title: browserTitle, getResponse });
       testPageHeading({ heading: pageHeader, getResponse });
 
@@ -137,7 +137,7 @@ describe("/poultry/interview", () => {
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
           .mockReturnValue({
-            interview: "yes",
+            biosecurityImprovements: "yes",
           });
 
         const response = await server.inject(options);
@@ -145,7 +145,7 @@ describe("/poultry/interview", () => {
         expect(await axe(response.payload)).toHaveNoViolations();
         const $ = cheerio.load(response.payload);
 
-        expect($('input[name="interview"]:checked').val()).toEqual("yes");
+        expect($('input[name="biosecurityImprovements"]:checked').val()).toEqual("yes");
         expect($(".govuk-back-link").text()).toMatch("Back");
       });
 
@@ -159,7 +159,7 @@ describe("/poultry/interview", () => {
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
           .mockReturnValue({
-            interview: "no",
+            biosecurityImprovements: "no",
           });
 
         const response = await server.inject(options);
@@ -167,35 +167,35 @@ describe("/poultry/interview", () => {
         expect(await axe(response.payload)).toHaveNoViolations();
         const $ = cheerio.load(response.payload);
 
-        expect($('input[name="interview"]:checked').val()).toEqual("no");
+        expect($('input[name="biosecurityImprovements"]:checked').val()).toEqual("no");
       });
 
       describe(`POST ${url}`, () => {
-        test("show error when interview answer not selected", async () => {
+        test("show error when biosecurityImprovements answer not selected", async () => {
           const options = {
             method: "POST",
             auth,
             url,
             headers: { cookie: `crumb=${crumb}` },
-            payload: { crumb, interview: "", assessmentPercentage: "" },
+            payload: { crumb, biosecurityImprovements: "", assessmentPercentage: "" },
           };
 
           const response = await server.inject(options);
 
           expect(await axe(response.payload)).toHaveNoViolations();
           const $ = cheerio.load(response.payload);
-          const errorMessage = "Select if you want to take part";
+          const errorMessage = "Select if new biosecurity improvements were identified";
 
           expect($("li > a").text()).toMatch(errorMessage);
         });
 
-        test("continue to next page when interview answer has been selected", async () => {
+        test("continue to next page when biosecurityImprovements answer has been selected", async () => {
           const options = {
             method: "POST",
             auth,
             url,
             headers: { cookie: `crumb=${crumb}` },
-            payload: { crumb, interview: "yes" },
+            payload: { crumb, biosecurityImprovements: "yes" },
           };
 
           const response = await server.inject(options);
@@ -205,7 +205,7 @@ describe("/poultry/interview", () => {
           expect(setSessionData).toHaveBeenCalledWith(
             expect.any(Object),
             "poultryClaim",
-            "interview",
+            "biosecurityImprovements",
             "yes",
           );
         });

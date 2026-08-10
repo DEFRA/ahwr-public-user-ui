@@ -206,7 +206,6 @@ describe("Send event on session set", () => {
         ["minimumNumberOfBirds", "speciesNumbers"],
         ["changesInBiosecurity", "biosecurityChanges"],
         ["costOfChanges", "biosecurityChangesCost"],
-        ["interview", "schemeExperienceInterview"],
       ])("renames $before to $after", async (before, after) => {
         await sendSessionEvent({ ...event, sessionKey: before, value: "10" });
 
