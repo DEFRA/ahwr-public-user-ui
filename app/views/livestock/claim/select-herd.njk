@@ -45,7 +45,7 @@
                     text: herdOrFlock | title + " name"
                   },
                   value: {
-                    text: herds[0].name
+                    text: herdName
                   }
                 },
                 {
@@ -82,9 +82,9 @@
               errorMessage: errorMessage,
               items: [
                 {
-                  value: herds[0].id,
+                  value: herdId,
                   text: "Yes, it's the same",
-                  checked: herdSelected == herds[0].id
+                  checked: herdSelected == herdId
                 },
                 {
                   value: radioValueNewHerd,
