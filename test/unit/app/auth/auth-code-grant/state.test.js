@@ -2,10 +2,6 @@ import { verifyState } from "../../../../../app/auth/auth-code-grant/state.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
 import { when } from "jest-when";
 
-jest.mock("node:crypto", () => ({
-  randomUUID: jest.fn(),
-}));
-
 jest.mock("../../../../../app/config/index.js", () => {
   const actual = jest.requireActual("../../../../../app/config/index.js");
   return {
