@@ -158,6 +158,18 @@ describe("signin-oidc", () => {
     expect(metricsCounter).toHaveBeenCalledWith("process_sign_in");
   });
 
+  test("the callback contains an error, return 400", async () => {
+    const res = await server.inject({
+      url: `/signin-oidc?error=server_error&error_description=An+invalid+response+was+received`,
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+  });
+
   test("happy path", async () => {
     const crn = "1100021396";
     const encodedState = await getEncodedTestState(server);
