@@ -17,5 +17,6 @@ process.env.RPA_GET_PERSON_SUMMARY_URL = "http://rpa.com";
 process.env.RPA_GET_ORGANISATION_PERMISSIONS_URL = "/api/organisation/organisationId/permissions";
 process.env.RPA_GET_ORGANISATION_URL = "/api/organisation/organisationId";
 process.env.RPA_GET_CPH_NUMBERS_URL = "/api/organisation/organisationId/cph";
+process.env.DEFRA_ID_TENANT = "dcidmtest";
 
 config();

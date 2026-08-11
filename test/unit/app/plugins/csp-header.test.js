@@ -44,8 +44,14 @@ describe("content security policy directives", () => {
     expect(directives["frame-ancestors"]).toEqual(["'none'"]);
   });
 
-  test("restricts form-action to self", () => {
-    expect(directives["form-action"]).toEqual(["'self'"]);
+  test("allows self and the Defra ID origin in form-action", () => {
+    expect(new Set(directives["form-action"])).toEqual(
+      new Set(["'self'", "https://dcidmtest.b2clogin.com"]),
+    );
+  });
+
+  test("does not allow arbitrary hosts as form targets", () => {
+    expect(directives["form-action"]).not.toContain("*");
   });
 
   test("restricts base-uri to self", () => {
