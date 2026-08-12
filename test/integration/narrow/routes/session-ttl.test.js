@@ -23,10 +23,10 @@ describe("session TTL", () => {
     await server.stop();
   });
 
-  test("the session cookie is issued with a 3 day max-age", () => {
+  test("the session cookie is issued with a 30 minute max-age", () => {
     const authCookie = getSetCookie(response, "ahwr_session");
 
     expect(authCookie).toBeDefined();
-    expect(getMaxAge(authCookie)).toBe(259200);
+    expect(getMaxAge(authCookie)).toBe(1800);
   });
 });
