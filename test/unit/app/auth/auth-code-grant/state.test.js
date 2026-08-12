@@ -35,7 +35,7 @@ describe("auth-code-grant state tests", () => {
     expect(() => verifyState(request)).toThrow("No state");
   });
 
-  test("state verify - no session estate", () => {
+  test("state verify - no session state", () => {
     const request = {
       query: {
         state: encodeState({ id: "b0a1c9d4-0000-4000-8000-000000000002", namespace: "ahwr" }),
