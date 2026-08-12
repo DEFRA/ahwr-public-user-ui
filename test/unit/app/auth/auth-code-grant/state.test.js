@@ -2,14 +2,6 @@ import { verifyState } from "../../../../../app/auth/auth-code-grant/state.js";
 import { getSessionData, sessionEntryKeys, sessionKeys } from "../../../../../app/session/index.js";
 import { when } from "jest-when";
 
-jest.mock("../../../../../app/config/index.js", () => {
-  const actual = jest.requireActual("../../../../../app/config/index.js");
-  return {
-    ...actual,
-    config: { ...actual.config, namespace: "test-namespace" },
-  };
-});
-
 jest.mock("../../../../../app/session", () => {
   const actual = jest.requireActual("../../../../../app/session");
   // Mocking everything apart from sessionKeys and sessionEntryKeys
