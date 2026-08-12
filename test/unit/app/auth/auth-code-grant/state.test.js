@@ -29,37 +29,32 @@ describe("auth-code-grant state tests", () => {
 
   test("state verify - no state", () => {
     const request = {
-      query: { description: "No state", error: false, state: false },
+      query: {},
       yar: { id: 1 },
-      logger: { error: jest.fn() },
     };
-    expect(verifyState(request)).toEqual(false);
+    expect(() => verifyState(request)).toThrow("No state");
   });
 
-  test("state verify - no state in session", () => {
+  test("state verify - no session estate", () => {
     const request = {
       query: {
-        error: false,
         state: encodeState({ id: "b0a1c9d4-0000-4000-8000-000000000002", namespace: "ahwr" }),
       },
       yar: { id: 1 },
-      logger: { error: jest.fn() },
     };
     when(getSessionData)
       .calledWith(request, sessionEntryKeys.tokens, sessionKeys.tokens.state)
       .mockReturnValue(undefined);
 
-    expect(verifyState(request)).toEqual(false);
+    expect(() => verifyState(request)).toThrow("No session state");
   });
 
   test("state verify - state id does not match session state id", () => {
     const request = {
       query: {
-        error: false,
         state: encodeState({ id: "b0a1c9d4-0000-4000-8000-000000000003", namespace: "ahwr" }),
       },
       yar: { id: 1 },
-      logger: { error: jest.fn() },
     };
     when(getSessionData)
       .calledWith(request, sessionEntryKeys.tokens, sessionKeys.tokens.state)
@@ -67,7 +62,7 @@ describe("auth-code-grant state tests", () => {
         encodeState({ id: "b0a1c9d4-0000-4000-8000-000000000004", namespace: "ahwr" }),
       );
 
-    expect(verifyState(request)).toEqual(false);
+    expect(() => verifyState(request)).toThrow("State id does not match");
   });
 
   test("state verify - state id matches session state id", () => {
@@ -76,9 +71,8 @@ describe("auth-code-grant state tests", () => {
       namespace: "ahwr",
     });
     const request = {
-      query: { error: false, state },
+      query: { state },
       yar: { id: 1 },
-      logger: { error: jest.fn() },
     };
     when(getSessionData)
       .calledWith(request, sessionEntryKeys.tokens, sessionKeys.tokens.state)

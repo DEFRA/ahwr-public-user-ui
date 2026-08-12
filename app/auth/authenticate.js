@@ -8,9 +8,11 @@ import { requestAuthorizationCodeUrl } from "./auth-code-grant/request-authoriza
 import { acquireSigningKey } from "./token-verify/acquire-signing-key.js";
 
 export const authenticate = async (request, h, logger) => {
-  if (!verifyState(request)) {
+  try {
+    verifyState(request);
+  } catch (error) {
     logger.error({
-      error: "Invalid state. Redirecting back to /signin-oidc after resetting state.",
+      error,
     });
     const authRedirectCallback = h.redirect(await requestAuthorizationCodeUrl(request));
 
