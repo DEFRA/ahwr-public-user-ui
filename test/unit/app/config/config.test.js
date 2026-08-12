@@ -15,11 +15,11 @@ describe("Base config", () => {
     expect(config.displayPageSize).toBe(100);
   });
 
-  test("session cookie and cache expires in 3 days", () => {
+  test("session cookie and cache expires in 30 minutes", () => {
     const config = getConfig();
 
-    expect(config).toHaveProperty("cache.expiresIn", 259200000);
-    expect(config).toHaveProperty("cookie.ttl", 259200000);
+    expect(config).toHaveProperty("cache.expiresIn", 1800000);
+    expect(config).toHaveProperty("cookie.ttl", 1800000);
   });
 
   test("should throw an error if config is invalid", () => {
