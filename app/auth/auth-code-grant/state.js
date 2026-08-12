@@ -24,23 +24,18 @@ export const generate = async (request) => {
 };
 
 export const verifyState = (request) => {
-  if (!request.query.error) {
-    const state = request.query.state;
-    if (!state) {
-      return false;
-    }
-    const decodedState = JSON.parse(Buffer.from(state, "base64").toString("ascii"));
-    const sessionState = getSessionData(request, sessionEntryKeys.tokens, sessionKeys.tokens.state);
-
-    if (sessionState === undefined) {
-      return false;
-    }
-
-    const savedState = JSON.parse(Buffer.from(sessionState, "base64").toString("ascii"));
-
-    return decodedState.id === savedState.id;
-  } else {
-    request.logger.error({ error: request.query.error });
+  const state = request.query.state;
+  if (!state) {
     return false;
   }
+  const decodedState = JSON.parse(Buffer.from(state, "base64").toString("ascii"));
+  const sessionState = getSessionData(request, sessionEntryKeys.tokens, sessionKeys.tokens.state);
+
+  if (sessionState === undefined) {
+    return false;
+  }
+
+  const savedState = JSON.parse(Buffer.from(sessionState, "base64").toString("ascii"));
+
+  return decodedState.id === savedState.id;
 };

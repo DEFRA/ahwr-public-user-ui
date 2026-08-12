@@ -27,16 +27,6 @@ describe("auth-code-grant state tests", () => {
     jest.clearAllMocks();
   });
 
-  test("state verify - query error", () => {
-    const request = {
-      query: { description: "Error", error: true },
-      yar: { id: 1 },
-      logger: { error: jest.fn() },
-    };
-    expect(verifyState(request)).toEqual(false);
-    expect(request.logger.error).toHaveBeenCalledWith({ error: true });
-  });
-
   test("state verify - no state", () => {
     const request = {
       query: { description: "No state", error: false, state: false },
