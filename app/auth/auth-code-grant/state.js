@@ -24,7 +24,7 @@ export const generate = async (request) => {
 };
 
 export const verifyState = (request) => {
-  const state = request.query.state;
+  const { state } = request.query;
   if (!state) {
     return false;
   }
