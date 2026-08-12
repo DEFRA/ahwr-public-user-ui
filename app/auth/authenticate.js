@@ -11,9 +11,10 @@ export const authenticate = async (request, h, logger) => {
   try {
     verifyState(request);
   } catch (error) {
-    logger.error({
-      error,
-    });
+    logger.error(
+      { error },
+      "Invalid state. Redirecting back to /signin-oidc after resetting state.",
+    );
     const authRedirectCallback = h.redirect(await requestAuthorizationCodeUrl(request));
 
     return { authRedirectCallback };
