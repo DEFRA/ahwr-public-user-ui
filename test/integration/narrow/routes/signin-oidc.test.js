@@ -160,7 +160,7 @@ describe("signin-oidc", () => {
 
   test("the callback contains an error, return 400", async () => {
     const res = await server.inject({
-      url: `/signin-oidc?error=server_error&error_description=An+invalid+response+was+received`,
+      url: "/signin-oidc?error=server_error&error_description=An+invalid+response+was+received",
       auth: {
         credentials: {},
         strategy: "cookie",
