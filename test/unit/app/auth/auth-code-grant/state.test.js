@@ -57,6 +57,17 @@ describe("auth-code-grant state tests", () => {
     expect(() => verifyState(request)).toThrow("State id does not match");
   });
 
+  test("state verify - not base64", () => {
+    const request = {
+      query: {
+        state: "blahblahblah",
+      },
+      yar: { id: 1 },
+    };
+
+    expect(() => verifyState(request)).toThrow();
+  });
+
   test("state verify - state id matches session state id", () => {
     const state = encodeState({
       id: "b0a1c9d4-0000-4000-8000-000000000005",
