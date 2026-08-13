@@ -674,7 +674,7 @@ describe("Poultry check answers test", () => {
       const $ = cheerio.load(res.payload);
       const interviewRow = $(".govuk-summary-list__row").eq(13);
       expect(interviewRow.find(".govuk-summary-list__key").text().trim()).toBe(
-        "Evaluation interview",
+        "Biosecurity improvements",
       );
       expect(interviewRow.find(".govuk-summary-list__value").text().trim()).toBe("Yes");
       expect(interviewRow.find(".govuk-summary-list__actions a").attr("href")).toBe(
