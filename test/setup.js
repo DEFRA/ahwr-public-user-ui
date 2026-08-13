@@ -18,5 +18,7 @@ process.env.RPA_GET_ORGANISATION_PERMISSIONS_URL = "/api/organisation/organisati
 process.env.RPA_GET_ORGANISATION_URL = "/api/organisation/organisationId";
 process.env.RPA_GET_CPH_NUMBERS_URL = "/api/organisation/organisationId/cph";
 process.env.DEFRA_ID_TENANT = "dcidmtest";
+// keep pino on ecs under test: a pino-pretty transport leaks a thread-stream worker
+process.env.USE_PRETTY_PRINT = "false";
 
 config();
