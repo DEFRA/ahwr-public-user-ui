@@ -2,9 +2,13 @@ import { pino } from "pino";
 import { loggerOptions } from "./logger-options.js";
 
 export const API_CALL_FAILED_CATEGORY = "api-call-failed";
-const logger = pino(loggerOptions);
+
+let logger;
 
 export function getLogger() {
+  if (!logger) {
+    logger = pino(loggerOptions);
+  }
   return logger;
 }
 
