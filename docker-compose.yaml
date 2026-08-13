@@ -22,6 +22,7 @@ services:
       DEFRA_ID_CLIENT_ID: ${DEFRA_ID_CLIENT_ID:-83d2b160-74ce-4356-9709-3f8da7868e35}
       DEFRA_ID_CLIENT_SECRET: ${DEFRA_ID_CLIENT_SECRET:-changeme}
       DEFRA_ID_SERVICE_ID: ${DEFRA_ID_SERVICE_ID:-2a672ee6-7750-ed11-bba3-000d3adf7047}
+      DEFRA_ID_REDIRECT_HOSTS: ${DEFRA_ID_REDIRECT_HOSTS:-}
       RPA_HOST_NAME: ${RPA_HOST_NAME:-https://dev-internal-gateway.trade.azure.defra.cloud}
       RPA_GET_PERSON_SUMMARY_URL: ${RPA_GET_PERSON_SUMMARY_URL:-/rural-payments-vet-visits/v1/person/3337243/summary}
       RPA_GET_ORGANISATION_PERMISSIONS_URL: ${RPA_GET_ORGANISATION_PERMISSIONS_URL:-/rural-payments-vet-visits/v1/SitiAgriApi/authorisation/organisation/organisationId/authorisation}

@@ -13,6 +13,7 @@ export const getAuthConfig = () => {
       clientSecret: joi.string(),
       serviceId: joi.string(),
       scope: joi.string(),
+      redirectHosts: joi.array().items(joi.string().uri()),
     },
     ruralPaymentsAgency: {
       hostname: joi.string(),
@@ -43,6 +44,11 @@ export const getAuthConfig = () => {
       clientSecret: process.env.DEFRA_ID_CLIENT_SECRET,
       serviceId: process.env.DEFRA_ID_SERVICE_ID,
       scope: `openid ${process.env.DEFRA_ID_CLIENT_ID} offline_access`,
+      // Defra ID hands off from the B2C tenant to its branded front door, so both hosts appear in the sign-in redirect chain
+      redirectHosts: (process.env.DEFRA_ID_REDIRECT_HOSTS ?? "")
+        .split(",")
+        .map((host) => host.trim())
+        .filter(Boolean),
     },
     ruralPaymentsAgency: {
       hostname: process.env.RPA_HOST_NAME,
