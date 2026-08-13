@@ -12,26 +12,75 @@ jest.mock("../../../../../app/session", () => {
   return mocked;
 });
 
-when(getSessionData)
-  .calledWith(expect.anything(), sessionEntryKeys.tokens, sessionKeys.tokens.accessToken)
-  .mockReturnValue("access-token");
+const encodeState = (state) => Buffer.from(JSON.stringify(state)).toString("base64");
 
 describe("auth-code-grant state tests", () => {
-  test("state verify - query error", () => {
-    const request = {
-      query: { description: "Error", error: true },
-      yar: { id: 1 },
-      logger: { error: jest.fn() },
-    };
-    expect(verifyState(request)).toEqual(false);
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   test("state verify - no state", () => {
     const request = {
-      query: { description: "No state", error: false, state: false },
+      query: {},
       yar: { id: 1 },
-      logger: { error: jest.fn() },
     };
-    expect(verifyState(request)).toEqual(false);
+    expect(() => verifyState(request)).toThrow("No state");
+  });
+
+  test("state verify - no session state", () => {
+    const request = {
+      query: {
+        state: encodeState({ id: "b0a1c9d4-0000-4000-8000-000000000002", namespace: "ahwr" }),
+      },
+      yar: { id: 1 },
+    };
+    when(getSessionData)
+      .calledWith(request, sessionEntryKeys.tokens, sessionKeys.tokens.state)
+      .mockReturnValue(undefined);
+
+    expect(() => verifyState(request)).toThrow("No session state");
+  });
+
+  test("state verify - state id does not match session state id", () => {
+    const request = {
+      query: {
+        state: encodeState({ id: "b0a1c9d4-0000-4000-8000-000000000003", namespace: "ahwr" }),
+      },
+      yar: { id: 1 },
+    };
+    when(getSessionData)
+      .calledWith(request, sessionEntryKeys.tokens, sessionKeys.tokens.state)
+      .mockReturnValue(
+        encodeState({ id: "b0a1c9d4-0000-4000-8000-000000000004", namespace: "ahwr" }),
+      );
+
+    expect(() => verifyState(request)).toThrow("State id does not match");
+  });
+
+  test("state verify - not base64", () => {
+    const request = {
+      query: {
+        state: "blahblahblah",
+      },
+      yar: { id: 1 },
+    };
+
+    expect(() => verifyState(request)).toThrow();
+  });
+
+  test("state verify - state id matches session state id", () => {
+    const state = encodeState({
+      id: "b0a1c9d4-0000-4000-8000-000000000005",
+      namespace: "ahwr",
+    });
+    const request = {
+      query: { state },
+      yar: { id: 1 },
+    };
+    when(getSessionData)
+      .calledWith(request, sessionEntryKeys.tokens, sessionKeys.tokens.state)
+      .mockReturnValue(state);
+
+    expect(verifyState(request)).toEqual(true);
   });
 });

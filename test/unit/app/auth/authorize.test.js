@@ -22,7 +22,9 @@ describe("Generate authentication url test", () => {
   });
 
   test("when invalid state occurs", async () => {
-    verifyState.mockReturnValueOnce(false);
+    verifyState.mockImplementationOnce(() => {
+      throw new Error("Boom");
+    });
     const request = { yar: { id: "33" }, logger: { error: jest.fn() } };
     const mockLogger = {
       error: jest.fn(),

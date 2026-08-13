@@ -106,6 +106,24 @@ describe("signin-oidc", () => {
     );
   });
 
+  test("state is missing, return 400", async () => {
+    const res = await server.inject({
+      url: `/signin-oidc?code=TESTCODE`,
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+    expect(trackError).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.any(Error),
+      "signin-oidc-validation-failed",
+      "Signin OIDC validation failed",
+    );
+  });
+
   test("state is not valid base64, return 400", async () => {
     const res = await server.inject({
       url: `/signin-oidc?state=TESTSTATE&code=TESTCODE`,
@@ -138,6 +156,18 @@ describe("signin-oidc", () => {
     expect(res.statusCode).toBe(StatusCodes.MOVED_TEMPORARILY);
     expect(res.headers.location).toBe(unitTestDefraId);
     expect(metricsCounter).toHaveBeenCalledWith("process_sign_in");
+  });
+
+  test("the callback contains an error, return 400", async () => {
+    const res = await server.inject({
+      url: "/signin-oidc?error=server_error&error_description=An+invalid+response+was+received",
+      auth: {
+        credentials: {},
+        strategy: "cookie",
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
   });
 
   test("happy path", async () => {

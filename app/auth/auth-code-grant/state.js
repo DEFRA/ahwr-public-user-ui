@@ -24,23 +24,23 @@ export const generate = async (request) => {
 };
 
 export const verifyState = (request) => {
-  if (!request.query.error) {
-    const state = request.query.state;
-    if (!state) {
-      return false;
-    }
-    const decodedState = JSON.parse(Buffer.from(state, "base64").toString("ascii"));
-    const sessionState = getSessionData(request, sessionEntryKeys.tokens, sessionKeys.tokens.state);
-
-    if (sessionState === undefined) {
-      return false;
-    }
-
-    const savedState = JSON.parse(Buffer.from(sessionState, "base64").toString("ascii"));
-
-    return decodedState.id === savedState.id;
-  } else {
-    request.logger.error({ error: request.query.error });
-    return false;
+  const { state } = request.query;
+  if (!state) {
+    throw new Error("No state");
   }
+
+  const decodedState = JSON.parse(Buffer.from(state, "base64").toString("ascii"));
+  const sessionState = getSessionData(request, sessionEntryKeys.tokens, sessionKeys.tokens.state);
+
+  if (sessionState === undefined) {
+    throw new Error("No session state");
+  }
+
+  const savedState = JSON.parse(Buffer.from(sessionState, "base64").toString("ascii"));
+
+  if (decodedState.id !== savedState.id) {
+    throw new Error("State id does not match");
+  }
+
+  return true;
 };
