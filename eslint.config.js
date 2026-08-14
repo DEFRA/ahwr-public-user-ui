@@ -15,8 +15,8 @@ export default [
       "import/extensions": ["error", "always", { ignorePackages: true }],
     },
   },
+  sonarjs.configs.recommended,
   {
-    plugins: { sonarjs },
     rules: {
       "sonarjs/no-commented-code": "error",
     },
