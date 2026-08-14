@@ -1,5 +1,4 @@
 import * as cheerio from "cheerio";
-import { ok } from "../../../../../utils/phase-banner-expect.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import {
   getSessionData,
@@ -82,7 +81,7 @@ describe("Check review numbers page test", () => {
       expect($(".govuk-back-link").attr("href")).toContain(
         livestockApplyRoutes.youCanClaimMultiple,
       );
-      ok($);
+      expect($).toShowPhaseBanner();
     });
   });
 

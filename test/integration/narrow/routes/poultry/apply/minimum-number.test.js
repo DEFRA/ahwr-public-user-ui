@@ -1,5 +1,4 @@
 import * as cheerio from "cheerio";
-import { ok } from "../../../../../utils/phase-banner-expect.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import {
   getSessionData,
@@ -113,7 +112,7 @@ describe("Check review minimum number page test", () => {
       expect(res.payload).not.toContain("Minimum number of poultry in the unit");
       expect(res.payload).not.toContain("Each time you do a biosecurity review of the unit");
 
-      ok($);
+      expect($).toShowPhaseBanner();
     });
   });
 

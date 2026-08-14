@@ -1,5 +1,4 @@
 import * as cheerio from "cheerio";
-import { ok } from "../../../../../utils/phase-banner-expect.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import {
@@ -106,7 +105,7 @@ describe("Declaration test", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(StatusCodes.OK);
       const $ = cheerio.load(res.payload);
-      ok($);
+      expect($).toShowPhaseBanner();
       const expectedHerdsText = `If the RPA requests evidence that your reviews or follow-ups took place, or details of the herd or flocks you have, you must provide it. This will be on your vet summary.`;
       const herdsText = $("p")
         .filter((i, el) => {
@@ -140,7 +139,7 @@ describe("Declaration test", () => {
       expect($("title").text()).toMatch(
         "Livestock application complete - Get funding to improve animal health and welfare",
       );
-      ok($);
+      expect($).toShowPhaseBanner();
       expect(clearApplyRedirect).toHaveBeenCalled();
       expect(refreshApplications).toHaveBeenCalledWith(organisation.sbi, expect.anything());
       expect(createApplication).toHaveBeenCalledWith(
@@ -183,7 +182,7 @@ describe("Declaration test", () => {
       expect($("title").text()).toMatch(
         "Livestock agreement offer rejected - Get funding to improve animal health and welfare",
       );
-      ok($);
+      expect($).toShowPhaseBanner();
       expect(createApplication).toHaveBeenCalledWith(
         { organisation, ...farmerApplyData },
         expect.anything(),

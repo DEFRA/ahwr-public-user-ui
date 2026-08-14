@@ -176,7 +176,7 @@ describe("Poultry check answers test", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($(".govuk-summary-list__row").length).toBe(14);
+      expect($(".govuk-summary-list__row")).toHaveLength(14);
     });
 
     test("renders 13 rows, excluding the interview question, when the interview page is disabled", async () => {
@@ -209,7 +209,7 @@ describe("Poultry check answers test", () => {
       const orgRow = $(".govuk-summary-list__row").eq(0);
       expect(orgRow.find(".govuk-summary-list__key").text().trim()).toBe("Business name");
       expect(orgRow.find(".govuk-summary-list__value").text().trim()).toBe("Test Business");
-      expect(orgRow.find(".govuk-summary-list__actions a").length).toBe(0);
+      expect(orgRow.find(".govuk-summary-list__actions a")).toHaveLength(0);
     });
 
     test("displays date of review in dd MMMM yyyy format without time component", async () => {
@@ -290,7 +290,7 @@ describe("Poultry check answers test", () => {
       expect(siteNameRow.find(".govuk-summary-list__value").text().trim()).toBe(
         "Existing Farm Site",
       );
-      expect(siteNameRow.find(".govuk-summary-list__actions a").length).toBe(0);
+      expect(siteNameRow.find(".govuk-summary-list__actions a")).toHaveLength(0);
     });
 
     test("displays site CPH with change link for new site", async () => {
@@ -348,7 +348,7 @@ describe("Poultry check answers test", () => {
       const cphRow = $(".govuk-summary-list__row").eq(3);
       expect(cphRow.find(".govuk-summary-list__key").text().trim()).toBe("Site CPH");
       expect(cphRow.find(".govuk-summary-list__value").text().trim()).toBe("98/765/4321");
-      expect(cphRow.find(".govuk-summary-list__actions a").length).toBe(0);
+      expect(cphRow.find(".govuk-summary-list__actions a")).toHaveLength(0);
     });
 
     test("displays only site within SBI with change link for new site", async () => {
@@ -412,7 +412,7 @@ describe("Poultry check answers test", () => {
         "Only site within the SBI",
       );
       expect(siteOthersRow.find(".govuk-summary-list__value").text().trim()).toBe("No");
-      expect(siteOthersRow.find(".govuk-summary-list__actions a").length).toBe(0);
+      expect(siteOthersRow.find(".govuk-summary-list__actions a")).toHaveLength(0);
     });
 
     test("displays species with correct change link", async () => {

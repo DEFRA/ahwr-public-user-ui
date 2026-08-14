@@ -120,9 +120,9 @@ describe("Timings test", () => {
       expect(res.payload).toContain("You can claim for a maximum of 3 reviews for each site.");
       expect(res.payload).toContain("All reviews must be completed by 31 December 2028.");
 
-      expect($("main h2").length).toBe(0);
-      expect($(".govuk-warning-text").length).toBe(0);
-      expect($("ul.govuk-list--bullet").length).toBe(0);
+      expect($("main h2")).toHaveLength(0);
+      expect($(".govuk-warning-text")).toHaveLength(0);
+      expect($("ul.govuk-list--bullet")).toHaveLength(0);
 
       expect(res.payload).not.toContain(
         "Claim your poultry biosecurity reviews as part of Get funding to improve animal health and welfare.",

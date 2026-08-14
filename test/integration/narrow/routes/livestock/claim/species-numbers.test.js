@@ -127,7 +127,7 @@ describe("Species numbers page", () => {
         expect($(".govuk-hint").text().trim()).toEqual(
           "You can find this on the summary the vet gave you.",
         );
-        expect($(".govuk-radios__item").length).toEqual(2);
+        expect($(".govuk-radios__item")).toHaveLength(2);
         expect($(".govuk-back-link").attr("href")).toEqual(backLink);
         expectPhaseBanner.ok($);
       },
@@ -182,7 +182,7 @@ describe("Species numbers page", () => {
         expect($(".govuk-hint").text().trim()).toEqual(
           "You can find this on the summary the vet gave you.",
         );
-        expect($(".govuk-radios__item").length).toEqual(2);
+        expect($(".govuk-radios__item")).toHaveLength(2);
         expect($(".govuk-back-link").attr("href")).toEqual(backLink);
         expectPhaseBanner.ok($);
       },
@@ -224,7 +224,7 @@ describe("Species numbers page", () => {
         expect($(".govuk-hint").text().trim()).toEqual(
           "You can find this on the summary the vet gave you.",
         );
-        expect($(".govuk-radios__item").length).toEqual(2);
+        expect($(".govuk-radios__item")).toHaveLength(2);
         expect($(".govuk-back-link").attr("href")).toEqual("/livestock/same-herd");
         expectPhaseBanner.ok($);
       },
@@ -261,7 +261,7 @@ describe("Species numbers page", () => {
       expect($(".govuk-hint").text().trim()).toEqual(
         "You can find this on the summary the vet gave you.",
       );
-      expect($(".govuk-radios__item").length).toEqual(2);
+      expect($(".govuk-radios__item")).toHaveLength(2);
       expectPhaseBanner.ok($);
     });
 

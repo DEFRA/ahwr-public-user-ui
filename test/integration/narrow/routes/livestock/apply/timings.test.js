@@ -97,7 +97,7 @@ describe("Declaration test", () => {
       expect(await axe(res.payload)).toHaveNoViolations();
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("main h2").length).toBe(2);
+      expect($("main h2")).toHaveLength(2);
 
       const firstListItems = $("ul.govuk-list--bullet").first().find("li");
 

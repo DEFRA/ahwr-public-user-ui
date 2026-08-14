@@ -251,7 +251,7 @@ describe("Number of species tested test", () => {
 
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
-      expect($("#main-content > div > div > ul").children().length).toBe(2);
+      expect($("#main-content > div > div > ul").children()).toHaveLength(2);
     });
 
     test("error page shows 3 bullet points when optional PI Hunt env not relevant", async () => {
@@ -274,7 +274,7 @@ describe("Number of species tested test", () => {
 
       expect(res.statusCode).toBe(400);
       const $ = cheerio.load(res.payload);
-      expect($("#main-content > div > div > ul").children().length).toBe(3);
+      expect($("#main-content > div > div > ul").children()).toHaveLength(3);
     });
   });
 });

@@ -18,7 +18,7 @@ describe("createTempReference for apply references", () => {
       ids.push(createTempReference({ referenceForClaim: false }));
     }
 
-    expect(ids.length).toEqual(numberToCreate);
+    expect(ids).toHaveLength(numberToCreate);
 
     const set = new Set(ids);
 
@@ -43,7 +43,7 @@ describe("createTempReference for claim references", () => {
       ids.push(createTempReference({ referenceForClaim: true }));
     }
 
-    expect(ids.length).toEqual(numberToCreate);
+    expect(ids).toHaveLength(numberToCreate);
 
     const set = new Set(ids);
 
