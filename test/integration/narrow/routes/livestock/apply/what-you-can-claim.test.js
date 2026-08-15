@@ -21,7 +21,7 @@ jest.mock("../../../../../../app/config/index.js", () => ({
   config: {
     ...jest.requireActual("../../../../../../app/config/index.js").config,
     customerSurvey: {
-      uri: "http://this-is-a-test-uri",
+      uri: "https://this-is-a-test-uri",
     },
   },
 }));
