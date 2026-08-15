@@ -8,6 +8,7 @@ jest.mock("../config", () => ({
       isSameSite: "Lax",
       isSecure: true,
       cookieNameAuth: "test_auth",
+      // eslint-disable-next-line sonarjs/no-hardcoded-passwords
       password: "password-must-be-at-least-32-characters-long",
       ttl: 3600000,
     },
