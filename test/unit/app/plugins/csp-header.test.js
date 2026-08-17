@@ -44,9 +44,13 @@ describe("content security policy directives", () => {
     expect(directives["frame-ancestors"]).toEqual(["'none'"]);
   });
 
-  test("allows self and the Defra ID origin in form-action", () => {
+  test("allows self and the Defra ID redirect hosts in form-action", () => {
     expect(new Set(directives["form-action"])).toEqual(
-      new Set(["'self'", "https://dcidmtest.b2clogin.com"]),
+      new Set([
+        "'self'",
+        "https://dcidmtest.b2clogin.com",
+        "https://your-account.cpdev.cui.defra.gov.uk",
+      ]),
     );
   });
 

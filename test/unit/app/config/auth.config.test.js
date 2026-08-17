@@ -18,6 +18,7 @@ describe("Auth config", () => {
         clientId: "dummyclientid",
         clientSecret: "dummyclientsecret",
         serviceId: "dummyserviceid",
+        redirectHosts: "https://testtenant.b2clogin.com,https://your-account.example.gov.uk",
         rpaHostname: "dummy-host-name",
         rpaGetPersonSummaryUrl: "dummy-get-person-summary-url",
         rpaGetOrganisationPermissionsUrl: "dummy-get-organisation-permissions-url",
@@ -42,6 +43,7 @@ describe("Auth config", () => {
           clientSecret: "dummyclientsecret",
           serviceId: "dummyserviceid",
           scope: "openid dummyclientid offline_access",
+          redirectHosts: ["https://testtenant.b2clogin.com", "https://your-account.example.gov.uk"],
         },
         ruralPaymentsAgency: {
           hostname: "dummy-host-name",
@@ -68,6 +70,7 @@ describe("Auth config", () => {
     process.env.DEFRA_ID_CLIENT_ID = testCase.processEnv.clientId;
     process.env.DEFRA_ID_CLIENT_SECRET = testCase.processEnv.clientSecret;
     process.env.DEFRA_ID_SERVICE_ID = testCase.processEnv.serviceId;
+    process.env.DEFRA_ID_REDIRECT_HOSTS = testCase.processEnv.redirectHosts;
     process.env.RPA_HOST_NAME = testCase.processEnv.rpaHostname;
     process.env.RPA_GET_PERSON_SUMMARY_URL = testCase.processEnv.rpaGetPersonSummaryUrl;
     process.env.RPA_GET_ORGANISATION_PERMISSIONS_URL =
@@ -96,6 +99,30 @@ describe("Auth config", () => {
   ])("GIVEN $processEnv EXPECT $errorMessage", (testCase) => {
     process.env.DEFRA_ID_REDIRECT_URI = testCase.processEnv.redirectUri;
     expect(() => getAuthConfig()).toThrow(testCase.errorMessage);
+  });
+
+  test("trims whitespace around the Defra ID redirect hosts", () => {
+    process.env.DEFRA_ID_REDIRECT_HOSTS =
+      " https://one.example.gov.uk , https://two.example.gov.uk ";
+
+    expect(getAuthConfig().defraId.redirectHosts).toEqual([
+      "https://one.example.gov.uk",
+      "https://two.example.gov.uk",
+    ]);
+  });
+
+  test("has no Defra ID redirect hosts when none are configured", () => {
+    delete process.env.DEFRA_ID_REDIRECT_HOSTS;
+
+    expect(getAuthConfig().defraId.redirectHosts).toEqual([]);
+  });
+
+  test("rejects a Defra ID redirect host that is missing its scheme", () => {
+    process.env.DEFRA_ID_REDIRECT_HOSTS = "https://valid.example.gov.uk,dcidmtest.b2clogin.com";
+
+    expect(() => getAuthConfig()).toThrow(
+      'The auth config is invalid. "defraId.redirectHosts[1]" must be a valid uri',
+    );
   });
 
   afterEach(() => {
