@@ -1,5 +1,4 @@
 import * as cheerio from "cheerio";
-import { ok } from "../../../../../utils/phase-banner-expect.js";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import {
@@ -124,7 +123,7 @@ describe("Agreement offer test", () => {
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(await axe(res.payload)).toHaveNoViolations();
       const $ = cheerio.load(res.payload);
-      ok($);
+      expect($).toShowPhaseBanner();
 
       const intro = $("p")
         .filter((i, el) =>
@@ -297,12 +296,12 @@ describe("Agreement offer test", () => {
         const guidanceLinks = $("a").filter(
           (_, el) => $(el).text().trim() === "how to have a poultry biosecurity review",
         );
-        expect(guidanceLinks.length).toBe(2);
+        expect(guidanceLinks).toHaveLength(2);
         guidanceLinks.each((_, el) => {
           expect($(el).attr("href")).toBe("https://example.gov.uk/poultry-guidance");
         });
 
-        ok($);
+        expect($).toShowPhaseBanner();
         expect(clearApplyRedirect).toHaveBeenCalled();
         expect(refreshApplications).toHaveBeenCalledWith(organisation.sbi, expect.anything());
         expect(createApplication).toHaveBeenCalledWith(
@@ -385,7 +384,7 @@ describe("Agreement offer test", () => {
 
         expect($(".govuk-back-link")).toBeAbsent();
 
-        ok($);
+        expect($).toShowPhaseBanner();
         expect(createApplication).toHaveBeenCalledWith(
           { organisation, ...poultryApplyData, type: "POUL" },
           expect.anything(),

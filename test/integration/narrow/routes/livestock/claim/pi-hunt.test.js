@@ -90,7 +90,7 @@ describe("PI Hunt tests when Optional PI Hunt is OFF", () => {
       const $ = cheerio.load(res.payload);
 
       expect(res.statusCode).toBe(200);
-      expect($(".govuk-radios__item").length).toEqual(2);
+      expect($(".govuk-radios__item")).toHaveLength(2);
       expectPhaseBanner.ok($);
     });
 

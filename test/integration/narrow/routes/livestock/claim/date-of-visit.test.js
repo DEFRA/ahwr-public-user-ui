@@ -1760,8 +1760,8 @@ describe("POST /livestock/date-of-visit handler", () => {
     expect(
       $(".govuk-link").filter(function () {
         return $(this).text().trim() === "Tell us if you are claiming for a review or follow up.";
-      }).length,
-    ).toBe(1);
+      }),
+    ).toHaveLength(1);
     expect(trackEvent).toHaveBeenCalledWith(
       expect.any(Object),
       "claim-invalid-date-of-visit",

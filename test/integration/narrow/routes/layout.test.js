@@ -1,7 +1,6 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../app/server.js";
 import { axe } from "../../../helpers/axe-helper.js";
-import { ok as phaseBannerOk } from "../../../utils/phase-banner-expect.js";
 
 const serviceName = "Get funding to improve animal health and welfare";
 
@@ -43,11 +42,11 @@ describe("Base layout (GOV.UK Frontend v6)", () => {
   });
 
   test("renders the footer with the accessibility and cookies links", () => {
-    expect($('.govuk-footer a[href="/accessibility"]').length).toBe(1);
-    expect($('.govuk-footer a[href="/cookies"]').length).toBe(1);
+    expect($('.govuk-footer a[href="/accessibility"]')).toHaveLength(1);
+    expect($('.govuk-footer a[href="/cookies"]')).toHaveLength(1);
   });
 
   test("renders the beta phase banner", () => {
-    phaseBannerOk($);
+    expect($).toShowPhaseBanner();
   });
 });

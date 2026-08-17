@@ -117,8 +117,6 @@ describe("organisation API", () => {
       expect(result).toBeFalsy();
     });
     test("returns false when person has appropriate role, along with another that is not appropriate", () => {
-      // TODO: Current implementation of organisationHasPermission would return false in this case
-      // However not convinced that is actually correct, need to check this with RPA team
       const result = getOrganisationRole({
         organisationAuthorisation: {
           personPrivileges: [

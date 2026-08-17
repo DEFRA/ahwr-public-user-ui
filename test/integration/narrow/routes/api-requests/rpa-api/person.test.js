@@ -33,7 +33,7 @@ describe("getPersonSummary", () => {
     });
 
     expect(sendRPAGetRequest).toHaveBeenCalledWith({
-      url: "http://rpa.com",
+      url: "https://rpa.com",
       defraIdAccessToken,
       headers: {
         crn,

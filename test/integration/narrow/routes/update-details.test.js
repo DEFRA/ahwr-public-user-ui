@@ -7,7 +7,7 @@ jest.mock("../../../../app/config/index.js", () => ({
     ...jest.requireActual("../../../../app/config/index.js").config,
     lfsUpdate: {
       enabled: true,
-      uri: "http://this-is-a-test-uri/home?ssoOrgId=",
+      uri: "https://this-is-a-test-uri/home?ssoOrgId=",
     },
   },
 }));
@@ -41,7 +41,7 @@ describe("/update-details", () => {
     });
 
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe("http://this-is-a-test-uri/home?ssoOrgId=FAKE_ORG_123");
+    expect(res.headers.location).toBe("https://this-is-a-test-uri/home?ssoOrgId=FAKE_ORG_123");
     expect(getSessionData).toHaveBeenCalled();
   });
 
