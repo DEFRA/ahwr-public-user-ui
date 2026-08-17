@@ -1,6 +1,4 @@
-// Ambient types for the custom Jest matchers registered in this repo:
-//   - toExistOnce / toBeAbsent — test/integration-setup.js
-//   - toShowManageYourClaims    — app/lib/agreement-helper.test.js
+// Ambient types for the custom Jest matchers registered in this repo
 // Lives at the repo root (not test/, which jsconfig.json excludes) so the
 // augmentation is visible to the co-located *.test.js files under app/.
 interface CustomMatchers<R = unknown> {
