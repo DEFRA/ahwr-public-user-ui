@@ -209,7 +209,7 @@ export const getConfig = () => {
     },
   };
 
-  const { error } = configSchema.validate(builtConfig, {
+  const { value, error } = configSchema.validate(builtConfig, {
     abortEarly: false,
   });
 
@@ -217,7 +217,7 @@ export const getConfig = () => {
     throw new Error(`The server config is invalid. ${error.message}`);
   }
 
-  return builtConfig;
+  return value;
 };
 
 export const config = getConfig();
