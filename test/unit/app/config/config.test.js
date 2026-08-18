@@ -1,7 +1,23 @@
 import { getConfig } from "../../../../app/config/index.js";
 
 describe("Base config", () => {
-  const env = process.env;
+  const env = {
+    APPLICATION_API_URI: "https://ahwr-application-backend",
+    AWS_REGION: "eu-west-2",
+    COOKIE_PASSWORD: "testtestesttesttesttesttesttestesttesttesttest",
+    TERMS_AND_CONDITIONS_URL: "test",
+    POULTRY_TERMS_AND_CONDITIONS_URL: "test",
+    POULTRY_VET_SUMMARY_TEMPLATE_URL: "test",
+    MESSAGE_QUEUE_HOST: "something.servicebus.windows.net",
+    MESSAGE_QUEUE_USER: "message-queue-user",
+    FCP_AHWR_EVENT_QUEUE_SA_KEY: "fcp-eenue-qery",
+    EVENT_QUEUE_ADDRESS: "ffc-ahwr-event-xyz",
+    DOCUMENT_BUCKET_NAME: "dev-ahwr-documents-xyz",
+  };
+
+  beforeEach(() => {
+    jest.replaceProperty(process, "env", env);
+  });
 
   afterEach(() => {
     jest.restoreAllMocks();
