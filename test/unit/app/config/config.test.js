@@ -1,14 +1,14 @@
 import { getConfig } from "../../../../app/config/index.js";
 
 describe("Base config", () => {
-  const env = { ...process.env, DISABLE_INTERVIEW_PAGE: "false" };
+  const env = process.env;
 
   afterEach(() => {
-    process.env = { ...env };
+    jest.restoreAllMocks();
   });
 
   test("environment variables used for overriding values", () => {
-    process.env.DISPLAY_PAGE_SIZE = "100";
+    jest.replaceProperty(process, "env", { ...env, DISPLAY_PAGE_SIZE: "100" });
 
     const config = getConfig();
 
@@ -23,32 +23,34 @@ describe("Base config", () => {
   });
 
   test("should throw an error if config is invalid", () => {
-    delete process.env.TERMS_AND_CONDITIONS_URL;
+    const { TERMS_AND_CONDITIONS_URL, ...envWithoutTerms } = env;
+    jest.replaceProperty(process, "env", { ...envWithoutTerms });
+
     expect(() => getConfig()).toThrow(
       'The server config is invalid. "latestTermsAndConditionsUri" is required',
     );
   });
 
   test("should throw an error if poultry terms and conditions URL is missing", () => {
-    delete process.env.POULTRY_TERMS_AND_CONDITIONS_URL;
+    const { POULTRY_TERMS_AND_CONDITIONS_URL, ...envWithoutTerms } = env;
+    jest.replaceProperty(process, "env", { ...envWithoutTerms });
     expect(() => getConfig()).toThrow(/poultry.*termsAndConditionsUri.*required/);
   });
 
   test("should throw an error if poultry vet summary template URL is missing", () => {
-    delete process.env.POULTRY_VET_SUMMARY_TEMPLATE_URL;
+    const { POULTRY_VET_SUMMARY_TEMPLATE_URL, ...envWithoutTemplate } = env;
+    jest.replaceProperty(process, "env", { ...envWithoutTemplate });
     expect(() => getConfig()).toThrow(/poultry.*vetSummaryTemplateUri.*required/);
   });
 
   test("poultry interview page is enabled by default", () => {
-    jest.replaceProperty(process.env, "DISABLE_INTERVIEW_PAGE", undefined);
-
     const config = getConfig();
 
     expect(config.poultry.disableInterviewPage).toBe(false);
   });
 
   test("poultry interview page can be disabled via DISABLE_INTERVIEW_PAGE=true", () => {
-    jest.replaceProperty(process.env, "DISABLE_INTERVIEW_PAGE", "true");
+    jest.replaceProperty(process, "env", { ...env, DISABLE_INTERVIEW_PAGE: "true" });
 
     const config = getConfig();
 
