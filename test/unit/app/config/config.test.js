@@ -13,6 +13,7 @@ describe("Base config", () => {
     FCP_AHWR_EVENT_QUEUE_SA_KEY: "fcp-eenue-qery",
     EVENT_QUEUE_ADDRESS: "ffc-ahwr-event-xyz",
     DOCUMENT_BUCKET_NAME: "dev-ahwr-documents-xyz",
+    SESSION_TIMEOUT_MILLISECONDS: "1800000",
   };
 
   beforeEach(() => {
@@ -31,11 +32,11 @@ describe("Base config", () => {
     expect(config.displayPageSize).toBe(100);
   });
 
-  test("session cookie and cache expires in 3 days", () => {
+  test("session cookie and cache uses SESSION_TIMEOUT_MILLISECONDS", () => {
     const config = getConfig();
 
-    expect(config).toHaveProperty("cache.expiresIn", 259200000);
-    expect(config).toHaveProperty("cookie.ttl", 259200000);
+    expect(config).toHaveProperty("cache.expiresIn", 1800000);
+    expect(config).toHaveProperty("cookie.ttl", 1800000);
   });
 
   test("should throw an error if config is invalid", () => {

@@ -8,8 +8,6 @@ const SECONDS_IN_HOUR = 3600;
 const HOURS_IN_DAY = 24;
 const DAYS_IN_YEAR = 365;
 const MS_IN_SECOND = 1000;
-const THREE = 3;
-const threeDaysInMs = MS_IN_SECOND * SECONDS_IN_HOUR * HOURS_IN_DAY * THREE;
 const oneYearInMs = MS_IN_SECOND * SECONDS_IN_HOUR * HOURS_IN_DAY * DAYS_IN_YEAR;
 const defaultApiKey = "c19fcb0d-a6d2-4d9e-9325-16d44ddc0724";
 
@@ -113,7 +111,7 @@ export const getConfig = () => {
   const builtConfig = {
     namespace: process.env.NAMESPACE,
     cache: {
-      expiresIn: threeDaysInMs,
+      expiresIn: process.env.SESSION_TIMEOUT_MILLISECONDS,
       name: "session",
       options: {
         host: process.env.REDIS_HOST || "redis-hostname.default",
@@ -134,7 +132,7 @@ export const getConfig = () => {
       isSameSite: process.env.DISABLE_COOKIE_SAME_SITE === "true" ? false : "Lax",
       isSecure: process.env.NODE_ENV === "production",
       password: process.env.COOKIE_PASSWORD,
-      ttl: threeDaysInMs,
+      ttl: process.env.SESSION_TIMEOUT_MILLISECONDS,
     },
     cookiePolicy: {
       clearInvalid: false,
