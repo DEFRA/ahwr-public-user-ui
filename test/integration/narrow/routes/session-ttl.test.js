@@ -23,10 +23,11 @@ describe("session TTL", () => {
     await server.stop();
   });
 
-  test("the session cookie is issued with a 3 day max-age", () => {
+  test("the session cookie is issued with a max-age", () => {
+    const expectedMagAgeSeconds = Number.parseInt(process.env.SESSION_TIMEOUT_MILLISECONDS) / 1000;
     const authCookie = getSetCookie(response, "ahwr_session");
 
     expect(authCookie).toBeDefined();
-    expect(getMaxAge(authCookie)).toBe(259200);
+    expect(getMaxAge(authCookie)).toBe(expectedMagAgeSeconds);
   });
 });
