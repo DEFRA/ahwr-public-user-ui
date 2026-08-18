@@ -21,6 +21,7 @@ process.env.RPA_GET_CPH_NUMBERS_URL = "/api/organisation/organisationId/cph";
 process.env.DEFRA_ID_TENANT = "dcidmtest";
 process.env.DEFRA_ID_REDIRECT_HOSTS =
   "https://dcidmtest.b2clogin.com,https://your-account.cpdev.cui.defra.gov.uk";
+process.env.SESSION_TIMEOUT_MILLISECONDS = "1800000";
 // keep pino on ecs under test: a pino-pretty transport leaks a thread-stream worker
 process.env.USE_PRETTY_PRINT = "false";
 
