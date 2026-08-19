@@ -21,7 +21,7 @@ export const headerPlugin = {
     keys: [
       { key: "X-Frame-Options", value: "deny" },
       { key: "X-Content-Type-Options", value: "nosniff" },
-      { key: "Access-Control-Allow-Origin", value: config.serviceUri },
+      { key: "Access-Control-Allow-Origin", value: config.get("serviceUri") },
       { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
       { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
       { key: "X-Robots-Tag", value: "noindex, nofollow" },

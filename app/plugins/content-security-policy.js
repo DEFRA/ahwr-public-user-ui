@@ -11,7 +11,7 @@ export const contentSecurityPolicyPlugin = {
     objectSrc: ["none"],
     scriptSrc: ["self", "www.google-analytics.com", GOOGLE_TAG_MANAGER],
     // Session expiry redirects form submissions on to Defra ID, and form-action applies to the whole redirect chain
-    formAction: ["self", ...authConfig.defraId.redirectHosts],
+    formAction: ["self", ...authConfig.get("defraId.redirectHosts")],
     baseUri: ["self"],
     connectSrc: ["self", GOOGLE_ANALYTICS, "*.analytics.google.com", GOOGLE_TAG_MANAGER],
     styleSrc: ["self", "tagmanager.google.com", "*.googleapis.com"],

@@ -3,18 +3,18 @@ import { generate as generateNonce } from "../id-token/nonce.js";
 import { generate as generateState } from "./state.js";
 import { generateCodeChallenge } from "./proof-key-for-code-exchange.js";
 
-export const DEFRA_ID_BASE_URL = `${authConfig.defraId.hostname}${authConfig.defraId.oAuthAuthorisePath}`;
+export const DEFRA_ID_BASE_URL = `${authConfig.get("defraId.hostname")}${authConfig.get("defraId.oAuthAuthorisePath")}`;
 
 export const requestAuthorizationCodeUrl = async (request, ssoOrgId) => {
   const url = new URL(DEFRA_ID_BASE_URL);
 
-  url.searchParams.append("p", authConfig.defraId.policy);
-  url.searchParams.append("client_id", authConfig.defraId.clientId);
+  url.searchParams.append("p", authConfig.get("defraId.policy"));
+  url.searchParams.append("client_id", authConfig.get("defraId.clientId"));
   url.searchParams.append("nonce", await generateNonce(request));
-  url.searchParams.append("redirect_uri", authConfig.defraId.redirectUri);
-  url.searchParams.append("scope", authConfig.defraId.scope);
+  url.searchParams.append("redirect_uri", authConfig.get("defraId.redirectUri"));
+  url.searchParams.append("scope", authConfig.get("defraId.scope"));
   url.searchParams.append("response_type", "code");
-  url.searchParams.append("serviceId", authConfig.defraId.serviceId);
+  url.searchParams.append("serviceId", authConfig.get("defraId.serviceId"));
   url.searchParams.append("state", await generateState(request));
   url.searchParams.append("forceReselection", true);
 

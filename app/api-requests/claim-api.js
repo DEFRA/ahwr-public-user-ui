@@ -3,10 +3,11 @@ import { config } from "../config/index.js";
 import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 import { withTraceId } from "@defra/hapi-tracing";
 
-const { apiKeys, tracing } = config;
+const apiKeys = config.get("apiKeys");
+const tracing = config.get("tracing");
 
 export async function getClaimsByApplicationReference(applicationReference, logger) {
-  const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/claims`;
+  const endpoint = `${config.get("applicationApiUri")}/applications/${applicationReference}/claims`;
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,
@@ -29,7 +30,7 @@ export async function getClaimsByApplicationReference(applicationReference, logg
 }
 
 export async function submitNewClaim(data, logger) {
-  const endpoint = `${config.applicationApiUri}/claims`;
+  const endpoint = `${config.get("applicationApiUri")}/claims`;
 
   try {
     const { payload } = await Wreck.post(endpoint, {
@@ -48,7 +49,7 @@ export async function submitNewClaim(data, logger) {
 }
 
 export async function isURNUnique(data, logger) {
-  const endpoint = `${config.applicationApiUri}/claims/is-urn-unique`;
+  const endpoint = `${config.get("applicationApiUri")}/claims/is-urn-unique`;
   try {
     const { payload } = await Wreck.post(endpoint, {
       payload: data,
@@ -72,7 +73,7 @@ export async function getClaimsCount(cph, herdId, scheme, logger) {
     params.append("herdId", herdId);
   }
 
-  const endpoint = `${config.applicationApiUri}/claims/count?${params.toString()}`;
+  const endpoint = `${config.get("applicationApiUri")}/claims/count?${params.toString()}`;
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,

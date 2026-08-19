@@ -4,6 +4,6 @@ import { config } from "../config/index.js";
 export const requestTracing = {
   plugin: tracing.plugin,
   options: {
-    tracingHeader: config.tracing.header,
+    tracingHeader: config.get("tracing.header"),
   },
 };

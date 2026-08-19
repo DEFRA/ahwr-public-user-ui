@@ -84,9 +84,7 @@ describe("Auth config", () => {
     process.env.APIM_CLIENT_SECRET = testCase.processEnv.apimClientSecret;
     process.env.APIM_SCOPE = testCase.processEnv.apimScope;
 
-    const config = getAuthConfig();
-
-    expect(config).toEqual(testCase.config);
+    expect(getAuthConfig().getProperties()).toEqual(testCase.config);
   });
 
   test.each([
@@ -94,18 +92,18 @@ describe("Auth config", () => {
       processEnv: {
         redirectUri: "not a uri",
       },
-      errorMessage: 'The auth config is invalid. "defraId.redirectUri" must be a valid uri',
+      errorMessage: "defraId.redirectUri must be a valid uri",
     },
   ])("GIVEN $processEnv EXPECT $errorMessage", (testCase) => {
     process.env.DEFRA_ID_REDIRECT_URI = testCase.processEnv.redirectUri;
-    expect(() => getAuthConfig()).toThrow(testCase.errorMessage);
+    expect(() => getAuthConfig()).toThrow(/defraId\.redirectUri.*must be a valid uri/);
   });
 
   test("trims whitespace around the Defra ID redirect hosts", () => {
     process.env.DEFRA_ID_REDIRECT_HOSTS =
       " https://one.example.gov.uk , https://two.example.gov.uk ";
 
-    expect(getAuthConfig().defraId.redirectHosts).toEqual([
+    expect(getAuthConfig().get("defraId.redirectHosts")).toEqual([
       "https://one.example.gov.uk",
       "https://two.example.gov.uk",
     ]);
@@ -114,15 +112,13 @@ describe("Auth config", () => {
   test("has no Defra ID redirect hosts when none are configured", () => {
     delete process.env.DEFRA_ID_REDIRECT_HOSTS;
 
-    expect(getAuthConfig().defraId.redirectHosts).toEqual([]);
+    expect(getAuthConfig().get("defraId.redirectHosts")).toEqual([]);
   });
 
   test("rejects a Defra ID redirect host that is missing its scheme", () => {
     process.env.DEFRA_ID_REDIRECT_HOSTS = "https://valid.example.gov.uk,dcidmtest.b2clogin.com";
 
-    expect(() => getAuthConfig()).toThrow(
-      'The auth config is invalid. "defraId.redirectHosts[1]" must be a valid uri',
-    );
+    expect(() => getAuthConfig()).toThrow(/defraId\.redirectHosts/);
   });
 
   afterEach(() => {

@@ -3,9 +3,7 @@ import { config } from "../config/index.js";
 import { ViewModel } from "./models/cookies-policy.js";
 import { updatePolicy } from "../cookies.js";
 
-const {
-  cookie: { cookieNameCookiePolicy },
-} = config;
+const cookieNameCookiePolicy = config.get("cookie.cookieNameCookiePolicy");
 
 export const cookieHandlers = [
   {

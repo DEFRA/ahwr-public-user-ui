@@ -7,13 +7,13 @@ export const updateDetailsHandlers = [
     path: "/update-details",
     options: {
       handler: async (request, h) => {
-        if (!config.lfsUpdate.enabled) {
+        if (!config.get("lfsUpdate.enabled")) {
           return h.redirect("/check-details");
         }
 
         const organisation = getSessionData(request, sessionEntryKeys.organisation);
 
-        return h.redirect(`${config.lfsUpdate.uri}${organisation.id}`);
+        return h.redirect(`${config.get("lfsUpdate.uri")}${organisation.id}`);
       },
     },
   },

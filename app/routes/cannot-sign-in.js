@@ -68,7 +68,7 @@ export const cannotSignInExceptionHandlers = [
           sbiText: `SBI ${organisation.sbi ?? ""}`,
           organisationName: organisation.name,
           signOutLink,
-          privacyPolicyUri: config.privacyPolicyUri,
+          privacyPolicyUri: config.get("privacyPolicyUri"),
         });
       },
     },

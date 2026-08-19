@@ -63,7 +63,7 @@ describe("redeemAuthorizationCodeForAccessToken", () => {
     const result = await redeemAuthorizationCodeForAccessToken(mockRequest);
     expect(result).toEqual(mockResponsePayload);
     expect(wreck.post).toHaveBeenCalledWith(
-      `${authConfig.defraId.hostname}/${authConfig.defraId.policy}/oauth2/v2.0/token`,
+      `${authConfig.get("defraId.hostname")}/${authConfig.get("defraId.policy")}/oauth2/v2.0/token`,
       expect.anything(),
     );
     expect(FormData.prototype.append).toHaveBeenCalledWith("code", "test-code");
@@ -91,18 +91,21 @@ describe("redeemAuthorizationCodeForAccessToken", () => {
     // Assuming FormData.append was mocked as shown previously
     expect(FormData.prototype.append).toHaveBeenCalledWith(
       "client_id",
-      authConfig.defraId.clientId,
+      authConfig.get("defraId.clientId"),
     );
     expect(FormData.prototype.append).toHaveBeenCalledWith(
       "client_secret",
-      authConfig.defraId.clientSecret,
+      authConfig.get("defraId.clientSecret"),
     );
-    expect(FormData.prototype.append).toHaveBeenCalledWith("scope", authConfig.defraId.scope);
+    expect(FormData.prototype.append).toHaveBeenCalledWith(
+      "scope",
+      authConfig.get("defraId.scope"),
+    );
     expect(FormData.prototype.append).toHaveBeenCalledWith("code", mockRequest.query.code);
     expect(FormData.prototype.append).toHaveBeenCalledWith("grant_type", "authorization_code");
     expect(FormData.prototype.append).toHaveBeenCalledWith(
       "redirect_uri",
-      authConfig.defraId.redirectUri,
+      authConfig.get("defraId.redirectUri"),
     );
     expect(FormData.prototype.append).toHaveBeenCalledWith("code_verifier", "test-code-verifier");
   });

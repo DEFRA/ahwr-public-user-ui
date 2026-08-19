@@ -7,7 +7,7 @@ import {
   dashboardRoutes,
 } from "../../../constants/routes.js";
 
-const { customerSurvey } = config;
+const customerSurvey = config.get("customerSurvey");
 
 const getHandler = {
   method: "GET",

@@ -231,7 +231,7 @@ describe("/poultry/minimum-birds tests", () => {
       const guidanceLink = $("a").filter(
         (_, el) => $(el).text().trim() === "minimum number of birds",
       );
-      expect(guidanceLink.attr("href")).toEqual(config.poultry.guidanceUri);
+      expect(guidanceLink.attr("href")).toEqual(config.get("poultry.guidanceUri"));
 
       const changeAnswerLink = $('a.govuk-link[href="/poultry/minimum-birds"]');
       expect(changeAnswerLink.text().trim()).toEqual(

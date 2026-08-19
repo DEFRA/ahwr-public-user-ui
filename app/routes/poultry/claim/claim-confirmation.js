@@ -6,10 +6,8 @@ import {
   poultryClaimViews,
 } from "../../../constants/routes.js";
 
-const {
-  customerSurvey,
-  poultry: { guidanceUri },
-} = config;
+const customerSurvey = config.get("customerSurvey");
+const guidanceUri = config.get("poultry.guidanceUri");
 
 const getHandler = {
   method: "GET",

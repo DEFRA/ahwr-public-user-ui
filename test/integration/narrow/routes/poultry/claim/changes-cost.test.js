@@ -31,7 +31,7 @@ describe("/poultry/changes-cost", () => {
 
   beforeEach(async () => {
     crumb = await getCrumbs(server);
-    config.poultry.disableInterviewPage = false;
+    config.set("poultry.disableInterviewPage", false);
   });
 
   beforeAll(async () => {
@@ -155,7 +155,7 @@ describe("/poultry/changes-cost", () => {
       });
 
       test("continue directly to check answers when the interview page is disabled", async () => {
-        config.poultry.disableInterviewPage = true;
+        config.set("poultry.disableInterviewPage", true);
 
         const options = {
           method: "POST",

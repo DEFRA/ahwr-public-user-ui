@@ -27,7 +27,7 @@ const mockValue = 200;
 describe("#metrics", () => {
   describe("When metrics is not enabled", () => {
     beforeEach(async () => {
-      config.isMetricsEnabled = false;
+      config.set("isMetricsEnabled", false);
       await metricsCounter(mockMetricsName, mockValue);
     });
 
@@ -42,7 +42,7 @@ describe("#metrics", () => {
 
   describe("When metrics is enabled", () => {
     beforeEach(() => {
-      config.isMetricsEnabled = true;
+      config.set("isMetricsEnabled", true);
     });
 
     test("Should send metric with default value", async () => {
@@ -77,7 +77,7 @@ describe("#metrics", () => {
     const mockError = "mock-metrics-put-error";
 
     beforeEach(async () => {
-      config.isMetricsEnabled = true;
+      config.set("isMetricsEnabled", true);
       mockFlush.mockRejectedValue(new Error(mockError));
 
       await metricsCounter(mockMetricsName, mockValue);

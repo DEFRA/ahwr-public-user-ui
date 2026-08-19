@@ -2,10 +2,8 @@ import { config } from "../config/index.js";
 import { getCurrentPolicy } from "../cookies.js";
 import HttpStatus from "http-status-codes";
 
-const {
-  cookie: { cookieNameCookiePolicy },
-  cookiePolicy,
-} = config;
+const cookieNameCookiePolicy = config.get("cookie.cookieNameCookiePolicy");
+const cookiePolicy = config.get("cookiePolicy");
 
 export const cookiePlugin = {
   plugin: {

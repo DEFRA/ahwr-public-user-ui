@@ -3,18 +3,18 @@ import { setupProxy } from "../../../app/lib/setup-proxy.js";
 
 describe("setupProxy", () => {
   afterEach(() => {
-    config.proxy = null;
+    config.set("proxy", null);
   });
 
   test("Should not setup proxy if the environment variable is not set", () => {
-    config.proxy = null;
+    config.set("proxy", null);
     setupProxy();
 
     expect(global?.GLOBAL_AGENT?.HTTP_PROXY).toBeUndefined();
   });
 
   test("Should setup proxy if the environment variable is set", () => {
-    config.proxy = "http://localhost:8080";
+    config.set("proxy", "http://localhost:8080");
     setupProxy();
     expect(global?.GLOBAL_AGENT?.HTTP_PROXY).toBe("http://localhost:8080");
   });

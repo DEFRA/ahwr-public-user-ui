@@ -8,7 +8,7 @@ let tokenCache = {
   expiresAt: 0, // seconds
 };
 
-const apimTokenEndpoint = `${authConfig.apim.hostname}${authConfig.apim.oAuthPath}`;
+const apimTokenEndpoint = `${authConfig.get("apim.hostname")}${authConfig.get("apim.oAuthPath")}`;
 
 function isTokenValid(buffer = 60) {
   if (!tokenCache.accessToken) {
@@ -22,16 +22,16 @@ function isTokenValid(buffer = 60) {
 
 async function fetchNewToken() {
   const data = new FormData();
-  data.append("client_id", String(authConfig.apim.clientId));
-  data.append("client_secret", String(authConfig.apim.clientSecret));
-  data.append("scope", String(authConfig.apim.scope));
+  data.append("client_id", String(authConfig.get("apim.clientId")));
+  data.append("client_secret", String(authConfig.get("apim.clientSecret")));
+  data.append("scope", String(authConfig.get("apim.scope")));
   data.append("grant_type", "client_credentials");
 
   const { payload } = await Wreck.post(apimTokenEndpoint, {
     headers: data.getHeaders(),
     payload: data,
     json: true,
-    timeout: config.wreckHttp.timeoutMilliseconds,
+    timeout: config.get("wreckHttp.timeoutMilliseconds"),
   });
 
   const defaultExpirySeconds = 3600;

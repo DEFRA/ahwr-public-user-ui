@@ -66,7 +66,7 @@ describe("Missing routes", () => {
       getByRole(document.body, "link", {
         name: "Sign in",
       }),
-    ).toHaveProperty("href", `${config.serviceUri}sign-in`);
+    ).toHaveProperty("href", `${config.get("serviceUri")}sign-in`);
   });
 
   test("GET an unregistered route when user is signed in", async () => {

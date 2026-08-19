@@ -57,7 +57,7 @@ export const sendSessionEvent = async ({
     id,
     sbi,
     cph: "n/a",
-    checkpoint: config.serviceName,
+    checkpoint: config.get("serviceName"),
     status: "success",
     type: `${journeyValue}-${eventKey}`, // e.g. claim-vetsName or farmerApplyData-agreeMultipleSpecies
     message: `Session set for ${journeyValue} and ${eventKey}.`,
@@ -77,7 +77,7 @@ export const sendHerdEvent = async ({ sbi, email, sessionId, type, message, data
     id: sessionId,
     sbi,
     cph: "n/a",
-    checkpoint: config.serviceName,
+    checkpoint: config.get("serviceName"),
     status: "success",
     type,
     message,

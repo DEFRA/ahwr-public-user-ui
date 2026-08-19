@@ -21,7 +21,7 @@ describe("FCP messaging service test", () => {
   });
 
   test("when audit events disabled, use stub", async () => {
-    config.isAuditEventEnabled = false;
+    config.set("isAuditEventEnabled", false);
     await startMessagingService(mockLogger);
 
     expect(getEventPublisher()).not.toBe(mockEventPublisher);
@@ -33,7 +33,7 @@ describe("FCP messaging service test", () => {
   });
 
   test("when audit events enabled, use Messaging service to send", async () => {
-    config.isAuditEventEnabled = true;
+    config.set("isAuditEventEnabled", true);
     createServiceBusClient.mockReturnValueOnce(mockServiceBusClient);
     createEventPublisher.mockReturnValueOnce(mockEventPublisher);
     await startMessagingService(mockLogger);

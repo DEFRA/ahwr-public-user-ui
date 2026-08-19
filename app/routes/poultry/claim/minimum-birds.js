@@ -10,9 +10,7 @@ import { poultryClaimRoutes, poultryClaimViews } from "../../../constants/routes
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 import { config } from "../../../config/index.js";
 
-const {
-  poultry: { guidanceUri },
-} = config;
+const guidanceUri = config.get("poultry.guidanceUri");
 
 const getHandler = {
   method: "GET",

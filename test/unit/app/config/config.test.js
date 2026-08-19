@@ -29,41 +29,39 @@ describe("Base config", () => {
 
     const config = getConfig();
 
-    expect(config.displayPageSize).toBe(100);
+    expect(config.get("displayPageSize")).toBe(100);
   });
 
   test("session cookie and cache uses SESSION_TIMEOUT_MILLISECONDS", () => {
     const config = getConfig();
 
-    expect(config).toHaveProperty("cache.expiresIn", 1800000);
-    expect(config).toHaveProperty("cookie.ttl", 1800000);
+    expect(config.get("cache.expiresIn")).toBe(1800000);
+    expect(config.get("cookie.ttl")).toBe(1800000);
   });
 
   test("should throw an error if config is invalid", () => {
     const { TERMS_AND_CONDITIONS_URL, ...envWithoutTerms } = env;
     jest.replaceProperty(process, "env", { ...envWithoutTerms });
 
-    expect(() => getConfig()).toThrow(
-      'The server config is invalid. "latestTermsAndConditionsUri" is required',
-    );
+    expect(() => getConfig()).toThrow(/latestTermsAndConditionsUri/);
   });
 
   test("should throw an error if poultry terms and conditions URL is missing", () => {
     const { POULTRY_TERMS_AND_CONDITIONS_URL, ...envWithoutTerms } = env;
     jest.replaceProperty(process, "env", { ...envWithoutTerms });
-    expect(() => getConfig()).toThrow(/poultry.*termsAndConditionsUri.*required/);
+    expect(() => getConfig()).toThrow(/poultry\.termsAndConditionsUri/);
   });
 
   test("should throw an error if poultry vet summary template URL is missing", () => {
     const { POULTRY_VET_SUMMARY_TEMPLATE_URL, ...envWithoutTemplate } = env;
     jest.replaceProperty(process, "env", { ...envWithoutTemplate });
-    expect(() => getConfig()).toThrow(/poultry.*vetSummaryTemplateUri.*required/);
+    expect(() => getConfig()).toThrow(/poultry\.vetSummaryTemplateUri/);
   });
 
   test("poultry interview page is enabled by default", () => {
     const config = getConfig();
 
-    expect(config.poultry.disableInterviewPage).toBe(false);
+    expect(config.get("poultry.disableInterviewPage")).toBe(false);
   });
 
   test("poultry interview page can be disabled via DISABLE_INTERVIEW_PAGE=true", () => {
@@ -71,6 +69,6 @@ describe("Base config", () => {
 
     const config = getConfig();
 
-    expect(config.poultry.disableInterviewPage).toBe(true);
+    expect(config.get("poultry.disableInterviewPage")).toBe(true);
   });
 });

@@ -12,7 +12,7 @@ describe("logger options", () => {
   });
 
   test("resolves the ecs log format when tests run, whatever the developer environment asks for", () => {
-    expect(config.logFormat).toBe("ecs");
+    expect(config.get("logFormat")).toBe("ecs");
   });
 
   test("still configures a pretty transport when the service itself runs with pretty printing on", () => {

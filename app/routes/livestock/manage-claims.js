@@ -15,7 +15,7 @@ import { livestockClaimRoutes, dashboardRoutes } from "../../constants/routes.js
 import { SHEEP } from "../../constants/claim-constants.js";
 import { refreshApplications } from "../../lib/context-helper.js";
 
-const { latestTermsAndConditionsUri } = config;
+const latestTermsAndConditionsUri = config.get("latestTermsAndConditionsUri");
 
 const centringClass = "vertical-middle";
 
@@ -169,7 +169,7 @@ export const vetVisitsHandlers = [
         if (latestEndemicsApplication.redacted) {
           return h.view("agreement-redacted", {
             ruralPaymentsAgency: RPA_CONTACT_DETAILS,
-            privacyPolicyUri: config.privacyPolicyUri,
+            privacyPolicyUri: config.get("privacyPolicyUri"),
           });
         }
 

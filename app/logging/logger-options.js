@@ -2,7 +2,11 @@ import { ecsFormat } from "@elastic/ecs-pino-format";
 import { getTraceId } from "@defra/hapi-tracing";
 import { config } from "../config/index.js";
 
-const { name, serviceVersion, logLevel, logFormat, logRedact } = config;
+const name = config.get("name");
+const serviceVersion = config.get("serviceVersion");
+const logLevel = config.get("logLevel");
+const logFormat = config.get("logFormat");
+const logRedact = config.get("logRedact");
 
 const formatters = {
   ecs: {

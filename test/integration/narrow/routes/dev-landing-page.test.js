@@ -20,7 +20,7 @@ describe("Dev landing page test", () => {
   });
 
   test("POST dev sign-in route returns redirect to apply journey if not applied yet", async () => {
-    config.devLogin.enabled = true;
+    config.set("devLogin.enabled", true);
     const sbi = "123456789";
     const server = await createServer();
 
@@ -42,7 +42,7 @@ describe("Dev landing page test", () => {
   });
 
   test("POST dev sign-in route returns redirect to dashboard if already signed up for an EE application", async () => {
-    config.devLogin.enabled = true;
+    config.set("devLogin.enabled", true);
     const sbi = "123456789";
     const server = await createServer();
 
@@ -69,7 +69,7 @@ describe("Dev landing page test", () => {
   });
 
   test("POST dev sign-in route returns redirect to apply journey if signed up for a closed VV application", async () => {
-    config.devLogin.enabled = true;
+    config.set("devLogin.enabled", true);
     const sbi = "123456789";
     const server = await createServer();
 
@@ -96,7 +96,7 @@ describe("Dev landing page test", () => {
   });
 
   test("POST dev sign-in route forwards to cannot sign in page for a non-closed VV agreement", async () => {
-    config.devLogin.enabled = true;
+    config.set("devLogin.enabled", true);
     const sbi = "123456789";
     const server = await createServer();
 
@@ -128,7 +128,7 @@ describe("Dev landing page test", () => {
     { scenario: "there is no eligible CPH", sbi: "123c" },
     { scenario: "the sbi does not start with 1", sbi: "223456789l" },
   ])("POST dev landing page forwards to cannot sign in when $scenario", async ({ sbi }) => {
-    config.devLogin.enabled = true;
+    config.set("devLogin.enabled", true);
     const server = await createServer();
 
     refreshApplications.mockResolvedValueOnce({
@@ -150,7 +150,7 @@ describe("Dev landing page test", () => {
   });
 
   test("GET dev landing page renders the sign-in view", async () => {
-    config.devLogin.enabled = true;
+    config.set("devLogin.enabled", true);
     const server = await createServer();
 
     const res = await server.inject({
@@ -162,7 +162,7 @@ describe("Dev landing page test", () => {
   });
 
   test("POST dev landing page shows verify-login-failed for an unexpected error", async () => {
-    config.devLogin.enabled = true;
+    config.set("devLogin.enabled", true);
     const sbi = "123456789";
     const server = await createServer();
 
@@ -182,7 +182,7 @@ describe("Dev landing page test", () => {
   });
 
   test("POST dev landing page handles a missing sbi via the default", async () => {
-    config.devLogin.enabled = true;
+    config.set("devLogin.enabled", true);
     const server = await createServer();
 
     refreshApplications.mockResolvedValueOnce({
@@ -202,7 +202,7 @@ describe("Dev landing page test", () => {
   });
 
   test("POST dev landing page shows the payload message when the error carries one", async () => {
-    config.devLogin.enabled = true;
+    config.set("devLogin.enabled", true);
     const sbi = "123456789";
     const server = await createServer();
 

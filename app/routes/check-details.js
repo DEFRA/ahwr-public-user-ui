@@ -68,7 +68,7 @@ export const checkDetailsHandlers = [
         }
 
         return h.view("update-details", {
-          lfsUpdateEnabled: config.lfsUpdate.enabled,
+          lfsUpdateEnabled: config.get("lfsUpdate.enabled"),
           ruralPaymentsAgency: RPA_CONTACT_DETAILS,
           lfsUpdateDetailsLink: "/update-details",
         });

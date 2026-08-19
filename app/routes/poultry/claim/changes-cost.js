@@ -67,7 +67,7 @@ const postHandler = {
         costOfChanges,
       );
 
-      const nextRoute = config.poultry.disableInterviewPage
+      const nextRoute = config.get("poultry.disableInterviewPage")
         ? poultryClaimRoutes.checkAnswers
         : poultryClaimRoutes.improvements;
 

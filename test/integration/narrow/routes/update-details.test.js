@@ -2,15 +2,16 @@ import { createServer } from "../../../../app/server.js";
 import { config } from "../../../../app/config/index.js";
 import { getSessionData } from "../../../../app/session/index.js";
 
-jest.mock("../../../../app/config/index.js", () => ({
-  config: {
-    ...jest.requireActual("../../../../app/config/index.js").config,
-    lfsUpdate: {
-      enabled: true,
-      uri: "https://this-is-a-test-uri/home?ssoOrgId=",
-    },
-  },
-}));
+jest.mock("../../../../app/config/index.js", () => {
+  const { asConvict } = require("../../../helpers/mock-config.js");
+  const values = jest.requireActual("../../../../app/config/index.js").config.getProperties();
+  values.lfsUpdate = {
+    ...values.lfsUpdate,
+    enabled: true,
+    uri: "https://this-is-a-test-uri/home?ssoOrgId=",
+  };
+  return { config: asConvict(values) };
+});
 jest.mock("../../../../app/session/index.js", () => ({
   ...jest.requireActual("../../../../app/session/index.js"),
   getSessionData: jest.fn(() => ({
@@ -46,7 +47,7 @@ describe("/update-details", () => {
   });
 
   test("redirects to /check-details when update is disabled", async () => {
-    config.lfsUpdate.enabled = false;
+    config.set("lfsUpdate.enabled", false);
 
     const res = await server.inject({
       url: "/update-details",

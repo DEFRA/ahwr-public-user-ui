@@ -169,7 +169,7 @@ const mapRoutes = () => {
 
   routes = routes.concat(poultryRoutes);
 
-  if (config.devLogin.enabled) {
+  if (config.get("devLogin.enabled")) {
     routes = routes.concat(devLoginHandlers);
   }
 };

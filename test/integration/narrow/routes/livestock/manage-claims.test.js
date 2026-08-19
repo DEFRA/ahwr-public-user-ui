@@ -296,7 +296,7 @@ describe("GET /livestock/manage-claims", () => {
     });
 
     test("no claims shows banner", async () => {
-      jest.replaceProperty(config.multiSpecies, "releaseDate", "2024-12-04");
+      jest.replaceProperty(config.get("multiSpecies"), "releaseDate", "2024-12-04");
 
       const sbi = "123123123";
 

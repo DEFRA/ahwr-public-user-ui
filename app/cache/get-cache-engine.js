@@ -6,7 +6,7 @@ import { getLogger } from "../logging/logger.js";
 
 const logger = getLogger();
 export const getCacheEngine = () => {
-  if (config.useRedis) {
+  if (config.get("useRedis")) {
     logger.info("Using Redis session cache");
     const redisClient = buildRedisClient();
 

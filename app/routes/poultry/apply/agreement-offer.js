@@ -47,8 +47,8 @@ export const poultryDeclarationRouteHandlers = [
 
         return h.view(poultryApplyViews.agreementOffer, {
           backLink: poultryApplyRoutes.timings,
-          termsAndConditionsUri: config.poultry.termsAndConditionsUri,
-          vetSummaryTemplateUri: config.poultry.vetSummaryTemplateUri,
+          termsAndConditionsUri: config.get("poultry.termsAndConditionsUri"),
+          vetSummaryTemplateUri: config.get("poultry.vetSummaryTemplateUri"),
           organisation: formatOrganisation(organisation),
         });
       },
@@ -72,8 +72,8 @@ export const poultryDeclarationRouteHandlers = [
           return h
             .view(poultryApplyViews.agreementOffer, {
               backLink: poultryApplyRoutes.timings,
-              termsAndConditionsUri: config.poultry.termsAndConditionsUri,
-              vetSummaryTemplateUri: config.poultry.vetSummaryTemplateUri,
+              termsAndConditionsUri: config.get("poultry.termsAndConditionsUri"),
+              vetSummaryTemplateUri: config.get("poultry.vetSummaryTemplateUri"),
               errorMessage: {
                 text: "Confirm you have read and agree to the terms and conditions",
               },
@@ -162,8 +162,8 @@ export const poultryDeclarationRouteHandlers = [
         return h.view(poultryApplyViews.confirmation, {
           reference: applicationReference,
           isNewUser: userType.NEW_USER === organisation.userType,
-          latestTermsAndConditionsUri: config.latestTermsAndConditionsUri,
-          guidanceUri: config.poultry.guidanceUri,
+          latestTermsAndConditionsUri: config.get("latestTermsAndConditionsUri"),
+          guidanceUri: config.get("poultry.guidanceUri"),
         });
       },
     },

@@ -464,7 +464,7 @@ describe("context-helper", () => {
         const mockRequest = { path: dashboardRoutes.checkDetails, method: "get" };
         const result = getSurveyUri(mockRequest);
 
-        expect(result).toBe(config.customerSurvey.applyUri);
+        expect(result).toBe(config.get("customerSurvey.applyUri"));
         expect(getSessionData).not.toHaveBeenCalled();
       });
 
@@ -472,7 +472,7 @@ describe("context-helper", () => {
         const mockRequest = { path: dashboardRoutes.selectFunding, method: "get" };
         const result = getSurveyUri(mockRequest);
 
-        expect(result).toBe(config.customerSurvey.applyUri);
+        expect(result).toBe(config.get("customerSurvey.applyUri"));
         expect(getSessionData).not.toHaveBeenCalled();
       });
     });
@@ -482,7 +482,7 @@ describe("context-helper", () => {
         const mockRequest = { path: livestockApplyRoutes.declaration, method: "post" };
         const result = getSurveyUri(mockRequest);
 
-        expect(result).toBe(config.customerSurvey.applyUri);
+        expect(result).toBe(config.get("customerSurvey.applyUri"));
         expect(getSessionData).not.toHaveBeenCalled();
       });
 
@@ -492,7 +492,7 @@ describe("context-helper", () => {
 
         const result = getSurveyUri(mockRequest);
 
-        expect(result).toBe(config.customerSurvey.claimUri);
+        expect(result).toBe(config.get("customerSurvey.claimUri"));
       });
 
       it("returns the agreement survey uri when latestEndemicsApplication is null", () => {
@@ -501,7 +501,7 @@ describe("context-helper", () => {
 
         const result = getSurveyUri(mockRequest);
 
-        expect(result).toBe(config.customerSurvey.applyUri);
+        expect(result).toBe(config.get("customerSurvey.applyUri"));
       });
 
       it("returns the agreement survey uri when latestEndemicsApplication is undefined", () => {
@@ -510,7 +510,7 @@ describe("context-helper", () => {
 
         const result = getSurveyUri(mockRequest);
 
-        expect(result).toBe(config.customerSurvey.applyUri);
+        expect(result).toBe(config.get("customerSurvey.applyUri"));
       });
 
       it("returns claimUri when path is /livestock/agreement-offer but method is get and latestEndemicsApplication exists", () => {
@@ -519,7 +519,7 @@ describe("context-helper", () => {
 
         const result = getSurveyUri(mockRequest);
 
-        expect(result).toBe(config.customerSurvey.claimUri);
+        expect(result).toBe(config.get("customerSurvey.claimUri"));
       });
     });
 
@@ -530,7 +530,7 @@ describe("context-helper", () => {
           const mockRequest = { path: poultryApplyRoutes.agreementOffer, method: "post" };
           const result = getSurveyUri(mockRequest);
 
-          expect(result).toBe(config.customerSurvey.applyUri);
+          expect(result).toBe(config.get("customerSurvey.applyUri"));
           expect(getSessionData).not.toHaveBeenCalled();
         },
       );
@@ -543,7 +543,7 @@ describe("context-helper", () => {
 
           const result = getSurveyUri(mockRequest);
 
-          expect(result).toBe(config.customerSurvey.claimUri);
+          expect(result).toBe(config.get("customerSurvey.claimUri"));
         },
       );
 
@@ -553,7 +553,7 @@ describe("context-helper", () => {
 
         const result = getSurveyUri(mockRequest);
 
-        expect(result).toBe(config.customerSurvey.claimUri);
+        expect(result).toBe(config.get("customerSurvey.claimUri"));
       });
     });
   });
