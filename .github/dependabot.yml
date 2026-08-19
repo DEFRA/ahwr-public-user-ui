@@ -1,0 +1,71 @@
+version: 2
+
+updates:
+  # Update npm packages
+  - package-ecosystem: npm
+    directory: /
+    open-pull-requests-limit: 10
+
+    # Group packages into shared PR
+    groups:
+      dev:
+        applies-to: "version-updates"
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
+
+      prod:
+        applies-to: "version-updates"
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
+
+      security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+
+      other:
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
+
+    # Schedule run nightly
+    schedule:
+      interval: "cron"
+      cronjob: "0 0 * * *"
+
+    cooldown:
+      default-days: 7
+
+    versioning-strategy: increase
+
+    allow:
+      # Include direct package.json updates
+      - dependency-type: direct
+
+    ignore:
+      # global-agent pinned to 3.x — v4 reworks the proxy API and breaks CDP forward-proxy setup
+      - dependency-name: global-agent
+        update-types:
+          - version-update:semver-major
+
+  # Update GitHub Actions
+  - package-ecosystem: github-actions
+    directory: /
+
+    # Schedule run nightly
+    schedule:
+      interval: "cron"
+      cronjob: "0 0 * * *"
+
+    cooldown:
+      default-days: 7
