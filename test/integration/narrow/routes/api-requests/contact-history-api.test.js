@@ -9,7 +9,7 @@ jest.mock("../../../../../app/logging/logger.js", () => ({
   trackError: jest.fn(),
 }));
 
-const headers = { "x-api-key": config.apiKeys.publicUiBackendApiKey };
+const headers = { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") };
 
 describe("contact history api", () => {
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe("contact history api", () => {
   const makeLogger = () => ({ error: jest.fn() });
 
   describe("updateContactHistory", () => {
-    const endpoint = `${config.applicationApiUri}/applications/contact-history`;
+    const endpoint = `${config.get("applicationApiUri")}/applications/contact-history`;
     const args = [
       { name: "Mr Agent", email: "agent1@theagency.com" },
       { email: "biz@business.com", sbi: "123456789", address: "Somewhere, over the rainbow" },

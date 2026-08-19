@@ -3,7 +3,7 @@ import { config } from "../config/index.js";
 import { getLogger } from "../logging/logger.js";
 
 const metricsCounter = async (metricName, value = 1) => {
-  if (!config.isMetricsEnabled) {
+  if (!config.get("isMetricsEnabled")) {
     return;
   }
 

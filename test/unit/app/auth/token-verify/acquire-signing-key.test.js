@@ -15,7 +15,7 @@ jest.mock("../../../../../app/logging/logger.js", () => ({
 }));
 
 jest.mock("../../../../../app/config/auth.js", () => ({
-  authConfig: {
+  authConfig: require("../../../../helpers/mock-config.js").asConvict({
     ruralPaymentsAgency: {
       hostname: "https://example.com",
     },
@@ -23,7 +23,7 @@ jest.mock("../../../../../app/config/auth.js", () => ({
       hostname: "https://example.com",
       policy: "policy123",
     },
-  },
+  }),
 }));
 
 describe("acquireSigningKey error scenario", () => {

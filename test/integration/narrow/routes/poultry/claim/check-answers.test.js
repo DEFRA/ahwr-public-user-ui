@@ -37,7 +37,7 @@ describe("Poultry check answers test", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
-    config.poultry.disableInterviewPage = false;
+    config.set("poultry.disableInterviewPage", false);
 
     when(getSessionData)
       .calledWith(
@@ -149,7 +149,7 @@ describe("Poultry check answers test", () => {
     });
 
     test("renders page with back link to changes cost when the interview page is disabled", async () => {
-      config.poultry.disableInterviewPage = true;
+      config.set("poultry.disableInterviewPage", true);
 
       const options = {
         method: "GET",
@@ -180,7 +180,7 @@ describe("Poultry check answers test", () => {
     });
 
     test("renders 13 rows, excluding the interview question, when the interview page is disabled", async () => {
-      config.poultry.disableInterviewPage = true;
+      config.set("poultry.disableInterviewPage", true);
 
       const options = {
         method: "GET",
@@ -683,7 +683,7 @@ describe("Poultry check answers test", () => {
     });
 
     test("does not display the evaluation interview row when the interview page is disabled", async () => {
-      config.poultry.disableInterviewPage = true;
+      config.set("poultry.disableInterviewPage", true);
 
       const options = {
         method: "GET",

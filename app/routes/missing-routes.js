@@ -14,8 +14,8 @@ export const missingPagesRoutes = [
 
         return h
           .view("error-pages/404", {
-            signInLink: !userIsSignedIn ? `${config.serviceUri}sign-in` : undefined,
-            dashboardLink: `${config.serviceUri}${dashboardRoutes.manageYourClaims.slice(1)}`,
+            signInLink: !userIsSignedIn ? `${config.get("serviceUri")}sign-in` : undefined,
+            dashboardLink: `${config.get("serviceUri")}${dashboardRoutes.manageYourClaims.slice(1)}`,
           })
           .code(StatusCodes.NOT_FOUND);
       },

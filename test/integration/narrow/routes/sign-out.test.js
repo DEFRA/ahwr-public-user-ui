@@ -61,7 +61,7 @@ describe("GET /sign-out handler", () => {
 
     expect(url.href).toContain(signOutUrl);
     expect(url.pathname).toMatch(/\/oauth2\/v2\.0\/logout$/);
-    expect(searchParams.get("post_logout_redirect_uri")).toBe(`${config.serviceUri}sign-in`);
+    expect(searchParams.get("post_logout_redirect_uri")).toBe(`${config.get("serviceUri")}sign-in`);
     expect(searchParams.get("id_token_hint")).toBe(accessToken);
     expect(metricsCounter).toHaveBeenCalledWith("sign_out");
   });

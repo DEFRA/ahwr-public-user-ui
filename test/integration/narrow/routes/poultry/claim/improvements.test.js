@@ -71,7 +71,7 @@ describe("/poultry/improvements", () => {
 
   describe("when the improvements page is disabled", () => {
     beforeEach(() => {
-      config.poultry.disableInterviewPage = true;
+      config.set("poultry.disableInterviewPage", true);
     });
 
     test("GET redirects straight to check answers without loading the page", async () => {
@@ -105,7 +105,7 @@ describe("/poultry/improvements", () => {
 
   describe("when the improvements page is enabled (default)", () => {
     beforeEach(() => {
-      config.poultry.disableInterviewPage = false;
+      config.set("poultry.disableInterviewPage", false);
     });
 
     describe(`GET ${url} route`, () => {

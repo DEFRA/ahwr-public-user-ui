@@ -38,7 +38,7 @@ export const downloadApplicationHandlers = {
       try {
         await s3Client.send(
           new HeadObjectCommand({
-            Bucket: config.documentBucketName,
+            Bucket: config.get("documentBucketName"),
             Key: key,
           }),
         );
@@ -48,7 +48,7 @@ export const downloadApplicationHandlers = {
       }
 
       const command = new GetObjectCommand({
-        Bucket: config.documentBucketName,
+        Bucket: config.get("documentBucketName"),
         Key: key,
         ResponseContentDisposition: `attachment; filename="${application.reference}.pdf"`,
       });

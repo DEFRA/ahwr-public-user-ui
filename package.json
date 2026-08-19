@@ -49,6 +49,7 @@
     "@ministryofjustice/frontend": "9.0.0",
     "aws-embedded-metrics": "4.2.0",
     "blankie": "5.0.0",
+    "convict": "6.2.5",
     "ffc-ahwr-common-library": "3.8.5",
     "form-data": "4.0.6",
     "global-agent": "3.0.0",

@@ -14,7 +14,7 @@ jest.mock("../../../../../app/logging/logger.js", () => ({
   trackError: jest.fn(),
 }));
 
-const headers = { "x-api-key": config.apiKeys.publicUiBackendApiKey };
+const headers = { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") };
 
 describe("application api", () => {
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe("application api", () => {
   const makeLogger = () => ({ error: jest.fn() });
 
   describe("getApplicationsBySbi", () => {
-    const endpoint = `${config.applicationApiUri}/applications?sbi=SBI123`;
+    const endpoint = `${config.get("applicationApiUri")}/applications?sbi=SBI123`;
     const args = ["SBI123"];
     const returnPayload = "ABC123";
 
@@ -62,7 +62,7 @@ describe("application api", () => {
   });
 
   describe("createApplication", () => {
-    const endpoint = `${config.applicationApiUri}/applications`;
+    const endpoint = `${config.get("applicationApiUri")}/applications`;
     const args = [{ testData: "stuff" }];
     const outboundPayload = { testData: "stuff" };
     const returnPayload = "ABC123";
@@ -109,7 +109,7 @@ describe("application api", () => {
   });
 
   describe("getHerds", () => {
-    const endpoint = `${config.applicationApiUri}/applications/IAHW-ABVR-1234/herds?species=beef`;
+    const endpoint = `${config.get("applicationApiUri")}/applications/IAHW-ABVR-1234/herds?species=beef`;
     const args = ["IAHW-ABVR-1234", "beef"];
     const returnPayload = "ABC123";
 
@@ -147,7 +147,7 @@ describe("application api", () => {
   });
 
   describe("getSites", () => {
-    const endpoint = `${config.applicationApiUri}/applications/IAHW-POULTRY-1234/herds?species=poultry`;
+    const endpoint = `${config.get("applicationApiUri")}/applications/IAHW-POULTRY-1234/herds?species=poultry`;
     const args = ["IAHW-POULTRY-1234"];
     const returnPayload = { herds: [{ id: "1", name: "Site 1" }] };
 

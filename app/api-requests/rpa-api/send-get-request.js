@@ -8,10 +8,10 @@ export const sendRPAGetRequest = async ({ url, defraIdAccessToken, headers }) =>
   const completedHeaders = {
     ...headers,
     [apiHeaders.xForwardedAuthorization]: defraIdAccessToken,
-    [apiHeaders.ocpSubscriptionKey]: authConfig.apim.ocpSubscriptionKey,
+    [apiHeaders.ocpSubscriptionKey]: authConfig.get("apim.ocpSubscriptionKey"),
   };
 
-  const { hostname } = authConfig.ruralPaymentsAgency;
+  const hostname = authConfig.get("ruralPaymentsAgency.hostname");
   const fullUrl = `${hostname}${url}`;
 
   try {
@@ -19,7 +19,7 @@ export const sendRPAGetRequest = async ({ url, defraIdAccessToken, headers }) =>
       headers: completedHeaders,
       json: true,
       rejectUnauthorized: false,
-      timeout: config.wreckHttp.timeoutMilliseconds,
+      timeout: config.get("wreckHttp.timeoutMilliseconds"),
     });
 
     return payload;

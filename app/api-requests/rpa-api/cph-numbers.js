@@ -4,10 +4,12 @@ import { authConfig } from "../../config/auth.js";
 
 export const getCphNumbers = async ({ request, apimAccessToken, defraIdAccessToken }) => {
   const response = await sendRPAGetRequest({
-    url: authConfig.ruralPaymentsAgency.getCphNumbersUrl.replace(
-      "organisationId",
-      getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.organisationId),
-    ),
+    url: authConfig
+      .get("ruralPaymentsAgency.getCphNumbersUrl")
+      .replace(
+        "organisationId",
+        getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.organisationId),
+      ),
     defraIdAccessToken,
     headers: {
       crn: getSessionData(request, sessionEntryKeys.customer, sessionKeys.customer.crn),

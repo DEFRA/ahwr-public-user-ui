@@ -13,22 +13,22 @@ jest.mock("../../../../../app/logging/logger.js", () => ({
 }));
 
 jest.mock("../../../../../app/config/auth.js", () => ({
-  authConfig: {
+  authConfig: require("../../../../helpers/mock-config.js").asConvict({
     ruralPaymentsAgency: {
       hostname: "https://rpa.example.com",
     },
     apim: {
       ocpSubscriptionKey: "test-subscription-key",
     },
-  },
+  }),
 }));
 
 jest.mock("../../../../../app/config/index.js", () => ({
-  config: {
+  config: require("../../../../helpers/mock-config.js").asConvict({
     wreckHttp: {
       timeoutMilliseconds: 10000,
     },
-  },
+  }),
 }));
 
 jest.mock("../../../../../app/constants/constants.js", () => ({

@@ -3,7 +3,9 @@ import nunjucks from "nunjucks";
 import { config } from "../config/index.js";
 import vision from "@hapi/vision";
 
-const { googleTagManagerKey, isLocal, serviceName } = config;
+const googleTagManagerKey = config.get("googleTagManagerKey");
+const isLocal = config.get("isLocal");
+const serviceName = config.get("serviceName");
 
 export const viewsPlugin = {
   plugin: vision,

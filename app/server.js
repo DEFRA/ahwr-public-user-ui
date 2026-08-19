@@ -30,8 +30,8 @@ export async function createServer() {
   setupProxy();
   const server = Hapi.server({
     cache: [getCacheEngine()],
-    port: config.port,
-    host: config.host,
+    port: config.get("port"),
+    host: config.get("host"),
     routes: {
       validate: {
         options: {
@@ -68,14 +68,14 @@ export async function createServer() {
   await server.register(requestTracing);
   await server.register(loggingContextPlugin);
 
-  if (config.devLogin.enabled) {
+  if (config.get("devLogin.enabled")) {
     await server.register(devRedirectPlugin);
   }
 
   server.ext("onRequest", (request, h) => {
     const context = {};
 
-    const traceId = request.headers[config.tracing.header];
+    const traceId = request.headers[config.get("tracing.header")];
     if (traceId) {
       context.trace = { id: traceId };
     }

@@ -26,7 +26,7 @@ import {
 } from "../constants/routes.js";
 import { AHWR_SCHEME, claimType, POULTRY_SCHEME } from "ffc-ahwr-common-library";
 
-const { customerSurvey } = config;
+const customerSurvey = config.get("customerSurvey");
 
 export async function refreshApplications(sbi, request) {
   const { latestEndemicsApplication, latestPoultryApplication, latestVetVisitApplication } =

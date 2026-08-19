@@ -29,7 +29,7 @@ jest.mock("../../../../app/auth/auth-code-grant/state.js", () => ({
 }));
 
 jest.mock("../../../../app/config/auth.js", () => ({
-  authConfig: {
+  authConfig: require("../../../helpers/mock-config.js").asConvict({
     defraId: {
       hostname: "https://tenantname.b2clogin.com/tenantname.onmicrosoft.com",
       tenantName: "tenantname",
@@ -42,7 +42,7 @@ jest.mock("../../../../app/config/auth.js", () => ({
       scope: "openid dummy_client_id offline_access",
       jwtIssuerId: "jwtissuerid",
     },
-  },
+  }),
 }));
 
 describe("authenticate", () => {
@@ -99,7 +99,7 @@ describe("authenticate", () => {
               lastName: "Doe",
               email: "john.doe@email.com",
               iat: 1516239022,
-              iss: `https://${authConfig.defraId.tenantName}.b2clogin.com/${authConfig.defraId.jwtIssuerId}/v2.0/`,
+              iss: `https://${authConfig.get("defraId.tenantName")}.b2clogin.com/${authConfig.get("defraId.jwtIssuerId")}/v2.0/`,
               roles: ["5384769:Agent:3"],
               contactId: "1234567890",
               currentRelationshipId: "123456789",

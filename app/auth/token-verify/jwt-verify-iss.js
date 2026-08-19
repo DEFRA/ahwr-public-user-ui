@@ -1,7 +1,7 @@
 import { authConfig } from "../../config/auth.js";
 
 const jwtTrustedIssuers = new Set([
-  `https://${authConfig.defraId.tenantName}.b2clogin.com/${authConfig.defraId.jwtIssuerId}/v2.0/`,
+  `https://${authConfig.get("defraId.tenantName")}.b2clogin.com/${authConfig.get("defraId.jwtIssuerId")}/v2.0/`,
 ]);
 
 export const jwtVerifyIss = async (iss) => {

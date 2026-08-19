@@ -7,9 +7,8 @@ import nunjucks from "nunjucks";
 import { getClaimsByApplicationReference } from "../../api-requests/claim-api.js";
 import { formatTypesOfPoultry } from "../../lib/display-helpers.js";
 
-const {
-  poultry: { termsAndConditionsUri, guidanceUri },
-} = config;
+const termsAndConditionsUri = config.get("poultry.termsAndConditionsUri");
+const guidanceUri = config.get("poultry.guidanceUri");
 
 const centringClass = "vertical-middle";
 

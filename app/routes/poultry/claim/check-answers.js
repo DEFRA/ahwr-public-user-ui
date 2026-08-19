@@ -31,7 +31,7 @@ const getHandler = {
 
       const rowsWithData = rows.filter((row) => row.value?.html !== undefined);
 
-      const backLink = config.poultry.disableInterviewPage
+      const backLink = config.get("poultry.disableInterviewPage")
         ? poultryClaimRoutes.changesCost
         : poultryClaimRoutes.improvements;
 

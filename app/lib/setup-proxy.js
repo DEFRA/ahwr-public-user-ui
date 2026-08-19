@@ -9,7 +9,7 @@ import { getLogger } from "../logging/logger.js";
  * Node Fetch will still need to pass a ProxyAgent in on each call.
  */
 export function setupProxy() {
-  const proxyUrl = config.proxy;
+  const proxyUrl = config.get("proxy");
 
   if (proxyUrl) {
     getLogger().info("Setting up global proxies");

@@ -15,7 +15,7 @@ jest.mock("../../../../../app/logging/logger.js", () => ({
   trackError: jest.fn(),
 }));
 
-const headers = { "x-api-key": config.apiKeys.publicUiBackendApiKey };
+const headers = { "x-api-key": config.get("apiKeys.publicUiBackendApiKey") };
 
 describe("claim api", () => {
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe("claim api", () => {
   const makeLogger = () => ({ error: jest.fn() });
 
   describe("getClaimsByApplicationReference", () => {
-    const endpoint = `${config.applicationApiUri}/applications/REF123/claims`;
+    const endpoint = `${config.get("applicationApiUri")}/applications/REF123/claims`;
     const args = ["REF123"];
     const returnPayload = "ABC123";
 
@@ -63,7 +63,7 @@ describe("claim api", () => {
   });
 
   describe("submitNewClaim", () => {
-    const endpoint = `${config.applicationApiUri}/claims`;
+    const endpoint = `${config.get("applicationApiUri")}/claims`;
     const args = [{ testData: "stuff" }];
     const outboundPayload = { testData: "stuff" };
     const returnPayload = "ABC123";
@@ -110,7 +110,7 @@ describe("claim api", () => {
   });
 
   describe("isURNUnique", () => {
-    const endpoint = `${config.applicationApiUri}/claims/is-urn-unique`;
+    const endpoint = `${config.get("applicationApiUri")}/claims/is-urn-unique`;
     const args = [{ testData: "stuff" }];
     const outboundPayload = { testData: "stuff" };
     const returnPayload = "ABC123";
@@ -162,7 +162,7 @@ describe("claim api", () => {
       scheme: POULTRY_SCHEME,
       herdId: "e3d320b7-b2cf-469a-903f-ead7587d98e9",
     });
-    const endpoint = `${config.applicationApiUri}/claims/count?${params.toString()}`;
+    const endpoint = `${config.get("applicationApiUri")}/claims/count?${params.toString()}`;
     const args = ["22/333/4444", "e3d320b7-b2cf-469a-903f-ead7587d98e9", POULTRY_SCHEME];
     const returnPayload = { count: 2 };
 
@@ -204,7 +204,7 @@ describe("claim api", () => {
       cph: "22/333/4444",
       scheme: POULTRY_SCHEME,
     });
-    const endpoint = `${config.applicationApiUri}/claims/count?${params.toString()}`;
+    const endpoint = `${config.get("applicationApiUri")}/claims/count?${params.toString()}`;
     const args = ["22/333/4444", undefined, POULTRY_SCHEME];
     const returnPayload = { count: 0 };
 

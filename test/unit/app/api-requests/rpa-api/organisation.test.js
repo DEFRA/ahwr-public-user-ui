@@ -12,12 +12,12 @@ const mockLogger = {
 
 jest.mock("../../../../../app/api-requests/rpa-api/send-get-request.js");
 jest.mock("../../../../../app/config/auth.js", () => ({
-  authConfig: {
+  authConfig: require("../../../../helpers/mock-config.js").asConvict({
     ruralPaymentsAgency: {
       getOrganisationPermissionsUrl: "https://rpa.api/organisations/organisationId/permissions",
       getOrganisationUrl: "https://rpa.api/organisations/organisationId",
     },
-  },
+  }),
 }));
 
 describe("organisation API", () => {

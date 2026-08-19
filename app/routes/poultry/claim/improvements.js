@@ -16,7 +16,7 @@ const getHandler = {
   path: poultryClaimRoutes.improvements,
   options: {
     handler: async (request, h) => {
-      if (config.poultry.disableInterviewPage) {
+      if (config.get("poultry.disableInterviewPage")) {
         return h.redirect(poultryClaimRoutes.checkAnswers);
       }
 
@@ -62,7 +62,7 @@ const postHandler = {
       },
     },
     handler: async (request, h) => {
-      if (config.poultry.disableInterviewPage) {
+      if (config.get("poultry.disableInterviewPage")) {
         return h.redirect(poultryClaimRoutes.checkAnswers);
       }
 

@@ -3,7 +3,8 @@ import { config } from "../config/index.js";
 import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 import { withTraceId } from "@defra/hapi-tracing";
 
-const { apiKeys, tracing } = config;
+const apiKeys = config.get("apiKeys");
+const tracing = config.get("tracing");
 
 export const updateContactHistory = async (
   personSummary,
@@ -12,7 +13,7 @@ export const updateContactHistory = async (
   personRole,
   logger,
 ) => {
-  const endpoint = `${config.applicationApiUri}/applications/contact-history`;
+  const endpoint = `${config.get("applicationApiUri")}/applications/contact-history`;
 
   const contactHistory = {
     farmerName: personSummary.name,

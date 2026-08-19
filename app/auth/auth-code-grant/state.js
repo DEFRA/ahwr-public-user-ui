@@ -10,7 +10,7 @@ import { config } from "../../config/index.js";
 export const generate = async (request) => {
   const state = {
     id: randomUUID(),
-    namespace: config.namespace,
+    namespace: config.get("namespace"),
   };
 
   const base64EncodedState = Buffer.from(JSON.stringify(state)).toString("base64");

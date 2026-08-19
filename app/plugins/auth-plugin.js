@@ -11,7 +11,7 @@ const hasAuthCookie = (request) => {
   if (!cookieHeader) {
     return false;
   }
-  return cookieHeader.includes(`${config.cookie.cookieNameAuth}=`);
+  return cookieHeader.includes(`${config.get("cookie.cookieNameAuth")}=`);
 };
 
 export const authPlugin = {
@@ -25,12 +25,12 @@ export const authPlugin = {
 
       server.auth.strategy("session", "cookie", {
         cookie: {
-          isSameSite: config.cookie.isSameSite,
-          isSecure: config.cookie.isSecure,
-          name: config.cookie.cookieNameAuth,
-          password: config.cookie.password,
-          path: config.cookiePolicy.path,
-          ttl: config.cookie.ttl,
+          isSameSite: config.get("cookie.isSameSite"),
+          isSecure: config.get("cookie.isSecure"),
+          name: config.get("cookie.cookieNameAuth"),
+          password: config.get("cookie.password"),
+          path: config.get("cookiePolicy.path"),
+          ttl: config.get("cookie.ttl"),
           clearInvalid: true,
           ignoreErrors: true,
         },

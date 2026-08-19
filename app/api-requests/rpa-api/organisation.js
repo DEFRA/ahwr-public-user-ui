@@ -8,7 +8,9 @@ export const getOrganisationAuthorisation = async ({
   apimAccessToken,
   defraIdAccessToken,
 }) => {
-  const { getOrganisationPermissionsUrl } = authConfig.ruralPaymentsAgency;
+  const getOrganisationPermissionsUrl = authConfig.get(
+    "ruralPaymentsAgency.getOrganisationPermissionsUrl",
+  );
 
   const response = await sendRPAGetRequest({
     url: getOrganisationPermissionsUrl.replace("organisationId", organisationId),
@@ -44,7 +46,7 @@ export const getOrganisationRole = ({ organisationAuthorisation, personId, logge
 };
 
 export const getOrganisation = async ({ organisationId, apimAccessToken, defraIdAccessToken }) => {
-  const { getOrganisationUrl } = authConfig.ruralPaymentsAgency;
+  const getOrganisationUrl = authConfig.get("ruralPaymentsAgency.getOrganisationUrl");
   const response = await sendRPAGetRequest({
     url: getOrganisationUrl.replace("organisationId", organisationId),
     defraIdAccessToken,

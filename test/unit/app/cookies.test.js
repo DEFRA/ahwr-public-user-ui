@@ -1,9 +1,7 @@
 import { config } from "../../../app/config/index.js";
 import { getCurrentPolicy, updatePolicy } from "../../../app/cookies.js";
 
-const {
-  cookie: { cookieNameCookiePolicy },
-} = config;
+const cookieNameCookiePolicy = config.get("cookie.cookieNameCookiePolicy");
 let request;
 let h;
 const defaultCookie = { confirmed: false, essential: true, analytics: false };

@@ -2,21 +2,24 @@ import Hapi from "@hapi/hapi";
 import hapiCookiePlugin from "@hapi/cookie";
 import { authPlugin } from "./auth-plugin.js";
 
-jest.mock("../config", () => ({
-  config: {
-    cookie: {
-      isSameSite: "Lax",
-      isSecure: true,
-      cookieNameAuth: "test_auth",
-      // eslint-disable-next-line sonarjs/no-hardcoded-passwords
-      password: "password-must-be-at-least-32-characters-long",
-      ttl: 3600000,
-    },
-    cookiePolicy: {
-      path: "/",
-    },
-  },
-}));
+jest.mock("../config", () => {
+  const { asConvict } = require("../../test/helpers/mock-config.js");
+  return {
+    config: asConvict({
+      cookie: {
+        isSameSite: "Lax",
+        isSecure: true,
+        cookieNameAuth: "test_auth",
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords
+        password: "password-must-be-at-least-32-characters-long",
+        ttl: 3600000,
+      },
+      cookiePolicy: {
+        path: "/",
+      },
+    }),
+  };
+});
 
 const mockLogger = {
   info: jest.fn(),

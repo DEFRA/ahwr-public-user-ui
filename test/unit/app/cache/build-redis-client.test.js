@@ -16,7 +16,7 @@ jest.mock("../../../../app/logging/logger.js", () => ({
   getLogger: jest.fn(),
 }));
 jest.mock("../../../../app/config/index.js", () => ({
-  config: {
+  config: require("../../../helpers/mock-config.js").asConvict({
     cache: {
       options: {
         host: "test-host",
@@ -24,7 +24,7 @@ jest.mock("../../../../app/config/index.js", () => ({
         useSingleInstanceCache: true,
       },
     },
-  },
+  }),
 }));
 
 describe("buildRedisClient", () => {
@@ -52,7 +52,7 @@ describe("buildRedisClient", () => {
   });
 
   it("creates a Redis cluster when useSingleInstanceCache = false", () => {
-    config.cache.options.useSingleInstanceCache = false;
+    config.set("cache.options.useSingleInstanceCache", false);
 
     const client = buildRedisClient();
 
@@ -74,11 +74,11 @@ describe("buildRedisClient", () => {
   });
 
   it("adds username and password when present", () => {
-    config.cache.options.useSingleInstanceCache = true;
+    config.set("cache.options.useSingleInstanceCache", true);
     const username = "user1";
     const password = "pw123";
-    config.cache.options.username = username;
-    config.cache.options.password = password;
+    config.set("cache.options.username", username);
+    config.set("cache.options.password", password);
 
     buildRedisClient();
 
@@ -91,7 +91,7 @@ describe("buildRedisClient", () => {
   });
 
   it("adds TLS when enabled", () => {
-    config.cache.options.useTLS = true;
+    config.set("cache.options.useTLS", true);
 
     buildRedisClient();
 

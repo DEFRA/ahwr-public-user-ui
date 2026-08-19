@@ -9,7 +9,7 @@ export const acquireSigningKey = async () => {
     return cachedKey;
   }
 
-  const endpoint = `${authConfig.defraId.hostname}/discovery/v2.0/keys?p=${authConfig.defraId.policy}`;
+  const endpoint = `${authConfig.get("defraId.hostname")}/discovery/v2.0/keys?p=${authConfig.get("defraId.policy")}`;
 
   try {
     const { payload } = await Wreck.get(endpoint, { json: true });

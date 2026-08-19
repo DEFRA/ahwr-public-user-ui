@@ -49,7 +49,7 @@ export const declarationRouteHandlers = [
 
         return h.view(livestockApplyViews.declaration, {
           backLink: livestockApplyRoutes.timings,
-          latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${livestockApplyRoutes.declaration}`,
+          latestTermsAndConditionsUri: `${config.get("latestTermsAndConditionsUri")}?continue=true&backLink=/${livestockApplyRoutes.declaration}`,
           organisation: formatOrganisation(organisation),
         });
       },
@@ -73,7 +73,7 @@ export const declarationRouteHandlers = [
           return h
             .view(livestockApplyViews.declaration, {
               backLink: livestockApplyRoutes.timings,
-              latestTermsAndConditionsUri: `${config.latestTermsAndConditionsUri}?continue=true&backLink=/${livestockApplyRoutes.declaration}`,
+              latestTermsAndConditionsUri: `${config.get("latestTermsAndConditionsUri")}?continue=true&backLink=/${livestockApplyRoutes.declaration}`,
               errorMessage: {
                 text: "Select yes if you have read and agree to the terms and conditions",
               },
@@ -157,7 +157,7 @@ export const declarationRouteHandlers = [
         return h.view(livestockApplyViews.confirmation, {
           reference: applicationReference,
           isNewUser: userType.NEW_USER === organisation.userType,
-          latestTermsAndConditionsUri: config.latestTermsAndConditionsUri,
+          latestTermsAndConditionsUri: config.get("latestTermsAndConditionsUri"),
         });
       },
     },

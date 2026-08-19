@@ -4,7 +4,8 @@ import { dashboardRoutes } from "../constants/routes.js";
 import { getScheme, getSurveyUri } from "../lib/context-helper.js";
 import { shouldShowManageYourClaims } from "../lib/agreement-helper.js";
 
-const { serviceName, serviceUri } = config;
+const serviceName = config.get("serviceName");
+const serviceUri = config.get("serviceUri");
 
 export const viewContextPlugin = {
   plugin: {

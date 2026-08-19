@@ -12,9 +12,7 @@ import { areDatesWithin10Months } from "../../../lib/utils.js";
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 import { config } from "../../../config/index.js";
 
-const {
-  poultry: { guidanceUri },
-} = config;
+const guidanceUri = config.get("poultry.guidanceUri");
 
 const radioValueNewSite = "NEW_SITE";
 

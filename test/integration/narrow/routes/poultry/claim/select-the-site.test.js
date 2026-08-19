@@ -1098,7 +1098,7 @@ describe("/poultry/select-site", () => {
           $(el).text().trim() ===
           "There must be at least 10 months between your poultry biosecurity reviews for this site",
       );
-      expect(guidanceLink.attr("href")).toEqual(config.poultry.guidanceUri);
+      expect(guidanceLink.attr("href")).toEqual(config.get("poultry.guidanceUri"));
 
       const changeAnswerLink = $('a[href="/poultry/date-of-visit"]');
       expect(changeAnswerLink.text().trim()).toEqual(

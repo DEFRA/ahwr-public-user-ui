@@ -4,10 +4,11 @@ import { StatusCodes } from "http-status-codes";
 import { API_CALL_FAILED_CATEGORY, trackError } from "../logging/logger.js";
 import { withTraceId } from "@defra/hapi-tracing";
 
-const { apiKeys, tracing } = config;
+const apiKeys = config.get("apiKeys");
+const tracing = config.get("tracing");
 
 export async function getApplicationsBySbi(sbi, logger) {
-  const endpoint = `${config.applicationApiUri}/applications?sbi=${sbi}`;
+  const endpoint = `${config.get("applicationApiUri")}/applications?sbi=${sbi}`;
   try {
     const { payload } = await Wreck.get(endpoint, {
       json: true,
@@ -24,7 +25,7 @@ export async function getApplicationsBySbi(sbi, logger) {
 }
 
 export const createApplication = async (application, logger) => {
-  const endpoint = `${config.applicationApiUri}/applications`;
+  const endpoint = `${config.get("applicationApiUri")}/applications`;
   try {
     const { payload } = await Wreck.post(endpoint, {
       payload: application,
@@ -42,7 +43,7 @@ export const createApplication = async (application, logger) => {
 };
 
 export const getHerds = async (applicationReference, typeOfLivestock, logger) => {
-  const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/herds?species=${typeOfLivestock}`;
+  const endpoint = `${config.get("applicationApiUri")}/applications/${applicationReference}/herds?species=${typeOfLivestock}`;
 
   try {
     const { payload } = await Wreck.get(endpoint, {
@@ -64,7 +65,7 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
 };
 
 export const getSites = async (applicationReference, logger) => {
-  const endpoint = `${config.applicationApiUri}/applications/${applicationReference}/herds?species=poultry`;
+  const endpoint = `${config.get("applicationApiUri")}/applications/${applicationReference}/herds?species=poultry`;
 
   try {
     const { payload } = await Wreck.get(endpoint, {

@@ -98,7 +98,7 @@ export const buildPoultryRows = ({ poultryClaim, organisation, herds }) => {
     costOfChangesRow,
   ];
 
-  if (!config.poultry.disableInterviewPage) {
+  if (!config.get("poultry.disableInterviewPage")) {
     const improvementsRow = createdHerdRowObject(
       "Biosecurity improvements",
       upperFirstLetter(poultryClaim.biosecurityImprovements),

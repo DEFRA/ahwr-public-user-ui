@@ -3,7 +3,7 @@ import { config } from "../config/index.js";
 import { getLogger } from "../logging/logger.js";
 
 export function buildRedisClient() {
-  const redisConfig = config.cache.options;
+  const redisConfig = config.get("cache.options");
   const { keyPrefix, host, username, password, useSingleInstanceCache, useTLS } = redisConfig;
   const port = 6379;
   const db = 0;

@@ -31,17 +31,18 @@ jest.mock("../../../../../../app/logging/logger.js", () => ({
   ...jest.requireActual("../../../../../../app/logging/logger.js"),
   trackEvent: jest.fn(),
 }));
-jest.mock("../../../../../../app/config/index.js", () => ({
-  config: {
-    ...jest.requireActual("../../../../../../app/config/index.js").config,
-    poultry: {
-      enabled: "true",
-      termsAndConditionsUri: "https://example.gov.uk/poultry-terms",
-      vetSummaryTemplateUri: "https://example.gov.uk/poultry-vet-summary",
-      guidanceUri: "https://example.gov.uk/poultry-guidance",
-    },
-  },
-}));
+jest.mock("../../../../../../app/config/index.js", () => {
+  const { asConvict } = require("../../../../../helpers/mock-config.js");
+  const values = jest.requireActual("../../../../../../app/config/index.js").config.getProperties();
+  values.poultry = {
+    ...values.poultry,
+    enabled: "true",
+    termsAndConditionsUri: "https://example.gov.uk/poultry-terms",
+    vetSummaryTemplateUri: "https://example.gov.uk/poultry-vet-summary",
+    guidanceUri: "https://example.gov.uk/poultry-guidance",
+  };
+  return { config: asConvict(values) };
+});
 
 describe("Agreement offer test", () => {
   const organisation = {

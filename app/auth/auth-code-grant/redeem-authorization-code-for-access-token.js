@@ -5,20 +5,20 @@ import { getSessionData, sessionEntryKeys, sessionKeys } from "../../session/ind
 import { API_CALL_FAILED_CATEGORY, trackError } from "../../logging/logger.js";
 
 export const redeemAuthorizationCodeForAccessToken = async (request) => {
-  const endpoint = `${authConfig.defraId.hostname}/${authConfig.defraId.policy}/oauth2/v2.0/token`;
+  const endpoint = `${authConfig.get("defraId.hostname")}/${authConfig.get("defraId.policy")}/oauth2/v2.0/token`;
   try {
     const data = new FormData();
     // The Application (client) ID
-    data.append("client_id", authConfig.defraId.clientId);
-    data.append("client_secret", authConfig.defraId.clientSecret);
+    data.append("client_id", authConfig.get("defraId.clientId"));
+    data.append("client_secret", authConfig.get("defraId.clientSecret"));
     // Allow apps to declare the resource they want the token for during token redemption.
-    data.append("scope", authConfig.defraId.scope);
+    data.append("scope", authConfig.get("defraId.scope"));
     // The authorization_code that you acquired in the first leg of the flow.
     data.append("code", request.query.code);
     // Must be authorization_code for the authorization code flow.
     data.append("grant_type", "authorization_code");
     // The same redirect_uri value that was used to acquire the authorization_code.
-    data.append("redirect_uri", authConfig.defraId.redirectUri);
+    data.append("redirect_uri", authConfig.get("defraId.redirectUri"));
     // The same code_verifier that was used to obtain the authorization_code.
     const pkcecodes = getSessionData(
       request,

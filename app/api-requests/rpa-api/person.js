@@ -8,7 +8,7 @@ function formatPersonName(personSummary) {
 }
 
 export const getPersonSummary = async ({ apimAccessToken, crn, logger, defraIdAccessToken }) => {
-  const { getPersonSummaryUrl } = authConfig.ruralPaymentsAgency;
+  const getPersonSummaryUrl = authConfig.get("ruralPaymentsAgency.getPersonSummaryUrl");
 
   const response = await sendRPAGetRequest({
     url: getPersonSummaryUrl,
