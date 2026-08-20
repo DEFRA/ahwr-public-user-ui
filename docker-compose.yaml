@@ -9,7 +9,6 @@ services:
       COOKIE_PASSWORD: who-likes-cookies-i-like-cookies-everybody-likes-cookies
       GOOGLE_TAG_MANAGER_KEY: ${GOOGLE_TAG_MANAGER_KEY}
       REDIS_HOST: redis
-      REDIS_PORT: 6379
       REDIS_USERNAME: ""
       REDIS_PASSWORD: ""
       SERVICE_URI: http://localhost:3003/
@@ -37,7 +36,6 @@ services:
       TERMS_AND_CONDITIONS_URL: ${TERMS_AND_CONDITIONS_URL:-http://localhost:3003/terms/v3}
       POULTRY_TERMS_AND_CONDITIONS_URL: ${POULTRY_TERMS_AND_CONDITIONS_URL:-https://www.gov.uk/government/publications/terms-and-conditions-poultry-biosecurity-review}
       POULTRY_VET_SUMMARY_TEMPLATE_URL: ${POULTRY_VET_SUMMARY_TEMPLATE_URL:-https://www.gov.uk/government/publications/poultry-biosecurity-review-vet-summary-template}
-      MULTI_SPECIES_RELEASE_DATE: ${MULTI_SPECIES_RELEASE_DATE}
       CUSTOMER_SURVEY_CLAIM_URI: ${CUSTOMER_SURVEY_CLAIM_URI:-https://forms.office.com/e/SLKqfJQ499}
       CUSTOMER_SURVEY_APPLY_URI: ${CUSTOMER_SURVEY_APPLY_URI:-https://forms.office.com/e/4frXv6SqvR}
       PRIVACY_POLICY_URI: ${PRIVACY_POLICY_URI:-https://www.gov.uk/government/publications/get-funding-to-improve-animal-health-and-welfare-privacy-notice}
