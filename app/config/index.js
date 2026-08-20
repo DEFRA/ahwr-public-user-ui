@@ -168,18 +168,6 @@ export const getConfig = () => {
         default: oneYearInMs,
       },
     },
-    env: {
-      doc: "The Node environment",
-      format: ["development", "test", "production"],
-      default: "development",
-      env: "NODE_ENV",
-    },
-    displayPageSize: {
-      doc: "Number of items to display per page",
-      format: Number,
-      default: 20,
-      env: "DISPLAY_PAGE_SIZE",
-    },
     googleTagManagerKey: {
       doc: "Google Tag Manager key",
       format: String,
@@ -210,7 +198,6 @@ export const getConfig = () => {
     applicationApiUri: {
       doc: "Application backend API URI",
       format: "uri",
-      nullable: true,
       default: null,
       env: "APPLICATION_API_URI",
     },
@@ -262,28 +249,12 @@ export const getConfig = () => {
         env: "CUSTOMER_SURVEY_APPLY_URI",
       },
     },
-    applicationApi: {
-      uri: {
-        doc: "Application backend API URI",
-        format: "uri",
-        default: null,
-        env: "APPLICATION_API_URI",
-      },
-    },
     wreckHttp: {
       timeoutMilliseconds: {
         doc: "Wreck HTTP request timeout in milliseconds",
         format: Number,
         default: 10000,
         env: "WRECK_HTTP_TIMEOUT_MILLISECONDS",
-      },
-    },
-    multiSpecies: {
-      releaseDate: {
-        doc: "Multi-species release date",
-        format: String,
-        default: "2024-12-06",
-        env: "MULTI_SPECIES_RELEASE_DATE",
       },
     },
     devLogin: {
@@ -298,11 +269,6 @@ export const getConfig = () => {
       format: String,
       default: null,
       env: "TERMS_AND_CONDITIONS_URL",
-    },
-    reapplyTimeLimitMonths: {
-      doc: "Number of months before a farmer can reapply",
-      format: Number,
-      default: 10,
     },
     privacyPolicyUri: {
       doc: "Privacy policy URI",

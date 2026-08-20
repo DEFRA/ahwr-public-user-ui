@@ -1,6 +1,5 @@
 import * as cheerio from "cheerio";
 import { setServerState } from "../../../../helpers/set-server-state.js";
-import { config } from "../../../../../app/config/index.js";
 import { createServer } from "../../../../../app/server.js";
 import { getClaimsByApplicationReference } from "../../../../../app/api-requests/claim-api.js";
 import { refreshApplications } from "../../../../../app/lib/context-helper.js";
@@ -296,8 +295,6 @@ describe("GET /livestock/manage-claims", () => {
     });
 
     test("no claims shows banner", async () => {
-      jest.replaceProperty(config.get("multiSpecies"), "releaseDate", "2024-12-04");
-
       const sbi = "123123123";
 
       await setServerState(server, {

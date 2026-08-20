@@ -25,11 +25,11 @@ describe("Base config", () => {
   });
 
   test("environment variables used for overriding values", () => {
-    jest.replaceProperty(process, "env", { ...env, DISPLAY_PAGE_SIZE: "100" });
+    jest.replaceProperty(process, "env", { ...env, WRECK_HTTP_TIMEOUT_MILLISECONDS: "5000" });
 
     const config = getConfig();
 
-    expect(config.get("displayPageSize")).toBe(100);
+    expect(config.get("wreckHttp.timeoutMilliseconds")).toBe(5000);
   });
 
   test("session cookie and cache uses SESSION_TIMEOUT_MILLISECONDS", () => {
