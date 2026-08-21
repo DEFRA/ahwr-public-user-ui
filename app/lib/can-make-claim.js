@@ -60,18 +60,24 @@ export const canMakeClaim = ({
   typeOfLivestock,
   oldWorldApplication,
 }) => {
-  const prevReviewClaim =
-    prevClaims.find((claim) => claim.type === claimType.review) ||
-    getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock);
+  // A follow-up must be preceded by a review on the new-world agreement. A review, however,
+  // still respects the 10-month gap against an old-world review.
+  if (typeOfReview === claimType.review) {
+    const prevReviewClaim =
+      prevClaims.find((claim) => claim.type === claimType.review) ||
+      getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock);
+
+    return canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit);
+  }
+
+  const prevReviewClaim = prevClaims.find((claim) => claim.type === claimType.review);
   const prevEndemicsClaim = prevClaims.find((claim) => claim.type === claimType.endemics);
 
-  return typeOfReview === claimType.review
-    ? canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit)
-    : canMakeEndemicsClaim(
-        dateOfVisit,
-        prevReviewClaim,
-        prevEndemicsClaim?.data.dateOfVisit,
-        organisation,
-        typeOfLivestock,
-      );
+  return canMakeEndemicsClaim(
+    dateOfVisit,
+    prevReviewClaim,
+    prevEndemicsClaim?.data.dateOfVisit,
+    organisation,
+    typeOfLivestock,
+  );
 };

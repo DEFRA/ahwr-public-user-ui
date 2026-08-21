@@ -1260,8 +1260,8 @@ describe("POST /livestock/date-of-visit handler", () => {
       );
     });
 
-    test("user has an old world claim, and makes a new world endemics claim", async () => {
-      // happy path
+    test("user is blocked from a follow-up when their only review is on an old world claim", async () => {
+      // unhappy path - a follow-up must be preceded by a review on the new world agreement
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockReturnValue({
@@ -1285,15 +1285,27 @@ describe("POST /livestock/date-of-visit handler", () => {
       const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
+
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "dateOfVisit",
         new Date(2025, 0, 1),
       );
-      expect(trackEvent).not.toHaveBeenCalled();
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.any(Object),
+        "claim-invalid-date-of-visit",
+        "follow-up",
+        {
+          reason: "Cannot claim for endemics without a previous review.",
+          reference: "TEMP-6GSE-PIR8",
+        },
+      );
     });
 
     test("for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive", async () => {

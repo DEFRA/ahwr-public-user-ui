@@ -7,7 +7,6 @@ import {
   sessionKeys,
   setSessionData,
 } from "../../../session/index.js";
-import { getOldWorldClaimFromApplication } from "../../../lib/claim-helper.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { BEEF, DAIRY } from "../../../constants/claim-constants.js";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
@@ -81,9 +80,7 @@ export const whichReviewHandlers = [
         const oldWorldClaimTypeOfLivestock = oldWorldApplication?.data?.whichReview;
 
         if (claimType[typeOfReview] === claimType.endemics) {
-          const prevReviewClaim =
-            relevantClaims.find((claim) => claim.type === claimType.review) ||
-            getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock);
+          const prevReviewClaim = relevantClaims.find((claim) => claim.type === claimType.review);
 
           if (!prevReviewClaim) {
             await sendInvalidDataEvent({
