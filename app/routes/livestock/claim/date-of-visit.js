@@ -323,32 +323,11 @@ const postHandler = {
       }
 
       if (isMultipleHerdsUserJourney(dateOfVisit, newWorldApplication.flags)) {
-        const tempHerdId = await getTempHerdId(request, tempHerdIdFromSession);
-        await setSessionData(request, endemicsClaimEntry, tempHerdIdKey, tempHerdId, {
-          shouldEmitEvent: false,
-        });
-        const { herds } = await getHerds(
-          newWorldApplication.reference,
+        return await mhRouting(request, h, {
+          tempHerdIdFromSession,
+          newWorldApplication,
           typeOfLivestock,
-          request.logger,
-        );
-        await setSessionData(request, endemicsClaimEntry, herdsKey, herds, {
-          shouldEmitEvent: false,
         });
-
-        if (herds.length) {
-          return h.redirect(livestockClaimRoutes.selectTheHerd);
-        }
-
-        await setSessionData(request, endemicsClaimEntry, herdIdKey, tempHerdId, {
-          shouldEmitEvent: false,
-        });
-
-        await setSessionData(request, endemicsClaimEntry, herdVersionKey, 1, {
-          shouldEmitEvent: false,
-        });
-
-        return h.redirect(livestockClaimRoutes.enterHerdName);
       }
 
       return await nonMhRouting(request, h, {
@@ -363,6 +342,35 @@ const postHandler = {
       });
     },
   },
+};
+
+const mhRouting = async (
+  request,
+  h,
+  { tempHerdIdFromSession, newWorldApplication, typeOfLivestock },
+) => {
+  const tempHerdId = await getTempHerdId(request, tempHerdIdFromSession);
+  await setSessionData(request, endemicsClaimEntry, tempHerdIdKey, tempHerdId, {
+    shouldEmitEvent: false,
+  });
+  const { herds } = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger);
+  await setSessionData(request, endemicsClaimEntry, herdsKey, herds, {
+    shouldEmitEvent: false,
+  });
+
+  if (herds.length) {
+    return h.redirect(livestockClaimRoutes.selectTheHerd);
+  }
+
+  await setSessionData(request, endemicsClaimEntry, herdIdKey, tempHerdId, {
+    shouldEmitEvent: false,
+  });
+
+  await setSessionData(request, endemicsClaimEntry, herdVersionKey, 1, {
+    shouldEmitEvent: false,
+  });
+
+  return h.redirect(livestockClaimRoutes.enterHerdName);
 };
 
 const checkForTimingException = async (
