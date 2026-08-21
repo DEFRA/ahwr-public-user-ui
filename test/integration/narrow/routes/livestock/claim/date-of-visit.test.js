@@ -1,6 +1,5 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
-import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { getHerds } from "../../../../../../app/api-requests/application-api.js";
 import {
@@ -154,7 +153,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
     expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
-    expectPhaseBanner.ok($);
+    expect($).toShowPhaseBanner();
   });
 
   test("returns 200 when you do have previous claims", async () => {
@@ -175,7 +174,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
     expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
-    expectPhaseBanner.ok($);
+    expect($).toShowPhaseBanner();
   });
 
   test("returns 200 and fills input with value in session", async () => {
@@ -200,7 +199,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect($("#visit-date-month")[0].attribs.value).toEqual("5");
     expect($("#visit-date-year")[0].attribs.value).toEqual("2024");
     expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
-    expectPhaseBanner.ok($);
+    expect($).toShowPhaseBanner();
   });
 
   test("shows the follow-up heading and links back to the old world review test results for an endemics cattle claim with no relevant new world claims", async () => {
@@ -214,7 +213,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect($(".govuk-back-link").attr("href")).toBe(
       livestockClaimRoutes.vetVisitsReviewTestResults,
     );
-    expectPhaseBanner.ok($);
+    expect($).toShowPhaseBanner();
   });
 
   test("shows the review heading and links back to which-type-of-review for a review claim", async () => {
@@ -226,7 +225,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
     expect($(".govuk-back-link").attr("href")).toBe(livestockClaimRoutes.whichTypeOfReview);
-    expectPhaseBanner.ok($);
+    expect($).toShowPhaseBanner();
   });
 
   testRedirectsToSignInWhenLoggedOut({
