@@ -112,18 +112,26 @@ describe("GET /livestock/date-of-visit handler", () => {
     jest.resetAllMocks();
   });
 
-  const getResponse = (typeOfReview) => () => {
+  const mockEndemicsClaimSession = (overrides) =>
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
       .mockReturnValue({
         latestEndemicsApplication,
         latestVetVisitApplication,
-        typeOfReview,
         typeOfLivestock: "beef",
-        previousClaims: [],
         reference: "TEMP-6GSE-PIR8",
+        ...overrides,
       });
+
+  const getResponse = (typeOfReview) => () => {
+    mockEndemicsClaimSession({ typeOfReview, previousClaims: [] });
     return server.inject({ method: "GET", url, auth });
+  };
+
+  const options = {
+    method: "GET",
+    url,
+    auth,
   };
 
   testBrowserPageTitle({
@@ -138,21 +146,7 @@ describe("GET /livestock/date-of-visit handler", () => {
   testPageHeading({ heading: "Date of follow-up", getResponse: getResponse("FOLLOW_UP") });
 
   test("returns 200 when you dont have any previous claims", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication,
-        typeOfReview: "endemics",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        reference: "TEMP-6GSE-PIR8",
-      });
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
+    mockEndemicsClaimSession({ typeOfReview: "endemics", previousClaims: [] });
 
     const res = await server.inject(options);
 
@@ -164,27 +158,16 @@ describe("GET /livestock/date-of-visit handler", () => {
   });
 
   test("returns 200 when you do have previous claims", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication,
-        typeOfReview: "endemics",
-        typeOfLivestock: "beef",
-        previousClaims: [
-          {
-            data: {
-              typeOfReview: "REVIEW",
-            },
+    mockEndemicsClaimSession({
+      typeOfReview: "endemics",
+      previousClaims: [
+        {
+          data: {
+            typeOfReview: "REVIEW",
           },
-        ],
-        reference: "TEMP-6GSE-PIR8",
-      });
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
+        },
+      ],
+    });
 
     const res = await server.inject(options);
 
@@ -196,28 +179,17 @@ describe("GET /livestock/date-of-visit handler", () => {
   });
 
   test("returns 200 and fills input with value in session", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication,
-        typeOfReview: "endemics",
-        typeOfLivestock: "beef",
-        previousClaims: [
-          {
-            data: {
-              typeOfReview: "REVIEW",
-            },
+    mockEndemicsClaimSession({
+      typeOfReview: "endemics",
+      previousClaims: [
+        {
+          data: {
+            typeOfReview: "REVIEW",
           },
-        ],
-        dateOfVisit: "2024-05-01",
-        reference: "TEMP-6GSE-PIR8",
-      });
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
+        },
+      ],
+      dateOfVisit: "2024-05-01",
+    });
 
     const res = await server.inject(options);
 
@@ -232,21 +204,7 @@ describe("GET /livestock/date-of-visit handler", () => {
   });
 
   test("shows the follow-up heading and links back to the old world review test results for an endemics cattle claim with no relevant new world claims", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication,
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        reference: "TEMP-6GSE-PIR8",
-      });
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
+    mockEndemicsClaimSession({ typeOfReview: "FOLLOW_UP", previousClaims: [] });
 
     const res = await server.inject(options);
 
@@ -260,21 +218,7 @@ describe("GET /livestock/date-of-visit handler", () => {
   });
 
   test("shows the review heading and links back to which-type-of-review for a review claim", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication,
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        reference: "TEMP-6GSE-PIR8",
-      });
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
+    mockEndemicsClaimSession({ typeOfReview: "REVIEW", previousClaims: [] });
 
     const res = await server.inject(options);
 
