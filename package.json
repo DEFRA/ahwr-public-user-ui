@@ -43,7 +43,7 @@
     "@hapi/hapi": "21.4.9",
     "@hapi/inert": "7.1.2",
     "@hapi/scooter": "8.0.0",
-    "@hapi/vision": "6.1.0",
+    "@hapi/vision": "7.0.3",
     "@hapi/wreck": "18.1.2",
     "@hapi/yar": "11.0.0",
     "@ministryofjustice/frontend": "9.0.0",
