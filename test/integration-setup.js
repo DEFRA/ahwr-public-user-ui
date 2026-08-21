@@ -67,4 +67,44 @@ expect.extend({
             `but found ${banner.length} banner(s) with text "${text}"`,
     };
   },
+
+  /**
+   * Asserts a loaded cheerio document shows the date-of-visit page content.
+   *
+   * @param {import("cheerio").CheerioAPI} $ - a loaded cheerio document
+   * @param {string} previousPageUrl - the expected back-link href
+   * @returns {{ pass: boolean, message: () => string }}
+   * @example
+   * expect($).toShowDateOfVisitPage(livestockClaimRoutes.whichTypeOfReview);
+   */
+  toShowDateOfVisitPage($, previousPageUrl) {
+    const backLink = $(".govuk-back-link");
+    const checks = {
+      title:
+        /Date of livestock review|follow-up - Get funding to improve animal health and welfare/i.test(
+          $("title").text(),
+        ),
+      heading: /(Date of review | follow-up)/i.test($("h1").text().trim()),
+      "intro paragraph":
+        /(This is the date the vet last visited the farm for this review\. You can find it on the summary the vet gave you\.| follow-up)/i.test(
+          $("p").text(),
+        ),
+      hint: $("#visit-date-hint").text().includes("For example, 27 3 2022"),
+      "day label": $("label[for=visit-date-day]").text().includes("Day"),
+      "month label": $("label[for=visit-date-month]").text().includes("Month"),
+      "year label": $("label[for=visit-date-year]").text().includes("Year"),
+      "continue button": $(".govuk-button").text().includes("Continue"),
+      "back link text": backLink.text().includes("Back"),
+      "back link href": (backLink.attr("href") ?? "").includes(previousPageUrl),
+    };
+    const failed = Object.keys(checks).filter((name) => !checks[name]);
+    const pass = failed.length === 0;
+    return {
+      pass,
+      message: () =>
+        pass
+          ? "expected the document not to show the date-of-visit page content"
+          : `expected the date-of-visit page content, but these checks failed: ${failed.join(", ")}`,
+    };
+  },
 });

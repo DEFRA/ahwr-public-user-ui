@@ -28,24 +28,6 @@ jest.mock("../../../../../../app/logging/logger.js", () => ({
   trackEvent: jest.fn(),
 }));
 
-function expectPageContentOk($, previousPageUrl) {
-  expect($("title").text()).toMatch(
-    /Date of livestock review|follow-up - Get funding to improve animal health and welfare/i,
-  );
-  expect($("h1").text().trim()).toMatch(/(Date of review | follow-up)/i);
-  expect($("p").text()).toMatch(
-    /(This is the date the vet last visited the farm for this review. You can find it on the summary the vet gave you.| follow-up)/i,
-  );
-  expect($("#visit-date-hint").text()).toMatch("For example, 27 3 2022");
-  expect($(`label[for=visit-date-day]`).text()).toMatch("Day");
-  expect($(`label[for=visit-date-month]`).text()).toMatch("Month");
-  expect($(`label[for=visit-date-year]`).text()).toMatch("Year");
-  expect($(".govuk-button").text()).toMatch("Continue");
-  const backLink = $(".govuk-back-link");
-  expect(backLink.text()).toMatch("Back");
-  expect(backLink.attr("href")).toMatch(previousPageUrl);
-}
-
 const latestVetVisitApplication = {
   reference: "AHWR-2470-6BA9",
   createdAt: new Date("2023/01/01"),
@@ -152,7 +134,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
+    expect($).toShowDateOfVisitPage(livestockClaimRoutes.whichTypeOfReview);
     expect($).toShowPhaseBanner();
   });
 
@@ -173,7 +155,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
+    expect($).toShowDateOfVisitPage(livestockClaimRoutes.whichTypeOfReview);
     expect($).toShowPhaseBanner();
   });
 
@@ -198,7 +180,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect($("#visit-date-day")[0].attribs.value).toEqual("1");
     expect($("#visit-date-month")[0].attribs.value).toEqual("5");
     expect($("#visit-date-year")[0].attribs.value).toEqual("2024");
-    expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
+    expect($).toShowDateOfVisitPage(livestockClaimRoutes.whichTypeOfReview);
     expect($).toShowPhaseBanner();
   });
 
