@@ -97,7 +97,7 @@
     "jest-environment-jsdom": "30.4.1",
     "jest-junit": "17.0.0",
     "jest-when": "3.7.0",
-    "jsdom": "26.1.0",
+    "jsdom": "30.0.1",
     "knip": "6.32.2",
     "mini-css-extract-plugin": "2.10.2",
     "msw": "2.15.0",
