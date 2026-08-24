@@ -63,11 +63,11 @@ export const canMakeClaim = ({
   // A follow-up must be preceded by a review on the new-world agreement. A review, however,
   // still respects the 10-month gap against an old-world review.
   if (typeOfReview === claimType.review) {
-    const prevReviewClaim =
+    const previousReviewClaim =
       prevClaims.find((claim) => claim.type === claimType.review) ||
       getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock);
 
-    return canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit);
+    return canMakeReviewClaim(dateOfVisit, previousReviewClaim?.data.dateOfVisit);
   }
 
   const prevReviewClaim = prevClaims.find((claim) => claim.type === claimType.review);
