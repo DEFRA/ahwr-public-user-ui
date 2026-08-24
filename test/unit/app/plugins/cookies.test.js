@@ -43,9 +43,7 @@ describe("Cookie plugin", () => {
           method: "GET",
           path: "/",
           handler: (req, h) => {
-            return h.view("index", {
-              /* context */
-            });
+            return h.view("index", {/* context */});
           },
         },
         {
@@ -68,9 +66,7 @@ describe("Cookie plugin", () => {
 
     test("should apply cookie policy for non-error, view responses", async () => {
       const getCurrentPolicy = require("../../../../app/cookies.js").getCurrentPolicy;
-      getCurrentPolicy.mockReturnValue({
-        /* Your mock policy data */
-      });
+      getCurrentPolicy.mockReturnValue({/* Your mock policy data */});
       request = {
         method: "get",
         url: "/blah",

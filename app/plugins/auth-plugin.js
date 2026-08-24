@@ -38,7 +38,7 @@ export const authPlugin = {
         redirectTo: (_request) => {
           return "/sign-in";
         },
-        validateFunc: async (request) => {
+        validate: async (request) => {
           request.app[AUTH_COOKIE_VALIDATED] = true;
           const sessionWasSet = Boolean(getSessionData(request, sessionEntryKeys.organisation));
 
@@ -49,7 +49,7 @@ export const authPlugin = {
             );
           }
 
-          return { valid: sessionWasSet };
+          return { isValid: sessionWasSet };
         },
       });
 
