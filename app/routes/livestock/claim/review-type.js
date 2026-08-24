@@ -80,7 +80,7 @@ export const whichReviewHandlers = [
         const oldWorldClaimTypeOfLivestock = oldWorldApplication?.data?.whichReview;
 
         if (claimType[typeOfReview] === claimType.endemics) {
-          const prevReviewClaim = relevantClaims.find((claim) => claim.type === claimType.review);
+          const prevReviewClaim = relevantClaims.some((claim) => claim.type === claimType.review);
 
           if (!prevReviewClaim) {
             await sendInvalidDataEvent({

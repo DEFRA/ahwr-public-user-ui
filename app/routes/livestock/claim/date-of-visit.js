@@ -323,7 +323,7 @@ const postHandler = {
       }
 
       if (isMultipleHerdsUserJourney(dateOfVisit, newWorldApplication.flags)) {
-        return await mhRouting(request, h, {
+        return mhRouting(request, h, {
           tempHerdIdFromSession,
           newWorldApplication,
           typeOfLivestock,
