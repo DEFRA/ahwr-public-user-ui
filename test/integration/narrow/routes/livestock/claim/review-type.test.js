@@ -139,7 +139,7 @@ describe("Which type of review test", () => {
       );
     });
 
-    test("Returns 302 and redirect to vet visit review test result", async () => {
+    test("user is blocked when they select endemics with only an old world review for the species", async () => {
       const endemicsMockValue = {
         typeOfReview: "endemics",
         typeOfLivestock: "beef",
@@ -147,7 +147,6 @@ describe("Which type of review test", () => {
         previousClaims,
       };
       getSessionData.mockReturnValue(endemicsMockValue);
-      // isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
 
       const options = {
         method: "POST",
@@ -162,9 +161,11 @@ describe("Which type of review test", () => {
 
       const res = await server.inject(options);
 
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/livestock/vet-visits-review-test-results");
-      expect(setSessionData).toHaveBeenCalled();
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
     });
 
     test("user can select review and be redirected", async () => {
@@ -232,8 +233,8 @@ describe("Which type of review test", () => {
       );
     });
 
-    test(`user can select endemics and be redirected IF they have dont have a new world review for the species,
-    but they have an old world application which contains a review for that species`, async () => {
+    test(`user is blocked when they dont have a new world review for the species,
+    even though they have an old world application which contains a review for that species`, async () => {
       getSessionData.mockReturnValue({
         typeOfLivestock: "beef",
         previousClaims: [],
@@ -261,8 +262,11 @@ describe("Which type of review test", () => {
 
       const res = await server.inject(options);
 
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toEqual("/livestock/vet-visits-review-test-results"); // because of isCattleEndemicsClaimForOldWorldReview check
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
       expect(setSessionData).toHaveBeenCalledWith(
         expect.anything(),
         "endemicsClaim",

@@ -26,6 +26,16 @@ interface CustomMatchers<R = unknown> {
   toShowPhaseBanner(): R;
 
   /**
+   * Asserts a loaded cheerio document shows the date-of-visit page content.
+   *
+   * @param previousPageUrl - the expected back-link href
+   * @example
+   * const $ = cheerio.load(response.payload);
+   * expect($).toShowDateOfVisitPage(livestockClaimRoutes.whichTypeOfReview);
+   */
+  toShowDateOfVisitPage(previousPageUrl: string): R;
+
+  /**
    * Asserts `shouldShowManageYourClaims` returns true for the request once the
    * relevant session lookup has been stubbed by the matcher.
    *

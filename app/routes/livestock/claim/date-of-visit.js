@@ -5,10 +5,7 @@ import {
   MULTIPLE_SPECIES_RELEASE_DATE,
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE,
 } from "../../../constants/claim-constants.js";
-import {
-  getOldWorldClaimFromApplication,
-  getAllClaimsForFirstHerd,
-} from "../../../lib/claim-helper.js";
+import { getAllClaimsForFirstHerd } from "../../../lib/claim-helper.js";
 import { validateDateParts, datePartsMessage } from "../../../lib/date-validations.js";
 import { getReviewType, getLivestockTypes } from "../../../lib/utils.js";
 import {
@@ -326,32 +323,11 @@ const postHandler = {
       }
 
       if (isMultipleHerdsUserJourney(dateOfVisit, newWorldApplication.flags)) {
-        const tempHerdId = await getTempHerdId(request, tempHerdIdFromSession);
-        await setSessionData(request, endemicsClaimEntry, tempHerdIdKey, tempHerdId, {
-          shouldEmitEvent: false,
-        });
-        const { herds } = await getHerds(
-          newWorldApplication.reference,
+        return mhRouting(request, h, {
+          tempHerdIdFromSession,
+          newWorldApplication,
           typeOfLivestock,
-          request.logger,
-        );
-        await setSessionData(request, endemicsClaimEntry, herdsKey, herds, {
-          shouldEmitEvent: false,
         });
-
-        if (herds.length) {
-          return h.redirect(livestockClaimRoutes.selectTheHerd);
-        }
-
-        await setSessionData(request, endemicsClaimEntry, herdIdKey, tempHerdId, {
-          shouldEmitEvent: false,
-        });
-
-        await setSessionData(request, endemicsClaimEntry, herdVersionKey, 1, {
-          shouldEmitEvent: false,
-        });
-
-        return h.redirect(livestockClaimRoutes.enterHerdName);
       }
 
       return await nonMhRouting(request, h, {
@@ -366,6 +342,35 @@ const postHandler = {
       });
     },
   },
+};
+
+const mhRouting = async (
+  request,
+  h,
+  { tempHerdIdFromSession, newWorldApplication, typeOfLivestock },
+) => {
+  const tempHerdId = await getTempHerdId(request, tempHerdIdFromSession);
+  await setSessionData(request, endemicsClaimEntry, tempHerdIdKey, tempHerdId, {
+    shouldEmitEvent: false,
+  });
+  const { herds } = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger);
+  await setSessionData(request, endemicsClaimEntry, herdsKey, herds, {
+    shouldEmitEvent: false,
+  });
+
+  if (herds.length) {
+    return h.redirect(livestockClaimRoutes.selectTheHerd);
+  }
+
+  await setSessionData(request, endemicsClaimEntry, herdIdKey, tempHerdId, {
+    shouldEmitEvent: false,
+  });
+
+  await setSessionData(request, endemicsClaimEntry, herdVersionKey, 1, {
+    shouldEmitEvent: false,
+  });
+
+  return h.redirect(livestockClaimRoutes.enterHerdName);
 };
 
 const checkForTimingException = async (
@@ -431,11 +436,7 @@ const nonMhRouting = async (
 
   // duplicated from which-type-of-review-ms
   // we don't know if postMH claims can be used for follow-up until date entered
-  if (
-    typeOfClaim === claimType.endemics &&
-    !getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock) &&
-    claimsForFirstHerdIfPreMH.length === 0
-  ) {
+  if (typeOfClaim === claimType.endemics && claimsForFirstHerdIfPreMH.length === 0) {
     trackEvent(request.logger, INVALID_DATE_OF_VISIT_EVENT, reviewOrFollowUpText, {
       reference: tempClaimReference,
       reason: "Cannot claim for endemics without a previous review.",

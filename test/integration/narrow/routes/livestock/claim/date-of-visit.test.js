@@ -1,6 +1,5 @@
 import * as cheerio from "cheerio";
 import { createServer } from "../../../../../../app/server.js";
-import expectPhaseBanner from "assert";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import { getHerds } from "../../../../../../app/api-requests/application-api.js";
 import {
@@ -28,24 +27,6 @@ jest.mock("../../../../../../app/logging/logger.js", () => ({
   ...jest.requireActual("../../../../../../app/logging/logger.js"),
   trackEvent: jest.fn(),
 }));
-
-function expectPageContentOk($, previousPageUrl) {
-  expect($("title").text()).toMatch(
-    /Date of livestock review|follow-up - Get funding to improve animal health and welfare/i,
-  );
-  expect($("h1").text().trim()).toMatch(/(Date of review | follow-up)/i);
-  expect($("p").text()).toMatch(
-    /(This is the date the vet last visited the farm for this review. You can find it on the summary the vet gave you.| follow-up)/i,
-  );
-  expect($("#visit-date-hint").text()).toMatch("For example, 27 3 2022");
-  expect($(`label[for=visit-date-day]`).text()).toMatch("Day");
-  expect($(`label[for=visit-date-month]`).text()).toMatch("Month");
-  expect($(`label[for=visit-date-year]`).text()).toMatch("Year");
-  expect($(".govuk-button").text()).toMatch("Continue");
-  const backLink = $(".govuk-back-link");
-  expect(backLink.text()).toMatch("Back");
-  expect(backLink.attr("href")).toMatch(previousPageUrl);
-}
 
 const latestVetVisitApplication = {
   reference: "AHWR-2470-6BA9",
@@ -112,18 +93,26 @@ describe("GET /livestock/date-of-visit handler", () => {
     jest.resetAllMocks();
   });
 
-  const getResponse = (typeOfReview) => () => {
+  const mockEndemicsClaimSession = (overrides) =>
     when(getSessionData)
       .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
       .mockReturnValue({
         latestEndemicsApplication,
         latestVetVisitApplication,
-        typeOfReview,
         typeOfLivestock: "beef",
-        previousClaims: [],
         reference: "TEMP-6GSE-PIR8",
+        ...overrides,
       });
+
+  const getResponse = (typeOfReview) => () => {
+    mockEndemicsClaimSession({ typeOfReview, previousClaims: [] });
     return server.inject({ method: "GET", url, auth });
+  };
+
+  const options = {
+    method: "GET",
+    url,
+    auth,
   };
 
   testBrowserPageTitle({
@@ -138,86 +127,50 @@ describe("GET /livestock/date-of-visit handler", () => {
   testPageHeading({ heading: "Date of follow-up", getResponse: getResponse("FOLLOW_UP") });
 
   test("returns 200 when you dont have any previous claims", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication,
-        typeOfReview: "endemics",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        reference: "TEMP-6GSE-PIR8",
-      });
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
+    mockEndemicsClaimSession({ typeOfReview: "endemics", previousClaims: [] });
 
     const res = await server.inject(options);
 
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
-    expectPhaseBanner.ok($);
+    expect($).toShowDateOfVisitPage(livestockClaimRoutes.whichTypeOfReview);
+    expect($).toShowPhaseBanner();
   });
 
   test("returns 200 when you do have previous claims", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication,
-        typeOfReview: "endemics",
-        typeOfLivestock: "beef",
-        previousClaims: [
-          {
-            data: {
-              typeOfReview: "REVIEW",
-            },
+    mockEndemicsClaimSession({
+      typeOfReview: "endemics",
+      previousClaims: [
+        {
+          data: {
+            typeOfReview: "REVIEW",
           },
-        ],
-        reference: "TEMP-6GSE-PIR8",
-      });
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
+        },
+      ],
+    });
 
     const res = await server.inject(options);
 
     expect(await axe(res.payload)).toHaveNoViolations();
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
-    expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
-    expectPhaseBanner.ok($);
+    expect($).toShowDateOfVisitPage(livestockClaimRoutes.whichTypeOfReview);
+    expect($).toShowPhaseBanner();
   });
 
   test("returns 200 and fills input with value in session", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication,
-        typeOfReview: "endemics",
-        typeOfLivestock: "beef",
-        previousClaims: [
-          {
-            data: {
-              typeOfReview: "REVIEW",
-            },
+    mockEndemicsClaimSession({
+      typeOfReview: "endemics",
+      previousClaims: [
+        {
+          data: {
+            typeOfReview: "REVIEW",
           },
-        ],
-        dateOfVisit: "2024-05-01",
-        reference: "TEMP-6GSE-PIR8",
-      });
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
+        },
+      ],
+      dateOfVisit: "2024-05-01",
+    });
 
     const res = await server.inject(options);
 
@@ -227,26 +180,12 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect($("#visit-date-day")[0].attribs.value).toEqual("1");
     expect($("#visit-date-month")[0].attribs.value).toEqual("5");
     expect($("#visit-date-year")[0].attribs.value).toEqual("2024");
-    expectPageContentOk($, livestockClaimRoutes.whichTypeOfReview);
-    expectPhaseBanner.ok($);
+    expect($).toShowDateOfVisitPage(livestockClaimRoutes.whichTypeOfReview);
+    expect($).toShowPhaseBanner();
   });
 
   test("shows the follow-up heading and links back to the old world review test results for an endemics cattle claim with no relevant new world claims", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication,
-        typeOfReview: "FOLLOW_UP",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        reference: "TEMP-6GSE-PIR8",
-      });
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
+    mockEndemicsClaimSession({ typeOfReview: "FOLLOW_UP", previousClaims: [] });
 
     const res = await server.inject(options);
 
@@ -256,25 +195,11 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect($(".govuk-back-link").attr("href")).toBe(
       livestockClaimRoutes.vetVisitsReviewTestResults,
     );
-    expectPhaseBanner.ok($);
+    expect($).toShowPhaseBanner();
   });
 
   test("shows the review heading and links back to which-type-of-review for a review claim", async () => {
-    when(getSessionData)
-      .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
-      .mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication,
-        typeOfReview: "REVIEW",
-        typeOfLivestock: "beef",
-        previousClaims: [],
-        reference: "TEMP-6GSE-PIR8",
-      });
-    const options = {
-      method: "GET",
-      url,
-      auth,
-    };
+    mockEndemicsClaimSession({ typeOfReview: "REVIEW", previousClaims: [] });
 
     const res = await server.inject(options);
 
@@ -282,7 +207,7 @@ describe("GET /livestock/date-of-visit handler", () => {
     expect(res.statusCode).toBe(200);
     const $ = cheerio.load(res.payload);
     expect($(".govuk-back-link").attr("href")).toBe(livestockClaimRoutes.whichTypeOfReview);
-    expectPhaseBanner.ok($);
+    expect($).toShowPhaseBanner();
   });
 
   testRedirectsToSignInWhenLoggedOut({
@@ -1260,8 +1185,8 @@ describe("POST /livestock/date-of-visit handler", () => {
       );
     });
 
-    test("user has an old world claim, and makes a new world endemics claim", async () => {
-      // happy path
+    test("user is blocked from a follow-up when their only review is on an old world claim", async () => {
+      // unhappy path - a follow-up must be preceded by a review on the new world agreement
       when(getSessionData)
         .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
         .mockReturnValue({
@@ -1285,15 +1210,27 @@ describe("POST /livestock/date-of-visit handler", () => {
       const options = postOptions({ day: "01", month: "01", year: "2025" });
 
       const res = await server.inject(options);
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe(livestockClaimRoutes.dateOfTesting);
+
+      const $ = cheerio.load(res.payload);
+
+      expect(res.statusCode).toBe(400);
+      expect($("h1").text().trim()).toMatch("You cannot continue with your claim");
+      expect(sendInvalidDataEvent).toHaveBeenCalled();
       expect(setSessionData).toHaveBeenCalledWith(
         expect.any(Object),
         "endemicsClaim",
         "dateOfVisit",
         new Date(2025, 0, 1),
       );
-      expect(trackEvent).not.toHaveBeenCalled();
+      expect(trackEvent).toHaveBeenCalledWith(
+        expect.any(Object),
+        "claim-invalid-date-of-visit",
+        "follow-up",
+        {
+          reason: "Cannot claim for endemics without a previous review.",
+          reference: "TEMP-6GSE-PIR8",
+        },
+      );
     });
 
     test("for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive", async () => {
