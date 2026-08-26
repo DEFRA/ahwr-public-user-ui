@@ -66,12 +66,6 @@
     "pino": "10.3.1",
     "uuid": "14.0.2"
   },
-  "overrides": {
-    "semver": "7.5.2",
-    "fast-uri": "3.1.2",
-    "brace-expansion": "2.0.2",
-    "fast-xml-parser": "5.7.3"
-  },
   "devDependencies": {
     "@babel/core": "7.29.7",
     "@babel/plugin-transform-export-namespace-from": "^7.27.1",
