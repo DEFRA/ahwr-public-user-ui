@@ -31,3 +31,34 @@ describe("session TTL", () => {
     expect(getMaxAge(authCookie)).toBe(expectedMagAgeSeconds);
   });
 });
+
+describe("session expiry redirect behaviour", () => {
+  let server;
+
+  beforeAll(async () => {
+    server = await createServer();
+    await server.initialize();
+  });
+
+  afterAll(async () => {
+    await server.stop();
+  });
+
+  test("GET request to a protected route without a session redirects to sign-in", async () => {
+    const response = await server.inject({ method: "GET", url: "/select-funding" });
+
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe("/sign-in");
+  });
+
+  test("POST request to a protected route without a session redirects to sign-in", async () => {
+    const response = await server.inject({
+      method: "POST",
+      url: "/select-funding",
+      payload: { selectedFunding: "beef-cattle" },
+    });
+
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe("/sign-in");
+  });
+});
