@@ -1,4 +1,4 @@
-import { areDatesWithin10Months, getLivestockTypes } from "./utils.js";
+import { areDatesWithin10Months, isLessThan10MonthsApart, getLivestockTypes } from "./utils.js";
 import { getOldWorldClaimFromApplication } from "./claim-helper.js";
 import { claimType } from "ffc-ahwr-common-library";
 
@@ -7,7 +7,7 @@ export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
     return "";
   }
 
-  if (areDatesWithin10Months(dateOfVisit, prevReviewClaimDateOfVisit)) {
+  if (isLessThan10MonthsApart(dateOfVisit, prevReviewClaimDateOfVisit)) {
     return "There must be at least 10 months between your reviews.";
   }
 
@@ -40,7 +40,7 @@ export const canMakeEndemicsClaim = (
 
   if (
     prevEndemicsClaimDateOfVisit &&
-    areDatesWithin10Months(dateOfVisit, prevEndemicsClaimDateOfVisit)
+    isLessThan10MonthsApart(dateOfVisit, prevEndemicsClaimDateOfVisit)
   ) {
     return "There must be at least 10 months between your follow-ups.";
   }

@@ -8,7 +8,7 @@ import {
 import Joi from "joi";
 import HttpStatus from "http-status-codes";
 import { formatDate, formatTypesOfPoultry } from "../../../lib/display-helpers.js";
-import { areDatesWithin10Months } from "../../../lib/utils.js";
+import { isLessThan10MonthsApart } from "../../../lib/utils.js";
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 import { config } from "../../../config/index.js";
 
@@ -134,7 +134,7 @@ const postHandler = {
 
       if (
         previousClaimForSite &&
-        areDatesWithin10Months(dateOfVisit, previousClaimForSite.data.dateOfVisit)
+        isLessThan10MonthsApart(dateOfVisit, previousClaimForSite.data.dateOfVisit)
       ) {
         await sendInvalidDataPoultryEvent({
           request,
