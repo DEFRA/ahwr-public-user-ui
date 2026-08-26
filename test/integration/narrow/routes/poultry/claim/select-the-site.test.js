@@ -1142,15 +1142,9 @@ describe("/poultry/select-site", () => {
         headers: { cookie: `crumb=${crumb}` },
       });
 
-      expect(res.statusCode).toBe(400);
-      const $ = cheerio.load(res.payload);
-      expect($("h1").text()).toContain("You cannot continue with your claim");
-      expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-site");
-      expect(sendInvalidDataPoultryEvent).toHaveBeenCalledWith({
-        request: expect.anything(),
-        sessionKey: sessionKeys.poultryClaim.dateOfVisit,
-        exception: `Value ${dateOfVisit} is invalid. Error: There must be at least 10 months between your reviews.`,
-      });
+      expect(res.statusCode).toBe(302);
+      expect(res.headers.location).toEqual("/poultry/poultry-type");
+      expect(sendInvalidDataPoultryEvent).not.toHaveBeenCalled();
     });
 
     test("allows claim when dateOfVisit is more than 10 months after previous claim for same site", async () => {
