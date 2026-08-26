@@ -51,7 +51,7 @@ describe("session expiry redirect behaviour", () => {
     expect(response.headers.location).toBe("/sign-in");
   });
 
-  test("POST request to a protected route without a session redirects to sign-in and does not loop", async () => {
+  test("POST request to a protected route without a session redirects to sign-in", async () => {
     const response = await server.inject({
       method: "POST",
       url: "/select-funding",
