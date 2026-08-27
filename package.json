@@ -35,7 +35,7 @@
     "@aws-sdk/s3-request-presigner": "3.1114.0",
     "@defra/hapi-tracing": "1.30.0",
     "@elastic/ecs-pino-format": "1.5.0",
-    "@hapi/boom": "9.1.4",
+    "@hapi/boom": "10.0.1",
     "@hapi/catbox-memory": "5.0.1",
     "@hapi/catbox-redis": "7.0.2",
     "@hapi/cookie": "12.0.1",
