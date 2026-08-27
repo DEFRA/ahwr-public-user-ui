@@ -57,6 +57,13 @@ updates:
       - dependency-name: global-agent
         update-types:
           - version-update:semver-major
+      # jsdom and global-jsdom pinned to major 26: the pair is version-coupled (global-jsdom 26 targets jsdom 26) and global-jsdom carries a patch-package patch tied to 26, so a major bump needs a coordinated migration plus patch regeneration (deferred)
+      - dependency-name: jsdom
+        update-types:
+          - version-update:semver-major
+      - dependency-name: global-jsdom
+        update-types:
+          - version-update:semver-major
 
   # Update GitHub Actions
   - package-ecosystem: github-actions
