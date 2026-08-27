@@ -9,9 +9,6 @@ import "./css/govspeak.scss";
 import "./css/organisation-logo.scss";
 import "./js/cookies.js";
 import "./js/handleDuplicateFormSubmissions.js";
-import jquery from "jquery";
 
 initAll();
 initMoj();
-
-window.$ = jquery;
