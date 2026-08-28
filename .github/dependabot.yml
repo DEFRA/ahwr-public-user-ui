@@ -64,6 +64,14 @@ updates:
       - dependency-name: global-jsdom
         update-types:
           - version-update:semver-major
+      # ioredis pinned to 5.x: @hapi/catbox-redis 7.0.2 peers ioredis ^5; revisit when catbox-redis accepts ^6
+      - dependency-name: ioredis
+        update-types:
+          - version-update:semver-major
+      # @hapi/catbox-memory pinned to 5.x: 6 trips a @hapi/validate error-annotation bug in the select-herd tests (public-ui only); revisit once @hapi/hapi ships a fixed @hapi/validate
+      - dependency-name: "@hapi/catbox-memory"
+        update-types:
+          - version-update:semver-major
 
   # Update GitHub Actions
   - package-ecosystem: github-actions
