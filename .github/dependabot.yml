@@ -38,10 +38,8 @@ updates:
         patterns:
           - "*"
 
-    # Schedule run nightly
     schedule:
-      interval: "cron"
-      cronjob: "0 0 * * *"
+      interval: "weekly"
 
     cooldown:
       default-days: 7
@@ -77,10 +75,8 @@ updates:
   - package-ecosystem: github-actions
     directory: /
 
-    # Schedule run nightly
     schedule:
-      interval: "cron"
-      cronjob: "0 0 * * *"
+      interval: "weekly"
 
     cooldown:
       default-days: 7
