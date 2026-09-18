@@ -1226,5 +1226,74 @@ describe("/poultry/select-site", () => {
       expect(res.statusCode).toBe(302);
       expect(res.headers.location).toEqual("/poultry/poultry-type");
     });
+
+    describe("site claim limit", () => {
+      const siteClaim = (dateOfVisit) => ({
+        herd: { id: "herd-123", name: "Main Farm", cph: "12/345/6789" },
+        status: "PAID",
+        data: { typesOfPoultry: ["laying-hens"], dateOfVisit },
+        createdAt: "2025-01-05",
+      });
+
+      afterEach(() => {
+        config.set("herdClaimLimit.enabled", false);
+      });
+
+      test("blocks a claim when the site is at the claim limit", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.poultry", 1);
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+          .mockReturnValue({
+            siteSelected: null,
+            dateOfVisit: new Date("2025-12-01"),
+            previousClaims: [siteClaim("2025-01-01")],
+          });
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, siteSelected: "herd-123" },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        expect(res.statusCode).toBe(400);
+        const $ = cheerio.load(res.payload);
+        expect($("h1").text()).toContain("You cannot continue with your claim");
+        expect($("p.govuk-body").first().text()).toContain(
+          "reached the maximum number of claims for this site",
+        );
+        expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-site");
+        expect(sendInvalidDataPoultryEvent).toHaveBeenCalledWith({
+          request: expect.anything(),
+          sessionKey: sessionKeys.poultryClaim.dateOfVisit,
+          exception: "Site herd-123 has reached the maximum number of claims.",
+        });
+      });
+
+      test("allows a claim when the site is below the claim limit", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.poultry", 2);
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.poultryClaim)
+          .mockReturnValue({
+            siteSelected: null,
+            dateOfVisit: new Date("2025-12-01"),
+            previousClaims: [siteClaim("2025-01-01")],
+          });
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, siteSelected: "herd-123" },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        expect(res.statusCode).toBe(302);
+        expect(res.headers.location).toEqual("/poultry/poultry-type");
+      });
+    });
   });
 });
