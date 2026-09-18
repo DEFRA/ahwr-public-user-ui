@@ -1,5 +1,6 @@
 import { canMakeClaim } from "./can-make-claim.js";
 import { claimType } from "ffc-ahwr-common-library";
+import { config } from "../config/index.js";
 
 const organisation = { name: "Test Farm", sbi: "123456789" };
 
@@ -52,6 +53,57 @@ describe("review timing rules (minimum 10-month gap)", () => {
     expect(makeReview("2024-11-30", [reviewClaim("2024-01-31")])).toBe("");
     expect(makeReview("2024-11-29", [reviewClaim("2024-01-31")])).toBe(
       "There must be at least 10 months between your reviews.",
+    );
+  });
+});
+
+describe("review separation exemption", () => {
+  afterEach(() => {
+    config.set("reviewSeparationExemption.enabled", false);
+    config.set("reviewSeparationExemption.date", null);
+  });
+
+  it("waives the 10-month gap for a review visited after the exemption date when enabled", () => {
+    config.set("reviewSeparationExemption.enabled", true);
+    config.set("reviewSeparationExemption.date", "2025-01-01");
+
+    expect(makeReview("2025-01-02", [reviewClaim("2024-12-01")])).toBe("");
+  });
+
+  it("still enforces the 10-month gap for a review visited on or before the exemption date", () => {
+    config.set("reviewSeparationExemption.enabled", true);
+    config.set("reviewSeparationExemption.date", "2025-01-01");
+
+    expect(makeReview("2025-01-01", [reviewClaim("2024-12-01")])).toBe(
+      "There must be at least 10 months between your reviews.",
+    );
+  });
+
+  it("does not waive the gap when the flag is off, even with a date set", () => {
+    config.set("reviewSeparationExemption.enabled", false);
+    config.set("reviewSeparationExemption.date", "2025-01-01");
+
+    expect(makeReview("2025-01-02", [reviewClaim("2024-12-01")])).toBe(
+      "There must be at least 10 months between your reviews.",
+    );
+  });
+
+  it("does not waive the gap when enabled but no date is set", () => {
+    config.set("reviewSeparationExemption.enabled", true);
+    config.set("reviewSeparationExemption.date", null);
+
+    expect(makeReview("2025-01-02", [reviewClaim("2024-12-01")])).toBe(
+      "There must be at least 10 months between your reviews.",
+    );
+  });
+
+  it("does not affect follow-ups, only reviews", () => {
+    config.set("reviewSeparationExemption.enabled", true);
+    config.set("reviewSeparationExemption.date", "2025-01-01");
+
+    // follow-up more than 10 months after its review is still blocked
+    expect(makeFollowUp("2025-01-02", [reviewClaim("2024-03-01")])).toBe(
+      "There must be no more than 10 months between your reviews and follow-ups.",
     );
   });
 });

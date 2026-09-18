@@ -1,13 +1,28 @@
 import { areDatesWithin10Months, isLessThan10MonthsApart, getLivestockTypes } from "./utils.js";
 import { getOldWorldClaimFromApplication } from "./claim-helper.js";
 import { claimType } from "ffc-ahwr-common-library";
+import { config } from "../config/index.js";
 
-export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
+// A review visited after the configured exemption date skips the 10-month separation rule.
+const isReviewExemptFromSeparation = (dateOfVisit) => {
+  if (!config.get("reviewSeparationExemption.enabled")) {
+    return false;
+  }
+
+  const exemptionDate = config.get("reviewSeparationExemption.date");
+  return Boolean(exemptionDate) && new Date(dateOfVisit) > new Date(exemptionDate);
+};
+
+export const canMakeReviewClaim = (
+  dateOfVisit,
+  prevReviewClaimDateOfVisit,
+  separationRuleExempt = false,
+) => {
   if (!prevReviewClaimDateOfVisit) {
     return "";
   }
 
-  if (isLessThan10MonthsApart(dateOfVisit, prevReviewClaimDateOfVisit)) {
+  if (!separationRuleExempt && isLessThan10MonthsApart(dateOfVisit, prevReviewClaimDateOfVisit)) {
     return "There must be at least 10 months between your reviews.";
   }
 
@@ -67,7 +82,11 @@ export const canMakeClaim = ({
       prevClaims.find((claim) => claim.type === claimType.review) ||
       getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock);
 
-    return canMakeReviewClaim(dateOfVisit, previousReviewClaim?.data.dateOfVisit);
+    return canMakeReviewClaim(
+      dateOfVisit,
+      previousReviewClaim?.data.dateOfVisit,
+      isReviewExemptFromSeparation(dateOfVisit),
+    );
   }
 
   const prevReviewClaim = prevClaims.find((claim) => claim.type === claimType.review);

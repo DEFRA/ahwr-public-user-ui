@@ -277,6 +277,20 @@ export const getConfig = () => {
       default: null,
       env: "PRIVACY_POLICY_URI",
     },
+    reviewSeparationExemption: {
+      enabled: {
+        doc: "Exempt reviews visited after the exemption date from the 10-month separation rule",
+        format: Boolean,
+        default: process.env.REVIEW_SEPARATION_EXEMPTION_ENABLED === "true",
+      },
+      date: {
+        doc: "Reviews with a visit date after this date are exempt from the 10-month separation rule",
+        format: String,
+        nullable: true,
+        default: null,
+        env: "REVIEW_SEPARATION_EXEMPTION_DATE",
+      },
+    },
     lfsUpdate: {
       enabled: {
         doc: "Enable the LFS update banner",
