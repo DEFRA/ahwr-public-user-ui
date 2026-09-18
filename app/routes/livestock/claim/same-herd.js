@@ -9,9 +9,14 @@ import {
 import HttpStatus from "http-status-codes";
 import { getReviewType } from "../../../lib/utils.js";
 import { canMakeClaim } from "../../../lib/can-make-claim.js";
+import { isLivestockHerdAtReviewLimit } from "../../../lib/herd-claim-limit.js";
 import { getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { getNextMultipleHerdsPage } from "../../../lib/get-next-multiple-herds-page.js";
-import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
+import {
+  dashboardRoutes,
+  livestockClaimRoutes,
+  livestockClaimViews,
+} from "../../../constants/routes.js";
 import { getClaimInfo } from "../../utils/get-claim-info.js";
 import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
 
@@ -101,6 +106,10 @@ const postHandler = {
           (claim) => claim.data.typeOfLivestock === typeOfLivestock,
         );
 
+        if (isReview && isLivestockHerdAtReviewLimit(prevClaims)) {
+          return await errorClaimLimit(request, h, typeOfLivestock);
+        }
+
         const errorMessage = canMakeClaim({
           prevClaims,
           typeOfReview,
@@ -111,50 +120,75 @@ const postHandler = {
         });
 
         if (errorMessage) {
-          await sendInvalidDataEvent({
-            request,
-            sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
-            exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
-          });
-
-          return h
-            .view(livestockClaimViews.sameHerdException, {
-              backLink: livestockClaimRoutes.sameHerd,
-              errorMessage,
-              backToPageText:
-                "If you entered the wrong date, you'll need to go back and enter the correct date.",
-              backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? "review" : "follow-up"}.`,
-              backToPageLink: livestockClaimRoutes.dateOfVisit,
-            })
-            .code(HttpStatus.BAD_REQUEST)
-            .takeover();
+          return await errorInvalidDate(request, dateOfVisit, errorMessage, h, isReview);
         }
       }
 
       if (herdSame === "no" && isEndemicsFollowUp) {
-        await sendInvalidDataEvent({
-          request,
-          sessionKey: sessionKeys.endemicsClaim.typeOfReview,
-          exception: "Cannot claim for endemics without a previous review.",
-        });
-
-        return h
-          .view(livestockClaimViews.sameHerdException, {
-            backLink: livestockClaimRoutes.sameHerd,
-            errorMessage:
-              "You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.",
-            backToPageText:
-              "If you have not claimed for the review yet, you will need to submit a claim and have the claim approved first.",
-            backToPageMessage: "Claim for a review",
-            backToPageLink: livestockClaimRoutes.whichTypeOfReview,
-          })
-          .code(HttpStatus.BAD_REQUEST)
-          .takeover();
+        return await errorFollowUpWithoutReview(request, h);
       }
 
       return h.redirect(await getNextMultipleHerdsPage(request));
     },
   },
 };
+
+async function errorFollowUpWithoutReview(request, h) {
+  await sendInvalidDataEvent({
+    request,
+    sessionKey: sessionKeys.endemicsClaim.typeOfReview,
+    exception: "Cannot claim for endemics without a previous review.",
+  });
+
+  return h
+    .view(livestockClaimViews.sameHerdException, {
+      backLink: livestockClaimRoutes.sameHerd,
+      errorMessage:
+        "You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.",
+      backToPageText:
+        "If you have not claimed for the review yet, you will need to submit a claim and have the claim approved first.",
+      backToPageMessage: "Claim for a review",
+      backToPageLink: livestockClaimRoutes.whichTypeOfReview,
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
+}
+
+async function errorClaimLimit(request, h, typeOfLivestock) {
+  await sendInvalidDataEvent({
+    request,
+    sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+    exception: "This herd or flock has reached the maximum number of review claims.",
+  });
+
+  return h
+    .view(livestockClaimViews.selectTheHerdLimitException, {
+      backLink: livestockClaimRoutes.sameHerd,
+      manageClaimsLink: dashboardRoutes.manageYourClaims,
+      herdOrFlock: getHerdOrFlock(typeOfLivestock),
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
+}
+
+async function errorInvalidDate(request, dateOfVisit, errorMessage, h, isReview) {
+  await sendInvalidDataEvent({
+    request,
+    sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+    exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
+  });
+
+  return h
+    .view(livestockClaimViews.sameHerdException, {
+      backLink: livestockClaimRoutes.sameHerd,
+      errorMessage,
+      backToPageText:
+        "If you entered the wrong date, you'll need to go back and enter the correct date.",
+      backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? "review" : "follow-up"}.`,
+      backToPageLink: livestockClaimRoutes.dateOfVisit,
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
+}
 
 export const sameHerdHandlers = [getHandler, postHandler];

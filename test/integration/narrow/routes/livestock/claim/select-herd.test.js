@@ -13,6 +13,7 @@ import { canMakeClaim } from "../../../../../../app/lib/can-make-claim.js";
 import { when } from "jest-when";
 import { testBrowserPageTitle } from "../../../../../helpers/page-title-and-heading.js";
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
+import { config } from "../../../../../../app/config/index.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/api-requests/claim-api");
@@ -1276,6 +1277,93 @@ describe("select-the-herd tests", () => {
 
       expect(res.statusCode).toBe(302);
       expect(removeSessionDataForSelectHerdChange).toHaveBeenCalledTimes(0);
+    });
+
+    describe("herd claim limit", () => {
+      const herdWithClaims = (typeOfReview, count) => ({
+        tempHerdId: fakeTemporaryHerdId,
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview,
+        typeOfLivestock: "sheep",
+        dateOfVisit: "2025-04-14T00:00:00.000Z",
+        previousClaims: Array.from({ length: count }, () => ({
+          type: "REVIEW",
+          status: "PAID",
+          createdAt: "2025-04-01T00:00:00.000Z",
+          data: { typeOfLivestock: "sheep" },
+          herd: { id: fakeHerdId },
+        })),
+        herds: [
+          { id: fakeHerdId, name: "Barn animals", version: 1, cph: "22/333/4444", reasons: [] },
+        ],
+      });
+
+      afterEach(() => {
+        config.set("herdClaimLimit.enabled", false);
+      });
+
+      test("blocks a review when the herd is at the review limit", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 1);
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue(herdWithClaims("REVIEW", 1));
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdSelected: fakeHerdId },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(400);
+        expect($("h1.govuk-heading-l").text().trim()).toBe("You cannot continue with your claim");
+        expect($("p.govuk-body").first().text()).toContain(
+          "reached the maximum number of claims for this flock",
+        );
+        expect($("#back").attr("href")).toEqual("/livestock/select-herd");
+        expect(sendInvalidDataEvent).toHaveBeenCalled();
+      });
+
+      test("allows a review when the herd is below the review limit", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 2);
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue(herdWithClaims("REVIEW", 1));
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdSelected: fakeHerdId },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        expect(res.statusCode).toBe(302);
+        expect(res.headers.location).toEqual("/livestock/check-herd-details");
+      });
+
+      test("never blocks a follow-up, even when the herd is at the review limit", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 1);
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue(herdWithClaims("FOLLOW_UP", 1));
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdSelected: fakeHerdId },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        expect(res.statusCode).toBe(302);
+        expect(res.headers.location).toEqual("/livestock/check-herd-details");
+      });
     });
   });
 });

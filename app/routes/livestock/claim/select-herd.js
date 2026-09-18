@@ -8,8 +8,13 @@ import {
 } from "../../../session/index.js";
 import HttpStatus from "http-status-codes";
 import { ONLY_HERD, ONLY_HERD_ON_SBI } from "../../../constants/claim-constants.js";
-import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
+import {
+  dashboardRoutes,
+  livestockClaimRoutes,
+  livestockClaimViews,
+} from "../../../constants/routes.js";
 import { canMakeClaim } from "../../../lib/can-make-claim.js";
+import { isLivestockHerdAtReviewLimit } from "../../../lib/herd-claim-limit.js";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { getClaimInfo } from "../../utils/get-claim-info.js";
 import { getReviewType } from "../../../lib/utils.js";
@@ -169,21 +174,16 @@ const persistSelectedHerdId = async (request, herdSelected, tempHerdId) => {
   );
 };
 
-const getClaimEligibilityError = (herdSelected, sessionData) => {
-  const {
-    previousClaims,
-    typeOfLivestock,
-    typeOfReview,
-    dateOfVisit,
-    organisation,
-    oldWorldApplication,
-  } = sessionData;
-
-  const prevHerdClaims = previousClaims.filter(
+const getPrevHerdClaims = (herdSelected, previousClaims, typeOfLivestock) =>
+  previousClaims.filter(
     (claim) =>
       claim.data.typeOfLivestock === typeOfLivestock &&
       (isUnnamedHerdClaim(herdSelected, claim) || claim.herd?.id === herdSelected),
   );
+
+const getClaimEligibilityError = (prevHerdClaims, sessionData) => {
+  const { typeOfLivestock, typeOfReview, dateOfVisit, organisation, oldWorldApplication } =
+    sessionData;
 
   return canMakeClaim({
     prevClaims: prevHerdClaims,
@@ -194,6 +194,16 @@ const getClaimEligibilityError = (herdSelected, sessionData) => {
     oldWorldApplication,
   });
 };
+
+const renderHerdLimitException = (h, herdOrFlock) =>
+  h
+    .view(livestockClaimViews.selectTheHerdLimitException, {
+      backLink: pageUrl,
+      manageClaimsLink: dashboardRoutes.manageYourClaims,
+      herdOrFlock,
+    })
+    .code(HttpStatus.BAD_REQUEST)
+    .takeover();
 
 const renderNewHerdReviewException = (h) =>
   h
@@ -265,8 +275,19 @@ const postHandler = {
         return renderNewHerdReviewException(h);
       }
 
-      const errorMessage = getClaimEligibilityError(herdSelected, {
-        previousClaims,
+      const prevHerdClaims = getPrevHerdClaims(herdSelected, previousClaims, typeOfLivestock);
+
+      if (typeOfReview === claimType.review && isLivestockHerdAtReviewLimit(prevHerdClaims)) {
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+          exception: `Herd ${herdSelected} has reached the maximum number of review claims.`,
+        });
+
+        return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock));
+      }
+
+      const errorMessage = getClaimEligibilityError(prevHerdClaims, {
         typeOfLivestock,
         typeOfReview,
         dateOfVisit,

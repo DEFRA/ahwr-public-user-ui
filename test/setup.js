@@ -24,5 +24,9 @@ process.env.DEFRA_ID_REDIRECT_HOSTS =
 process.env.SESSION_TIMEOUT_MILLISECONDS = "1800000";
 // keep pino on ecs under test: a pino-pretty transport leaks a thread-stream worker
 process.env.USE_PRETTY_PRINT = "false";
+// keep the herd/site claim limit off by default so tests don't inherit a developer's local
+// .env; tests that need it opt in with config.set("herdClaimLimit.enabled", true)
+// this to be removed once we go live with the feature
+process.env.HERD_CLAIM_LIMIT_ENABLED = "false";
 
 config();
