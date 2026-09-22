@@ -25,11 +25,11 @@ describe("isLivestockHerdAtReviewLimit", () => {
     expect(isLivestockHerdAtReviewLimit([review(), followUp(), followUp()])).toBe(false);
   });
 
-  it("ignores rejected review claims", () => {
+  it("does not ignore rejected review claims", () => {
     config.set("herdClaimLimit.enabled", true);
     config.set("herdClaimLimit.livestock", 2);
 
-    expect(isLivestockHerdAtReviewLimit([review(), review("REJECTED")])).toBe(false);
+    expect(isLivestockHerdAtReviewLimit([review(), review("REJECTED")])).toBe(true);
   });
 
   it("is at the limit when non-rejected reviews reach the limit", () => {
@@ -56,10 +56,10 @@ describe("isPoultrySiteAtClaimLimit", () => {
     expect(isPoultrySiteAtClaimLimit([poultryClaim(), poultryClaim()])).toBe(true);
   });
 
-  it("ignores rejected claims", () => {
+  it("does not ignore rejected claims", () => {
     config.set("herdClaimLimit.enabled", true);
     config.set("herdClaimLimit.poultry", 2);
 
-    expect(isPoultrySiteAtClaimLimit([poultryClaim(), poultryClaim("REJECTED")])).toBe(false);
+    expect(isPoultrySiteAtClaimLimit([poultryClaim(), poultryClaim("REJECTED")])).toBe(true);
   });
 });
