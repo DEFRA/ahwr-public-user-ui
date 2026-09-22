@@ -16,9 +16,10 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
-      <p class="govuk-body">You have reached the maximum number of claims for this {{ herdOrFlock }}.</p>
+      <p class="govuk-body">You have already claimed for {{ numberOfClaims }} reviews for this {{ herdOrFlock }}.</p>
+      <p class="govuk-body">This is the maximum number you can claim for under your agreement.</p>
       <p class="govuk-body">
-        <a class="govuk-link" href="{{ manageClaimsLink }}">Return to your claims</a>
+        <a class="govuk-link" href="{{ manageClaimsLink }}">Return to Manage your claims</a>
       </p>
       {{ govukWarningText({
         text: "Your claim will be checked by our team.",

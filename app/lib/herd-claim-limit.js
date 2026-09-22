@@ -12,9 +12,10 @@ export const isLivestockHerdAtReviewLimit = (herdClaims) => {
     return false;
   }
 
-  const reviewClaims = herdClaims.filter((claim) => claim.type === claimType.review);
+  const reviewClaims = totalReviewClaims(herdClaims);
+  console.log({ reviewClaims });
 
-  return reviewClaims.length >= config.get("herdClaimLimit.livestock");
+  return reviewClaims >= config.get("herdClaimLimit.livestock");
 };
 
 /**
@@ -30,3 +31,6 @@ export const isPoultrySiteAtClaimLimit = (siteClaims) => {
 
   return siteClaims.length >= config.get("herdClaimLimit.poultry");
 };
+
+export const totalReviewClaims = (herdClaims) =>
+  herdClaims.filter((claim) => claim.type === claimType.review).length;

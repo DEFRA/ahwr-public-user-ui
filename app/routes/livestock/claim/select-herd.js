@@ -14,7 +14,7 @@ import {
   livestockClaimViews,
 } from "../../../constants/routes.js";
 import { canMakeClaim } from "../../../lib/can-make-claim.js";
-import { isLivestockHerdAtReviewLimit } from "../../../lib/herd-claim-limit.js";
+import { isLivestockHerdAtReviewLimit, totalReviewClaims } from "../../../lib/herd-claim-limit.js";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { getClaimInfo } from "../../utils/get-claim-info.js";
 import { getReviewType } from "../../../lib/utils.js";
@@ -195,11 +195,12 @@ const getClaimEligibilityError = (prevHerdClaims, sessionData) => {
   });
 };
 
-const renderHerdLimitException = (h, herdOrFlock) =>
+const renderHerdLimitException = (h, herdOrFlock, numberOfClaims) =>
   h
     .view(livestockClaimViews.selectTheHerdLimitException, {
       backLink: pageUrl,
       manageClaimsLink: dashboardRoutes.manageYourClaims,
+      numberOfClaims,
       herdOrFlock,
     })
     .code(HttpStatus.BAD_REQUEST)
@@ -284,7 +285,9 @@ const postHandler = {
           exception: `Herd ${herdSelected} has reached the maximum number of review claims.`,
         });
 
-        return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock));
+        const numberOfReviews = totalReviewClaims(prevHerdClaims);
+
+        return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
       }
 
       const errorMessage = getClaimEligibilityError(prevHerdClaims, {

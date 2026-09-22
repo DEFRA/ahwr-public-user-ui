@@ -651,7 +651,10 @@ describe("select-the-herd tests", () => {
         expect(res.statusCode).toBe(400);
         expect($("h1.govuk-heading-l").text().trim()).toBe("You cannot continue with your claim");
         expect($("p.govuk-body").first().text()).toContain(
-          "reached the maximum number of claims for this flock",
+          "You have already claimed for  reviews for this flock.",
+        );
+        expect($("p.govuk-body").eq(1).text()).toContain(
+          "This is the maximum number you can claim for under your agreement",
         );
         expect($("#back").attr("href")).toEqual("/livestock/same-herd");
         expect(sendInvalidDataEvent).toHaveBeenCalled();
