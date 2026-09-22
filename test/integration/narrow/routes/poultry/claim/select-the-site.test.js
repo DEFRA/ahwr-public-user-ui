@@ -1262,7 +1262,10 @@ describe("/poultry/select-site", () => {
         const $ = cheerio.load(res.payload);
         expect($("h1").text()).toContain("You cannot continue with your claim");
         expect($("p.govuk-body").first().text()).toContain(
-          "reached the maximum number of claims for this site",
+          "You have already claimed for 1 reviews at this site.",
+        );
+        expect($("p.govuk-body").eq(1).text()).toContain(
+          "This is the maximum number you can claim for under your agreement.",
         );
         expect($(".govuk-back-link").attr("href")).toEqual("/poultry/select-site");
         expect(sendInvalidDataPoultryEvent).toHaveBeenCalledWith({

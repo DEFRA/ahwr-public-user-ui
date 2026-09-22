@@ -135,7 +135,7 @@ const postHandler = {
         previousClaims?.filter((claim) => claim.herd?.id === siteSelected) ?? [];
 
       if (isPoultrySiteAtClaimLimit(claimsForSite)) {
-        return await errorClaimLimit(request, siteSelected, h);
+        return await errorClaimLimit(request, siteSelected, h, claimsForSite.length);
       }
 
       const previousClaimForSite = previousClaims?.find((claim) => claim.herd?.id === siteSelected);
@@ -170,7 +170,7 @@ async function errorInvalidDate(request, dateOfVisit, h) {
     .code(HttpStatus.BAD_REQUEST);
 }
 
-async function errorClaimLimit(request, siteSelected, h) {
+async function errorClaimLimit(request, siteSelected, h, numberOfClaims) {
   await sendInvalidDataPoultryEvent({
     request,
     sessionKey: sessionKeys.poultryClaim.dateOfVisit,
@@ -180,6 +180,7 @@ async function errorClaimLimit(request, siteSelected, h) {
   return h
     .view(poultryClaimViews.cannotContinueClaimLimit, {
       backLink: poultryClaimRoutes.selectTheSite,
+      numberOfClaims,
     })
     .code(HttpStatus.BAD_REQUEST);
 }
