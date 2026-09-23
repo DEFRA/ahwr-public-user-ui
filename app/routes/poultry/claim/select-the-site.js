@@ -135,7 +135,7 @@ const postHandler = {
         previousClaims?.filter((claim) => claim.herd?.id === siteSelected) ?? [];
 
       if (isPoultrySiteAtClaimLimit(claimsForSite)) {
-        return await errorClaimLimit(request, siteSelected, h, claimsForSite.length);
+        return errorClaimLimit(request, siteSelected, h, claimsForSite.length);
       }
 
       const previousClaimForSite = previousClaims?.find((claim) => claim.herd?.id === siteSelected);
@@ -144,7 +144,7 @@ const postHandler = {
         previousClaimForSite &&
         isLessThan10MonthsApart(dateOfVisit, previousClaimForSite.data.dateOfVisit)
       ) {
-        return await errorInvalidDate(request, dateOfVisit, h);
+        return errorInvalidDate(request, dateOfVisit, h);
       }
 
       await setupSiteData(request, selectedSite);

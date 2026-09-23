@@ -107,7 +107,7 @@ const postHandler = {
         );
 
         if (isReview && isLivestockHerdAtReviewLimit(prevClaims)) {
-          return await errorClaimLimit(request, h, typeOfLivestock);
+          return errorClaimLimit(request, h, typeOfLivestock);
         }
 
         const errorMessage = canMakeClaim({
@@ -120,12 +120,12 @@ const postHandler = {
         });
 
         if (errorMessage) {
-          return await errorInvalidDate(request, dateOfVisit, errorMessage, h, isReview);
+          return errorInvalidDate(request, dateOfVisit, errorMessage, h, isReview);
         }
       }
 
       if (herdSame === "no" && isEndemicsFollowUp) {
-        return await errorFollowUpWithoutReview(request, h);
+        return errorFollowUpWithoutReview(request, h);
       }
 
       return h.redirect(await getNextMultipleHerdsPage(request));
