@@ -13,5 +13,5 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           echo "PR title: $PR_TITLE"
-          echo "$PR_TITLE" | grep -Pq '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(.+\))?: .+' \
-            || (echo "❌ PR title must follow Conventional Commits" && exit 1)
+          echo "$PR_TITLE" | grep -Pq '^((feat|fix|chore|docs|style|refactor|test|ci)(\(.+\))?: .+|[A-Z]+-\d+ .+)$' \
+            || (echo "❌ PR title must follow Conventional Commits or start with a ticket key (e.g. AHWR-1234)" && exit 1)
