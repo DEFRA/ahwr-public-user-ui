@@ -392,6 +392,25 @@ export const getConfig = () => {
         default: process.env.DISABLE_INTERVIEW_PAGE === "true",
       },
     },
+    herdClaimLimit: {
+      enabled: {
+        doc: "Enable the per-herd/site claim limit feature",
+        format: Boolean,
+        default: process.env.HERD_CLAIM_LIMIT_ENABLED === "true",
+      },
+      livestock: {
+        doc: "Max number of non-rejected review claims allowed per livestock herd",
+        format: Number,
+        default: 3,
+        env: "LIVESTOCK_HERD_CLAIM_LIMIT",
+      },
+      poultry: {
+        doc: "Max number of non-rejected claims allowed per poultry site",
+        format: Number,
+        default: 3,
+        env: "POULTRY_SITE_CLAIM_LIMIT",
+      },
+    },
   });
 
   config.validate({ allowed: "strict" });

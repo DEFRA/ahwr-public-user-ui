@@ -9,6 +9,7 @@ import Joi from "joi";
 import HttpStatus from "http-status-codes";
 import { formatDate, formatTypesOfPoultry } from "../../../lib/display-helpers.js";
 import { isLessThan10MonthsApart } from "../../../lib/utils.js";
+import { isPoultrySiteAtClaimLimit } from "../../../lib/herd-claim-limit.js";
 import { sendInvalidDataPoultryEvent } from "../../../messaging/ineligibility-event-emission.js";
 import { config } from "../../../config/index.js";
 
@@ -130,25 +131,20 @@ const postHandler = {
       const sites = getUniqueSites(previousClaims);
       const selectedSite = sites.find((site) => site.id === siteSelected);
 
+      const claimsForSite =
+        previousClaims?.filter((claim) => claim.herd?.id === siteSelected) ?? [];
+
+      if (isPoultrySiteAtClaimLimit(claimsForSite)) {
+        return errorClaimLimit(request, siteSelected, h, claimsForSite.length);
+      }
+
       const previousClaimForSite = previousClaims?.find((claim) => claim.herd?.id === siteSelected);
 
       if (
         previousClaimForSite &&
         isLessThan10MonthsApart(dateOfVisit, previousClaimForSite.data.dateOfVisit)
       ) {
-        await sendInvalidDataPoultryEvent({
-          request,
-          sessionKey: sessionKeys.poultryClaim.dateOfVisit,
-          exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage10Months}`,
-        });
-
-        return h
-          .view(poultryClaimViews.cannotContinueTimingRules, {
-            backLink: poultryClaimRoutes.selectTheSite,
-            backToDateLink: poultryClaimRoutes.dateOfVisit,
-            guidanceUri,
-          })
-          .code(HttpStatus.BAD_REQUEST);
+        return errorInvalidDate(request, dateOfVisit, h);
       }
 
       await setupSiteData(request, selectedSite);
@@ -157,6 +153,37 @@ const postHandler = {
     },
   },
 };
+
+async function errorInvalidDate(request, dateOfVisit, h) {
+  await sendInvalidDataPoultryEvent({
+    request,
+    sessionKey: sessionKeys.poultryClaim.dateOfVisit,
+    exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage10Months}`,
+  });
+
+  return h
+    .view(poultryClaimViews.cannotContinueTimingRules, {
+      backLink: poultryClaimRoutes.selectTheSite,
+      backToDateLink: poultryClaimRoutes.dateOfVisit,
+      guidanceUri,
+    })
+    .code(HttpStatus.BAD_REQUEST);
+}
+
+async function errorClaimLimit(request, siteSelected, h, numberOfClaims) {
+  await sendInvalidDataPoultryEvent({
+    request,
+    sessionKey: sessionKeys.poultryClaim.dateOfVisit,
+    exception: `Site ${siteSelected} has reached the maximum number of claims.`,
+  });
+
+  return h
+    .view(poultryClaimViews.cannotContinueClaimLimit, {
+      backLink: poultryClaimRoutes.selectTheSite,
+      numberOfClaims,
+    })
+    .code(HttpStatus.BAD_REQUEST);
+}
 
 async function setupSiteData(request, selectedSite) {
   await setSessionData(

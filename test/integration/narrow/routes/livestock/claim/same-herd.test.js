@@ -14,6 +14,7 @@ import { getReviewWithinLast10Months } from "../../../../../../app/lib/claim-hel
 import { sendInvalidDataEvent } from "../../../../../../app/messaging/ineligibility-event-emission.js";
 import { when } from "jest-when";
 import { testBrowserPageTitle } from "../../../../../helpers/page-title-and-heading.js";
+import { config } from "../../../../../../app/config/index.js";
 
 jest.mock("../../../../../../app/session/index.js");
 jest.mock("../../../../../../app/api-requests/claim-api");
@@ -614,6 +615,67 @@ describe("select-the-herd tests", () => {
 
       expect(res.statusCode).toBe(302);
       expect(removeSessionDataForSameHerdChange).toHaveBeenCalledTimes(0);
+    });
+
+    describe("herd claim limit", () => {
+      const sessionWithReviews = (count) => ({
+        reference: "TEMP-6GSE-PIR8",
+        typeOfReview: "REVIEW",
+        typeOfLivestock: "sheep",
+        previousClaims: Array.from({ length: count }, () => ({
+          type: "REVIEW",
+          status: "PAID",
+          createdAt: "2025-04-01T00:00:00.000Z",
+          data: { typeOfLivestock: "sheep", dateOfVisit: "2025-04-14T00:00:00.000Z" },
+        })),
+      });
+
+      afterEach(() => {
+        config.set("herdClaimLimit.enabled", false);
+      });
+
+      test("blocks a review when the flock is at the review limit", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 1);
+        getSessionData.mockReturnValue(sessionWithReviews(1));
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdSame: "yes" },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(400);
+        expect($("h1.govuk-heading-l").text().trim()).toBe("You cannot continue with your claim");
+        expect($("p.govuk-body").first().text()).toContain(
+          "You have already claimed for  reviews for this flock.",
+        );
+        expect($("p.govuk-body").eq(1).text()).toContain(
+          "This is the maximum number you can claim for under your agreement",
+        );
+        expect($("#back").attr("href")).toEqual("/livestock/same-herd");
+        expect(sendInvalidDataEvent).toHaveBeenCalled();
+      });
+
+      test("allows a review when the flock is below the review limit", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 2);
+        getSessionData.mockReturnValue(sessionWithReviews(1));
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdSame: "yes" },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        expect(res.statusCode).toBe(302);
+        expect(res.headers.location).toEqual("/livestock/test-date");
+      });
     });
   });
 });
