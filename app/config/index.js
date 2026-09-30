@@ -401,7 +401,7 @@ export const getConfig = () => {
       livestock: {
         doc: "Max number of non-rejected review claims allowed per livestock herd",
         format: Number,
-        default: 3,
+        default: 4,
         env: "LIVESTOCK_HERD_CLAIM_LIMIT",
       },
       poultry: {
