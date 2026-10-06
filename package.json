@@ -122,5 +122,13 @@
     "*.{json,md}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "@hapi/catbox-redis": {
+      "joi": "17.13.8"
+    },
+    "nunjucks": {
+      "chokidar": "^4.0.3"
+    }
   }
 }
