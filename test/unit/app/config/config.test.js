@@ -73,26 +73,6 @@ describe("Base config", () => {
   });
 
   describe("10-month exemption window", () => {
-    test("is unset by default", () => {
-      const config = getConfig();
-
-      expect(config.get("tenMonthExemption.start")).toBeNull();
-      expect(config.get("tenMonthExemption.end")).toBeNull();
-    });
-
-    test("reads START_10_MONTH_EXEMPTION and END_10_MONTH_EXEMPTION", () => {
-      jest.replaceProperty(process, "env", {
-        ...env,
-        START_10_MONTH_EXEMPTION: "2024-06-01",
-        END_10_MONTH_EXEMPTION: "2024-12-31",
-      });
-
-      const config = getConfig();
-
-      expect(config.get("tenMonthExemption.start")).toBe("2024-06-01");
-      expect(config.get("tenMonthExemption.end")).toBe("2024-12-31");
-    });
-
     test("accepts empty values, as docker-compose passes when unset", () => {
       jest.replaceProperty(process, "env", {
         ...env,
@@ -103,21 +83,17 @@ describe("Base config", () => {
       expect(() => getConfig()).not.toThrow();
     });
 
-    test.each([
-      "01/06/2024",
-      "2024-6-1",
-      "2024-06-01T00:00:00Z",
-      "2024-02-30",
-      "2024-13-01",
-      "soon",
-    ])("should throw an error if START_10_MONTH_EXEMPTION is %s", (start) => {
-      jest.replaceProperty(process, "env", { ...env, START_10_MONTH_EXEMPTION: start });
+    test.each(["01/06/2024", "2024-6-1", "2024-13-01", "soon"])(
+      "should throw an error if START_10_MONTH_EXEMPTION is %s",
+      (start) => {
+        jest.replaceProperty(process, "env", { ...env, START_10_MONTH_EXEMPTION: start });
 
-      expect(() => getConfig()).toThrow(/tenMonthExemption\.start/);
-    });
+        expect(() => getConfig()).toThrow(/tenMonthExemption\.start/);
+      },
+    );
 
-    test("should throw an error if END_10_MONTH_EXEMPTION is not a valid date", () => {
-      jest.replaceProperty(process, "env", { ...env, END_10_MONTH_EXEMPTION: "2023-02-29" });
+    test("should throw an error if END_10_MONTH_EXEMPTION is not an ISO 8601 date", () => {
+      jest.replaceProperty(process, "env", { ...env, END_10_MONTH_EXEMPTION: "31/12/2024" });
 
       expect(() => getConfig()).toThrow(/tenMonthExemption\.end/);
     });

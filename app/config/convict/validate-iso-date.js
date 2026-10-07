@@ -1,19 +1,21 @@
-import { isValidDate } from "../../lib/date-validations.js";
+import joi from "joi";
+import { toDateOnly } from "../../lib/utils.js";
 
-const YYYY_MM_DD = /^(\d{4})-(\d{2})-(\d{2})$/;
+const isoDate = joi.date().iso();
 
-// Accepts an unset value (null or "", e.g. an empty env var) or a real calendar day as YYYY-MM-DD.
-// The real-day check reuses the date-of-visit validation.
+// An unset value (null or "", e.g. an empty env var) or an ISO 8601 date, read once into the local
+// calendar day, the same way vet visit dates are stored. Invalid values are left as they are for
+// validate to report.
 export const convictValidateIsoDate = {
   name: "iso-date",
   validate: function validateIsoDate(value) {
+    joi.assert(value, isoDate);
+  },
+  coerce: function coerceIsoDate(value) {
     if (!value) {
-      return;
+      return null;
     }
-
-    const [, year, month, day] = YYYY_MM_DD.exec(value) ?? [];
-    if (!year || !isValidDate(Number(year), Number(month), Number(day))) {
-      throw new Error("must be a valid date in the format YYYY-MM-DD");
-    }
+    const { value: date, error } = isoDate.validate(value);
+    return error ? value : toDateOnly(date);
   },
 };

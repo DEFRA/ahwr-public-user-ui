@@ -281,14 +281,14 @@ export const getConfig = () => {
     },
     tenMonthExemption: {
       start: {
-        doc: "First vet visit date (YYYY-MM-DD, inclusive) that skips the livestock 10-month gaps between reviews and between follow-ups; empty for no exemption",
+        doc: "First vet visit date (ISO 8601, inclusive) that skips the livestock 10-month gaps between reviews and between follow-ups; empty for no exemption",
         format: "iso-date",
         nullable: true,
         default: null,
         env: "START_10_MONTH_EXEMPTION",
       },
       end: {
-        doc: "Last vet visit date (YYYY-MM-DD, inclusive) that skips the livestock 10-month gaps; empty for no end",
+        doc: "Last vet visit date (ISO 8601, inclusive) that skips the livestock 10-month gaps; empty for no end",
         format: "iso-date",
         nullable: true,
         default: null,

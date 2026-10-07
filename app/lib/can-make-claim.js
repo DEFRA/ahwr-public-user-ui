@@ -3,16 +3,16 @@ import { getOldWorldClaimFromApplication } from "./claim-helper.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { isWithinTenMonthExemption } from "./timing-rules-exemption.js";
 
+const isBlockedByTenMonthGap = (dateOfVisit, previousDateOfVisit) =>
+  !isWithinTenMonthExemption(dateOfVisit) &&
+  isLessThan10MonthsApart(dateOfVisit, previousDateOfVisit);
+
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
     return "";
   }
 
-  // the review-to-review gap is suspended when the vet visit date is in the exemption window.
-  if (
-    !isWithinTenMonthExemption(dateOfVisit) &&
-    isLessThan10MonthsApart(dateOfVisit, prevReviewClaimDateOfVisit)
-  ) {
+  if (isBlockedByTenMonthGap(dateOfVisit, prevReviewClaimDateOfVisit)) {
     return "There must be at least 10 months between your reviews.";
   }
 
@@ -43,11 +43,9 @@ export const canMakeEndemicsClaim = (
     return "Your review claim must have been approved before you claim for the follow-up that happened after it.";
   }
 
-  // the follow-up-to-follow-up gap is suspended when the vet visit date is in the exemption window.
   if (
-    !isWithinTenMonthExemption(dateOfVisit) &&
     prevEndemicsClaimDateOfVisit &&
-    isLessThan10MonthsApart(dateOfVisit, prevEndemicsClaimDateOfVisit)
+    isBlockedByTenMonthGap(dateOfVisit, prevEndemicsClaimDateOfVisit)
   ) {
     return "There must be at least 10 months between your follow-ups.";
   }
