@@ -10,7 +10,7 @@ export const isWithin10MonthsFromNow = (d) => {
 // Strip time-of-day so a boundary date counts for the whole calendar day.
 // Technically we set all the dates already to be at 00:00:00.000
 // But this is additional peace of mind
-const toDateOnly = (originalDate) => {
+export const toDateOnly = (originalDate) => {
   const date = new Date(originalDate);
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 };

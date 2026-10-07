@@ -7,7 +7,6 @@ import {
 import { userType } from "../../../constants/constants.js";
 import { livestockApplyRoutes, livestockApplyViews } from "../../../constants/routes.js";
 import { preApplyHandler } from "../../../lib/pre-apply-handler.js";
-import { isTimingRulesExemptionEnabled } from "../../../lib/timing-rules-exemption.js";
 
 export const timingsRouteHandlers = [
   {
@@ -23,7 +22,6 @@ export const timingsRouteHandlers = [
           hasOldWorldApplication,
           backLink: livestockApplyRoutes.numbers,
           organisation,
-          timingRulesExemptionEnabled: isTimingRulesExemptionEnabled(),
         });
       },
     },

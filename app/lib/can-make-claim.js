@@ -1,16 +1,16 @@
 import { areDatesWithin10Months, isLessThan10MonthsApart, getLivestockTypes } from "./utils.js";
 import { getOldWorldClaimFromApplication } from "./claim-helper.js";
 import { claimType } from "ffc-ahwr-common-library";
-import { isTimingRulesExemptionEnabled } from "./timing-rules-exemption.js";
+import { isWithinTenMonthExemption } from "./timing-rules-exemption.js";
 
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
     return "";
   }
 
-  // the review-to-review gap is suspended while the toggle is on.
+  // the review-to-review gap is suspended when the vet visit date is in the exemption window.
   if (
-    !isTimingRulesExemptionEnabled() &&
+    !isWithinTenMonthExemption(dateOfVisit) &&
     isLessThan10MonthsApart(dateOfVisit, prevReviewClaimDateOfVisit)
   ) {
     return "There must be at least 10 months between your reviews.";
@@ -30,12 +30,7 @@ export const canMakeEndemicsClaim = (
   prevEndemicsClaimDateOfVisit,
   organisation,
   typeOfLivestock,
-  latestReviewHasFollowUp = false,
 ) => {
-  // false while the toggle is on, which suspends the follow-up-to-follow-up gap below.
-  // The review-to-follow-up limit is a sequencing rule, out of the story's scope, so it always applies.
-  const timingRulesApply = !isTimingRulesExemptionEnabled();
-
   if (!areDatesWithin10Months(dateOfVisit, prevReviewClaim.data.dateOfVisit)) {
     return "There must be no more than 10 months between your reviews and follow-ups.";
   }
@@ -48,20 +43,13 @@ export const canMakeEndemicsClaim = (
     return "Your review claim must have been approved before you claim for the follow-up that happened after it.";
   }
 
-  // the follow-up-to-follow-up gap is suspended while the toggle is on.
+  // the follow-up-to-follow-up gap is suspended when the vet visit date is in the exemption window.
   if (
-    timingRulesApply &&
+    !isWithinTenMonthExemption(dateOfVisit) &&
     prevEndemicsClaimDateOfVisit &&
     isLessThan10MonthsApart(dateOfVisit, prevEndemicsClaimDateOfVisit)
   ) {
     return "There must be at least 10 months between your follow-ups.";
-  }
-
-  // With the 10-month gaps off, nothing else limits follow-ups (only reviews have a count limit),
-  // so allow one follow-up per review, which is effectively what the gaps allow today.
-  // Rejected follow-ups count too, as they do for the 10-month gap today.
-  if (!timingRulesApply && latestReviewHasFollowUp) {
-    return "You can only claim for one follow-up for each review.";
   }
 
   if (new Date(dateOfVisit) < new Date(prevReviewClaim.data.dateOfVisit)) {
@@ -89,17 +77,12 @@ export const canMakeClaim = ({
     return canMakeReviewClaim(dateOfVisit, previousReviewClaim?.data.dateOfVisit);
   }
 
-  // prevClaims: this herd and species only (callers filter it), newest submitted first (backend sorts by createdAt).
+  // prevClaims: this herd and species only (callers filter it), newest submitted first
+  // (backend sorts by createdAt).
   // prevReviewClaim: the latest review, whole claim (status and data.dateOfVisit).
-  // prevEndemicsClaim: the latest follow-up ("endemics"), undefined if none; its visit date and whether it came after the latest review are passed on.
+  // prevEndemicsClaim: the latest follow-up ("endemics"), undefined if none.
   const prevReviewClaim = prevClaims.find((claim) => claim.type === claimType.review);
   const prevEndemicsClaim = prevClaims.find((claim) => claim.type === claimType.endemics);
-
-  // prevClaims is newest submitted first, so a follow-up listed before the latest review was submitted
-  // after it and was checked against it: that review already has its follow-up.
-  const latestReviewHasFollowUp =
-    !!prevEndemicsClaim &&
-    prevClaims.indexOf(prevEndemicsClaim) < prevClaims.indexOf(prevReviewClaim);
 
   return canMakeEndemicsClaim(
     dateOfVisit,
@@ -107,6 +90,5 @@ export const canMakeClaim = ({
     prevEndemicsClaim?.data.dateOfVisit,
     organisation,
     typeOfLivestock,
-    latestReviewHasFollowUp,
   );
 };

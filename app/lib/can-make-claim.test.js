@@ -91,70 +91,40 @@ describe("follow-up timing rules", () => {
   });
 });
 
-describe("livestock timing rules exemption toggle", () => {
-  // A review 1 month after the previous one: blocked unless the exemption is on.
+describe("10-month exemption window", () => {
+  // A review 1 month after the previous one: blocked unless its visit date is in the window.
   const reviewOneMonthLater = () => makeReview("2024-04-01", [reviewClaim("2024-03-01")]);
 
+  const setWindow = (start, end = null) => {
+    config.set("tenMonthExemption.start", start);
+    config.set("tenMonthExemption.end", end);
+  };
+
   afterEach(() => {
-    config.set("livestockTimingRulesExemption.enabled", false);
+    config.set("tenMonthExemption.start", null);
+    config.set("tenMonthExemption.end", null);
   });
 
-  it("is off by default, so the 10-month gaps still apply", () => {
-    expect(config.get("livestockTimingRulesExemption.enabled")).toBe(false);
+  it("is not set by default, so the 10-month gaps still apply", () => {
+    expect(config.get("tenMonthExemption.start")).toBeFalsy();
     expect(reviewOneMonthLater()).toBe("There must be at least 10 months between your reviews.");
     expect(
       makeFollowUp("2024-06-01", [followUpClaim("2024-05-01"), reviewClaim("2024-04-01")]),
     ).toBe("There must be at least 10 months between your follow-ups.");
   });
 
-  describe("when on", () => {
+  describe("when the new claim's visit date is in the window", () => {
     beforeEach(() => {
-      config.set("livestockTimingRulesExemption.enabled", true);
+      setWindow("2024-01-01", "2025-12-31");
     });
 
     it("allows a review less than 10 months after the previous review", () => {
       expect(reviewOneMonthLater()).toBe("");
     });
 
-    it("allows a follow-up less than 10 months after a follow-up for an earlier review", () => {
-      expect(
-        makeFollowUp("2024-06-01", [
-          reviewClaim("2024-05-01"),
-          followUpClaim("2024-04-15"),
-          reviewClaim("2024-04-01"),
-        ]),
-      ).toBe("");
-    });
-
-    it("blocks a second follow-up for the same review", () => {
+    it("allows a follow-up less than 10 months after the previous follow-up", () => {
       expect(
         makeFollowUp("2024-06-01", [followUpClaim("2024-05-01"), reviewClaim("2024-04-01")]),
-      ).toBe("You can only claim for one follow-up for each review.");
-    });
-
-    it("blocks a second follow-up when the first is on the same day as the review", () => {
-      expect(
-        makeFollowUp("2024-06-01", [followUpClaim("2024-04-01"), reviewClaim("2024-04-01")]),
-      ).toBe("You can only claim for one follow-up for each review.");
-    });
-
-    it("allows a follow-up for a new review dated the same day as the previous follow-up", () => {
-      expect(
-        makeFollowUp("2024-04-01", [
-          reviewClaim("2024-03-01"),
-          followUpClaim("2024-03-01"),
-          reviewClaim("2024-01-01"),
-        ]),
-      ).toBe("");
-    });
-
-    it("allows a follow-up for a new review dated before the previous follow-up", () => {
-      expect(
-        makeFollowUp("2024-04-01", [
-          reviewClaim("2024-02-15"),
-          followUpClaim("2024-03-01"),
-          reviewClaim("2024-01-01"),
-        ]),
       ).toBe("");
     });
 
@@ -174,6 +144,51 @@ describe("livestock timing rules exemption toggle", () => {
       expect(makeFollowUp("2024-06-01", [reviewClaim("2024-04-01", "ON_HOLD")])).toBe(
         "Your review claim must have been approved before you claim for the follow-up that happened after it.",
       );
+    });
+
+    it("allows a review in the window even when the previous review is before it", () => {
+      setWindow("2024-04-01", "2024-12-31");
+
+      expect(makeReview("2024-04-15", [reviewClaim("2024-03-01")])).toBe("");
+    });
+
+    it("has no end to the window when only the start is set", () => {
+      setWindow("2024-01-01");
+
+      expect(makeReview("2030-04-01", [reviewClaim("2030-03-01")])).toBe("");
+    });
+  });
+
+  describe("when the new claim's visit date is outside the window", () => {
+    const reviewGapError = "There must be at least 10 months between your reviews.";
+    const followUpGapError = "There must be at least 10 months between your follow-ups.";
+
+    it("blocks a review dated before the window start", () => {
+      setWindow("2024-05-01", "2024-12-31");
+
+      expect(reviewOneMonthLater()).toBe(reviewGapError);
+    });
+
+    it("blocks a review dated after the window end", () => {
+      setWindow("2024-01-01", "2024-03-31");
+
+      expect(reviewOneMonthLater()).toBe(reviewGapError);
+    });
+
+    it("blocks a follow-up dated before the window start with the follow-up gap", () => {
+      setWindow("2024-07-01", "2024-12-31");
+
+      expect(
+        makeFollowUp("2024-06-01", [followUpClaim("2024-05-01"), reviewClaim("2024-04-01")]),
+      ).toBe(followUpGapError);
+    });
+
+    it("blocks a follow-up dated after the window end with the follow-up gap", () => {
+      setWindow("2024-01-01", "2024-05-31");
+
+      expect(
+        makeFollowUp("2024-06-01", [followUpClaim("2024-05-01"), reviewClaim("2024-04-01")]),
+      ).toBe(followUpGapError);
     });
   });
 });

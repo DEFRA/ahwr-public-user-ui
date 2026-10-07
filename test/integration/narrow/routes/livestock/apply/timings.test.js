@@ -11,7 +11,6 @@ import { livestockApplyRoutes } from "../../../../../../app/constants/routes.js"
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
-import { config } from "../../../../../../app/config/index.js";
 import {
   testBrowserPageTitle,
   testPageHeading,
@@ -111,32 +110,6 @@ describe("Declaration test", () => {
       const actualItems = firstListItems.map((i, el) => $(el).text().trim()).get();
 
       expect(actualItems).toEqual(expectedItems);
-    });
-
-    test("hides the 10-month gap rules when the timing rules exemption is on", async () => {
-      config.set("livestockTimingRulesExemption.enabled", true);
-
-      try {
-        const res = await getResponse();
-
-        expect(res.statusCode).toBe(200);
-        const $ = cheerio.load(res.payload);
-        const allItems = $("ul.govuk-list--bullet li")
-          .map((i, el) => $(el).text().trim())
-          .get();
-        expect(allItems).not.toContain(
-          "ensure reviews on herds or flocks of a particular species, are at least 10 months apart",
-        );
-        expect(allItems).not.toContain(
-          "ensure that follow-ups on herds or flocks of a particular species, are always at least 10 months apart",
-        );
-        expect(allItems).toContain(
-          "ensure the follow-up takes place no more than 10 months after your review",
-        );
-        expect(allItems).toContain("have had a review which you should claim for first");
-      } finally {
-        config.set("livestockTimingRulesExemption.enabled", false);
-      }
     });
   });
 

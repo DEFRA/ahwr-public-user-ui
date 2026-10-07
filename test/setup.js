@@ -28,8 +28,8 @@ process.env.USE_PRETTY_PRINT = "false";
 // .env; tests that need it opt in with config.set("herdClaimLimit.enabled", true)
 // this to be removed once we go live with the feature
 process.env.HERD_CLAIM_LIMIT_ENABLED = "false";
-// keep the livestock timing rules exemption off by default; tests opt in with
-// config.set("livestockTimingRulesExemption.enabled", true)
-process.env.LIVESTOCK_TIMING_RULES_EXEMPTION_ENABLED = "false";
+// keep the 10-month exemption window unset by default; tests opt in with config.set("tenMonthExemption.start", ...)
+process.env.START_10_MONTH_EXEMPTION = "";
+process.env.END_10_MONTH_EXEMPTION = "";
 
 config();
