@@ -77,10 +77,6 @@ export const canMakeClaim = ({
     return canMakeReviewClaim(dateOfVisit, previousReviewClaim?.data.dateOfVisit);
   }
 
-  // prevClaims: this herd and species only (callers filter it), newest submitted first
-  // (backend sorts by createdAt).
-  // prevReviewClaim: the latest review, whole claim (status and data.dateOfVisit).
-  // prevEndemicsClaim: the latest follow-up ("endemics"), undefined if none.
   const prevReviewClaim = prevClaims.find((claim) => claim.type === claimType.review);
   const prevEndemicsClaim = prevClaims.find((claim) => claim.type === claimType.endemics);
 
