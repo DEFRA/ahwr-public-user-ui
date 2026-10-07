@@ -91,7 +91,7 @@ describe("follow-up timing rules", () => {
   });
 });
 
-describe("livestock timing rules exemption toggle (AHWR-2286)", () => {
+describe("livestock timing rules exemption toggle", () => {
   // A review 1 month after the previous one: blocked unless the exemption is on.
   const reviewOneMonthLater = () => makeReview("2024-04-01", [reviewClaim("2024-03-01")]);
 
@@ -136,6 +136,26 @@ describe("livestock timing rules exemption toggle (AHWR-2286)", () => {
       expect(
         makeFollowUp("2024-06-01", [followUpClaim("2024-04-01"), reviewClaim("2024-04-01")]),
       ).toBe("You can only claim for one follow-up for each review.");
+    });
+
+    it("allows a follow-up for a new review dated the same day as the previous follow-up", () => {
+      expect(
+        makeFollowUp("2024-04-01", [
+          reviewClaim("2024-03-01"),
+          followUpClaim("2024-03-01"),
+          reviewClaim("2024-01-01"),
+        ]),
+      ).toBe("");
+    });
+
+    it("allows a follow-up for a new review dated before the previous follow-up", () => {
+      expect(
+        makeFollowUp("2024-04-01", [
+          reviewClaim("2024-02-15"),
+          followUpClaim("2024-03-01"),
+          reviewClaim("2024-01-01"),
+        ]),
+      ).toBe("");
     });
 
     it("still blocks a follow-up more than 10 months after its review", () => {

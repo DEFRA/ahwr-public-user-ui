@@ -113,7 +113,7 @@ describe("Declaration test", () => {
       expect(actualItems).toEqual(expectedItems);
     });
 
-    test("hides the 10-month gap rules when the timing rules exemption is on (AHWR-2286)", async () => {
+    test("hides the 10-month gap rules when the timing rules exemption is on", async () => {
       config.set("livestockTimingRulesExemption.enabled", true);
 
       try {

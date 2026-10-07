@@ -30,8 +30,9 @@ export const canMakeEndemicsClaim = (
   prevEndemicsClaimDateOfVisit,
   organisation,
   typeOfLivestock,
+  latestReviewHasFollowUp = false,
 ) => {
-  // AHWR-2286: false while the toggle is on, which suspends the follow-up-to-follow-up gap below.
+  // false while the toggle is on, which suspends the follow-up-to-follow-up gap below.
   // The review-to-follow-up limit is a sequencing rule, out of the story's scope, so it always applies.
   const timingRulesApply = !isTimingRulesExemptionEnabled();
 
@@ -47,7 +48,7 @@ export const canMakeEndemicsClaim = (
     return "Your review claim must have been approved before you claim for the follow-up that happened after it.";
   }
 
-  // AHWR-2286: the follow-up-to-follow-up gap is suspended while the toggle is on.
+  // the follow-up-to-follow-up gap is suspended while the toggle is on.
   if (
     timingRulesApply &&
     prevEndemicsClaimDateOfVisit &&
@@ -56,15 +57,10 @@ export const canMakeEndemicsClaim = (
     return "There must be at least 10 months between your follow-ups.";
   }
 
-  // With the 10-month gaps off, nothing else limits follow-ups (only reviews have a
-  // count limit), so allow one follow-up per review, which is effectively what the gaps allow today.
-  // A follow-up dated on or after the latest review belongs to that review, so block another one.
+  // With the 10-month gaps off, nothing else limits follow-ups (only reviews have a count limit),
+  // so allow one follow-up per review, which is effectively what the gaps allow today.
   // Rejected follow-ups count too, as they do for the 10-month gap today.
-  if (
-    !timingRulesApply &&
-    prevEndemicsClaimDateOfVisit &&
-    new Date(prevEndemicsClaimDateOfVisit) >= new Date(prevReviewClaim.data.dateOfVisit)
-  ) {
+  if (!timingRulesApply && latestReviewHasFollowUp) {
     return "You can only claim for one follow-up for each review.";
   }
 
@@ -95,9 +91,15 @@ export const canMakeClaim = ({
 
   // prevClaims: this herd and species only (callers filter it), newest submitted first (backend sorts by createdAt).
   // prevReviewClaim: the latest review, whole claim (status and data.dateOfVisit).
-  // prevEndemicsClaim: the latest follow-up ("endemics"); only its visit date is passed on, undefined if none.
+  // prevEndemicsClaim: the latest follow-up ("endemics"), undefined if none; its visit date and whether it came after the latest review are passed on.
   const prevReviewClaim = prevClaims.find((claim) => claim.type === claimType.review);
   const prevEndemicsClaim = prevClaims.find((claim) => claim.type === claimType.endemics);
+
+  // prevClaims is newest submitted first, so a follow-up listed before the latest review was submitted
+  // after it and was checked against it: that review already has its follow-up.
+  const latestReviewHasFollowUp =
+    !!prevEndemicsClaim &&
+    prevClaims.indexOf(prevEndemicsClaim) < prevClaims.indexOf(prevReviewClaim);
 
   return canMakeEndemicsClaim(
     dateOfVisit,
@@ -105,5 +107,6 @@ export const canMakeClaim = ({
     prevEndemicsClaim?.data.dateOfVisit,
     organisation,
     typeOfLivestock,
+    latestReviewHasFollowUp,
   );
 };
