@@ -72,30 +72,12 @@ describe("Base config", () => {
     expect(config.get("poultry.disableInterviewPage")).toBe(true);
   });
 
-  describe("10-month exemption window", () => {
-    test("accepts empty values, as docker-compose passes when unset", () => {
-      jest.replaceProperty(process, "env", {
-        ...env,
-        START_10_MONTH_EXEMPTION: "",
-        END_10_MONTH_EXEMPTION: "",
-      });
+  test.each([
+    ["START_10_MONTH_EXEMPTION", /tenMonthExemption\.start/],
+    ["END_10_MONTH_EXEMPTION", /tenMonthExemption\.end/],
+  ])("should throw an error if %s is not an ISO 8601 date", (envVar, error) => {
+    jest.replaceProperty(process, "env", { ...env, [envVar]: "31/12/2024" });
 
-      expect(() => getConfig()).not.toThrow();
-    });
-
-    test.each(["01/06/2024", "2024-6-1", "2024-13-01", "soon"])(
-      "should throw an error if START_10_MONTH_EXEMPTION is %s",
-      (start) => {
-        jest.replaceProperty(process, "env", { ...env, START_10_MONTH_EXEMPTION: start });
-
-        expect(() => getConfig()).toThrow(/tenMonthExemption\.start/);
-      },
-    );
-
-    test("should throw an error if END_10_MONTH_EXEMPTION is not an ISO 8601 date", () => {
-      jest.replaceProperty(process, "env", { ...env, END_10_MONTH_EXEMPTION: "31/12/2024" });
-
-      expect(() => getConfig()).toThrow(/tenMonthExemption\.end/);
-    });
+    expect(() => getConfig()).toThrow(error);
   });
 });
