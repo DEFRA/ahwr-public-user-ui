@@ -1,13 +1,18 @@
 import { areDatesWithin10Months, isLessThan10MonthsApart, getLivestockTypes } from "./utils.js";
 import { getOldWorldClaimFromApplication } from "./claim-helper.js";
 import { claimType } from "ffc-ahwr-common-library";
+import { isTimingRulesExemptionEnabled } from "./timing-rules-exemption.js";
 
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
     return "";
   }
 
-  if (isLessThan10MonthsApart(dateOfVisit, prevReviewClaimDateOfVisit)) {
+  // the review-to-review gap is suspended while the toggle is on.
+  if (
+    !isTimingRulesExemptionEnabled() &&
+    isLessThan10MonthsApart(dateOfVisit, prevReviewClaimDateOfVisit)
+  ) {
     return "There must be at least 10 months between your reviews.";
   }
 
@@ -26,6 +31,10 @@ export const canMakeEndemicsClaim = (
   organisation,
   typeOfLivestock,
 ) => {
+  // AHWR-2286: false while the toggle is on, which suspends the follow-up-to-follow-up gap below.
+  // The review-to-follow-up limit is a sequencing rule, out of the story's scope, so it always applies.
+  const timingRulesApply = !isTimingRulesExemptionEnabled();
+
   if (!areDatesWithin10Months(dateOfVisit, prevReviewClaim.data.dateOfVisit)) {
     return "There must be no more than 10 months between your reviews and follow-ups.";
   }
@@ -38,11 +47,25 @@ export const canMakeEndemicsClaim = (
     return "Your review claim must have been approved before you claim for the follow-up that happened after it.";
   }
 
+  // AHWR-2286: the follow-up-to-follow-up gap is suspended while the toggle is on.
   if (
+    timingRulesApply &&
     prevEndemicsClaimDateOfVisit &&
     isLessThan10MonthsApart(dateOfVisit, prevEndemicsClaimDateOfVisit)
   ) {
     return "There must be at least 10 months between your follow-ups.";
+  }
+
+  // With the 10-month gaps off, nothing else limits follow-ups (only reviews have a
+  // count limit), so allow one follow-up per review, which is effectively what the gaps allow today.
+  // A follow-up dated on or after the latest review belongs to that review, so block another one.
+  // Rejected follow-ups count too, as they do for the 10-month gap today.
+  if (
+    !timingRulesApply &&
+    prevEndemicsClaimDateOfVisit &&
+    new Date(prevEndemicsClaimDateOfVisit) >= new Date(prevReviewClaim.data.dateOfVisit)
+  ) {
+    return "You can only claim for one follow-up for each review.";
   }
 
   if (new Date(dateOfVisit) < new Date(prevReviewClaim.data.dateOfVisit)) {
@@ -70,6 +93,9 @@ export const canMakeClaim = ({
     return canMakeReviewClaim(dateOfVisit, previousReviewClaim?.data.dateOfVisit);
   }
 
+  // prevClaims: this herd and species only (callers filter it), newest submitted first (backend sorts by createdAt).
+  // prevReviewClaim: the latest review, whole claim (status and data.dateOfVisit).
+  // prevEndemicsClaim: the latest follow-up ("endemics"); only its visit date is passed on, undefined if none.
   const prevReviewClaim = prevClaims.find((claim) => claim.type === claimType.review);
   const prevEndemicsClaim = prevClaims.find((claim) => claim.type === claimType.endemics);
 

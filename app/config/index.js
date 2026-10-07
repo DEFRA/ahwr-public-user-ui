@@ -277,6 +277,13 @@ export const getConfig = () => {
       default: null,
       env: "PRIVACY_POLICY_URI",
     },
+    livestockTimingRulesExemption: {
+      enabled: {
+        doc: "Switch off the livestock 10-month gaps between reviews and between follow-ups",
+        format: Boolean,
+        default: process.env.LIVESTOCK_TIMING_RULES_EXEMPTION_ENABLED === "true",
+      },
+    },
     lfsUpdate: {
       enabled: {
         doc: "Enable the LFS update banner",
