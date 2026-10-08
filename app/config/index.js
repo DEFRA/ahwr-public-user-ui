@@ -1,9 +1,11 @@
 import convict from "convict";
 import { convictValidateUri } from "./convict/validate-uri.js";
 import { convictValidateCookiePassword } from "./convict/validate-cookie-password.js";
+import { convictValidateIsoDate } from "./convict/validate-iso-date.js";
 
 convict.addFormat(convictValidateUri);
 convict.addFormat(convictValidateCookiePassword);
+convict.addFormat(convictValidateIsoDate);
 
 const SECONDS_IN_HOUR = 3600;
 const HOURS_IN_DAY = 24;
@@ -276,6 +278,22 @@ export const getConfig = () => {
       nullable: true,
       default: null,
       env: "PRIVACY_POLICY_URI",
+    },
+    tenMonthExemption: {
+      start: {
+        doc: "First vet visit date (ISO 8601, inclusive) that skips the livestock 10-month gaps between reviews and between follow-ups; empty for no exemption",
+        format: "iso-date",
+        nullable: true,
+        default: null,
+        env: "START_10_MONTH_EXEMPTION",
+      },
+      end: {
+        doc: "Last vet visit date (ISO 8601, inclusive) that skips the livestock 10-month gaps; empty for no end",
+        format: "iso-date",
+        nullable: true,
+        default: null,
+        env: "END_10_MONTH_EXEMPTION",
+      },
     },
     lfsUpdate: {
       enabled: {

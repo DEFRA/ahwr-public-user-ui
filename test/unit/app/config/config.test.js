@@ -71,4 +71,13 @@ describe("Base config", () => {
 
     expect(config.get("poultry.disableInterviewPage")).toBe(true);
   });
+
+  test.each([
+    ["START_10_MONTH_EXEMPTION", /tenMonthExemption\.start/],
+    ["END_10_MONTH_EXEMPTION", /tenMonthExemption\.end/],
+  ])("should throw an error if %s is not an ISO 8601 date", (envVar, error) => {
+    jest.replaceProperty(process, "env", { ...env, [envVar]: "31/12/2024" });
+
+    expect(() => getConfig()).toThrow(error);
+  });
 });
