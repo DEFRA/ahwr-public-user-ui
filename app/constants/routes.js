@@ -98,6 +98,7 @@ export const livestockClaimRoutes = {
   vetVisitsReviewTestResults: "/livestock/vet-visits-review-test-results",
   whichSpecies: "/livestock/species",
   whichTypeOfReview: "/livestock/review-type",
+  selectReview: "/livestock/select-review",
 };
 
 export const livestockClaimViews = {
@@ -161,6 +162,7 @@ export const livestockClaimViews = {
     "livestock/claim/which-type-of-review-dairy-follow-up-exception",
   whichTypeOfReviewException: "livestock/claim/which-type-of-review-exception",
   whichTypeOfReview: "livestock/claim/review-type",
+  selectReview: "livestock/claim/select-review",
   youCannotClaim: "livestock/claim/you-cannot-claim",
 };
 
