@@ -3,16 +3,19 @@ import { getOldWorldClaimFromApplication } from "./claim-helper.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { isWithinTenMonthExemption } from "./timing-rules-exemption.js";
 
-const isBlockedByTenMonthGap = (dateOfVisit, previousDateOfVisit) =>
+const isBlockedBy10Gap = (dateOfVisit, previousDateOfVisit) =>
   !isWithinTenMonthExemption(dateOfVisit) &&
   isLessThan10MonthsApart(dateOfVisit, previousDateOfVisit);
+
+const isFollowFromReviewBlockedBy10Gap= (dateOfVisit,claimDateOfVisit)=>
+  areDatesWithin10Months(dateOfVisit,claimDateOfVisit)
 
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
     return "";
   }
 
-  if (isBlockedByTenMonthGap(dateOfVisit, prevReviewClaimDateOfVisit)) {
+  if (isBlockedBy10Gap(dateOfVisit, prevReviewClaimDateOfVisit)) {
     return "There must be at least 10 months between your reviews.";
   }
 
@@ -26,13 +29,17 @@ const formatTypeOfLivestock = (typeOfLivestock) => {
 
 export const canMakeEndemicsClaim = (
   dateOfVisit,
-  prevReviewClaim,
-  prevEndemicsClaimDateOfVisit,
+  prevClaims,
   organisation,
   typeOfLivestock,
 ) => {
-  if (!areDatesWithin10Months(dateOfVisit, prevReviewClaim.data.dateOfVisit)) {
-    return "There must be no more than 10 months between your reviews and follow-ups.";
+
+  const prevReviewClaim = prevClaims.find((claim) => claim.type === claimType.review
+    && new Date(claim.data.dateOfVisit) < new Date(dateOfVisit)
+    && isFollowFromReviewBlockedBy10Gap(dateOfVisit, claim.data.dateOfVisit));
+
+  if (prevReviewClaim === undefined) {
+    return "There is no review within the timeframe of this follow up";
   }
 
   if (prevReviewClaim.status === "REJECTED") {
@@ -43,16 +50,18 @@ export const canMakeEndemicsClaim = (
     return "Your review claim must have been approved before you claim for the follow-up that happened after it.";
   }
 
-  if (
-    prevEndemicsClaimDateOfVisit &&
-    isBlockedByTenMonthGap(dateOfVisit, prevEndemicsClaimDateOfVisit)
-  ) {
+  const followUpWithin10Month = prevClaims.find(
+    (claim) => claim.type === claimType.endemics
+      && isBlockedBy10Gap(dateOfVisit, claim.data.dateOfVisit),
+  );
+  const thereAreEndemicClaims = prevClaims.some(
+    (claim) => claim.type === claimType.endemics
+  );
+
+  if (thereAreEndemicClaims && followUpWithin10Month) {
     return "There must be at least 10 months between your follow-ups.";
   }
 
-  if (new Date(dateOfVisit) < new Date(prevReviewClaim.data.dateOfVisit)) {
-    return "The follow-up must be after your review";
-  }
 
   return "";
 };
@@ -75,13 +84,9 @@ export const canMakeClaim = ({
     return canMakeReviewClaim(dateOfVisit, previousReviewClaim?.data.dateOfVisit);
   }
 
-  const prevReviewClaim = prevClaims.find((claim) => claim.type === claimType.review);
-  const prevEndemicsClaim = prevClaims.find((claim) => claim.type === claimType.endemics);
-
   return canMakeEndemicsClaim(
     dateOfVisit,
-    prevReviewClaim,
-    prevEndemicsClaim?.data.dateOfVisit,
+    prevClaims,
     organisation,
     typeOfLivestock,
   );
