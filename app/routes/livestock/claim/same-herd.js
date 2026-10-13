@@ -110,7 +110,7 @@ const postHandler = {
           return errorClaimLimit(request, h, typeOfLivestock);
         }
 
-        const errorMessage = canMakeClaim({
+        const { error: errorMessage } = canMakeClaim({
           prevClaims,
           typeOfReview,
           dateOfVisit,

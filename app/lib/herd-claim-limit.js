@@ -1,6 +1,6 @@
 import { claimType } from "ffc-ahwr-common-library";
 import { config } from "../config/index.js";
-
+const herdClaimLimitEnabled = "herdClaimLimit.enabled";
 /**
  * Used to check if we have reached the limit of review claims for a herd/flock
  *
@@ -8,12 +8,27 @@ import { config } from "../config/index.js";
  * @returns {boolean} True when the herd has reached the review claim limit.
  */
 export const isLivestockHerdAtReviewLimit = (herdClaims) => {
-  if (!config.get("herdClaimLimit.enabled")) {
+  if (!config.get(herdClaimLimitEnabled)) {
     return false;
   }
 
   const reviewClaims = totalReviewClaims(herdClaims);
-  console.log({ reviewClaims });
+
+  return reviewClaims >= config.get("herdClaimLimit.livestock");
+};
+
+/**
+ * Used to check if we have reached the limit of review claims for a herd/flock
+ *
+ * @param {Array<{type: string, status: string}>} herdClaims - Claims for the herd.
+ * @returns {boolean} True when the herd has reached the review claim limit.
+ */
+export const isLivestockHerdAtFollowUpLimit = (herdClaims) => {
+  if (!config.get(herdClaimLimitEnabled)) {
+    return false;
+  }
+
+  const reviewClaims = totalFollowUpClaims(herdClaims);
 
   return reviewClaims >= config.get("herdClaimLimit.livestock");
 };
@@ -25,7 +40,7 @@ export const isLivestockHerdAtReviewLimit = (herdClaims) => {
  * @returns {boolean} True when the site has reached the poultry claim limit.
  */
 export const isPoultrySiteAtClaimLimit = (siteClaims) => {
-  if (!config.get("herdClaimLimit.enabled")) {
+  if (!config.get(herdClaimLimitEnabled)) {
     return false;
   }
 
@@ -34,3 +49,6 @@ export const isPoultrySiteAtClaimLimit = (siteClaims) => {
 
 export const totalReviewClaims = (herdClaims) =>
   herdClaims.filter((claim) => claim.type === claimType.review).length;
+
+export const totalFollowUpClaims = (herdClaims) =>
+  herdClaims.filter((claim) => claim.type === claimType.endemics).length;

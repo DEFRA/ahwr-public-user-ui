@@ -14,7 +14,11 @@ import {
   livestockClaimViews,
 } from "../../../constants/routes.js";
 import { canMakeClaim } from "../../../lib/can-make-claim.js";
-import { isLivestockHerdAtReviewLimit, totalReviewClaims } from "../../../lib/herd-claim-limit.js";
+import {
+  isLivestockHerdAtFollowUpLimit,
+  isLivestockHerdAtReviewLimit,
+  totalReviewClaims,
+} from "../../../lib/herd-claim-limit.js";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { getClaimInfo } from "../../utils/get-claim-info.js";
 import { getReviewType } from "../../../lib/utils.js";
@@ -181,7 +185,7 @@ const getPrevHerdClaims = (herdSelected, previousClaims, typeOfLivestock) =>
       (isUnnamedHerdClaim(herdSelected, claim) || claim.herd?.id === herdSelected),
   );
 
-const getClaimEligibilityError = (prevHerdClaims, sessionData) => {
+const validateClaimEligibility = (prevHerdClaims, sessionData) => {
   const { typeOfLivestock, typeOfReview, dateOfVisit, organisation, oldWorldApplication } =
     sessionData;
 
@@ -226,6 +230,163 @@ const renderSelectHerdDateException = (h, errorMessage, isReview) =>
     .code(HttpStatus.BAD_REQUEST)
     .takeover();
 
+const getNextPageUrl = async (request, typeOfReview, reviews, existingHerd) => {
+  if (typeOfReview === claimType.endemics && reviews.length === 1) {
+    await setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.selectedReview,
+      reviews[0].reference,
+    );
+  }
+  if (typeOfReview === claimType.endemics && reviews.length > 1) {
+    return livestockClaimRoutes.selectReview;
+  }
+  return existingHerd ? livestockClaimRoutes.checkHerdDetails : livestockClaimRoutes.enterHerdName;
+};
+
+async function handleReviewLimitException(
+  request,
+  herdSelected,
+  prevHerdClaims,
+  h,
+  typeOfLivestock,
+) {
+  await sendInvalidDataEvent({
+    request,
+    sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+    exception: `Herd ${herdSelected} has reached the maximum number of review claims.`,
+  });
+
+  const numberOfReviews = totalReviewClaims(prevHerdClaims);
+  return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
+}
+
+async function handleFollowUpLimitException(
+  request,
+  herdSelected,
+  prevHerdClaims,
+  h,
+  typeOfLivestock,
+) {
+  await sendInvalidDataEvent({
+    request,
+    sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+    exception: `Herd ${herdSelected} has reached the maximum number of follow up claims.`,
+  });
+
+  const numberOfReviews = isLivestockHerdAtFollowUpLimit(prevHerdClaims);
+  return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
+}
+
+async function handleDateOfVisitException(request, dateOfVisit, errorMessage, typeOfReview, h) {
+  await sendInvalidDataEvent({
+    request,
+    sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+    exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
+  });
+
+  const { isReview } = getReviewType(typeOfReview);
+  return renderSelectHerdDateException(h, errorMessage, isReview);
+}
+
+const getSessionAndValidate = (request, herdSelected) => {
+  const organisation = getSessionData(request, sessionEntryKeys.organisation);
+  const {
+    tempHerdId,
+    herds,
+    typeOfReview,
+    previousClaims,
+    typeOfLivestock,
+    dateOfVisit,
+    latestVetVisitApplication: oldWorldApplication,
+    herdSelected: herdSelectedFromSession,
+  } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+
+  if (herdSelected !== herdSelectedFromSession) {
+    removeSessionDataForSelectHerdChange(request);
+  }
+
+  return {
+    organisation,
+    tempHerdId,
+    herds,
+    typeOfReview,
+    previousClaims,
+    typeOfLivestock,
+    dateOfVisit,
+    oldWorldApplication,
+  };
+};
+
+const validateHerdSelection = async (request, herdSelected, tempHerdId, typeOfReview, h) => {
+  await setSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+    sessionKeys.endemicsClaim.herdSelected,
+    herdSelected,
+    { shouldEmitEvent: false },
+  );
+
+  await persistSelectedHerdId(request, herdSelected, tempHerdId);
+
+  if (herdSelected === radioValueNewHerd && typeOfReview === claimType.endemics) {
+    return { shouldStop: true, response: renderNewHerdReviewException(h) };
+  }
+
+  return { shouldStop: false };
+};
+
+const checkHerdLimits = async (
+  request,
+  herdSelected,
+  prevHerdClaims,
+  h,
+  typeOfLivestock,
+  typeOfReview,
+) => {
+  if (typeOfReview === claimType.review && isLivestockHerdAtReviewLimit(prevHerdClaims)) {
+    return {
+      shouldStop: true,
+      response: await handleReviewLimitException(
+        request,
+        herdSelected,
+        prevHerdClaims,
+        h,
+        typeOfLivestock,
+      ),
+    };
+  }
+
+  if (typeOfReview === claimType.endemics && isLivestockHerdAtFollowUpLimit(prevHerdClaims)) {
+    return {
+      shouldStop: true,
+      response: await handleFollowUpLimitException(
+        request,
+        herdSelected,
+        prevHerdClaims,
+        h,
+        typeOfLivestock,
+      ),
+    };
+  }
+
+  return { shouldStop: false };
+};
+
+const persistHerdData = async (request, herdSelected, existingHerd, herds) => {
+  await addHerdToSession(request, existingHerd, herds);
+  if (herdSelected === radioValueUnnamedHerd) {
+    await setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.herdSame,
+      "yes",
+      { shouldEmitEvent: false },
+    );
+  }
+};
+
 const postHandler = {
   method: "POST",
   path: pageUrl,
@@ -246,85 +407,61 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdSelected } = request.payload;
-      const organisation = getSessionData(request, sessionEntryKeys.organisation);
-      const {
-        tempHerdId,
-        herds,
-        typeOfReview,
-        previousClaims,
-        typeOfLivestock,
-        dateOfVisit,
-        latestVetVisitApplication: oldWorldApplication,
-        herdSelected: herdSelectedFromSession,
-      } = getSessionData(request, sessionEntryKeys.endemicsClaim);
+      const sessionData = getSessionAndValidate(request, herdSelected);
 
-      if (herdSelected !== herdSelectedFromSession) {
-        removeSessionDataForSelectHerdChange(request);
+      const herdValidation = await validateHerdSelection(
+        request,
+        herdSelected,
+        sessionData.tempHerdId,
+        sessionData.typeOfReview,
+        h,
+      );
+      if (herdValidation.shouldStop) {
+        return herdValidation.response;
       }
 
-      await setSessionData(
-        request,
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.herdSelected,
+      const prevHerdClaims = getPrevHerdClaims(
         herdSelected,
-        { shouldEmitEvent: false },
+        sessionData.previousClaims,
+        sessionData.typeOfLivestock,
       );
 
-      await persistSelectedHerdId(request, herdSelected, tempHerdId);
-
-      if (herdSelected === radioValueNewHerd && typeOfReview === claimType.endemics) {
-        return renderNewHerdReviewException(h);
+      const limitCheck = await checkHerdLimits(
+        request,
+        herdSelected,
+        prevHerdClaims,
+        h,
+        sessionData.typeOfLivestock,
+        sessionData.typeOfReview,
+      );
+      if (limitCheck.shouldStop) {
+        return limitCheck.response;
       }
 
-      const prevHerdClaims = getPrevHerdClaims(herdSelected, previousClaims, typeOfLivestock);
-
-      if (typeOfReview === claimType.review && isLivestockHerdAtReviewLimit(prevHerdClaims)) {
-        await sendInvalidDataEvent({
-          request,
-          sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
-          exception: `Herd ${herdSelected} has reached the maximum number of review claims.`,
-        });
-
-        const numberOfReviews = totalReviewClaims(prevHerdClaims);
-
-        return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
-      }
-
-      const errorMessage = getClaimEligibilityError(prevHerdClaims, {
-        typeOfLivestock,
-        typeOfReview,
-        dateOfVisit,
-        organisation,
-        oldWorldApplication,
-      });
+      const { error: errorMessage, reviews } = validateClaimEligibility(
+        prevHerdClaims,
+        sessionData,
+      );
 
       if (errorMessage) {
-        await sendInvalidDataEvent({
+        return handleDateOfVisitException(
           request,
-          sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
-          exception: `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`,
-        });
-
-        const { isReview } = getReviewType(typeOfReview);
-        return renderSelectHerdDateException(h, errorMessage, isReview);
-      }
-
-      const existingHerd = herds.find((herd) => herd.id === herdSelected);
-      await addHerdToSession(request, existingHerd, herds);
-      if (herdSelected === radioValueUnnamedHerd) {
-        await setSessionData(
-          request,
-          sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.herdSame,
-          "yes",
-          { shouldEmitEvent: false },
+          sessionData.dateOfVisit,
+          errorMessage,
+          sessionData.typeOfReview,
+          h,
         );
       }
 
-      const nextPageUrl = existingHerd
-        ? livestockClaimRoutes.checkHerdDetails
-        : livestockClaimRoutes.enterHerdName;
+      const existingHerd = sessionData.herds.find((herd) => herd.id === herdSelected);
+      await persistHerdData(request, herdSelected, existingHerd, sessionData.herds);
 
+      const nextPageUrl = await getNextPageUrl(
+        request,
+        sessionData.typeOfReview,
+        reviews,
+        existingHerd,
+      );
       return h.redirect(nextPageUrl);
     },
   },

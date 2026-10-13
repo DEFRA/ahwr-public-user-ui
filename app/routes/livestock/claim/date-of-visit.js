@@ -457,7 +457,7 @@ const nonMhRouting = async (
       .takeover();
   }
 
-  const errorMessage = canMakeClaim({
+  const { error: errorMessage } = canMakeClaim({
     prevClaims: claimsForFirstHerdIfPreMH,
     typeOfReview: typeOfClaim,
     dateOfVisit,
