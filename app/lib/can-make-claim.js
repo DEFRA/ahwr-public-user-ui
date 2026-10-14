@@ -34,7 +34,9 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, type
       new Date(claim.data.dateOfVisit) < new Date(dateOfVisit) &&
       isFollowFromReviewBlockedBy10Gap(dateOfVisit, claim.data.dateOfVisit),
   );
-
+  // 1 review, go as usual
+  // number of reviews is more than 1, ask the farmer to choose which review to use,
+  // apply the rules
   if (prevReviewClaim === undefined) {
     return "There is no review within the timeframe of this follow up";
   }

@@ -19,6 +19,24 @@ export const isLivestockHerdAtReviewLimit = (herdClaims) => {
 };
 
 /**
+ * Used to check if we have reached the limit of review claims for a herd/flock
+ *
+ * @param {Array<{type: string, status: string}>} herdClaims - Claims for the herd.
+ * @returns {boolean} True when the herd has reached the review claim limit.
+ */
+export const isLivestockHerdAtFollowUpLimit = (herdClaims) => {
+  if (!config.get("herdClaimLimit.enabled")) {
+    return false;
+  }
+
+  const reviewClaims = totalFollowUpClaims(herdClaims);
+  console.log({ reviewClaims });
+
+  return reviewClaims >= config.get("herdClaimLimit.livestock");
+};
+
+
+/**
  * Used to check if we have reached the limit of claims for a site. Poultry has no follow-ups.
  *
  * @param {Array<{status: string}>} siteClaims - Claims for the site.
@@ -34,3 +52,6 @@ export const isPoultrySiteAtClaimLimit = (siteClaims) => {
 
 export const totalReviewClaims = (herdClaims) =>
   herdClaims.filter((claim) => claim.type === claimType.review).length;
+
+export const totalFollowUpClaims = (herdClaims) =>
+  herdClaims.filter((claim) => claim.type === claimType.endemics).length;

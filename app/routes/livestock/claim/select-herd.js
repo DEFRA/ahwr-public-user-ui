@@ -14,7 +14,11 @@ import {
   livestockClaimViews,
 } from "../../../constants/routes.js";
 import { canMakeClaim } from "../../../lib/can-make-claim.js";
-import { isLivestockHerdAtReviewLimit, totalReviewClaims } from "../../../lib/herd-claim-limit.js";
+import {
+  isLivestockHerdAtFollowUpLimit,
+  isLivestockHerdAtReviewLimit,
+  totalReviewClaims,
+} from "../../../lib/herd-claim-limit.js";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { getClaimInfo } from "../../utils/get-claim-info.js";
 import { getReviewType } from "../../../lib/utils.js";
@@ -286,6 +290,18 @@ const postHandler = {
         });
 
         const numberOfReviews = totalReviewClaims(prevHerdClaims);
+
+        return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
+      }
+
+      if (typeOfReview === claimType.endemics && isLivestockHerdAtFollowUpLimit(prevHerdClaims)) {
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+          exception: `Herd ${herdSelected} has reached the maximum number of follow up claims.`,
+        });
+
+        const numberOfReviews = isLivestockHerdAtFollowUpLimit(prevHerdClaims);
 
         return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
       }
