@@ -370,7 +370,7 @@ const mhRouting = async (
     shouldEmitEvent: false,
   });
 
-  return h.redirect(livestockClaimRoutes.enterHerdName);
+  return h.redirect(livestockClaimRoutes.selectReview);
 };
 
 const checkForTimingException = async (
