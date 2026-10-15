@@ -185,7 +185,7 @@ const getPrevHerdClaims = (herdSelected, previousClaims, typeOfLivestock) =>
       (isUnnamedHerdClaim(herdSelected, claim) || claim.herd?.id === herdSelected),
   );
 
-const getClaimEligibilityError = (prevHerdClaims, sessionData) => {
+const validateClaimEligibility = (prevHerdClaims, sessionData) => {
   const { typeOfLivestock, typeOfReview, dateOfVisit, organisation, oldWorldApplication } =
     sessionData;
 
@@ -229,6 +229,13 @@ const renderSelectHerdDateException = (h, errorMessage, isReview) =>
     })
     .code(HttpStatus.BAD_REQUEST)
     .takeover();
+
+const getNextPageUrl = (typeOfReview, reviews, existingHerd) => {
+  if (typeOfReview === claimType.endemics && reviews.length > 1) {
+    return livestockClaimRoutes.selectReview;
+  }
+  return existingHerd ? livestockClaimRoutes.checkHerdDetails : livestockClaimRoutes.enterHerdName;
+};
 
 const postHandler = {
   method: "POST",
@@ -306,7 +313,7 @@ const postHandler = {
         return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
       }
 
-      const { error: errorMessage, reviews } = getClaimEligibilityError(prevHerdClaims, {
+      const { error: errorMessage, reviews } = validateClaimEligibility(prevHerdClaims, {
         typeOfLivestock,
         typeOfReview,
         dateOfVisit,
@@ -336,13 +343,8 @@ const postHandler = {
           { shouldEmitEvent: false },
         );
       }
-      if (typeOfReview === claimType.endemics && reviews.length > 1) {
-        return h.redirect(livestockClaimRoutes.selectReview);
-      }
-      const nextPageUrl = existingHerd
-        ? livestockClaimRoutes.checkHerdDetails
-        : livestockClaimRoutes.enterHerdName;
 
+      const nextPageUrl = getNextPageUrl(typeOfReview, reviews, existingHerd);
       return h.redirect(nextPageUrl);
     },
   },

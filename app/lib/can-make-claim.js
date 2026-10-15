@@ -3,7 +3,7 @@ import { getOldWorldClaimFromApplication } from "./claim-helper.js";
 import { claimType } from "ffc-ahwr-common-library";
 import { isWithinTenMonthExemption } from "./timing-rules-exemption.js";
 
-const isBlockedBy10MonthsGap = (dateOfVisit, previousDateOfVisit) =>
+const isBlockedByTenMonthGap = (dateOfVisit, previousDateOfVisit) =>
   !isWithinTenMonthExemption(dateOfVisit) &&
   isLessThan10MonthsApart(dateOfVisit, previousDateOfVisit);
 
@@ -15,7 +15,7 @@ export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
     return { error: "", reviews: [] };
   }
 
-  if (isBlockedBy10MonthsGap(dateOfVisit, prevReviewClaimDateOfVisit)) {
+  if (isBlockedByTenMonthGap(dateOfVisit, prevReviewClaimDateOfVisit)) {
     return { error: "There must be at least 10 months between your reviews.", reviews: [] };
   }
 
@@ -59,7 +59,7 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, type
   const followUpWithin10Month = prevClaims.find(
     (claim) =>
       claim.type === claimType.endemics &&
-      isBlockedBy10MonthsGap(dateOfVisit, claim.data.dateOfVisit),
+      isBlockedByTenMonthGap(dateOfVisit, claim.data.dateOfVisit),
   );
   const thereAreEndemicClaims = prevClaims.some((claim) => claim.type === claimType.endemics);
 
