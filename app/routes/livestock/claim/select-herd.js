@@ -282,7 +282,6 @@ const postHandler = {
       );
 
       await persistSelectedHerdId(request, herdSelected, tempHerdId);
-
       if (herdSelected === radioValueNewHerd && typeOfReview === claimType.endemics) {
         return renderNewHerdReviewException(h);
       }
@@ -297,7 +296,6 @@ const postHandler = {
         });
 
         const numberOfReviews = totalReviewClaims(prevHerdClaims);
-
         return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
       }
 
@@ -309,7 +307,6 @@ const postHandler = {
         });
 
         const numberOfReviews = isLivestockHerdAtFollowUpLimit(prevHerdClaims);
-
         return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
       }
 
