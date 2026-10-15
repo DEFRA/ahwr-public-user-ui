@@ -3,12 +3,12 @@ import { POULTRY_SCHEME, RPA_CONTACT_DETAILS } from "ffc-ahwr-common-library";
 import { dashboardRoutes } from "../constants/routes.js";
 import { getScheme, getSurveyUri } from "../lib/context-helper.js";
 import { shouldShowManageYourClaims } from "../lib/agreement-helper.js";
-import { DEFAULT_LIVESTOCK_HERD_CLAIM_LIMIT } from "../constants/claim-constants.js"
+import { DEFAULT_LIVESTOCK_HERD_CLAIM_LIMIT } from "../constants/claim-constants.js";
 
 const serviceName = config.get("serviceName");
 const serviceUri = config.get("serviceUri");
 const livestockHerdClaimLimit = config.get("herdClaimLimit.livestock");
-const herdClaimLimitEnabled = config.get("herdClaimLimit.enabled")
+const herdClaimLimitEnabled = config.get("herdClaimLimit.enabled");
 
 export const viewContextPlugin = {
   plugin: {
@@ -30,7 +30,9 @@ export const viewContextPlugin = {
           ctx.serviceName = serviceName;
           ctx.serviceUrl = serviceUrl;
           ctx.serviceUri = serviceUri;
-          ctx.livestockHerdClaimLimit = herdClaimLimitEnabled ? livestockHerdClaimLimit : DEFAULT_LIVESTOCK_HERD_CLAIM_LIMIT;
+          ctx.livestockHerdClaimLimit = herdClaimLimitEnabled
+            ? livestockHerdClaimLimit
+            : DEFAULT_LIVESTOCK_HERD_CLAIM_LIMIT;
           ctx.livestockHerdClaimLimitEnabled = herdClaimLimitEnabled;
           ctx.customerSurveyUri = getSurveyUri(request);
           ctx.userIsSignedIn = request.auth.isAuthenticated;
