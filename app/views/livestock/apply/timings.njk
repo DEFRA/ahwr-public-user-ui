@@ -29,6 +29,9 @@
     <p>To be eligible to claim for animal health and welfare reviews you must:</p>
     <ul class="govuk-list govuk-list--bullet">
       <li>have an Improve Animal Health and Welfare (IAHW) agreement in place before you do your first review, including any sampling or testing</li>
+      {% if not livestockHerdClaimLimitEnabled %}
+        <li>ensure reviews on herds or flocks of a particular species, are at least 10 months apart</li>
+      {% endif %}
       <li>have no more than {{ livestockHerdClaimLimit }} reviews on any number of herds or flocks per species by 19 June 2027</li>
     </ul>
 
@@ -41,6 +44,9 @@
       <li>have had a review which you should claim for first</li>
       <li>have the follow-up on the same herd or flock of a particular species as the review</li>
       <li>ensure the follow-up takes place no more than 10 months after your review</li>
+      {% if not livestockHerdClaimLimitEnabled %}
+        <li>ensure that follow-ups on herds or flocks of a particular species, are always at least 10 months apart</li>
+      {% endif %}
       <li>have no more than {{ livestockHerdClaimLimit }} follow-ups on any number of herds or flocks per species by 19 June 2027</li>
     </ul>
 

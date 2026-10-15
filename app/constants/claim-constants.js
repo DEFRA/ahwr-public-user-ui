@@ -62,6 +62,8 @@ export const ONLY_HERD_ON_SBI = {
   NO: "no",
 };
 
+export const DEFAULT_LIVESTOCK_HERD_CLAIM_LIMIT = 3;
+
 export const MULTIPLE_SPECIES_RELEASE_DATE = new Date("2025-02-26T00:00:00");
 export const MULTIPLE_HERDS_RELEASE_DATE = new Date("2025-06-26T00:00:00");
 export const PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE = new Date("2025-01-21T00:00:00");
