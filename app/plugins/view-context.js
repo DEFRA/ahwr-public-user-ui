@@ -6,6 +6,7 @@ import { shouldShowManageYourClaims } from "../lib/agreement-helper.js";
 
 const serviceName = config.get("serviceName");
 const serviceUri = config.get("serviceUri");
+const livestockHerdClaimLimit = config.get("herdClaimLimit.livestock");
 
 export const viewContextPlugin = {
   plugin: {
@@ -27,6 +28,7 @@ export const viewContextPlugin = {
           ctx.serviceName = serviceName;
           ctx.serviceUrl = serviceUrl;
           ctx.serviceUri = serviceUri;
+          ctx.livestockHerdClaimLimit = livestockHerdClaimLimit;
           ctx.customerSurveyUri = getSurveyUri(request);
           ctx.userIsSignedIn = request.auth.isAuthenticated;
           ctx.showManageYourClaims = shouldShowManageYourClaims(request);

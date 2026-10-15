@@ -103,8 +103,7 @@ describe("Declaration test", () => {
 
       const expectedItems = [
         "have an Improve Animal Health and Welfare (IAHW) agreement in place before you do your first review, including any sampling or testing",
-        "ensure reviews on herds or flocks of a particular species, are at least 10 months apart",
-        "have no more than 3 reviews on any number of herds or flocks per species by 19 June 2027",
+        "have no more than 4 reviews on any number of herds or flocks per species by 19 June 2027",
       ];
 
       const actualItems = firstListItems.map((i, el) => $(el).text().trim()).get();
