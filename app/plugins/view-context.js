@@ -7,8 +7,6 @@ import { DEFAULT_LIVESTOCK_HERD_CLAIM_LIMIT } from "../constants/claim-constants
 
 const serviceName = config.get("serviceName");
 const serviceUri = config.get("serviceUri");
-const livestockHerdClaimLimit = config.get("herdClaimLimit.livestock");
-const herdClaimLimitEnabled = config.get("herdClaimLimit.enabled");
 
 export const viewContextPlugin = {
   plugin: {
@@ -19,6 +17,8 @@ export const viewContextPlugin = {
 
         if (response.variety === "view" && !response.source.template?.startsWith("error-pages/")) {
           const ctx = response.source.context || {};
+          const livestockHerdClaimLimit = config.get("herdClaimLimit.livestock");
+          const herdClaimLimitEnabled = config.get("herdClaimLimit.enabled");
 
           let serviceUrl = "/";
 
