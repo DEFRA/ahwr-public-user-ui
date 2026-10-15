@@ -1,4 +1,5 @@
 import { viewContextPlugin } from "../../../../app/plugins/view-context.js";
+import { config } from "../../../../app/config/index.js";
 
 jest.mock("../../../../app/lib/context-helper.js");
 jest.mock("../../../../app/lib/agreement-helper.js");
@@ -95,6 +96,64 @@ describe("View Context Plugin", () => {
 
       expect(result).toBe(mockH.continue);
       expect(mockRequest.response.source.context).toBeUndefined();
+    });
+  });
+  describe("livestock herd claim limit", () => {
+    const buildRequest = () => ({
+      path: "/test",
+      plugins: { blankie: { nonces: { script: "test-nonce" } } },
+      auth: { isAuthenticated: true },
+      response: {
+        variety: "view",
+        source: {
+          template: "livestock/apply/timings",
+          context: {},
+        },
+      },
+    });
+
+    afterEach(() => {
+      config.set("herdClaimLimit.enabled", false);
+      config.set("herdClaimLimit.livestock", 3);
+    });
+
+    it("uses the default limit when the feature is disabled", () => {
+      config.set("herdClaimLimit.enabled", false);
+      config.set("herdClaimLimit.livestock", 5);
+      const mockRequest = buildRequest();
+
+      onPreResponseHandler(mockRequest, mockH);
+
+      expect(mockRequest.response.source.context).toMatchObject({
+        livestockHerdClaimLimit: 3,
+        livestockHerdClaimLimitIncreased: false,
+      });
+    });
+
+    it("uses the configured limit and flags it as increased when enabled and above the default", () => {
+      config.set("herdClaimLimit.enabled", true);
+      config.set("herdClaimLimit.livestock", 4);
+      const mockRequest = buildRequest();
+
+      onPreResponseHandler(mockRequest, mockH);
+
+      expect(mockRequest.response.source.context).toMatchObject({
+        livestockHerdClaimLimit: 4,
+        livestockHerdClaimLimitIncreased: true,
+      });
+    });
+
+    it("does not flag the limit as increased when enabled and equal to the default", () => {
+      config.set("herdClaimLimit.enabled", true);
+      config.set("herdClaimLimit.livestock", 3);
+      const mockRequest = buildRequest();
+
+      onPreResponseHandler(mockRequest, mockH);
+
+      expect(mockRequest.response.source.context).toMatchObject({
+        livestockHerdClaimLimit: 3,
+        livestockHerdClaimLimitIncreased: false,
+      });
     });
   });
 });
