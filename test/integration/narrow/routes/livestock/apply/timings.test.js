@@ -10,6 +10,7 @@ import { getApplicationsBySbi } from "../../../../../../app/api-requests/applica
 import { livestockApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { when } from "jest-when";
+import { config } from "../../../../../../app/config/index.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import {
   testBrowserPageTitle,
@@ -110,6 +111,77 @@ describe("Declaration test", () => {
       const actualItems = firstListItems.map((i, el) => $(el).text().trim()).get();
 
       expect(actualItems).toEqual(expectedItems);
+    });
+
+    describe("herd claim limit content", () => {
+      const reviewsMonthsApart =
+        "ensure reviews on herds or flocks of a particular species, are at least 10 months apart";
+      const followUpsMonthsApart =
+        "ensure that follow-ups on herds or flocks of a particular species, are always at least 10 months apart";
+      const followUpWithinTenMonths =
+        "ensure the follow-up takes place no more than 10 months after your review";
+
+      const getListItems = async () => {
+        const res = await getResponse();
+        const $ = cheerio.load(res.payload);
+        return {
+          reviewItems: $("ul.govuk-list--bullet")
+            .eq(0)
+            .find("li")
+            .map((i, el) => $(el).text().trim())
+            .get(),
+          followUpItems: $("ul.govuk-list--bullet")
+            .eq(1)
+            .find("li")
+            .map((i, el) => $(el).text().trim())
+            .get(),
+        };
+      };
+
+      afterEach(() => {
+        config.set("herdClaimLimit.enabled", false);
+        config.set("herdClaimLimit.livestock", 3);
+      });
+
+      test.each([
+        { description: "disabled", enabled: false, limit: 4 },
+        { description: "enabled with a limit of 3", enabled: true, limit: 3 },
+      ])(
+        "shows the original content when the herd claim limit is $description",
+        async ({ enabled, limit }) => {
+          config.set("herdClaimLimit.enabled", enabled);
+          config.set("herdClaimLimit.livestock", limit);
+
+          const { reviewItems, followUpItems } = await getListItems();
+
+          expect(reviewItems).toContain(reviewsMonthsApart);
+          expect(reviewItems).toContain(
+            "have no more than 3 reviews on any number of herds or flocks per species by 19 June 2027",
+          );
+          expect(followUpItems).toContain(followUpsMonthsApart);
+          expect(followUpItems).toContain(followUpWithinTenMonths);
+          expect(followUpItems).toContain(
+            "have no more than 3 follow-ups on any number of herds or flocks per species by 19 June 2027",
+          );
+        },
+      );
+
+      test("shows the updated content when the herd claim limit is enabled with a limit of 4", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 4);
+
+        const { reviewItems, followUpItems } = await getListItems();
+
+        expect(reviewItems).not.toContain(reviewsMonthsApart);
+        expect(reviewItems).toContain(
+          "have no more than 4 reviews on any number of herds or flocks per species by 19 June 2027",
+        );
+        expect(followUpItems).not.toContain(followUpsMonthsApart);
+        expect(followUpItems).toContain(followUpWithinTenMonths);
+        expect(followUpItems).toContain(
+          "have no more than 4 follow-ups on any number of herds or flocks per species by 19 June 2027",
+        );
+      });
     });
   });
 
