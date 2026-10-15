@@ -23,7 +23,7 @@ const makeReview = (dateOfVisit, prevClaims) =>
     dateOfVisit,
     organisation,
     typeOfLivestock: "beef",
-  });
+  }).error;
 
 const makeFollowUp = (dateOfVisit, prevClaims) =>
   canMakeClaim({
@@ -32,7 +32,7 @@ const makeFollowUp = (dateOfVisit, prevClaims) =>
     dateOfVisit,
     organisation,
     typeOfLivestock: "beef",
-  });
+  }).error;
 
 describe("review timing rules (minimum 10-month gap)", () => {
   it("allows a review exactly 10 calendar months after the previous review", () => {

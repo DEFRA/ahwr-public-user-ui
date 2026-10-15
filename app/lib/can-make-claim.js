@@ -12,14 +12,14 @@ const isFollowFromReviewBlockedBy10Gap = (dateOfVisit, claimDateOfVisit) =>
 
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
-    return "";
+    return { error: "", reviews: [] };
   }
 
   if (isBlockedBy10MonthsGap(dateOfVisit, prevReviewClaimDateOfVisit)) {
-    return "There must be at least 10 months between your reviews.";
+    return { error: "There must be at least 10 months between your reviews.", reviews: [] };
   }
 
-  return "";
+  return { error: "", reviews: [] };
 };
 
 const formatTypeOfLivestock = (typeOfLivestock) => {
@@ -38,15 +38,22 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, type
   // number of reviews is more than 1, ask the farmer to choose which review to use,
   // apply the rules
   if (prevReviewClaim === undefined) {
-    return "There is no review within the timeframe of this follow up";
+    return { error: "There is no review within the timeframe of this follow up", reviews: [] };
   }
 
   if (prevReviewClaim.status === "REJECTED") {
-    return `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formatTypeOfLivestock(typeOfLivestock)} in the last 10 months.`;
+    return {
+      error: `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formatTypeOfLivestock(typeOfLivestock)} in the last 10 months.`,
+      reviews: [],
+    };
   }
 
   if (!["READY_TO_PAY", "PAID"].includes(prevReviewClaim.status)) {
-    return "Your review claim must have been approved before you claim for the follow-up that happened after it.";
+    return {
+      error:
+        "Your review claim must have been approved before you claim for the follow-up that happened after it.",
+      reviews: [],
+    };
   }
 
   const followUpWithin10Month = prevClaims.find(
@@ -57,10 +64,16 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, type
   const thereAreEndemicClaims = prevClaims.some((claim) => claim.type === claimType.endemics);
 
   if (thereAreEndemicClaims && followUpWithin10Month) {
-    return "There must be at least 10 months between your follow-ups.";
+    return { error: "There must be at least 10 months between your follow-ups.", reviews: [] };
   }
-
-  return "";
+  // error, reviews array
+  const previousReviews = prevClaims.filter(
+    (claim) =>
+      claim.type === claimType.review &&
+      new Date(claim.data.dateOfVisit) < new Date(dateOfVisit) &&
+      isLessThan10MonthsApart(dateOfVisit, claim.data.dateOfVisit),
+  );
+  return { error: "", reviews: previousReviews };
 };
 
 export const canMakeClaim = ({

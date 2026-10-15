@@ -306,7 +306,7 @@ const postHandler = {
         return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
       }
 
-      const errorMessage = getClaimEligibilityError(prevHerdClaims, {
+      const { error: errorMessage, reviews } = getClaimEligibilityError(prevHerdClaims, {
         typeOfLivestock,
         typeOfReview,
         dateOfVisit,
@@ -336,7 +336,9 @@ const postHandler = {
           { shouldEmitEvent: false },
         );
       }
-
+      if (typeOfReview === claimType.endemics && reviews.length > 1) {
+        return h.redirect(livestockClaimRoutes.selectReview);
+      }
       const nextPageUrl = existingHerd
         ? livestockClaimRoutes.checkHerdDetails
         : livestockClaimRoutes.enterHerdName;

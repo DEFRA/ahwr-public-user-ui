@@ -370,7 +370,7 @@ const mhRouting = async (
     shouldEmitEvent: false,
   });
 
-  return h.redirect(livestockClaimRoutes.selectReview);
+  return h.redirect(livestockClaimRoutes.enterHerdName);
 };
 
 const checkForTimingException = async (
@@ -457,7 +457,7 @@ const nonMhRouting = async (
       .takeover();
   }
 
-  const errorMessage = canMakeClaim({
+  const { error: errorMessage } = canMakeClaim({
     prevClaims: claimsForFirstHerdIfPreMH,
     typeOfReview: typeOfClaim,
     dateOfVisit,

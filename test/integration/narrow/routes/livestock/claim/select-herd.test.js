@@ -66,6 +66,8 @@ describe("select-the-herd tests", () => {
         sessionKeys.endemicsClaim.reference,
       )
       .mockReturnValue("IAHW-1LZ5-ELVQ");
+
+    canMakeClaim.mockReturnValue({ error: "", reviews: [] });
   });
 
   afterEach(() => {
@@ -1163,7 +1165,7 @@ describe("select-the-herd tests", () => {
           herds: [],
           dateOfVisit: "2025-06-26",
         });
-      canMakeClaim.mockReturnValue("Invalid claim message");
+      canMakeClaim.mockReturnValue({ error: "Invalid claim message", reviews: [] });
 
       const res = await server.inject({
         method: "POST",

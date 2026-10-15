@@ -105,6 +105,7 @@ export const sessionKeys = {
     pigsElisaTestResult: "pigsElisaTestResult",
     pigsPcrTestResult: "pigsPcrTestResult",
     pigsGeneticSequencing: "pigsGeneticSequencing",
+    selectedReview: "selectedReview",
   },
   pkcecodes: {
     verifier: "verifier",

@@ -1,49 +1,43 @@
 import Joi from "joi";
 import HttpStatus from "http-status-codes";
 import { livestockClaimRoutes, livestockClaimViews } from "../../../constants/routes.js";
-import { getSessionData, sessionEntryKeys, sessionKeys, setSessionData } from "../../../session/index.js";
+import {
+  getSessionData,
+  sessionEntryKeys,
+  sessionKeys,
+  setSessionData,
+} from "../../../session/index.js";
 import { claimType } from "ffc-ahwr-common-library";
-import { BEEF, DAIRY } from "../../../constants/claim-constants.js";
-import { sendInvalidDataEvent } from "../../../messaging/ineligibility-event-emission.js";
-import { getNextMultipleHerdsPage } from "../../../lib/get-next-multiple-herds-page.js";
-
 
 const getReviews = (request) => {
-  const endemicsClaimData = getSessionData(request, sessionEntryKeys.endemicsClaim);
-  console.log("Full session data:", endemicsClaimData);
-
-  const { previousClaims, typeOfLivestock } = endemicsClaimData;
-  console.log("typeOfLivestock", typeOfLivestock);
-
-  // If typeOfLivestock is not set, return all reviews without filtering
-  if (!typeOfLivestock) {
-    console.log("typeOfLivestock not set, returning all reviews");
-    const reviews = previousClaims.filter((claim) => claim.type === claimType.review);
-    console.log({reviews});
-    return reviews;
-  }
+  const { previousClaims, typeOfLivestock, dateOfVisit, herdId } = getSessionData(
+    request,
+    sessionEntryKeys.endemicsClaim,
+  );
 
   const reviews = previousClaims.filter(
-    (claim) => claim.type === claimType.review && claim.data.typeOfLivestock === typeOfLivestock,
+    (claim) =>
+      claim.type === claimType.review &&
+      claim.data.dateOfVisit <= dateOfVisit &&
+      claim.herd.id === herdId &&
+      claim.data.typeOfLivestock === typeOfLivestock,
   );
-  console.log({reviews});
 
-  // Transform review objects into govukRadios format
   return reviews.map((review) => ({
     value: review.reference,
     text: `${review.herd.name}`,
     hint: {
-      text: `Date of visit: ${new Date(review.data.dateOfVisit).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' })}`,
+      text: `Date of visit: ${new Date(review.data.dateOfVisit).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`,
     },
   }));
 };
+
 export const selectReviewHandlers = [
   {
     method: "GET",
     path: livestockClaimRoutes.selectReview,
     options: {
       handler: async (request, h) => {
-
         return h.view(livestockClaimViews.selectReview, {
           backLink: livestockClaimRoutes.dateOfVisit,
           reviews: getReviews(request),
@@ -57,71 +51,30 @@ export const selectReviewHandlers = [
     options: {
       validate: {
         payload: Joi.object({
-          typeOfReview: Joi.string().valid("review", "endemics").required(),
+          reviews: Joi.string().required(),
         }),
         failAction: (request, h, error) => {
           request.logger.error({ error });
 
           return h
-            .view(livestockClaimViews.whichTypeOfReview, {
-              errorMessage: { text: "Select what you are claiming for", href: "#typeOfReview" },
-              backLink: livestockClaimRoutes.whichSpecies,
+            .view(livestockClaimViews.selectReview, {
+              errorMessage: { text: "Select the review claim this follow up is ", href: "#review" },
+              backLink: livestockClaimRoutes.selectReview,
             })
             .code(HttpStatus.BAD_REQUEST)
             .takeover();
         },
       },
       handler: async (request, h) => {
-        const { typeOfReview } = request.payload;
-        const {
-          typeOfLivestock,
-          previousClaims,
-          latestVetVisitApplication: oldWorldApplication,
-        } = getSessionData(request, sessionEntryKeys.endemicsClaim);
-
+        const { reviews: reviewReference } = request.payload;
         await setSessionData(
           request,
           sessionEntryKeys.endemicsClaim,
-          sessionKeys.endemicsClaim.typeOfReview,
-          claimType[typeOfReview],
+          sessionKeys.endemicsClaim.selectedReview,
+          reviewReference,
         );
 
-        const relevantClaims = previousClaims.filter(
-          (claim) => claim.data.typeOfLivestock === typeOfLivestock,
-        );
-
-        const oldWorldClaimTypeOfLivestock = oldWorldApplication?.data?.whichReview;
-
-        if (claimType[typeOfReview] === claimType.endemics) {
-          const prevReviewClaim = relevantClaims.some((claim) => claim.type === claimType.review);
-
-          if (!prevReviewClaim) {
-            await sendInvalidDataEvent({
-              request,
-              sessionKey: sessionKeys.endemicsClaim.typeOfReview,
-              exception: "Cannot claim for endemics without a previous review.",
-            });
-
-            return h
-              .view(livestockClaimViews.whichTypeOfReviewException, {
-                backLink: livestockClaimRoutes.whichTypeOfReview,
-                backToPageMessage: "Tell us if you are claiming for a review or follow up.",
-              })
-              .code(HttpStatus.BAD_REQUEST)
-              .takeover();
-          }
-        }
-
-        const isCattleEndemicsClaimForOldWorldReview =
-          claimType[typeOfReview] === claimType.endemics &&
-          [BEEF, DAIRY].includes(oldWorldClaimTypeOfLivestock) &&
-          relevantClaims.length === 0 &&
-          typeOfLivestock === oldWorldClaimTypeOfLivestock;
-
-        if (isCattleEndemicsClaimForOldWorldReview) {
-          return h.redirect(livestockClaimRoutes.vetVisitsReviewTestResults);
-        }
-        return h.redirect(await getNextMultipleHerdsPage(request));
+        return h.redirect(livestockClaimRoutes.checkHerdDetails);
       },
     },
   },

@@ -35,7 +35,6 @@ export const isLivestockHerdAtFollowUpLimit = (herdClaims) => {
   return reviewClaims >= config.get("herdClaimLimit.livestock");
 };
 
-
 /**
  * Used to check if we have reached the limit of claims for a site. Poultry has no follow-ups.
  *
