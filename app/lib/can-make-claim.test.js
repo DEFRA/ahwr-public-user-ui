@@ -23,7 +23,7 @@ const makeReview = (dateOfVisit, prevClaims) =>
     dateOfVisit,
     organisation,
     typeOfLivestock: "beef",
-  });
+  }).error;
 
 const makeFollowUp = (dateOfVisit, prevClaims) =>
   canMakeClaim({
@@ -32,7 +32,7 @@ const makeFollowUp = (dateOfVisit, prevClaims) =>
     dateOfVisit,
     organisation,
     typeOfLivestock: "beef",
-  });
+  }).error;
 
 describe("review timing rules (minimum 10-month gap)", () => {
   it("allows a review exactly 10 calendar months after the previous review", () => {
@@ -68,7 +68,7 @@ describe("follow-up timing rules", () => {
 
   it("blocks a follow-up more than 10 months after its associated review", () => {
     expect(makeFollowUp("2025-01-02", [reviewClaim("2024-03-01")])).toBe(
-      "There must be no more than 10 months between your reviews and follow-ups.",
+      "There is no review within the timeframe of this follow up",
     );
   });
 
@@ -86,7 +86,7 @@ describe("follow-up timing rules", () => {
 
   it("blocks a follow-up dated before its associated review", () => {
     expect(makeFollowUp("2024-02-01", [reviewClaim("2024-03-01")])).toBe(
-      "The follow-up must be after your review",
+      "There is no review within the timeframe of this follow up",
     );
   });
 });
@@ -130,13 +130,13 @@ describe("10-month exemption window", () => {
 
     it("still blocks a follow-up more than 10 months after its review", () => {
       expect(makeFollowUp("2025-02-01", [reviewClaim("2024-03-01")])).toBe(
-        "There must be no more than 10 months between your reviews and follow-ups.",
+        "There is no review within the timeframe of this follow up",
       );
     });
 
     it("still requires the follow-up to be after its review", () => {
       expect(makeFollowUp("2024-02-01", [reviewClaim("2024-03-01")])).toBe(
-        "The follow-up must be after your review",
+        "There is no review within the timeframe of this follow up",
       );
     });
 

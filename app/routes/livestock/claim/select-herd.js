@@ -14,7 +14,11 @@ import {
   livestockClaimViews,
 } from "../../../constants/routes.js";
 import { canMakeClaim } from "../../../lib/can-make-claim.js";
-import { isLivestockHerdAtReviewLimit, totalReviewClaims } from "../../../lib/herd-claim-limit.js";
+import {
+  isLivestockHerdAtFollowUpLimit,
+  isLivestockHerdAtReviewLimit,
+  totalReviewClaims,
+} from "../../../lib/herd-claim-limit.js";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { getClaimInfo } from "../../utils/get-claim-info.js";
 import { getReviewType } from "../../../lib/utils.js";
@@ -181,7 +185,7 @@ const getPrevHerdClaims = (herdSelected, previousClaims, typeOfLivestock) =>
       (isUnnamedHerdClaim(herdSelected, claim) || claim.herd?.id === herdSelected),
   );
 
-const getClaimEligibilityError = (prevHerdClaims, sessionData) => {
+const validateClaimEligibility = (prevHerdClaims, sessionData) => {
   const { typeOfLivestock, typeOfReview, dateOfVisit, organisation, oldWorldApplication } =
     sessionData;
 
@@ -225,6 +229,21 @@ const renderSelectHerdDateException = (h, errorMessage, isReview) =>
     })
     .code(HttpStatus.BAD_REQUEST)
     .takeover();
+
+const getNextPageUrl = async (request, typeOfReview, reviews, existingHerd) => {
+  if (typeOfReview === claimType.endemics && reviews.length === 1) {
+    await setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.selectedReview,
+      reviews[0].reference,
+    );
+  }
+  if (typeOfReview === claimType.endemics && reviews.length > 1) {
+    return livestockClaimRoutes.selectReview;
+  }
+  return existingHerd ? livestockClaimRoutes.checkHerdDetails : livestockClaimRoutes.enterHerdName;
+};
 
 const postHandler = {
   method: "POST",
@@ -271,7 +290,6 @@ const postHandler = {
       );
 
       await persistSelectedHerdId(request, herdSelected, tempHerdId);
-
       if (herdSelected === radioValueNewHerd && typeOfReview === claimType.endemics) {
         return renderNewHerdReviewException(h);
       }
@@ -286,11 +304,21 @@ const postHandler = {
         });
 
         const numberOfReviews = totalReviewClaims(prevHerdClaims);
-
         return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
       }
 
-      const errorMessage = getClaimEligibilityError(prevHerdClaims, {
+      if (typeOfReview === claimType.endemics && isLivestockHerdAtFollowUpLimit(prevHerdClaims)) {
+        await sendInvalidDataEvent({
+          request,
+          sessionKey: sessionKeys.endemicsClaim.dateOfVisit,
+          exception: `Herd ${herdSelected} has reached the maximum number of follow up claims.`,
+        });
+
+        const numberOfReviews = isLivestockHerdAtFollowUpLimit(prevHerdClaims);
+        return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
+      }
+
+      const { error: errorMessage, reviews } = validateClaimEligibility(prevHerdClaims, {
         typeOfLivestock,
         typeOfReview,
         dateOfVisit,
@@ -321,10 +349,7 @@ const postHandler = {
         );
       }
 
-      const nextPageUrl = existingHerd
-        ? livestockClaimRoutes.checkHerdDetails
-        : livestockClaimRoutes.enterHerdName;
-
+      const nextPageUrl = await getNextPageUrl(request, typeOfReview, reviews, existingHerd);
       return h.redirect(nextPageUrl);
     },
   },

@@ -65,6 +65,8 @@ describe("select-the-herd tests", () => {
         sessionKeys.endemicsClaim.reference,
       )
       .mockReturnValue("IAHW-1LZ5-ELVQ");
+
+    canMakeClaim.mockReturnValue({ error: "", reviews: [] });
   });
 
   afterEach(() => {
@@ -492,9 +494,10 @@ describe("select-the-herd tests", () => {
           dateOfVisit: "2024-01-01T00:00:00.000Z",
         },
       });
-      canMakeClaim.mockReturnValue(
-        "There must be no more than 10 months between your reviews and follow-ups.",
-      );
+      canMakeClaim.mockReturnValue({
+        error: "There must be no more than 10 months between your reviews and follow-ups.",
+        reviews: [],
+      });
 
       const res = await server.inject({
         method: "POST",
