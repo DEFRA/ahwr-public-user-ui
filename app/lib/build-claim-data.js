@@ -439,6 +439,7 @@ export const buildClaimPayload = (endemicsClaimSession) => {
     applicationReference: latestEndemicsApplication.reference,
     reference: tempClaimReference,
     type: typeOfReview,
+    reviewReference: endemicsClaimSession.selectedReview,
     createdBy: "admin",
     data: {
       typeOfLivestock: endemicsClaimSession.typeOfLivestock,

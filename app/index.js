@@ -11,10 +11,8 @@ const init = async () => {
 
 process.on("unhandledRejection", async (err) => {
   console.log(err);
-  if (server) {
-    await server.stop();
-    server.logger.error(err, "unhandledRejection");
-  }
+  await server.stop();
+  server.logger.error(err, "unhandledRejection");
   await stopMessagingService();
   process.exit(1);
 });

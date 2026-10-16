@@ -7,7 +7,7 @@ const isBlockedByTenMonthGap = (dateOfVisit, previousDateOfVisit) =>
   !isWithinTenMonthExemption(dateOfVisit) &&
   isLessThan10MonthsApart(dateOfVisit, previousDateOfVisit);
 
-const isFollowFromReviewBlockedBy10Gap = (dateOfVisit, claimDateOfVisit) =>
+const isFollowUpWithinValidReviewWindow = (dateOfVisit, claimDateOfVisit) =>
   areDatesWithin10Months(dateOfVisit, claimDateOfVisit);
 
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
@@ -27,28 +27,15 @@ const formatTypeOfLivestock = (typeOfLivestock) => {
   return isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`;
 };
 
-export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, typeOfLivestock) => {
-  const prevReviewClaim = prevClaims.find(
-    (claim) =>
-      claim.type === claimType.review &&
-      new Date(claim.data.dateOfVisit) < new Date(dateOfVisit) &&
-      isFollowFromReviewBlockedBy10Gap(dateOfVisit, claim.data.dateOfVisit),
-  );
-  // 1 review, go as usual
-  // number of reviews is more than 1, ask the farmer to choose which review to use,
-  // apply the rules
-  if (prevReviewClaim === undefined) {
-    return { error: "There is no review within the timeframe of this follow up", reviews: [] };
-  }
-
-  if (prevReviewClaim.status === "REJECTED") {
+function singleReview(prevReviewClaims, organisation, typeOfLivestock, prevClaims, dateOfVisit) {
+  if (prevReviewClaims[0].status === "REJECTED") {
     return {
       error: `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formatTypeOfLivestock(typeOfLivestock)} in the last 10 months.`,
       reviews: [],
     };
   }
 
-  if (!["READY_TO_PAY", "PAID"].includes(prevReviewClaim.status)) {
+  if (!["READY_TO_PAY", "PAID"].includes(prevReviewClaims[0].status)) {
     return {
       error:
         "Your review claim must have been approved before you claim for the follow-up that happened after it.",
@@ -66,14 +53,55 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, type
   if (thereAreEndemicClaims && followUpWithin10Month) {
     return { error: "There must be at least 10 months between your follow-ups.", reviews: [] };
   }
-  // error, reviews array
-  const previousReviews = prevClaims.filter(
+  return { error: "", reviews: prevReviewClaims };
+}
+
+export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, typeOfLivestock) => {
+  let prevReviewClaims = prevClaims.filter(
     (claim) =>
       claim.type === claimType.review &&
       new Date(claim.data.dateOfVisit) < new Date(dateOfVisit) &&
-      isLessThan10MonthsApart(dateOfVisit, claim.data.dateOfVisit),
+      isFollowUpWithinValidReviewWindow(dateOfVisit, claim.data.dateOfVisit),
   );
-  return { error: "", reviews: previousReviews };
+
+  if (prevReviewClaims.length === 0) {
+    return { error: "There is no review within the timeframe of this follow up", reviews: [] };
+  }
+
+  const existingReviewReferences = prevClaims
+    .filter(
+      (claim) =>
+        claim.type === claimType.endemics &&
+        claim.reviewReference &&
+        new Date(claim.data.dateOfVisit) < new Date(dateOfVisit),
+    )
+    .map((claim) => claim.reviewReference);
+
+  if (existingReviewReferences.length !== 0) {
+    const reviewsWithNoFollowupsClaims = prevReviewClaims.filter(
+      (review) => !existingReviewReferences.includes(review.reference),
+    );
+
+    if (reviewsWithNoFollowupsClaims.length === 0) {
+      return { error: "There is no review eligible for this follow up.", reviews: [] };
+    }
+    prevReviewClaims = reviewsWithNoFollowupsClaims;
+  }
+
+  if (prevReviewClaims.length === 1) {
+    return singleReview(prevReviewClaims, organisation, typeOfLivestock, prevClaims, dateOfVisit);
+  } else {
+    // filter rejected, not in PAID or READY_TO_PAY
+    const rejectedReviews = prevReviewClaims.filter((claim) => claim.status !== "REJECTED");
+    const previousReviews = rejectedReviews.filter(
+      (claim) => claim.status === "READY_TO_PAY" || claim.status === "PAID",
+    );
+
+    if (previousReviews.length === 0) {
+      return { error: "There is no review eligible for this follow up.", reviews: [] };
+    }
+    return { error: "", reviews: previousReviews };
+  }
 };
 
 export const canMakeClaim = ({

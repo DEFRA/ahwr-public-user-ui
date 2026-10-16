@@ -8,6 +8,7 @@ import {
   setSessionData,
 } from "../../../session/index.js";
 import { claimType } from "ffc-ahwr-common-library";
+import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
 
 const getReviews = (request) => {
   const { previousClaims, typeOfLivestock, dateOfVisit, herdId } = getSessionData(
@@ -25,9 +26,9 @@ const getReviews = (request) => {
 
   return reviews.map((review) => ({
     value: review.reference,
-    text: `${review.herd.name}`,
+    text: `Claim number: ${review.herd.name}`,
     hint: {
-      text: `Date of visit: ${new Date(review.data.dateOfVisit).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`,
+      html: `Date of review: ${formatDate(review.data.dateOfTesting)}<br>Claim date: ${formatDate(review.createdAt)}<br>Last visit date: ${formatDate(review.data.dateOfTesting)}`,
     },
   }));
 };
@@ -38,9 +39,18 @@ export const selectReviewHandlers = [
     path: livestockClaimRoutes.selectReview,
     options: {
       handler: async (request, h) => {
+        const { herdName, typeOfLivestock } = getSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+        );
+
         return h.view(livestockClaimViews.selectReview, {
           backLink: livestockClaimRoutes.dateOfVisit,
           reviews: getReviews(request),
+          herdName,
+          species: typeOfLivestock,
+          typeOfLivestock,
+          herdOrFlock: getHerdOrFlock(typeOfLivestock),
         });
       },
     },
@@ -56,10 +66,20 @@ export const selectReviewHandlers = [
         failAction: (request, h, error) => {
           request.logger.error({ error });
 
+          const { herdName, typeOfLivestock } = getSessionData(
+            request,
+            sessionEntryKeys.endemicsClaim,
+          );
+
           return h
             .view(livestockClaimViews.selectReview, {
               errorMessage: { text: "Select the review claim this follow up is ", href: "#review" },
               backLink: livestockClaimRoutes.selectReview,
+              reviews: getReviews(request),
+              herdName,
+              species: typeOfLivestock,
+              typeOfLivestock,
+              herdOrFlock: getHerdOrFlock(typeOfLivestock),
             })
             .code(HttpStatus.BAD_REQUEST)
             .takeover();

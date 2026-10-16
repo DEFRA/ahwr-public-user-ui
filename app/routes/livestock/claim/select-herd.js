@@ -230,7 +230,15 @@ const renderSelectHerdDateException = (h, errorMessage, isReview) =>
     .code(HttpStatus.BAD_REQUEST)
     .takeover();
 
-const getNextPageUrl = (typeOfReview, reviews, existingHerd) => {
+const getNextPageUrl = async (request, typeOfReview, reviews, existingHerd) => {
+  if (typeOfReview === claimType.endemics && reviews.length === 1) {
+    await setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.selectedReview,
+      reviews[0].reference,
+    );
+  }
   if (typeOfReview === claimType.endemics && reviews.length > 1) {
     return livestockClaimRoutes.selectReview;
   }
@@ -341,7 +349,7 @@ const postHandler = {
         );
       }
 
-      const nextPageUrl = getNextPageUrl(typeOfReview, reviews, existingHerd);
+      const nextPageUrl = await getNextPageUrl(request, typeOfReview, reviews, existingHerd);
       return h.redirect(nextPageUrl);
     },
   },
