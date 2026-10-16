@@ -1,4 +1,5 @@
 import { viewContextPlugin } from "../../../../app/plugins/view-context.js";
+import { config } from "../../../../app/config/index.js";
 
 jest.mock("../../../../app/lib/context-helper.js");
 jest.mock("../../../../app/lib/agreement-helper.js");
@@ -95,6 +96,51 @@ describe("View Context Plugin", () => {
 
       expect(result).toBe(mockH.continue);
       expect(mockRequest.response.source.context).toBeUndefined();
+    });
+  });
+  describe("livestock herd claim limit", () => {
+    const buildRequest = () => ({
+      path: "/test",
+      plugins: { blankie: { nonces: { script: "test-nonce" } } },
+      auth: { isAuthenticated: true },
+      response: {
+        variety: "view",
+        source: {
+          template: "livestock/apply/timings",
+          context: {},
+        },
+      },
+    });
+
+    afterEach(() => {
+      config.set("herdClaimLimit.enabled", false);
+      config.set("herdClaimLimit.livestock", 3);
+    });
+
+    it("uses the default limit when the feature is disabled", () => {
+      config.set("herdClaimLimit.enabled", false);
+      config.set("herdClaimLimit.livestock", 5);
+      const mockRequest = buildRequest();
+
+      onPreResponseHandler(mockRequest, mockH);
+
+      expect(mockRequest.response.source.context).toMatchObject({
+        livestockHerdClaimLimit: 3,
+        livestockHerdClaimLimitEnabled: false,
+      });
+    });
+
+    it("uses the configured limit when the feature is enabled", () => {
+      config.set("herdClaimLimit.enabled", true);
+      config.set("herdClaimLimit.livestock", 5);
+      const mockRequest = buildRequest();
+
+      onPreResponseHandler(mockRequest, mockH);
+
+      expect(mockRequest.response.source.context).toMatchObject({
+        livestockHerdClaimLimit: 5,
+        livestockHerdClaimLimitEnabled: true,
+      });
     });
   });
 });

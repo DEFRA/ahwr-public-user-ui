@@ -1,3 +1,4 @@
+import * as cheerio from "cheerio";
 import { getCrumbs } from "../../../../../utils/get-crumbs.js";
 import {
   getSessionData,
@@ -10,6 +11,7 @@ import { StatusCodes } from "http-status-codes";
 import { getApplicationsBySbi } from "../../../../../../app/api-requests/application-api.js";
 import { livestockApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { when } from "jest-when";
+import { config } from "../../../../../../app/config/index.js";
 import { userType } from "../../../../../../app/constants/constants.js";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import {
@@ -94,6 +96,36 @@ describe("you-can-claim-multiple page", () => {
         sessionKeys.farmerApplyData.reference,
         expect.any(String),
       );
+    });
+    const getLimitText = async () => {
+      const res = await getResponse();
+      const $ = cheerio.load(res.payload);
+      return $("p.govuk-body")
+        .filter((_, el) => $(el).text().includes("You can do a maximum of"))
+        .text()
+        .replace(/\s+/g, " ")
+        .trim();
+    };
+
+    test("shows the default limit of 3 when the herd claim limit is disabled", async () => {
+      config.set("herdClaimLimit.enabled", false);
+      config.set("herdClaimLimit.livestock", 4);
+
+      expect(await getLimitText()).toContain("You can do a maximum of 3 reviews and 3 follow-ups");
+    });
+
+    test("shows the configured limit when the herd claim limit is enabled", async () => {
+      config.set("herdClaimLimit.enabled", true);
+      config.set("herdClaimLimit.livestock", 4);
+
+      try {
+        expect(await getLimitText()).toContain(
+          "You can do a maximum of 4 reviews and 4 follow-ups",
+        );
+      } finally {
+        config.set("herdClaimLimit.enabled", false);
+        config.set("herdClaimLimit.livestock", 3);
+      }
     });
   });
 

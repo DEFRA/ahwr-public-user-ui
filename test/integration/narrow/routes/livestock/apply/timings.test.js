@@ -9,6 +9,7 @@ import {
 import { getApplicationsBySbi } from "../../../../../../app/api-requests/application-api.js";
 import { livestockApplyRoutes } from "../../../../../../app/constants/routes.js";
 import { userType } from "../../../../../../app/constants/constants.js";
+import { config } from "../../../../../../app/config/index.js";
 import { when } from "jest-when";
 import { axe } from "../../../../../helpers/axe-helper.js";
 import {
@@ -91,7 +92,7 @@ describe("Declaration test", () => {
     });
     testPageHeading({ heading: "Timing of reviews and follow-ups", getResponse });
 
-    test("returns 200 when application found", async () => {
+    const getListItems = async () => {
       const res = await getResponse();
 
       expect(await axe(res.payload)).toHaveNoViolations();
@@ -99,17 +100,64 @@ describe("Declaration test", () => {
       const $ = cheerio.load(res.payload);
       expect($("main h2")).toHaveLength(2);
 
-      const firstListItems = $("ul.govuk-list--bullet").first().find("li");
+      const lists = $("ul.govuk-list--bullet");
+      const toText = (list) =>
+        $(list)
+          .find("li")
+          .map((_, el) => $(el).text().trim())
+          .get();
 
-      const expectedItems = [
-        "have an Improve Animal Health and Welfare (IAHW) agreement in place before you do your first review, including any sampling or testing",
-        "ensure reviews on herds or flocks of a particular species, are at least 10 months apart",
-        "have no more than 3 reviews on any number of herds or flocks per species by 19 June 2027",
-      ];
+      return { reviewItems: toText(lists.eq(0)), followUpItems: toText(lists.eq(1)) };
+    };
 
-      const actualItems = firstListItems.map((i, el) => $(el).text().trim()).get();
+    describe("when the herd claim limit is disabled", () => {
+      beforeEach(() => {
+        config.set("herdClaimLimit.enabled", false);
+        config.set("herdClaimLimit.livestock", 4);
+      });
 
-      expect(actualItems).toEqual(expectedItems);
+      test("shows the 10 month rules and the default limit of 3", async () => {
+        const { reviewItems, followUpItems } = await getListItems();
+
+        expect(reviewItems).toEqual([
+          "have an Improve Animal Health and Welfare (IAHW) agreement in place before you do your first review, including any sampling or testing",
+          "ensure reviews on herds or flocks of a particular species, are at least 10 months apart",
+          "have no more than 3 reviews on any number of herds or flocks per species by 19 June 2027",
+        ]);
+        expect(followUpItems).toContain(
+          "ensure that follow-ups on herds or flocks of a particular species, are always at least 10 months apart",
+        );
+        expect(followUpItems).toContain(
+          "have no more than 3 follow-ups on any number of herds or flocks per species by 19 June 2027",
+        );
+      });
+    });
+
+    describe("when the herd claim limit is enabled", () => {
+      beforeEach(() => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 4);
+      });
+
+      afterEach(() => {
+        config.set("herdClaimLimit.enabled", false);
+        config.set("herdClaimLimit.livestock", 3);
+      });
+
+      test("hides the 10 month rules and shows the configured limit", async () => {
+        const { reviewItems, followUpItems } = await getListItems();
+
+        expect(reviewItems).toEqual([
+          "have an Improve Animal Health and Welfare (IAHW) agreement in place before you do your first review, including any sampling or testing",
+          "have no more than 4 reviews on any number of herds or flocks per species by 19 June 2027",
+        ]);
+        expect(followUpItems).not.toContain(
+          "ensure that follow-ups on herds or flocks of a particular species, are always at least 10 months apart",
+        );
+        expect(followUpItems).toContain(
+          "have no more than 4 follow-ups on any number of herds or flocks per species by 19 June 2027",
+        );
+      });
     });
   });
 
