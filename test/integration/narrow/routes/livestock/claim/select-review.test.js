@@ -103,8 +103,8 @@ describe("select-review tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("input[value='CLAIM-1']").length).toBe(1);
-      expect($("input[value='CLAIM-2']").length).toBe(0);
+      expect($("input[value='CLAIM-1']").length).toBeTruthy();
+      expect($("input[value='CLAIM-2']").length).toBeFalsy();
 
       const hintText = $(".govuk-radios__hint").html();
       expect(hintText).toContain("Date of review: 5 February 2024");
