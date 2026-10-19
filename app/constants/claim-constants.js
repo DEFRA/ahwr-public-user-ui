@@ -5,7 +5,7 @@ export const claimConstants = {
     beef: 5,
     pigs: 30,
     sheep: 10,
-  },
+  }, 
   diseaseStatusTypes: {
     1: "1",
     2: "2",
