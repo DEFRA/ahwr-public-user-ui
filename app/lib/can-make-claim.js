@@ -12,7 +12,7 @@ const isFollowUpWithinValidReviewWindow = (dateOfVisit, claimDateOfVisit) =>
 
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
-    return { error: "" };
+    return { };
   }
 
   if (isBlockedByTenMonthGap(dateOfVisit, prevReviewClaimDateOfVisit)) {
