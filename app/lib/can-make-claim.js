@@ -12,14 +12,14 @@ const isFollowUpWithinValidReviewWindow = (dateOfVisit, claimDateOfVisit) =>
 
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
-    return { error: "", reviews: [] };
+    return { error: "" };
   }
 
   if (isBlockedByTenMonthGap(dateOfVisit, prevReviewClaimDateOfVisit)) {
-    return { error: "There must be at least 10 months between your reviews.", reviews: [] };
+    return { error: "There must be at least 10 months between your reviews." };
   }
 
-  return { error: "", reviews: [] };
+  return { error: "" };
 };
 
 const formatTypeOfLivestock = (typeOfLivestock) => {
@@ -36,16 +36,14 @@ function validateSingleReview(
 ) {
   if (prevReviewClaims[0].status === "REJECTED") {
     return {
-      error: `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formatTypeOfLivestock(typeOfLivestock)} in the last 10 months.`,
-      reviews: [],
+      error: `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formatTypeOfLivestock(typeOfLivestock)} in the last 10 months.`
     };
   }
 
   if (!["READY_TO_PAY", "PAID"].includes(prevReviewClaims[0].status)) {
     return {
       error:
-        "Your review claim must have been approved before you claim for the follow-up that happened after it.",
-      reviews: [],
+        "Your review claim must have been approved before you claim for the follow-up that happened after it."
     };
   }
 
@@ -57,9 +55,20 @@ function validateSingleReview(
   const thereAreEndemicClaims = prevClaims.some((claim) => claim.type === claimType.endemics);
 
   if (thereAreEndemicClaims && followUpWithin10Month) {
-    return { error: "There must be at least 10 months between your follow-ups.", reviews: [] };
+    return { error: "There must be at least 10 months between your follow-ups."};
   }
   return { error: "", reviews: prevReviewClaims };
+}
+
+function validateMultipleReviews(prevReviewClaims) {
+  const previousReviews = prevReviewClaims.filter(
+    (claim) => claim.status === "READY_TO_PAY" || claim.status === "PAID",
+  );
+
+  if (previousReviews.length === 0) {
+    return { error: "There is no review eligible for this follow up." };
+  }
+  return { error: "", reviews: previousReviews };
 }
 
 export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, typeOfLivestock) => {
@@ -71,7 +80,7 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, type
   );
 
   if (prevReviewClaims.length === 0) {
-    return { error: "There is no review within the timeframe of this follow up", reviews: [] };
+    return { error: "There is no review within the timeframe of this follow up"};
   }
 
   const existingReviewReferences = prevClaims
@@ -103,14 +112,7 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, type
       dateOfVisit,
     );
   } else {
-    const previousReviews = prevReviewClaims.filter(
-      (claim) => claim.status === "READY_TO_PAY" || claim.status === "PAID",
-    );
-
-    if (previousReviews.length === 0) {
-      return { error: "There is no review eligible for this follow up.", reviews: [] };
-    }
-    return { error: "", reviews: previousReviews };
+    return validateMultipleReviews(prevReviewClaims);
   }
 };
 

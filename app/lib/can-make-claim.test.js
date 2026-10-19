@@ -200,6 +200,7 @@ describe("10-month exemption window", () => {
         ]),
       ).toBe("There is no review eligible for this follow up.");
     });
+
     it("blocks when the existing review is rejected", () => {
       setWindow("2024-01-01", "2026-01-01");
       expect(
@@ -210,6 +211,7 @@ describe("10-month exemption window", () => {
         ]),
       ).toBe("There is no review eligible for this follow up.");
     });
+
     it("allows when the existing reviews have paid status", () => {
       setWindow("2024-01-01", "2026-01-01");
       expect(
@@ -222,7 +224,4 @@ describe("10-month exemption window", () => {
     });
   });
 });
-/*
-test scenario
-case where
- */
+

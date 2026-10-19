@@ -17,6 +17,7 @@ import { canMakeClaim } from "../../../lib/can-make-claim.js";
 import {
   isLivestockHerdAtFollowUpLimit,
   isLivestockHerdAtReviewLimit,
+  totalFollowUpClaims,
   totalReviewClaims,
 } from "../../../lib/herd-claim-limit.js";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
@@ -275,8 +276,8 @@ async function handleFollowUpLimitException(
     exception: `Herd ${herdSelected} has reached the maximum number of follow up claims.`,
   });
 
-  const numberOfReviews = isLivestockHerdAtFollowUpLimit(prevHerdClaims);
-  return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfReviews);
+  const numberOfFollowUpsClaims = totalFollowUpClaims(prevHerdClaims);
+  return renderHerdLimitException(h, getHerdOrFlock(typeOfLivestock), numberOfFollowUpsClaims);
 }
 
 async function handleDateOfVisitException(request, dateOfVisit, errorMessage, typeOfReview, h) {
