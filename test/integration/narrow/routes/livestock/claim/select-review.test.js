@@ -103,8 +103,8 @@ describe("select-review tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("input[value='CLAIM-1']").length).toBeTruthy();
-      expect($("input[value='CLAIM-2']").length).toBeFalsy();
+      expect($("input[value='CLAIM-1']")).toHaveLength(1);
+      expect($("input[value='CLAIM-2']")).toHaveLength(0);
 
       const fieldsetHint = $("#reviews-hint").html();
       expect(fieldsetHint).toContain("<b>Herd Name:</b> Barn Herd<br><b>Species:</b> beef");
