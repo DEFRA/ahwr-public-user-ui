@@ -2,7 +2,7 @@ import { startMessagingService, stopMessagingService } from "./messaging/fcp-mes
 import { createServer } from "./server.js";
 
 let server;
-
+ 
 const init = async () => {
   server = await createServer();
   await server.start();
