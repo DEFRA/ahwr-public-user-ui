@@ -17,8 +17,9 @@ export const viewContextPlugin = {
 
         if (response.variety === "view" && !response.source.template?.startsWith("error-pages/")) {
           const ctx = response.source.context || {};
-          const livestockHerdClaimLimit = config.get("herdClaimLimit.livestock");
-          const herdClaimLimitEnabled = config.get("herdClaimLimit.enabled");
+          const livestockHerdClaimLimit = config.get("herdClaimLimit.enabled")
+            ? config.get("herdClaimLimit.livestock")
+            : DEFAULT_LIVESTOCK_HERD_CLAIM_LIMIT;
 
           let serviceUrl = "/";
 
@@ -30,10 +31,9 @@ export const viewContextPlugin = {
           ctx.serviceName = serviceName;
           ctx.serviceUrl = serviceUrl;
           ctx.serviceUri = serviceUri;
-          ctx.livestockHerdClaimLimit = herdClaimLimitEnabled
-            ? livestockHerdClaimLimit
-            : DEFAULT_LIVESTOCK_HERD_CLAIM_LIMIT;
-          ctx.livestockHerdClaimLimitEnabled = herdClaimLimitEnabled;
+          ctx.livestockHerdClaimLimit = livestockHerdClaimLimit;
+          ctx.livestockHerdClaimLimitIncreased =
+            livestockHerdClaimLimit > DEFAULT_LIVESTOCK_HERD_CLAIM_LIMIT;
           ctx.customerSurveyUri = getSurveyUri(request);
           ctx.userIsSignedIn = request.auth.isAuthenticated;
           ctx.showManageYourClaims = shouldShowManageYourClaims(request);

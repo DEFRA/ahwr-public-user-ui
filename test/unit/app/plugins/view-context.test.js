@@ -126,20 +126,33 @@ describe("View Context Plugin", () => {
 
       expect(mockRequest.response.source.context).toMatchObject({
         livestockHerdClaimLimit: 3,
-        livestockHerdClaimLimitEnabled: false,
+        livestockHerdClaimLimitIncreased: false,
       });
     });
 
-    it("uses the configured limit when the feature is enabled", () => {
+    it("uses the configured limit and flags it as increased when enabled and above the default", () => {
       config.set("herdClaimLimit.enabled", true);
-      config.set("herdClaimLimit.livestock", 5);
+      config.set("herdClaimLimit.livestock", 4);
       const mockRequest = buildRequest();
 
       onPreResponseHandler(mockRequest, mockH);
 
       expect(mockRequest.response.source.context).toMatchObject({
-        livestockHerdClaimLimit: 5,
-        livestockHerdClaimLimitEnabled: true,
+        livestockHerdClaimLimit: 4,
+        livestockHerdClaimLimitIncreased: true,
+      });
+    });
+
+    it("does not flag the limit as increased when enabled and equal to the default", () => {
+      config.set("herdClaimLimit.enabled", true);
+      config.set("herdClaimLimit.livestock", 3);
+      const mockRequest = buildRequest();
+
+      onPreResponseHandler(mockRequest, mockH);
+
+      expect(mockRequest.response.source.context).toMatchObject({
+        livestockHerdClaimLimit: 3,
+        livestockHerdClaimLimitIncreased: false,
       });
     });
   });

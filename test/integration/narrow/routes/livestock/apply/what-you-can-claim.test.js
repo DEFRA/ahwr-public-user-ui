@@ -97,35 +97,49 @@ describe("you-can-claim-multiple page", () => {
         expect.any(String),
       );
     });
-    const getLimitText = async () => {
-      const res = await getResponse();
-      const $ = cheerio.load(res.payload);
-      return $("p.govuk-body")
-        .filter((_, el) => $(el).text().includes("You can do a maximum of"))
-        .text()
-        .replace(/\s+/g, " ")
-        .trim();
-    };
 
-    test("shows the default limit of 3 when the herd claim limit is disabled", async () => {
-      config.set("herdClaimLimit.enabled", false);
-      config.set("herdClaimLimit.livestock", 4);
+    describe("herd claim limit content", () => {
+      const getLimitText = async () => {
+        const res = await getResponse();
+        const $ = cheerio.load(res.payload);
+        return $("p.govuk-body")
+          .filter((_, el) => $(el).text().includes("You can do a maximum of"))
+          .text()
+          .replace(/\s+/g, " ")
+          .trim();
+      };
 
-      expect(await getLimitText()).toContain("You can do a maximum of 3 reviews and 3 follow-ups");
-    });
+      afterEach(() => {
+        config.set("herdClaimLimit.enabled", false);
+        config.set("herdClaimLimit.livestock", 3);
+      });
 
-    test("shows the configured limit when the herd claim limit is enabled", async () => {
-      config.set("herdClaimLimit.enabled", true);
-      config.set("herdClaimLimit.livestock", 4);
+      test("shows the default limit of 3 when the herd claim limit is disabled", async () => {
+        config.set("herdClaimLimit.enabled", false);
+        config.set("herdClaimLimit.livestock", 4);
 
-      try {
+        expect(await getLimitText()).toContain(
+          "You can do a maximum of 3 reviews and 3 follow-ups",
+        );
+      });
+
+      test("shows the configured limit of 4 when the herd claim limit is enabled", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 4);
+
         expect(await getLimitText()).toContain(
           "You can do a maximum of 4 reviews and 4 follow-ups",
         );
-      } finally {
-        config.set("herdClaimLimit.enabled", false);
+      });
+
+      test("shows the limit of 3 when the herd claim limit is enabled and set to 3", async () => {
+        config.set("herdClaimLimit.enabled", true);
         config.set("herdClaimLimit.livestock", 3);
-      }
+
+        expect(await getLimitText()).toContain(
+          "You can do a maximum of 3 reviews and 3 follow-ups",
+        );
+      });
     });
   });
 

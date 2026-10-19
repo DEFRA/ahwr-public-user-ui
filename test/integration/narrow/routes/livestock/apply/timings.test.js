@@ -159,6 +159,54 @@ describe("Declaration test", () => {
         );
       });
     });
+
+    describe("when the herd claim limit is enabled but not above the default", () => {
+      const reviewsMonthsApart =
+        "ensure reviews on herds or flocks of a particular species, are at least 10 months apart";
+      const followUpsMonthsApart =
+        "ensure that follow-ups on herds or flocks of a particular species, are always at least 10 months apart";
+      const followUpWithinTenMonths =
+        "ensure the follow-up takes place no more than 10 months after your review";
+
+      const getListItems = async () => {
+        const res = await getResponse();
+        const $ = cheerio.load(res.payload);
+        return {
+          reviewItems: $("ul.govuk-list--bullet")
+            .eq(0)
+            .find("li")
+            .map((i, el) => $(el).text().trim())
+            .get(),
+          followUpItems: $("ul.govuk-list--bullet")
+            .eq(1)
+            .find("li")
+            .map((i, el) => $(el).text().trim())
+            .get(),
+        };
+      };
+
+      afterEach(() => {
+        config.set("herdClaimLimit.enabled", false);
+        config.set("herdClaimLimit.livestock", 3);
+      });
+
+      test("shows the original content when the herd claim limit is enabled with a limit of 3", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 3);
+
+        const { reviewItems, followUpItems } = await getListItems();
+
+        expect(reviewItems).toContain(reviewsMonthsApart);
+        expect(reviewItems).toContain(
+          "have no more than 3 reviews on any number of herds or flocks per species by 19 June 2027",
+        );
+        expect(followUpItems).toContain(followUpsMonthsApart);
+        expect(followUpItems).toContain(followUpWithinTenMonths);
+        expect(followUpItems).toContain(
+          "have no more than 3 follow-ups on any number of herds or flocks per species by 19 June 2027",
+        );
+      });
+    });
   });
 
   describe("POST /livestock/timings route", () => {
