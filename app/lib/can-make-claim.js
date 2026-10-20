@@ -19,7 +19,7 @@ export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
     return { error: "There must be at least 10 months between your reviews." };
   }
 
-  return { error: "" };
+  return { };
 };
 
 const formatTypeOfLivestock = (typeOfLivestock) => {
@@ -57,7 +57,7 @@ function validateSingleReview(
   if (thereAreEndemicClaims && followUpWithin10Month) {
     return { error: "There must be at least 10 months between your follow-ups." };
   }
-  return { error: "", reviews: prevReviewClaims };
+  return { reviews: prevReviewClaims };
 }
 
 function validateMultipleReviews(prevReviewClaims) {

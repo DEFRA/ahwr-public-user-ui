@@ -44,11 +44,12 @@ const makeFollowUp = (dateOfVisit, prevClaims) =>
 
 describe("review timing rules (minimum 10-month gap)", () => {
   it("allows a review exactly 10 calendar months after the previous review", () => {
-    expect(makeReview("2025-01-01", [reviewClaim("2024-03-01")])).toBe("");
+    const result=makeReview("2025-01-01", [reviewClaim("2024-03-01")])
+    expect(result).toBeUndefined();
   });
 
   it("allows a review more than 10 months after the previous review", () => {
-    expect(makeReview("2025-02-01", [reviewClaim("2024-03-01")])).toBe("");
+    expect(makeReview("2025-02-01", [reviewClaim("2024-03-01")])).toBeUndefined();
   });
 
   it("blocks a review less than 10 months after the previous review", () => {
@@ -58,7 +59,7 @@ describe("review timing rules (minimum 10-month gap)", () => {
   });
 
   it("clamps end-of-month: 31 Jan + 10 months allows a review on 30 Nov but not 29 Nov", () => {
-    expect(makeReview("2024-11-30", [reviewClaim("2024-01-31")])).toBe("");
+    expect(makeReview("2024-11-30", [reviewClaim("2024-01-31")])).toBeUndefined();
     expect(makeReview("2024-11-29", [reviewClaim("2024-01-31")])).toBe(
       "There must be at least 10 months between your reviews.",
     );
@@ -67,11 +68,11 @@ describe("review timing rules (minimum 10-month gap)", () => {
 
 describe("follow-up timing rules", () => {
   it("allows a follow-up exactly 10 months after its associated review", () => {
-    expect(makeFollowUp("2025-01-01", [reviewClaim("2024-03-01")])).toBe("");
+    expect(makeFollowUp("2025-01-01", [reviewClaim("2024-03-01")])).toBeUndefined();
   });
 
   it("allows a follow-up less than 10 months after its associated review", () => {
-    expect(makeFollowUp("2024-06-01", [reviewClaim("2024-03-01")])).toBe("");
+    expect(makeFollowUp("2024-06-01", [reviewClaim("2024-03-01")])).toBeUndefined();
   });
 
   it("blocks a follow-up more than 10 months after its associated review", () => {
@@ -82,7 +83,7 @@ describe("follow-up timing rules", () => {
 
   it("allows a follow-up exactly 10 months after the previous follow-up", () => {
     const prevClaims = [reviewClaim("2024-03-01"), followUpClaim("2024-03-01")];
-    expect(makeFollowUp("2025-01-01", prevClaims)).toBe("");
+    expect(makeFollowUp("2025-01-01", prevClaims)).toBeUndefined();
   });
 
   it("blocks a follow-up less than 10 months after the previous follow-up", () => {
@@ -127,13 +128,13 @@ describe("10-month exemption window", () => {
     });
 
     it("allows a review less than 10 months after the previous review", () => {
-      expect(reviewOneMonthLater()).toBe("");
+      expect(reviewOneMonthLater()).toBeUndefined();
     });
 
     it("allows a follow-up less than 10 months after the previous follow-up", () => {
       expect(
         makeFollowUp("2024-06-01", [followUpClaim("2024-05-01"), reviewClaim("2024-04-01")]),
-      ).toBe("");
+      ).toBeUndefined();
     });
 
     it("still blocks a follow-up more than 10 months after its review", () => {
@@ -157,13 +158,13 @@ describe("10-month exemption window", () => {
     it("allows a review in the window even when the previous review is before it", () => {
       setWindow("2024-04-01", "2024-12-31");
 
-      expect(makeReview("2024-04-15", [reviewClaim("2024-03-01")])).toBe("");
+      expect(makeReview("2024-04-15", [reviewClaim("2024-03-01")])).toBeUndefined();
     });
 
     it("has no end to the window when only the start is set", () => {
       setWindow("2024-01-01");
 
-      expect(makeReview("2030-04-01", [reviewClaim("2030-03-01")])).toBe("");
+      expect(makeReview("2030-04-01", [reviewClaim("2030-03-01")])).toBeUndefined();
     });
   });
 
@@ -219,8 +220,7 @@ describe("10-month exemption window", () => {
           followUpClaim("2024-05-01"),
           reviewClaim("2024-06-01"),
           reviewClaim("2024-03-02"),
-        ]),
-      ).toBe("");
+        ])).toBeUndefined();
     });
   });
 });
