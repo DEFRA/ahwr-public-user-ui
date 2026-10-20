@@ -47,7 +47,7 @@ function validateSingleReview(
     };
   }
 
-  const followUpWithin10Month = prevClaims.find(
+  const followUpWithin10Month = prevClaims.some(
     (claim) =>
       claim.type === claimType.endemics &&
       isBlockedByTenMonthGap(dateOfVisit, claim.data.dateOfVisit),
