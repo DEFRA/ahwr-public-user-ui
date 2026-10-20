@@ -93,7 +93,7 @@ const postHandler = {
         });
 
         if (isFollowUpOfNewWorldReview(relevantReviewForEndemics) && answer !== previousAnswer) {
-          clearPiHuntSessionOnChange(request, "piHunt");
+          await clearPiHuntSessionOnChange(request, "piHunt");
         }
 
         if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) {

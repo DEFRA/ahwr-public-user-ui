@@ -72,7 +72,7 @@ const postHandler = {
       );
 
       if (numberOfBloodSamples !== requiredNumberBloodSamples) {
-        sendInvalidDataEvent({
+        await sendInvalidDataEvent({
           request,
           sessionKey: numberOfBloodSamplesKey,
           exception: `Value ${numberOfBloodSamples} is not exactly ${requiredNumberBloodSamples}`,

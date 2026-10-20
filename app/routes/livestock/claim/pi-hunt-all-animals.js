@@ -122,7 +122,7 @@ const postHandler = {
         });
 
         if (piHuntAllAnimals !== previousAnswer) {
-          clearPiHuntSessionOnChange(request, "piHuntAllAnimals");
+          await clearPiHuntSessionOnChange(request, "piHuntAllAnimals");
         }
 
         return h
