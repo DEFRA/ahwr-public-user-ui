@@ -22,6 +22,10 @@
         }) }}
       {% endif %}
 
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Which review is this follow-up related to?</h1>
+      <p class="govuk-hint govuk-!-margin-bottom-7">A follow-up always takes place after a specific review.
+        If you do not select the correct review, you may not be able to claim for future follow-ups.</p>
+
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{ crumb }}" />
 
@@ -29,15 +33,8 @@
           idPrefix: "reviews",
           name: "reviews",
           errorMessage: errorMessage,
-          fieldset: {
-            legend: {
-              text: "Select the review claim this follow-up is for",
-              isPageHeading: true,
-              classes: "govuk-fieldset__legend--l"
-            }
-          },
           hint: {
-            html: "<b>Herd Name:</b> " + herdName + "<br><b>Species:</b> " + typeOfLivestock
+            html: "<b>Herd Name: " + herdName + "<br>Species: " + typeOfLivestock + "</b>"
           },
           items: reviews
         }) }}

@@ -107,12 +107,10 @@ describe("select-review tests", () => {
       expect($("input[value='CLAIM-2']")).toHaveLength(0);
 
       const fieldsetHint = $("#reviews-hint").html();
-      expect(fieldsetHint).toContain("<b>Herd Name:</b> Barn Herd<br><b>Species:</b> beef");
+      expect(fieldsetHint).toContain("<b>Herd Name: Barn Herd<br>Species: beef</b>");
 
       const itemHint = $(".govuk-radios__hint").html();
-      expect(itemHint).toContain("Date of review: 5 February 2024");
-      expect(itemHint).toContain("Claim date: 15 February 2024");
-      expect(itemHint).toContain("Last visit date: 5 February 2024");
+      expect(itemHint).toContain("Claim number: CLAIM-1");
     });
   });
 
