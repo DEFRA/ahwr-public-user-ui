@@ -68,7 +68,7 @@ function validateMultipleReviews(prevReviewClaims) {
   if (previousReviews.length === 0) {
     return { error: "There is no review eligible for this follow up." };
   }
-  return { error: "", reviews: previousReviews };
+  return { reviews: previousReviews };
 }
 
 export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, typeOfLivestock) => {
