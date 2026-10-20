@@ -1,27 +1,29 @@
 import { setSessionData, sessionEntryKeys, sessionKeys } from "../session/index.js";
 
 const clearTestDetails = async (request) => {
-  await setSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-    sessionKeys.endemicsClaim.dateOfTesting,
-    undefined,
-    { shouldEmitEvent: false },
-  );
-  await setSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-    sessionKeys.endemicsClaim.laboratoryURN,
-    undefined,
-    { shouldEmitEvent: false },
-  );
-  await setSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-    sessionKeys.endemicsClaim.testResults,
-    undefined,
-    { shouldEmitEvent: false },
-  );
+  await Promise.allSettled([
+    setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.dateOfTesting,
+      undefined,
+      { shouldEmitEvent: false },
+    ),
+    setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.laboratoryURN,
+      undefined,
+      { shouldEmitEvent: false },
+    ),
+    setSessionData(
+      request,
+      sessionEntryKeys.endemicsClaim,
+      sessionKeys.endemicsClaim.testResults,
+      undefined,
+      { shouldEmitEvent: false },
+    )
+  ]);
 };
 
 const clearPiHuntAllAnimals = async (request) =>
@@ -45,28 +47,34 @@ const clearPiHuntRecommended = async (request) =>
 export async function clearPiHuntSessionOnChange(request, piHuntStage) {
   switch (piHuntStage) {
     case "dateOfVisit":
-      await setSessionData(
-        request,
-        sessionEntryKeys.endemicsClaim,
-        sessionKeys.endemicsClaim.piHunt,
-        undefined,
-        { shouldEmitEvent: false },
-      );
-      clearPiHuntRecommended(request);
-      clearPiHuntAllAnimals(request);
-      clearTestDetails(request);
+      await Promise.allSettled([
+        setSessionData(
+          request,
+          sessionEntryKeys.endemicsClaim,
+          sessionKeys.endemicsClaim.piHunt,
+          undefined,
+          { shouldEmitEvent: false },
+        ),
+        clearPiHuntRecommended(request),
+        clearPiHuntAllAnimals(request),
+        clearTestDetails(request)
+      ])
       break;
     case "piHunt":
-      clearPiHuntRecommended(request);
-      clearPiHuntAllAnimals(request);
-      clearTestDetails(request);
+      await Promise.allSettled([
+        clearPiHuntRecommended(request),
+        clearPiHuntAllAnimals(request),
+        clearTestDetails(request)
+      ]);
       break;
     case "piHuntRecommended":
-      clearPiHuntAllAnimals(request);
-      clearTestDetails(request);
+      await Promise.allSettled([
+        clearPiHuntAllAnimals(request),
+        clearTestDetails(request)
+      ]);
       break;
     case "piHuntAllAnimals":
-      clearTestDetails(request);
+      await clearTestDetails(request);
       break;
     default:
       // No action needed otherwise

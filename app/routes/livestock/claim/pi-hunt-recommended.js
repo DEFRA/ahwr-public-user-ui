@@ -115,7 +115,7 @@ const postHandler = {
         });
 
         if (piHuntRecommended !== previousAnswer) {
-          clearPiHuntSessionOnChange(request, "piHuntRecommended");
+          await clearPiHuntSessionOnChange(request, "piHuntRecommended");
         }
 
         return h

@@ -42,7 +42,7 @@ export const getNextMultipleHerdsPage = async (request) => {
         isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit);
 
       if (!piHuntEnabledAndVisitDateAfterGoLive) {
-        clearPiHuntSessionOnChange(request, "dateOfVisit");
+        await clearPiHuntSessionOnChange(request, "dateOfVisit");
       }
 
       const reviewTestResultsValue =
