@@ -12,14 +12,14 @@ const isFollowUpWithinValidReviewWindow = (dateOfVisit, claimDateOfVisit) =>
 
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
-    return { };
+    return {};
   }
 
   if (isBlockedByTenMonthGap(dateOfVisit, prevReviewClaimDateOfVisit)) {
     return { error: "There must be at least 10 months between your reviews." };
   }
 
-  return { };
+  return {};
 };
 
 const formatTypeOfLivestock = (typeOfLivestock) => {
@@ -47,14 +47,13 @@ function validateSingleReview(
     };
   }
 
-  const followUpWithin10Month = prevClaims.some(
+  const hasRecentFollowUp = prevClaims.some(
     (claim) =>
       claim.type === claimType.endemics &&
       isBlockedByTenMonthGap(dateOfVisit, claim.data.dateOfVisit),
   );
-  const thereAreEndemicClaims = prevClaims.some((claim) => claim.type === claimType.endemics);
 
-  if (thereAreEndemicClaims && followUpWithin10Month) {
+  if (hasRecentFollowUp) {
     return { error: "There must be at least 10 months between your follow-ups." };
   }
   return { reviews: prevReviewClaims };
