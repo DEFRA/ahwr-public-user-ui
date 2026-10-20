@@ -7,16 +7,19 @@ const isBlockedByTenMonthGap = (dateOfVisit, previousDateOfVisit) =>
   !isWithinTenMonthExemption(dateOfVisit) &&
   isLessThan10MonthsApart(dateOfVisit, previousDateOfVisit);
 
+const isFollowUpWithinValidReviewWindow = (dateOfVisit, claimDateOfVisit) =>
+  areDatesWithin10Months(dateOfVisit, claimDateOfVisit);
+
 export const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
-    return "";
+    return {};
   }
 
   if (isBlockedByTenMonthGap(dateOfVisit, prevReviewClaimDateOfVisit)) {
-    return "There must be at least 10 months between your reviews.";
+    return { error: "There must be at least 10 months between your reviews." };
   }
 
-  return "";
+  return {};
 };
 
 const formatTypeOfLivestock = (typeOfLivestock) => {
@@ -24,37 +27,87 @@ const formatTypeOfLivestock = (typeOfLivestock) => {
   return isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`;
 };
 
-export const canMakeEndemicsClaim = (
-  dateOfVisit,
-  prevReviewClaim,
-  prevEndemicsClaimDateOfVisit,
+function validateSingleReview(
+  prevReviewClaims,
   organisation,
   typeOfLivestock,
-) => {
-  if (!areDatesWithin10Months(dateOfVisit, prevReviewClaim.data.dateOfVisit)) {
-    return "There must be no more than 10 months between your reviews and follow-ups.";
+  prevClaims,
+  dateOfVisit,
+) {
+  if (prevReviewClaims[0].status === "REJECTED") {
+    return {
+      error: `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formatTypeOfLivestock(typeOfLivestock)} in the last 10 months.`,
+    };
   }
 
-  if (prevReviewClaim.status === "REJECTED") {
-    return `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formatTypeOfLivestock(typeOfLivestock)} in the last 10 months.`;
+  if (!["READY_TO_PAY", "PAID"].includes(prevReviewClaims[0].status)) {
+    return {
+      error:
+        "Your review claim must have been approved before you claim for the follow-up that happened after it.",
+    };
   }
 
-  if (!["READY_TO_PAY", "PAID"].includes(prevReviewClaim.status)) {
-    return "Your review claim must have been approved before you claim for the follow-up that happened after it.";
+  const hasRecentFollowUp = prevClaims.some(
+    (claim) =>
+      claim.type === claimType.endemics &&
+      isBlockedByTenMonthGap(dateOfVisit, claim.data.dateOfVisit),
+  );
+
+  if (hasRecentFollowUp) {
+    return { error: "There must be at least 10 months between your follow-ups." };
+  }
+  return { reviews: prevReviewClaims };
+}
+
+function validateMultipleReviews(prevReviewClaims) {
+  const previousReviews = prevReviewClaims.filter(
+    (claim) => claim.status === "READY_TO_PAY" || claim.status === "PAID",
+  );
+
+  if (previousReviews.length === 0) {
+    return { error: "There is no review eligible for this follow up." };
+  }
+  return { reviews: previousReviews };
+}
+
+export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, typeOfLivestock) => {
+  let prevReviewClaims = prevClaims.filter(
+    (claim) =>
+      claim.type === claimType.review &&
+      new Date(claim.data.dateOfVisit) < new Date(dateOfVisit) &&
+      isFollowUpWithinValidReviewWindow(dateOfVisit, claim.data.dateOfVisit),
+  );
+
+  if (prevReviewClaims.length === 0) {
+    return { error: "There is no review within the timeframe of this follow up" };
   }
 
-  if (
-    prevEndemicsClaimDateOfVisit &&
-    isBlockedByTenMonthGap(dateOfVisit, prevEndemicsClaimDateOfVisit)
-  ) {
-    return "There must be at least 10 months between your follow-ups.";
+  const existingReviewReferences = prevClaims
+    .filter((claim) => claim.type === claimType.endemics && claim.reviewReference)
+    .map((claim) => claim.reviewReference);
+
+  if (existingReviewReferences.length !== 0) {
+    const reviewsWithNoFollowupsClaims = prevReviewClaims.filter(
+      (review) => !existingReviewReferences.includes(review.reference),
+    );
+
+    if (reviewsWithNoFollowupsClaims.length === 0) {
+      return { error: "There is no review eligible for this follow up.", reviews: [] };
+    }
+    prevReviewClaims = reviewsWithNoFollowupsClaims;
   }
 
-  if (new Date(dateOfVisit) < new Date(prevReviewClaim.data.dateOfVisit)) {
-    return "The follow-up must be after your review";
+  if (prevReviewClaims.length === 1) {
+    return validateSingleReview(
+      prevReviewClaims,
+      organisation,
+      typeOfLivestock,
+      prevClaims,
+      dateOfVisit,
+    );
+  } else {
+    return validateMultipleReviews(prevReviewClaims);
   }
-
-  return "";
 };
 
 export const canMakeClaim = ({
@@ -75,14 +128,5 @@ export const canMakeClaim = ({
     return canMakeReviewClaim(dateOfVisit, previousReviewClaim?.data.dateOfVisit);
   }
 
-  const prevReviewClaim = prevClaims.find((claim) => claim.type === claimType.review);
-  const prevEndemicsClaim = prevClaims.find((claim) => claim.type === claimType.endemics);
-
-  return canMakeEndemicsClaim(
-    dateOfVisit,
-    prevReviewClaim,
-    prevEndemicsClaim?.data.dateOfVisit,
-    organisation,
-    typeOfLivestock,
-  );
+  return canMakeEndemicsClaim(dateOfVisit, prevClaims, organisation, typeOfLivestock);
 };

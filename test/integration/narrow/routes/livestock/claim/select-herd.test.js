@@ -66,6 +66,8 @@ describe("select-the-herd tests", () => {
         sessionKeys.endemicsClaim.reference,
       )
       .mockReturnValue("IAHW-1LZ5-ELVQ");
+
+    canMakeClaim.mockReturnValue({ error: "", reviews: [] });
   });
 
   afterEach(() => {
@@ -1163,7 +1165,7 @@ describe("select-the-herd tests", () => {
           herds: [],
           dateOfVisit: "2025-06-26",
         });
-      canMakeClaim.mockReturnValue("Invalid claim message");
+      canMakeClaim.mockReturnValue({ error: "Invalid claim message", reviews: [] });
 
       const res = await server.inject({
         method: "POST",
@@ -1298,6 +1300,24 @@ describe("select-the-herd tests", () => {
         ],
       });
 
+      const herdWithFollowUpClaims = (typeOfReview, count) => ({
+        tempHerdId: fakeTemporaryHerdId,
+        reference: "TEMP-6GSE-PIR9",
+        typeOfReview,
+        typeOfLivestock: "sheep",
+        dateOfVisit: "2025-04-14T00:00:00.000Z",
+        previousClaims: Array.from({ length: count }, () => ({
+          type: "FOLLOW_UP",
+          status: "PAID",
+          createdAt: "2025-04-01T00:00:00.000Z",
+          data: { typeOfLivestock: "sheep" },
+          herd: { id: fakeHerdId },
+        })),
+        herds: [
+          { id: fakeHerdId, name: "Barn animals", version: 1, cph: "22/333/4444", reasons: [] },
+        ],
+      });
+
       afterEach(() => {
         config.set("herdClaimLimit.enabled", false);
       });
@@ -1308,6 +1328,34 @@ describe("select-the-herd tests", () => {
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
           .mockReturnValue(herdWithClaims("REVIEW", 1));
+
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdSelected: fakeHerdId },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        const $ = cheerio.load(res.payload);
+        expect(res.statusCode).toBe(400);
+        expect($("h1.govuk-heading-l").text().trim()).toBe("You cannot continue with your claim");
+        expect($("p.govuk-body").first().text()).toContain(
+          "You have already claimed for 1 reviews for this flock.",
+        );
+        expect($("p.govuk-body").eq(1).text()).toContain(
+          "This is the maximum number you can claim for under your agreement.",
+        );
+        expect($("#back").attr("href")).toEqual("/livestock/select-herd");
+        expect(sendInvalidDataEvent).toHaveBeenCalled();
+      });
+
+      test("blocks a follow up when the herd is at the follow up limit", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 1);
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue(herdWithFollowUpClaims("FOLLOW_UP", 1));
 
         const res = await server.inject({
           method: "POST",
@@ -1355,7 +1403,10 @@ describe("select-the-herd tests", () => {
         when(getSessionData)
           .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
           .mockReturnValue(herdWithClaims("FOLLOW_UP", 1));
-
+        canMakeClaim.mockReturnValue({
+          error: "",
+          reviews: [{ reference: "REVIEW-CLAIM-1" }],
+        });
         const res = await server.inject({
           method: "POST",
           url,
@@ -1366,6 +1417,28 @@ describe("select-the-herd tests", () => {
 
         expect(res.statusCode).toBe(302);
         expect(res.headers.location).toEqual("/livestock/check-herd-details");
+      });
+
+      test("Allows select review page when there are more than 1 review for a follow-up", async () => {
+        config.set("herdClaimLimit.enabled", true);
+        config.set("herdClaimLimit.livestock", 3);
+        when(getSessionData)
+          .calledWith(expect.anything(), sessionEntryKeys.endemicsClaim)
+          .mockReturnValue(herdWithClaims("FOLLOW_UP", 2));
+        canMakeClaim.mockReturnValue({
+          error: "",
+          reviews: [{ reference: "REVIEW-CLAIM-1" }, { reference: "REVIEW-CLAIM-2" }],
+        });
+        const res = await server.inject({
+          method: "POST",
+          url,
+          auth,
+          payload: { crumb, herdSelected: fakeHerdId },
+          headers: { cookie: `crumb=${crumb}` },
+        });
+
+        expect(res.statusCode).toBe(302);
+        expect(res.headers.location).toEqual("/livestock/select-review");
       });
     });
   });
