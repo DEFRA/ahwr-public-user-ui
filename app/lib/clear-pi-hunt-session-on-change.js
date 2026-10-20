@@ -52,21 +52,21 @@ export async function clearPiHuntSessionOnChange(request, piHuntStage) {
         undefined,
         { shouldEmitEvent: false },
       );
-      clearPiHuntRecommended(request);
-      clearPiHuntAllAnimals(request);
-      clearTestDetails(request);
+      await clearPiHuntRecommended(request);
+      await clearPiHuntAllAnimals(request);
+      await clearTestDetails(request);
       break;
     case "piHunt":
-      clearPiHuntRecommended(request);
-      clearPiHuntAllAnimals(request);
-      clearTestDetails(request);
+      await clearPiHuntRecommended(request);
+      await clearPiHuntAllAnimals(request);
+      await clearTestDetails(request);
       break;
     case "piHuntRecommended":
-      clearPiHuntAllAnimals(request);
-      clearTestDetails(request);
+      await clearPiHuntAllAnimals(request);
+      await clearTestDetails(request);
       break;
     case "piHuntAllAnimals":
-      clearTestDetails(request);
+      await clearTestDetails(request);
       break;
     default:
       // No action needed otherwise
