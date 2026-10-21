@@ -26,9 +26,10 @@ const getReviews = (request) => {
 
   return reviews.map((review) => ({
     value: review.reference,
-    html: `<b>Date of Review: ${formatDate(review.createdAt)}</b>`,
+    html: `<b>Date of review</b>: ${formatDate(review.createdAt)}`,
     hint: {
-      html: `Claim number: ${review.reference}`,
+      html: `<b>Claim number</b>: ${review.reference}`,
+      classe: "govuk-!-secondary-text",
     },
   }));
 };

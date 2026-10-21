@@ -44,7 +44,7 @@ const makeFollowUp = (dateOfVisit, prevClaims) =>
 
 describe("review timing rules (minimum 10-month gap)", () => {
   it("allows a review exactly 10 calendar months after the previous review", () => {
-    const result=makeReview("2025-01-01", [reviewClaim("2024-03-01")])
+    const result = makeReview("2025-01-01", [reviewClaim("2024-03-01")]);
     expect(result).toBeUndefined();
   });
 
@@ -220,7 +220,8 @@ describe("10-month exemption window", () => {
           followUpClaim("2024-05-01"),
           reviewClaim("2024-06-01"),
           reviewClaim("2024-03-02"),
-        ])).toBeUndefined();
+        ]),
+      ).toBeUndefined();
     });
   });
 });
