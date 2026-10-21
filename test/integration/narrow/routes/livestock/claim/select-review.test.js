@@ -107,10 +107,10 @@ describe("select-review tests", () => {
       expect($("input[value='CLAIM-2']")).toHaveLength(0);
 
       const fieldsetHint = $("#reviews-hint").html();
-      expect(fieldsetHint).toContain("<b>Herd Name: Barn Herd<br>Species: beef</b>");
+      expect(fieldsetHint).toContain("<b>Herd Name</b>: Barn Herd<br><b>Species</b>: beef");
 
       const itemHint = $(".govuk-radios__hint").html();
-      expect(itemHint).toContain("Claim number: CLAIM-1");
+      expect(itemHint).toContain("<b>Claim number</b>: CLAIM-1");
     });
   });
 

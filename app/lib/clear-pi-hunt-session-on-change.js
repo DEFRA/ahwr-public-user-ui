@@ -22,7 +22,7 @@ const clearTestDetails = async (request) => {
       sessionKeys.endemicsClaim.testResults,
       undefined,
       { shouldEmitEvent: false },
-    )
+    ),
   ]);
 };
 
@@ -57,21 +57,18 @@ export async function clearPiHuntSessionOnChange(request, piHuntStage) {
         ),
         clearPiHuntRecommended(request),
         clearPiHuntAllAnimals(request),
-        clearTestDetails(request)
-      ])
+        clearTestDetails(request),
+      ]);
       break;
     case "piHunt":
       await Promise.allSettled([
         clearPiHuntRecommended(request),
         clearPiHuntAllAnimals(request),
-        clearTestDetails(request)
+        clearTestDetails(request),
       ]);
       break;
     case "piHuntRecommended":
-      await Promise.allSettled([
-        clearPiHuntAllAnimals(request),
-        clearTestDetails(request)
-      ]);
+      await Promise.allSettled([clearPiHuntAllAnimals(request), clearTestDetails(request)]);
       break;
     case "piHuntAllAnimals":
       await clearTestDetails(request);
