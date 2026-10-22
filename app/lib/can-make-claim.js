@@ -74,7 +74,7 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, type
   let prevReviewClaims = prevClaims.filter(
     (claim) =>
       claim.type === claimType.review &&
-      new Date(claim.data.dateOfVisit) < new Date(dateOfVisit) &&
+      new Date(claim.data.dateOfVisit) <= new Date(dateOfVisit) &&
       isFollowUpWithinValidReviewWindow(dateOfVisit, claim.data.dateOfVisit),
   );
 
