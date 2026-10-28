@@ -70,7 +70,7 @@ function validateMultipleReviews(prevReviewClaims) {
   return { reviews: previousReviews };
 }
 
-export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, typeOfLivestock) => {
+export function filterReviewsWithNoFollowUps(prevClaims, dateOfVisit) {
   let prevReviewClaims = prevClaims.filter(
     (claim) =>
       claim.type === claimType.review &&
@@ -79,7 +79,7 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, type
   );
 
   if (prevReviewClaims.length === 0) {
-    return { error: "There is no review within the timeframe of this follow up" };
+    return { error: "There is no review within the timeframe of this follow up", reviews: [] };
   }
 
   const existingReviewReferences = prevClaims
@@ -97,6 +97,17 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, type
     prevReviewClaims = reviewsWithNoFollowupsClaims;
   }
 
+  return { reviews: prevReviewClaims };
+}
+
+export const canMakeEndemicsClaim = (dateOfVisit, prevClaims, organisation, typeOfLivestock) => {
+  const { error, reviews: prevReviewClaims } = filterReviewsWithNoFollowUps(
+    prevClaims,
+    dateOfVisit,
+  );
+  if (error) {
+    return { error };
+  }
   if (prevReviewClaims.length === 1) {
     return validateSingleReview(
       prevReviewClaims,

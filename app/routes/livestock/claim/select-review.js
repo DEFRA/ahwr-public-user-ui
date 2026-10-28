@@ -7,22 +7,13 @@ import {
   sessionKeys,
   setSessionData,
 } from "../../../session/index.js";
-import { claimType } from "ffc-ahwr-common-library";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
+import { filterReviewsWithNoFollowUps } from "../../../lib/can-make-claim.js";
 
 const getReviews = (request) => {
-  const { previousClaims, typeOfLivestock, dateOfVisit, herdId } = getSessionData(
-    request,
-    sessionEntryKeys.endemicsClaim,
-  );
+  const { previousClaims, dateOfVisit } = getSessionData(request, sessionEntryKeys.endemicsClaim);
 
-  const reviews = previousClaims.filter(
-    (claim) =>
-      claim.type === claimType.review &&
-      claim.data.dateOfVisit <= dateOfVisit &&
-      claim.herd.id === herdId &&
-      claim.data.typeOfLivestock === typeOfLivestock,
-  );
+  const { reviews } = filterReviewsWithNoFollowUps(previousClaims, dateOfVisit);
 
   return reviews.map((review) => ({
     value: review.reference,
