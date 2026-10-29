@@ -9,7 +9,6 @@ import {
 } from "../../../session/index.js";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { filterReviewsWithNoFollowUps } from "../../../lib/can-make-claim.js";
-import { claimType } from "ffc-ahwr-common-library";
 
 const getReviews = (request) => {
   const { previousClaims, typeOfLivestock, dateOfVisit, herdId } = getSessionData(
@@ -18,10 +17,7 @@ const getReviews = (request) => {
   );
 
   const currentHerdReviews = previousClaims.filter(
-    (claim) =>
-      claim.type === claimType.review &&
-      claim.herd.id === herdId &&
-      claim.data.typeOfLivestock === typeOfLivestock,
+    (claim) => claim.herd.id === herdId && claim.data.typeOfLivestock === typeOfLivestock,
   );
   const { reviews } = filterReviewsWithNoFollowUps(currentHerdReviews, dateOfVisit);
 
