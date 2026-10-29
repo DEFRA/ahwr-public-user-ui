@@ -88,12 +88,46 @@ describe("select-review tests", () => {
             {
               reference: "CLAIM-2",
               type: "REVIEW",
-              herd: { id: "herd-2", name: "Other Herd" },
+              herd: { id: "herd-1", name: "Barn Herd" },
               createdAt: "2024-02-15T12:00:00.000Z",
               data: {
                 typeOfLivestock: "beef",
-                dateOfVisit: "2024-02-10",
+                dateOfVisit: "2024-03-10",
                 dateOfTesting: "2024-02-05",
+              },
+            },
+            {
+              reference: "CLAIM-3",
+              type: "REVIEW",
+              herd: { id: "herd-1", name: "Barn Herd" },
+              createdAt: "2024-02-15T12:00:00.000Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-04-10",
+                dateOfTesting: "2024-02-05",
+              },
+            },
+            {
+              reference: "CLAIM-4",
+              type: "REVIEW",
+              herd: { id: "herd-2", name: "Different herd" },
+              createdAt: "2024-02-15T12:00:00.000Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-04-10",
+                dateOfTesting: "2024-02-05",
+              },
+            },
+            {
+              reference: "CLAIM-5",
+              reviewReference: "CLAIM-1",
+              type: "FOLLOW_UP",
+              herd: { id: "herd-1", name: "Barn Herd" },
+              createdAt: "2024-02-15T12:00:00.000Z",
+              data: {
+                typeOfLivestock: "beef",
+                dateOfVisit: "2024-01-10",
+                dateOfTesting: "2024-01-10",
               },
             },
           ],
@@ -103,13 +137,24 @@ describe("select-review tests", () => {
 
       expect(res.statusCode).toBe(200);
       const $ = cheerio.load(res.payload);
-      expect($("input[value='CLAIM-1']")).toHaveLength(1);
+
+      expect($("input[value='CLAIM-2']")).toHaveLength(1);
+      expect($("input[value='CLAIM-3']")).toHaveLength(1);
+      expect($("input[value='CLAIM-4']")).not.toBeNull();
+      expect($("input[value='CLAIM-1']")).not.toBeNull();
 
       const fieldsetHint = $("#reviews-hint").html();
       expect(fieldsetHint).toContain("<b>Herd Name</b>: Barn Herd<br><b>Species</b>: beef");
 
-      const itemHint = $(".govuk-radios__hint").html();
-      expect(itemHint).toContain("<b>Claim number</b>: CLAIM-1");
+      const hints = $(".govuk-radios__hint");
+
+      expect(hints).toHaveLength(2);
+
+      const firstHintHtml = hints.eq(0).html();
+      expect(firstHintHtml).toContain("<b>Claim number</b>: CLAIM-2");
+
+      const secondHintHtml = hints.eq(1).html();
+      expect(secondHintHtml).toContain("<b>Claim number</b>: CLAIM-3");
     });
   });
 
