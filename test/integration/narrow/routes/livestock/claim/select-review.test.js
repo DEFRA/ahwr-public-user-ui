@@ -140,8 +140,9 @@ describe("select-review tests", () => {
 
       expect($("input[value='CLAIM-2']")).toHaveLength(1);
       expect($("input[value='CLAIM-3']")).toHaveLength(1);
-      expect($("input[value='CLAIM-4']")).not.toBeNull();
-      expect($("input[value='CLAIM-1']")).not.toBeNull();
+      expect($("input[value='CLAIM-4']")).toHaveLength(0);
+      expect($("input[value='CLAIM-1']")).toHaveLength(0);
+      expect($("input[value='CLAIM-5']")).toHaveLength(0);
 
       const fieldsetHint = $("#reviews-hint").html();
       expect(fieldsetHint).toContain("<b>Herd Name</b>: Barn Herd<br><b>Species</b>: beef");
