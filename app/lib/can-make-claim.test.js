@@ -4,11 +4,11 @@ import { config } from "../config/index.js";
 
 const organisation = { name: "Test Farm", sbi: "123456789" };
 
-const reviewClaim = (dateOfVisit, status = "PAID") => ({
+const reviewClaim = (dateOfVisit, status = "PAID", reference = "123456789") => ({
   type: claimType.review,
   status,
   data: { typeOfLivestock: "beef", dateOfVisit },
-  reference: "123456789",
+  reference,
 });
 
 const followUpClaim = (dateOfVisit) => ({
@@ -17,11 +17,11 @@ const followUpClaim = (dateOfVisit) => ({
   data: { typeOfLivestock: "beef", dateOfVisit },
 });
 
-const followUpClaimWithReviewReference = (dateOfVisit) => ({
+const followUpClaimWithReviewReference = (dateOfVisit, reviewReference = "123456789") => ({
   type: claimType.endemics,
   status: "PAID",
   data: { typeOfLivestock: "beef", dateOfVisit },
-  reviewReference: "123456789",
+  reviewReference,
 });
 
 const makeReview = (dateOfVisit, prevClaims) =>
@@ -97,6 +97,71 @@ describe("follow-up timing rules", () => {
     expect(makeFollowUp("2024-02-01", [reviewClaim("2024-03-01")])).toBe(
       "There is no review within the timeframe of this follow up",
     );
+  });
+
+  describe("reviewReference checks (excluding reviews used by follow-ups)", () => {
+    it("excludes a review that is used in a follow-up claim and allows another unused review", () => {
+      const prevClaims = [
+        reviewClaim("2024-01-01", "PAID", "REVIEW-USED"),
+        reviewClaim("2024-03-01", "PAID", "REVIEW-UNUSED"),
+        followUpClaimWithReviewReference("2024-01-15", "REVIEW-USED"),
+      ];
+
+      const result = canMakeClaim({
+        prevClaims,
+        typeOfReview: claimType.endemics,
+        dateOfVisit: "2025-01-01",
+        organisation,
+        typeOfLivestock: "beef",
+      });
+
+      expect(result.error).toBeUndefined();
+      expect(result.reviews).toHaveLength(1);
+      expect(result.reviews[0].reference).toBe("REVIEW-UNUSED");
+    });
+
+    it("returns all unused reviews when multiple reviews are not referenced by follow-ups", () => {
+      const prevClaims = [
+        reviewClaim("2024-01-01", "PAID", "REVIEW-USED"),
+        reviewClaim("2024-02-01", "PAID", "REVIEW-UNUSED-1"),
+        reviewClaim("2024-03-01", "PAID", "REVIEW-UNUSED-2"),
+        followUpClaimWithReviewReference("2024-01-15", "REVIEW-USED"),
+      ];
+
+      const result = canMakeClaim({
+        prevClaims,
+        typeOfReview: claimType.endemics,
+        dateOfVisit: "2024-05-01",
+        organisation,
+        typeOfLivestock: "beef",
+      });
+
+      expect(result.error).toBeUndefined();
+      expect(result.reviews).toHaveLength(2);
+      expect(result.reviews.map((r) => r.reference)).toEqual([
+        "REVIEW-UNUSED-1",
+        "REVIEW-UNUSED-2",
+      ]);
+    });
+
+    it("blocks when all reviews within the timeframe are used by follow-up claims", () => {
+      const prevClaims = [
+        reviewClaim("2024-01-01", "PAID", "REVIEW-1"),
+        reviewClaim("2024-02-01", "PAID", "REVIEW-2"),
+        followUpClaimWithReviewReference("2024-01-15", "REVIEW-1"),
+        followUpClaimWithReviewReference("2024-02-15", "REVIEW-2"),
+      ];
+
+      const result = canMakeClaim({
+        prevClaims,
+        typeOfReview: claimType.endemics,
+        dateOfVisit: "2024-05-01",
+        organisation,
+        typeOfLivestock: "beef",
+      });
+
+      expect(result.error).toBe("There is no review eligible for this follow up.");
+    });
   });
 });
 
