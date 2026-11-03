@@ -9,24 +9,32 @@ import {
 } from "../../../session/index.js";
 import { formatDate, getHerdOrFlock } from "../../../lib/display-helpers.js";
 import { filterReviewsWithNoFollowUps } from "../../../lib/can-make-claim.js";
+import { claimType } from "ffc-ahwr-common-library";
 
 const getReviews = (request) => {
   const { previousClaims, typeOfLivestock, dateOfVisit, herdId } = getSessionData(
     request,
     sessionEntryKeys.endemicsClaim,
   );
-
-  const currentHerdReviews = previousClaims.filter(
-    (claim) => claim.herd.id === herdId && claim.data.typeOfLivestock === typeOfLivestock,
+  const herdClaims = previousClaims.filter(
+    (claim) => claim.herd?.id === herdId && claim.data?.typeOfLivestock === typeOfLivestock,
   );
-  const { reviews } = filterReviewsWithNoFollowUps(currentHerdReviews, dateOfVisit);
+
+  const currentHerdClaims = herdClaims.filter(
+    (claim) =>
+      (claim.type === claimType.review &&
+        claim.data?.dateOfVisit <= dateOfVisit &&
+        (claim.status === "READY_TO_PAY" || claim.status === "PAID")) ||
+      claim.type === claimType.endemics,
+  );
+  const { reviews } = filterReviewsWithNoFollowUps(currentHerdClaims, dateOfVisit);
 
   return reviews.map((review) => ({
     value: review.reference,
     html: `<b>Date of review</b>: ${formatDate(review.data.dateOfVisit)}`,
     hint: {
       html: `<b>Claim number</b>: ${review.reference}`,
-      classe: "govuk-!-secondary-text",
+      class: "govuk-!-secondary-text",
     },
   }));
 };
