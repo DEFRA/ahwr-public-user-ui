@@ -22,7 +22,6 @@ AHWR Public User UI service, which contains the user dashboard as well as both t
 This UI represents the public facing part of the AHWR service, and is responsible for handling user interactions,
 displaying information, and facilitating the application and claim processes for farmers.
 
-
 ## Service features
 
 - User dashboard: Provides an overview of the user's application and claims, allowing them to track their progress and access relevant information.
