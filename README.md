@@ -33,6 +33,7 @@ displaying information, and facilitating the application and claim processes for
 - Accessibility: The UI is designed with accessibility in mind, ensuring that it can be used by a wide range of users, including those with disabilities.
 
 
+
 ## Architecture
 
 ```mermaid
