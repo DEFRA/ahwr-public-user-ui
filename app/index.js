@@ -1,6 +1,7 @@
 import { startMessagingService, stopMessagingService } from "./messaging/fcp-messaging-service.js";
 import { createServer } from "./server.js";
 
+/** @type {Awaited<ReturnType<typeof createServer>>} */
 let server;
 
 const init = async () => {
@@ -23,4 +24,4 @@ process.on("SIGINT", async () => {
   process.exit(0);
 });
 
-init();
+await init();
