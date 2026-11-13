@@ -23,4 +23,4 @@ process.on("SIGINT", async () => {
   process.exit(0);
 });
 
-init();
+await init();
