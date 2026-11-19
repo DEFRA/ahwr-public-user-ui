@@ -1,6 +1,6 @@
 # AHWR Public User UI
 
-## Table of contents
+## Table of contents 
 
 - [Service purpose](#service-purpose)
 - [Service features](#service-features)
