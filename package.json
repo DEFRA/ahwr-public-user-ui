@@ -31,8 +31,8 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@2toad/profanity": "3.3.0",
-    "@aws-sdk/client-s3": "3.1167.0",
-    "@aws-sdk/s3-request-presigner": "3.1167.0",
+    "@aws-sdk/client-s3": "3.1172.0",
+    "@aws-sdk/s3-request-presigner": "3.1172.0",
     "@defra/hapi-tracing": "1.30.2",
     "@elastic/ecs-pino-format": "1.5.0",
     "@hapi/boom": "10.0.1",
