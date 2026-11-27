@@ -70,7 +70,7 @@
     "@babel/plugin-transform-export-namespace-from": "^7.27.1",
     "@babel/plugin-transform-modules-commonjs": "7.29.14",
     "@testing-library/dom": "10.4.2",
-    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/jest-dom": "8.0.0",
     "@testing-library/user-event": "14.6.13",
     "babel-jest": "30.5.2",
     "baseline-browser-mapping": "^2.11.38",
